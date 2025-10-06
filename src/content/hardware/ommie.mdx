@@ -1,206 +1,58 @@
 ---
 name: "Ommie"
-description: "A versatile and affordable robotics platform designed for education and research. Ommie combines ease of use with advanced capabilities, making it ideal for teaching robotics concepts and conducting HRI experiments."
-shortDescription: "Versatile educational robot platform for teaching and research"
-category: "educational"
-status: "available"
+description: "A novel socially assistive robot designed to support deep breathing practices for anxiety reduction. Ommie uses haptic interaction and non-verbal cues to guide users through calming breathing exercises."
+shortDescription: "Social robot for anxiety reduction through guided deep breathing"
+category: "assistive"
+status: "experimental"
+images:
+  hero: "@/assets/images/hardware/ommie-hero.png"
 specifications:
-  height: "0.8 meters"
-  weight: "15 kg"
-  battery: "6 hours continuous operation"
-  sensors: ["RGB camera", "LIDAR", "Ultrasonic sensors", "Microphone array"]
-  actuators: ["Differential drive", "1 DOF arm", "Pan-tilt head"]
-  computePlatform: "Raspberry Pi 4 with optional Jetson Nano"
+  height: "Approx. 0.3 meters (tabletop size)"
+  weight: "Approx. 2-3 kg"
+  battery: "Powered via wall adapter"
+  sensors: ["Capacitive touch", "IMU", "Motor encoders", "Optional camera"]
+  actuators: ["Dynamixel MX-64AT (breathing motion)", "Dynamixel AX-12A (head nodding)"]
+  computePlatform: "Raspberry Pi"
 features:
-  - "Easy programming interface"
-  - "ROS 2 compatible"
-  - "Modular sensor configuration"
-  - "Visual programming support"
-  - "Remote control capability"
-  - "Educational curriculum included"
+  - "Haptic breathing guidance through physical expansion/contraction"
+  - "Non-verbal interaction through eye animations and audio chimes"
+  - "Soft sweater covering for comfortable touch"
+  - "Body (breathing) and head motions (nodding)"
+  - "Capacitive touch inputs"
+  - "Multiple breathing patterns supported (customizable)"
 applications:
-  - "Robotics education"
-  - "HRI research"
-  - "STEM outreach"
-  - "Programming courses"
-  - "Navigation studies"
+  - "Anxiety reduction"
+  - "Deep breathing"
+  - "Stress management"
+  - "Mental health support"
 researchAreas:
-  - "Educational Robotics"
+  - "Socially Assistive Robotics"
   - "Human-Robot Interaction"
-  - "Navigation"
-  - "Computer Vision"
-pricing:
-  purchase: 5000
-  rental:
-    daily: 75
-    weekly: 400
-    monthly: 1200
+  - "Mental Health Technology"
+  - "Haptic Interaction"
+  - "Therapeutic Robotics"
 links:
-  documentation: "https://docs.ommie.org"
-  github: "https://github.com/semio-community/ommie"
-  website: "https://ommie.org"
-  purchase: "https://store.semio-community.org/products/ommie"
-  rental: "https://store.semio-community.org/rentals/ommie"
-maintainers: ["Semio Community", "Oregon State University"]
-institutions: ["Oregon State University", "Tufts University", "Yale University"]
-tags: ["educational", "ros2", "mobile-robot", "stem"]
-featured: false
-publishDate: 2024-01-20
+  website: "https://scazlab.yale.edu/ommie-robot"
+  documentation: "https://dl.acm.org/doi/10.1145/3706122"
+maintainers: ["Yale University Social Robotics Lab"]
+institutions: ["Yale University"]
+tags: ["mental-health", "therapeutic", "haptic", "social-robot", "anxiety", "breathing", "wellness"]
+featured: true
+publishDate: 2025-02-19
 ---
 
 ## Overview
 
-Ommie is an educational robotics platform that bridges the gap between simple educational robots and advanced research platforms. Designed with both educators and researchers in mind, Ommie provides an accessible entry point into robotics while maintaining the capabilities needed for serious research.
+Ommie is a socially assistive robot developed at Yale University's Social Robotics Lab to help individuals manage anxiety through guided deep breathing exercises. The robot's core functionality centers on its unique haptic interaction design: it physically expands and contracts in a rhythmic breathing pattern while users place their hands on its soft, sweater-covered body. This mechanical breathing motion, combined with synchronized audio chimes and expressive eye animations, helps users naturally synchronize their own breathing to therapeutic deep breathing patterns that have been scientifically shown to calm the autonomic nervous system.
 
-## Key Features
+Initial research with 43 participants at a university wellness center demonstrated Ommie's effectiveness, with users experiencing statistically significant reductions in anxiety state measures after interacting with the robot. Beyond the quantitative improvements, participants consistently rated the robot highly for its calming, approachable, and engaging qualities. Users particularly highlighted the focusing effect of the haptic interaction, reporting that the physical sensation helped them achieve a calmer state more quickly than traditional breathing exercises. Many participants also described experiencing a sense of companionship during the interaction, comparing it to the motivational benefits of group meditation. The robot has shown promise beyond adult anxiety management, with ongoing applications in pediatric healthcare settings where it has been successfully deployed to help children manage stress during oral allergy challenges. Recent work has also explored the application of machine learning algorithms to detect deep breathing phase for monitoring and adjusting deep breathing practices. Future work involves expanding use of the robot to new populations benefitting from deep breathing, as well as more longitudinal, in-the-wild experimentation.
 
-### Educational Focus
+## Research Publications
 
-Ommie comes with a comprehensive educational package including:
-- Structured curriculum for undergraduate courses
-- Tutorial series covering basic to advanced topics
-- Visual programming interface for beginners
-- Python and C++ APIs for advanced users
+- Chun, A., Mamantov, E., Stahl, U., Scassellati, B., & Leeds, S. (2025). **Breathe Easy: Harnessing Robots for Stress Reduction During Pediatric Oral Challenges.** *Journal of Allergy and Clinical Immunology*, 155(2).
 
-### Modular Design
+- Matheus, K., Vázquez, M., & Scassellati, B. (2024). **Ommie: The Design and Development of a Social Robot for Anxiety Reduction.** *ACM Transactions on Human-Robot Interaction*.
 
-The platform's modular architecture allows for:
-- Easy sensor upgrades and replacements
-- Customizable configurations for different use cases
-- Quick maintenance and repairs
-- Cost-effective operation
+- Matheus, K., Mamantov, E., Vázquez, M., & Scassellati, B. (2023). **Deep Breathing Phase Classification with a Social Robot for Mental Health.** *International Conference on Multimodal Interaction (ICMI '23)*, Paris, France.
 
-## Technical Capabilities
-
-### Navigation
-
-Ommie features advanced navigation capabilities:
-- SLAM (Simultaneous Localization and Mapping)
-- Path planning algorithms
-- Obstacle avoidance
-- Multi-robot coordination support
-
-### Perception
-
-The integrated sensor suite enables:
-- Object detection and recognition
-- Person tracking
-- Gesture recognition
-- Speech interaction
-
-## Software Support
-
-### Programming Options
-
-```python
-# Example: Simple Ommie control
-from ommie import Robot
-
-robot = Robot()
-robot.connect()
-
-# Move forward for 2 meters
-robot.move_forward(2.0)
-
-# Turn 90 degrees
-robot.rotate(90)
-
-# Say hello
-robot.speak("Hello, I'm Ommie!")
-```
-
-### ROS 2 Integration
-
-Full ROS 2 support with pre-configured packages:
-- `ommie_navigation`: Autonomous navigation
-- `ommie_perception`: Sensor processing
-- `ommie_control`: Low-level control
-- `ommie_education`: Educational tools
-
-## Educational Resources
-
-### Curriculum Modules
-
-1. **Introduction to Robotics** (4 weeks)
-   - Robot components and systems
-   - Basic programming concepts
-   - Sensor fundamentals
-
-2. **Mobile Robotics** (6 weeks)
-   - Kinematics and dynamics
-   - Localization techniques
-   - Path planning algorithms
-
-3. **Human-Robot Interaction** (4 weeks)
-   - Social robotics concepts
-   - Interaction design
-   - User studies
-
-### Learning Materials
-
-- 50+ hands-on exercises
-- Video tutorials library
-- Online simulation environment
-- Assessment tools for educators
-
-## Research Applications
-
-Despite its educational focus, Ommie has been used in numerous research projects:
-- Navigation in crowded environments
-- Multi-robot coordination
-- Educational robotics studies
-- Accessibility research
-
-## Community
-
-### User Base
-
-- 200+ universities worldwide
-- 5,000+ students trained annually
-- Active educator community
-- Regular webinars and workshops
-
-### Support
-
-- Comprehensive documentation
-- Active forum community
-- Educational Discord server
-- Monthly educator meetups
-
-## Getting Started
-
-### Quick Setup
-
-1. Unbox and charge the robot
-2. Download the Ommie app
-3. Connect via WiFi
-4. Run the setup wizard
-5. Start with tutorial projects
-
-### Training Options
-
-- Online self-paced courses
-- Instructor training workshops
-- Summer bootcamps for educators
-- Custom training programs
-
-## Specifications Summary
-
-| Feature | Specification |
-|---------|--------------|
-| Dimensions | 80cm × 40cm × 40cm |
-| Weight | 15 kg |
-| Max Speed | 1 m/s |
-| Battery | 6 hours typical |
-| Computing | RPi 4 / Jetson Nano |
-| Connectivity | WiFi, Bluetooth, USB |
-| OS | Ubuntu 20.04 |
-
-## Future Development
-
-Ongoing improvements include:
-- Enhanced computer vision capabilities
-- Improved battery life
-- Additional sensor options
-- Expanded curriculum materials
-- Cloud-based fleet management
+- Matheus, K., Vázquez, M., & Scassellati, B. (2022). **A Social Robot for Anxiety Reduction via Deep Breathing.** *31st IEEE International Conference on Robot Human Interactive Communication (RO-MAN)*, Naples, Italy. **[Best Student Paper Award]**

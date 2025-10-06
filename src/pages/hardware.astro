@@ -21,6 +21,7 @@ const products = allHardware.map((hw) => ({
   type: "hardware" as const,
   description: hw.data.shortDescription,
   status: hw.data.status,
+  ...(hw.data.images?.hero && { image: hw.data.images.hero }),
   links: {
     primary: {
       label: hw.data.status === "available" ? "Get" : "Learn More",
@@ -123,35 +124,6 @@ const services = [
     </div>
   </Section>
 
-  <!-- Services Section -->
-  <Section
-    id="services"
-    title="Our Services"
-    subtitle="Comprehensive support for robotics hardware development and deployment"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          services.map((service) => (
-            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-              <Icon
-                name={service.icon}
-                class="w-12 h-12 mb-4 text-accent-two"
-              />
-              <h3 class="text-lg font-semibold mb-1">{service.title}</h3>
-              <p class="text-sm font-medium text-accent-one mb-2">
-                {service.subtitle}
-              </p>
-              <p class="text-sm text-color-600 dark:text-color-400">
-                {service.description}
-              </p>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </Section>
-
   <!-- Products Section -->
   <Section
     id="products"
@@ -178,6 +150,35 @@ const services = [
           </div>
         )
       }
+    </div>
+  </Section>
+
+  <!-- Services Section -->
+  <Section
+    id="services"
+    title="Our Services"
+    subtitle="Comprehensive support for robotics hardware development and deployment"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          services.map((service) => (
+            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <Icon
+                name={service.icon}
+                class="w-12 h-12 mb-4 text-accent-two"
+              />
+              <h3 class="text-lg font-semibold mb-1">{service.title}</h3>
+              <p class="text-sm font-medium text-accent-one mb-2">
+                {service.subtitle}
+              </p>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                {service.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
     </div>
   </Section>
 

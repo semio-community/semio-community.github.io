@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import { Icon } from "astro-icon/components";
@@ -55,31 +56,89 @@ const meta = {
 
 <PageLayout meta={meta}>
   <article class="hardware-detail">
+    <!-- Hero Image with Title Overlay -->
+    {
+      data.images?.hero && (
+        <div class="relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-xl overflow-hidden">
+          <div class="aspect-[21/9] overflow-hidden bg-gradient-to-b from-special-lighter to-special">
+            <Image
+              src={data.images.hero}
+              alt={`${data.name} hero image`}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+            <!-- Overlay gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent" />
+
+            <!-- Title, description and status overlay -->
+            <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+              <div class="max-w-7xl mx-auto">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                  {data.name}
+                </h1>
+                <p class="text-lg md:text-xl text-white/90 mb-4 max-w-3xl drop-shadow">
+                  {data.shortDescription}
+                </p>
+                <div class="flex gap-2">
+                  <span
+                    class={`px-3 py-1 rounded-full text-sm font-medium ${
+                      data.status === 'available'
+                        ? 'bg-green-500/80 text-white'
+                        : data.status === 'experimental'
+                        ? 'bg-yellow-500/80 text-white'
+                        : data.status === 'coming-soon'
+                        ? 'bg-blue-500/80 text-white'
+                        : 'bg-gray-500/80 text-white'
+                    } backdrop-blur-sm`}
+                  >
+                    {statusLabels[data.status]}
+                  </span>
+                  {
+                    data.featured && (
+                      <span class="px-3 py-1 rounded-full text-sm font-medium bg-accent-two/80 text-white backdrop-blur-sm">
+                        Featured
+                      </span>
+                    )
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     <!-- Header -->
     <header class="mb-8">
       <div class="flex items-start justify-between mb-4">
         <div>
-          <h1 class="title mb-4">{data.name}</h1>
-          <p class="text-xl text-color-600 dark:text-color-400 mb-4">
-            {data.shortDescription}
-          </p>
+          {!data.images?.hero && (
+            <>
+              <h1 class="title mb-4">{data.name}</h1>
+              <p class="text-xl text-color-600 dark:text-color-400 mb-4">
+                {data.shortDescription}
+              </p>
+            </>
+          )}
         </div>
-        <div class="flex gap-2">
-          <span
-            class={`px-3 py-1 rounded-full text-sm font-medium ${
-              statusColors[data.status]
-            } bg-color-100 dark:bg-special-dark`}
-          >
-            {statusLabels[data.status]}
-          </span>
-          {
-            data.featured && (
-              <span class="px-3 py-1 rounded-full text-sm font-medium text-accent-two bg-accent-two/10">
-                Featured
-              </span>
-            )
-          }
-        </div>
+        {!data.images?.hero && (
+          <div class="flex gap-2">
+            <span
+              class={`px-3 py-1 rounded-full text-sm font-medium ${
+                statusColors[data.status]
+              } bg-color-100 dark:bg-special-dark`}
+            >
+              {statusLabels[data.status]}
+            </span>
+            {
+              data.featured && (
+                <span class="px-3 py-1 rounded-full text-sm font-medium text-accent-two bg-accent-two/10">
+                  Featured
+                </span>
+              )
+            }
+          </div>
+        )}
       </div>
 
       <!-- Quick Info -->
@@ -100,6 +159,22 @@ const meta = {
 
       <!-- Action Buttons -->
       <div class="flex flex-wrap gap-3 mb-6">
+          {
+            data.links.website && (
+              <a
+                href={data.links.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+              >
+                <Icon
+                  name="solar:global-line-duotone"
+                  class="w-5 h-5 mr-2"
+                />
+                Website
+              </a>
+            )
+          }
         {
           data.links.purchase && (
             <a
