@@ -117,7 +117,11 @@ import { homeUrl, url } from "@/utils/url";
             .map((link) => (
               <a
                 aria-current={Astro.url.pathname === link.path ? "page" : false}
-                class="px-1 sm:px-2 md:px-3 py-1 rounded underline-offset-2 hover:text-accent-base aria-[current=page]:text-foreground aria-[current=page]:font-semibold whitespace-nowrap text-xs sm:text-sm leading-tight"
+                class={
+                  link.callToAction
+                    ? "px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-accent-one to-accent-two text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 whitespace-nowrap text-xs sm:text-sm leading-tight aria-[current=page]:shadow-xl"
+                    : "px-1 sm:px-2 md:px-3 py-1 rounded underline-offset-2 hover:text-accent-base aria-[current=page]:text-foreground aria-[current=page]:font-semibold whitespace-nowrap text-xs sm:text-sm leading-tight"
+                }
                 data-astro-prefetch
                 href={url(link.path)}
               >
@@ -270,7 +274,11 @@ import { homeUrl, url } from "@/utils/url";
         menuLinks.map((link) => (
           <a
             aria-current={Astro.url.pathname === link.path ? "page" : false}
-            class="px-4 py-2 rounded-lg underline-offset-2 hover:text-accent-base hover:bg-accent-base/10 aria-[current=page]:text-foreground aria-[current=page]:font-semibold transition-colors"
+            class={
+              link.callToAction
+                ? "px-6 py-3 rounded-lg bg-gradient-to-r from-accent-one to-accent-two text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 aria-[current=page]:shadow-xl"
+                : "px-4 py-2 rounded-lg underline-offset-2 hover:text-accent-base hover:bg-accent-base/10 aria-[current=page]:text-foreground aria-[current=page]:font-semibold transition-colors"
+            }
             data-astro-prefetch
             href={url(link.path)}
           >

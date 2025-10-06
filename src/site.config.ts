@@ -63,7 +63,7 @@ export const menuLinks: {
   {
     path: "/about/",
     title: "About",
-    inHeader: true,
+    inHeader: false,
   },
   {
     path: "/get-involved/",
