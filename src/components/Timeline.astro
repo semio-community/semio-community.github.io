@@ -1,0 +1,76 @@
+---
+export interface TimelineItem {
+  date: string;
+  title: string;
+  description?: string;
+  items?: string[];
+  highlight?: boolean;
+  strikethrough?: boolean;
+  newDate?: string;
+  color?: 'accent-one' | 'accent-two' | 'special' | 'gradient';
+}
+
+export interface Props {
+  items: TimelineItem[];
+}
+
+const { items } = Astro.props;
+
+const getColorClasses = (color?: string, highlight?: boolean) => {
+  if (color === 'gradient') {
+    return {
+      dot: 'bg-gradient-to-r from-accent-one to-accent-two',
+      bg: 'bg-gradient-to-r from-accent-one/10 to-accent-two/10 border border-accent-one/20',
+      text: ''
+    };
+  }
+
+  const baseColor = color || 'accent-one';
+  return {
+    dot: `bg-${baseColor}`,
+    bg: highlight ? `bg-${baseColor}/5` : 'bg-special-lighter',
+    text: highlight ? `text-${baseColor}` : ''
+  };
+};
+---
+
+<div class="relative mb-8">
+  <!-- Continuous timeline line -->
+  <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-special/30 via-accent-two/30 to-accent-one/30"></div>
+
+  <div class="space-y-6">
+    {items.map((item) => {
+      const colors = getColorClasses(item.color, item.highlight);
+      return (
+        <div class="relative pl-12">
+          <div class={`absolute left-3 top-0 w-6 h-6 ${colors.dot} rounded-full border-4 border-surface z-10`}></div>
+          <div class={`p-4 ${colors.bg} rounded-lg`}>
+            <h3 class={`text-lg font-semibold mb-2 ${colors.text}`}>
+              {item.strikethrough && item.newDate ? (
+                <>
+                  <span class="line-through text-accent-base">{item.date}</span>
+                  <span> {item.newDate}</span>
+                </>
+              ) : (
+                item.date
+              )}
+            </h3>
+            {item.title && (
+              <p class="font-semibold mb-2">{item.title}</p>
+            )}
+            {item.description && (
+              <p class="mb-2">{item.description}</p>
+            )}
+            {item.items && item.items.length > 0 && (
+              <ul class="list-disc list-inside space-y-1">
+                {item.items.map((listItem) => (
+                  <li set:html={listItem} />
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>

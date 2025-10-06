@@ -1,0 +1,87 @@
+---
+export interface Props {
+  name: string;
+  date: string;
+  dateRange?: string | undefined;
+  location?: string | undefined;
+  description?: string | undefined;
+  link?: string | undefined;
+  type?: "conference" | "workshop" | "symposium" | "summit" | "training";
+  isPast?: boolean | undefined;
+}
+
+const {
+  name,
+  date,
+  dateRange,
+  location,
+  description,
+  link,
+  type = "conference",
+  isPast = false,
+} = Astro.props;
+
+const typeColors = {
+  conference: "from-accent-one to-accent-two",
+  workshop: "from-accent-two to-special",
+  symposium: "from-special to-accent-one",
+  summit: "from-accent-base to-accent-one",
+  training: "from-accent-two to-accent-base",
+};
+
+const gradientColor = typeColors[type] || typeColors.conference;
+---
+
+<div
+  class={`relative p-6 rounded-lg border transition-all ${
+    isPast
+      ? "bg-surface/50 border-color-300 dark:border-color-700 opacity-75"
+      : "bg-special-lighter border-special hover:border-accent-one/40"
+  }`}
+>
+  {/* Event type badge */}
+  <div
+    class={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${gradientColor}`}
+  >
+    {type}
+  </div>
+
+  <div class="pr-20">
+    <h3
+      class={`text-lg font-semibold mb-2 ${isPast ? "text-color-600 dark:text-color-400" : "gradient-brand-text"}`}
+    >
+      {
+        link ? (
+          <a
+            href={link}
+            class="hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {name}
+          </a>
+        ) : (
+          name
+        )
+      }
+    </h3>
+
+    <div class="space-y-1 text-sm">
+      <p class="font-medium text-accent-two">
+        {dateRange || date}
+      </p>
+
+      {
+        location && (
+          <p class="text-color-600 dark:text-color-400">📍 {location}</p>
+        )
+      }
+
+      {
+        description && (
+          <p class="mt-2 text-color-600 dark:text-color-400">{description}</p>
+        )
+      }
+    </div>
+  </div>
+</div>

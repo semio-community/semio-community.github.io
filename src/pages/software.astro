@@ -1,0 +1,249 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { Icon } from "astro-icon/components";
+
+const meta = {
+  title: "Software",
+  description:
+    "Open-source software tools and frameworks for human-robot interaction research and development",
+};
+
+// Placeholder product data - to be expanded with actual content
+const products = [
+  {
+    name: "Arora",
+    type: "software" as const,
+    description: "Advanced robot operating system for autonomous agents",
+    status: "available" as const,
+    features: ["Lorem ipsum dolor sit amet", "Consectetur adipiscing elit"],
+    links: {
+      primary: { label: "Get Started", url: "#" },
+      github: "#",
+      docs: "#",
+    },
+  },
+  {
+    name: "SBL",
+    type: "software" as const,
+    description:
+      "Social Behavior Library - Comprehensive toolkit for social robotics behaviors",
+    status: "available" as const,
+    badge: "v3.0",
+    features: [
+      "Human Behavior Perception",
+      "Robot Behavior Production",
+      "Social Behavior Categories",
+    ],
+    links: {
+      primary: { label: "Try Now", url: "#" },
+      github: "#",
+      docs: "#",
+      demo: "#",
+    },
+  },
+  {
+    name: "Studio",
+    type: "software" as const,
+    description: "Visual programming environment for robot behavior design",
+    status: "coming-soon" as const,
+    badge: "Coming Soon",
+    features: ["Lorem ipsum dolor sit amet", "Consectetur adipiscing elit"],
+    links: {
+      primary: { label: "Join Waitlist", url: "#" },
+    },
+  },
+  {
+    name: "Vizij",
+    type: "software" as const,
+    description: "Visualization and analysis toolkit for HRI experiments",
+    status: "beta" as const,
+    badge: "Beta",
+    features: ["Lorem ipsum dolor sit amet", "Consectetur adipiscing elit"],
+    links: {
+      primary: { label: "Try Beta", url: "#" },
+      github: "#",
+      docs: "#",
+    },
+  },
+];
+
+const sblCategories = [
+  { name: "Proxemics", description: "Lorem ipsum dolor sit amet" },
+  { name: "Haptics", description: "Lorem ipsum dolor sit amet" },
+  { name: "Oculesics", description: "Lorem ipsum dolor sit amet" },
+  { name: "Deixis", description: "Lorem ipsum dolor sit amet" },
+  { name: "Kinesics", description: "Lorem ipsum dolor sit amet" },
+  { name: "Vocalics", description: "Lorem ipsum dolor sit amet" },
+  { name: "Chronemics", description: "Lorem ipsum dolor sit amet" },
+];
+
+const services = [
+  {
+    icon: "solar:code-2-line-duotone",
+    title: "Research-to-Production Code",
+    description: "Lorem ipsum dolor sit amet",
+    features: ["Lorem ipsum dolor", "Consectetur adipiscing"],
+  },
+  {
+    icon: "hugeicons:user-group",
+    title: "Community Pool & Bounties",
+    description: "Lorem ipsum dolor sit amet",
+    features: ["Lorem ipsum dolor", "Consectetur adipiscing"],
+  },
+];
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">Software</h1>
+
+  <!-- Hero Section with CTAs -->
+  <Section id="software-cta">
+    <div class="max-w-4xl mx-auto text-center mb-12">
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Open-source tools and frameworks designed to accelerate human-robot
+        interaction research and enable reproducible science.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="#products"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:play-bold" class="w-5 h-5 mr-2" />
+          Try Software
+        </a>
+        <a
+          href="#contribute"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+        >
+          <Icon name="mdi:github" class="w-5 h-5 mr-2" />
+          Contribute
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Services Section -->
+  <Section
+    id="services"
+    title="Our Services"
+    subtitle="Supporting the transition from research to real-world deployment"
+  >
+    <div class="max-w-5xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {
+          services.map((service) => (
+            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <div class="flex items-start gap-4">
+                <Icon
+                  name={service.icon}
+                  class="w-12 h-12 text-accent-two flex-shrink-0"
+                />
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold mb-2">{service.title}</h3>
+                  <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                    {service.description}
+                  </p>
+                  <ul class="space-y-1">
+                    {service.features.map((feature) => (
+                      <li class="flex items-center gap-2 text-sm">
+                        <Icon
+                          name="solar:check-circle-bold"
+                          class="w-4 h-4 text-accent-one flex-shrink-0"
+                        />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <!-- Products Section -->
+  <Section
+    id="products"
+    title="Our Software"
+    subtitle="Comprehensive tools for every aspect of HRI development"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {products.map((product) => <ProductCard {...product} />)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- SBL Categories Section -->
+  <Section
+    id="sbl-categories"
+    title="Social Behavior Library (SBL)"
+    subtitle="Comprehensive coverage of social behavior categories"
+  >
+    <div class="max-w-5xl mx-auto">
+      <div
+        class="mb-8 p-6 bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20"
+      >
+        <p class="text-center mb-6">
+          The Social Behavior Library provides standardized implementations of
+          key social behaviors for human-robot interaction:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {
+            sblCategories.map((category) => (
+              <div class="flex items-start gap-3 p-4 bg-surface/80 rounded-lg">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <div>
+                  <h4 class="font-semibold text-sm mb-1">{category.name}</h4>
+                  <p class="text-xs text-color-600 dark:text-color-400">
+                    {category.description}
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a
+          href="#"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:book-2-line-duotone" class="w-5 h-5 mr-2" />
+          Explore SBL Documentation
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Contribute Section -->
+  <Section
+    id="contribute"
+    title="Contribute to Our Software"
+    subtitle="Join our open-source community and help shape the future of HRI"
+  >
+    <div class="max-w-4xl mx-auto text-center">
+      <p class="mb-8 text-color-600 dark:text-color-400">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Get involved to
+        help shape the future of HRI software!
+      </p>
+      <a
+        href="/get-involved/"
+        class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+      >
+        Get Involved
+      </a>
+    </div>
+  </Section>
+</PageLayout>

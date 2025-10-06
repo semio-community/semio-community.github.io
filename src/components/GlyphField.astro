@@ -1,0 +1,270 @@
+---
+export interface Props {
+  count: number;
+  speed?: number;
+  scaling?: number;
+  bottomLeft?: any;
+  class?: string;
+  grayscale?: boolean;
+  filled?: boolean;
+  svgClass?: string;
+}
+
+const {
+  count,
+  speed = 1,
+  scaling = 1,
+  bottomLeft,
+  class: className,
+  grayscale = false,
+  filled = false,
+  svgClass: svgClassName,
+} = Astro.props;
+
+// Generate glyphs data server-side
+function getRandomVariant(): "primary" | "secondary" | "tertiary" {
+  const variants: ("primary" | "secondary" | "tertiary")[] = [
+    "primary",
+    "secondary",
+    "tertiary",
+  ];
+  return variants[Math.floor(Math.random() * variants.length)] as
+    | "primary"
+    | "secondary"
+    | "tertiary";
+}
+
+function shuffle<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = arr[i];
+    arr[i] = arr[j] as T;
+    arr[j] = temp as T;
+  }
+  return arr;
+}
+
+function range(start: number, end: number): number[] {
+  return Array.from({ length: end - start }, (_, i) => start + i);
+}
+
+const glyphs = shuffle(range(0, count)).map((val, idx) => ({
+  id: crypto.randomUUID(),
+  variant: getRandomVariant(),
+  baseX: Math.random() * 0.2 - 0.05 + val / count,
+  baseY: Math.random() * 0.2 - 0.05 + idx / count,
+  scale: Math.random() + scaling,
+  duration: Math.random() * 2 * speed + 5 + speed,
+  begin: Math.random() * 5,
+  angle: Math.random() * Math.PI,
+}));
+
+function getRotation(variant: string): string {
+  switch (variant) {
+    case "primary":
+      return "rotate(0deg)";
+    case "secondary":
+      return "rotate(120deg)";
+    case "tertiary":
+      return "rotate(240deg)";
+    default:
+      return "rotate(0deg)";
+  }
+}
+
+function getLineColor(variant: string, grayscale?: boolean): string {
+  if (grayscale) {
+    switch (variant) {
+      case "primary":
+        return "dark:stroke-neutral-900 stroke-neutral-300";
+      case "secondary":
+        return "dark:stroke-neutral-800 stroke-neutral-200";
+      case "tertiary":
+        return "dark:stroke-neutral-700 stroke-neutral-100";
+      default:
+        return "stroke-neutral-500";
+    }
+  }
+  // Using the new brand colors
+  switch (variant) {
+    case "primary":
+      return "stroke-[#EF6129]"; // red-orange
+    case "secondary":
+      return "stroke-[#FF9E00]"; // yellow-orange
+    case "tertiary":
+      return "stroke-[#50C4B6]"; // teal
+    default:
+      return "stroke-neutral-500";
+  }
+}
+
+function getFillColor(variant: string, grayscale?: boolean): string {
+  if (grayscale) {
+    switch (variant) {
+      case "primary":
+        return "dark:fill-neutral-900 fill-neutral-300";
+      case "secondary":
+        return "dark:fill-neutral-800 fill-neutral-200";
+      case "tertiary":
+        return "dark:fill-neutral-700 fill-neutral-100";
+      default:
+        return "fill-neutral-500";
+    }
+  }
+  // Using the new brand colors
+  switch (variant) {
+    case "primary":
+      return "fill-[#EF6129]"; // red-orange
+    case "secondary":
+      return "fill-[#FF9E00]"; // yellow-orange
+    case "tertiary":
+      return "fill-[#50C4B6]"; // teal
+    default:
+      return "fill-neutral-500";
+  }
+}
+
+function unitVector(vec: [number, number]): [number, number] {
+  const magnitude = Math.sqrt(vec[0] ** 2 + vec[1] ** 2);
+  return [vec[0] / magnitude, vec[1] / magnitude];
+}
+
+function generatePath(angle: number): string {
+  const vector = unitVector([Math.cos(angle), Math.sin(angle)]);
+  const zenith: [number, number] = [vector[0] * 50, vector[1] * 50];
+  const close: [number, number] = [vector[0] * 30, vector[1] * 30];
+  return [
+    [-zenith[0], -zenith[1]],
+    [-close[0], -close[1]],
+    [close[0], close[1]],
+    [zenith[0], zenith[1]],
+    [close[0], close[1]],
+    [-close[0], -close[1]],
+    [-zenith[0], -zenith[1]],
+  ]
+    .map((point) => point.join(" "))
+    .join(";");
+}
+---
+
+<div class={`overflow-hidden relative ${className || ""}`} data-glyph-field>
+  <svg
+    width="100%"
+    height="100%"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    stroke-linejoin="round"
+    stroke-miterlimit="2"
+    class={`absolute bg-transparent ${svgClassName || ""}`}
+    data-glyph-svg
+  >
+    {
+      glyphs.map((glyph) => {
+        const path = generatePath(glyph.angle);
+        return (
+          <g>
+            <animateTransform
+              attributeName="transform"
+              type="translate"
+              begin={`-${glyph.begin}s`}
+              values={path}
+              dur={`${glyph.duration}s`}
+              repeatCount="indefinite"
+            />
+            <g
+              class={`glyph-group ${getRotation(glyph.variant)}`}
+              data-base-x={glyph.baseX}
+              data-base-y={glyph.baseY}
+              data-scale={glyph.scale}
+              data-variant={glyph.variant}
+            >
+              <path
+                class={`glyph-path ${filled ? getFillColor(glyph.variant, grayscale) : ""} ${getLineColor(glyph.variant, grayscale)} stroke-1 hover:stroke-2`}
+                data-scale={glyph.scale}
+                d="M0.55,10.626L18.002,0.55L35.456,10.627L35.472,30.771L24.893,36.879L29.541,39.562C29.543,39.564 29.546,39.565 29.548,39.567L30.716,40.241L23.83,44.202L14.575,38.873L0.55,30.778L0.55,10.626Z"
+                fill-opacity={filled ? 0.5 : 0}
+              />
+            </g>
+          </g>
+        );
+      })
+    }
+  </svg>
+  {
+    bottomLeft && (
+      <div class="absolute z-10 bottom-4 left-6 flex flex-row items-center gap-1 drop-shadow-md">
+        {bottomLeft}
+      </div>
+    )
+  }
+  <slot />
+</div>
+
+<script>
+  // Update glyph positions based on container size
+  function updateGlyphPositions() {
+    const containers = document.querySelectorAll("[data-glyph-field]");
+
+    containers.forEach((container) => {
+      const svg = container.querySelector("[data-glyph-svg]") as SVGElement;
+      if (!svg) return;
+
+      const bounds = container.getBoundingClientRect();
+      const glyphGroups = svg.querySelectorAll(".glyph-group");
+
+      glyphGroups.forEach((group: Element) => {
+        const baseX = parseFloat(group.getAttribute("data-base-x") || "0");
+        const baseY = parseFloat(group.getAttribute("data-base-y") || "0");
+        const scale = parseFloat(group.getAttribute("data-scale") || "1");
+        const variant = group.getAttribute("data-variant") || "primary";
+
+        const x = bounds.width * baseX;
+        const y = bounds.height * baseY;
+        const rotation = getRotation(variant);
+
+        (group as HTMLElement).style.transform =
+          `translate(${x}px, ${y}px) ${rotation}`;
+
+        const path = group.querySelector(".glyph-path") as SVGPathElement;
+        if (path) {
+          const pathScale = parseFloat(path.getAttribute("data-scale") || "1");
+          path.style.transform = `translate(-${pathScale * (37 / 2)}px, -${pathScale * (45 / 2)}px) scale(${pathScale})`;
+          path.style.pointerEvents = "visibleFill";
+        }
+      });
+    });
+  }
+
+  function getRotation(variant: string): string {
+    switch (variant) {
+      case "primary":
+        return "rotate(0deg)";
+      case "secondary":
+        return "rotate(120deg)";
+      case "tertiary":
+        return "rotate(240deg)";
+      default:
+        return "rotate(0deg)";
+    }
+  }
+
+  // Initial update
+  updateGlyphPositions();
+
+  // Update on resize
+  let resizeTimer: number;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(updateGlyphPositions, 100);
+  });
+
+  // Update when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", updateGlyphPositions);
+  } else {
+    updateGlyphPositions();
+  }
+</script>

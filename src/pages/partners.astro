@@ -1,0 +1,405 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import PartnerCard from "@/components/PartnerCard.astro";
+import { Icon } from "astro-icon/components";
+
+const meta = {
+  title: "Partners",
+  description:
+    "Academic, industry, and public sector partners advancing human-centered robotics and AI together",
+};
+
+// Partner data organized by type
+const partners = {
+  universities: [
+    {
+      name: "George Mason University",
+      website: "https://www.gmu.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "Oregon State University",
+      website: "https://oregonstate.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "University of Pennsylvania",
+      website: "https://www.upenn.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "University of Southern California",
+      website: "https://www.usc.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "Tufts University",
+      website: "https://www.tufts.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "Yale University",
+      website: "https://www.yale.edu",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+  ],
+  nonprofit: [
+    {
+      name: "KISS Institute for Practical Robotics (KIPR)",
+      website: "https://www.kipr.org",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "Peerbots",
+      website: "#",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+  ],
+  private: [
+    {
+      name: "OLogic, Inc.",
+      website: "https://ologic.com",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+    {
+      name: "Semio AI, Inc.",
+      website: "https://semio.ai",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+  ],
+  public: [
+    {
+      name: "National Institute of Standards and Technology (NIST)",
+      website: "https://www.nist.gov",
+      description: "Lorem ipsum dolor sit amet.",
+    },
+  ],
+};
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">Partners</h1>
+
+  <!-- Hero Section -->
+  <Section id="partners-intro">
+    <div class="max-w-4xl mx-auto text-center mb-12">
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Semio Community brings together leading institutions from academia,
+        industry, and the public sector to advance human-centered robotics and
+        artificial intelligence through collaborative innovation.
+      </p>
+
+      <!-- Partner Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <div class="text-2xl font-bold gradient-brand-text mb-1">
+            {partners.universities.length}
+          </div>
+          <div class="text-xs text-color-600 dark:text-color-400">
+            Universities
+          </div>
+        </div>
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <div class="text-2xl font-bold gradient-brand-text mb-1">
+            {partners.nonprofit.length}
+          </div>
+          <div class="text-xs text-color-600 dark:text-color-400">
+            Non-profits
+          </div>
+        </div>
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <div class="text-2xl font-bold gradient-brand-text mb-1">
+            {partners.private.length}
+          </div>
+          <div class="text-xs text-color-600 dark:text-color-400">
+            Private Sector
+          </div>
+        </div>
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <div class="text-2xl font-bold gradient-brand-text mb-1">
+            {partners.public.length}
+          </div>
+          <div class="text-xs text-color-600 dark:text-color-400">
+            Public Sector
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Universities Section -->
+  <Section
+    id="universities"
+    title="University Partners"
+    subtitle="Leading academic institutions driving HRI research"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {partners.universities.map((partner) => <PartnerCard {...partner} />)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- Non-profit Section -->
+  <Section
+    id="nonprofit"
+    title="Not-for-Profit Partners"
+    subtitle="Organizations advancing robotics for social good"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {partners.nonprofit.map((partner) => <PartnerCard {...partner} />)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- Private Sector Section -->
+  <Section
+    id="private"
+    title="Private Sector Partners"
+    subtitle="Industry leaders bringing innovation to market"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {partners.private.map((partner) => <PartnerCard {...partner} />)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- Public Sector Section -->
+  <Section
+    id="public"
+    title="Public Sector Partners"
+    subtitle="Government organizations supporting robotics advancement"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {partners.public.map((partner) => <PartnerCard {...partner} />)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- Become a Partner Section -->
+  <Section
+    id="become-partner"
+    title="Become a Partner"
+    subtitle="Join our growing network of organizations advancing human-centered robotics"
+  >
+    <div class="max-w-4xl mx-auto">
+      <div
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
+              Who Can Partner?
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:check-circle-bold"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm"
+                  >Academic institutions and research labs</span
+                >
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:check-circle-bold"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Non-profit organizations</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:check-circle-bold"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Technology companies and startups</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:check-circle-bold"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Government agencies and labs</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:check-circle-bold"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Industry consortiums</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
+              Partnership Types
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Research collaborations</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Technology development partnerships</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Educational initiatives</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Event sponsorships</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:star-bold"
+                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Resource sharing agreements</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h3 class="text-2xl font-semibold mb-4 gradient-brand-text">
+            Ready to Partner with Us?
+          </h3>
+          <p class="mb-6 text-color-600 dark:text-color-400">
+            Let's work together to advance the field of human-centered robotics
+            and create positive impact.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="mailto:ross@community.semio.ai"
+              class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+            >
+              <Icon name="solar:letter-line-duotone" class="w-5 h-5 mr-2" />
+              Contact Us
+            </a>
+            <a
+              href="/about/"
+              class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special-lighter transition-all"
+            >
+              Learn More About Us
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Collaboration Opportunities -->
+  <Section
+    id="opportunities"
+    title="Current Opportunities"
+    subtitle="Active projects and initiatives seeking partners"
+  >
+    <div class="max-w-4xl mx-auto">
+      <div class="space-y-4">
+        <div
+          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
+        >
+          <div class="flex items-start gap-4">
+            <Icon
+              name="solar:cpu-bolt-line-duotone"
+              class="w-8 h-8 text-accent-two flex-shrink-0"
+            />
+            <div class="flex-1">
+              <h3 class="font-semibold mb-2">Hardware Development Partners</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                We're seeking partners for developing and manufacturing
+                next-generation social robot platforms.
+              </p>
+              <a href="/hardware/" class="text-sm text-link hover:underline">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
+        >
+          <div class="flex items-start gap-4">
+            <Icon
+              name="solar:code-square-line-duotone"
+              class="w-8 h-8 text-accent-two flex-shrink-0"
+            />
+            <div class="flex-1">
+              <h3 class="font-semibold mb-2">Open Source Contributors</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                Join our open-source initiatives to develop reusable software
+                for HRI research.
+              </p>
+              <a href="/software/" class="text-sm text-link hover:underline">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
+        >
+          <div class="flex items-start gap-4">
+            <Icon
+              name="solar:test-tube-line-duotone"
+              class="w-8 h-8 text-accent-two flex-shrink-0"
+            />
+            <div class="flex-1">
+              <h3 class="font-semibold mb-2">Research Collaborators</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                Participate in multi-site studies and contribute to reproducible
+                HRI research.
+              </p>
+              <a href="/studies/" class="text-sm text-link hover:underline">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
+        >
+          <div class="flex items-start gap-4">
+            <Icon
+              name="hugeicons:calendar-03"
+              class="w-8 h-8 text-accent-two flex-shrink-0"
+            />
+            <div class="flex-1">
+              <h3 class="font-semibold mb-2">Event Sponsors</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                Support conferences, workshops, and training events for the HRI
+                community.
+              </p>
+              <a href="/events/" class="text-sm text-link hover:underline">
+                Learn more →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+</PageLayout>

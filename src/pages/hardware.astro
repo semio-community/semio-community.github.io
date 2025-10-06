@@ -1,0 +1,187 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import ProductCard from "@/components/ProductCard.astro";
+import { Icon } from "astro-icon/components";
+
+const meta = {
+  title: "Hardware",
+  description:
+    "Community-driven robotics hardware platforms for human-robot interaction research",
+};
+
+// Placeholder product data - to be expanded with actual content
+const products = [
+  {
+    name: "Quori",
+    type: "hardware" as const,
+    description: "Lorem ipsum dolor sit amet, Quori hardware platform.",
+    status: "available" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+  {
+    name: "Ommie",
+    type: "hardware" as const,
+    description: "Lorem ipsum dolor sit amet, Ommie hardware platform.",
+    status: "available" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+  {
+    name: "MuSoHu (GMU Helmet)",
+    type: "hardware" as const,
+    description:
+      "Lorem ipsum dolor sit amet, MuSoHu (GMU Helmet) hardware platform.",
+    status: "experimental" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+  {
+    name: "BeholderBot",
+    type: "hardware" as const,
+    description: "Lorem ipsum dolor sit amet, BeholderBot hardware platform.",
+    status: "available" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+  {
+    name: "Jibo",
+    type: "hardware" as const,
+    description: "Lorem ipsum dolor sit amet, Jibo hardware platform.",
+    status: "coming-soon" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+  {
+    name: "Blossom",
+    type: "hardware" as const,
+    description: "Lorem ipsum dolor sit amet, Blossom hardware platform.",
+    status: "coming-soon" as const,
+    links: {
+      primary: { label: "Get", url: "#" },
+    },
+  },
+];
+
+const services = [
+  {
+    icon: "solar:settings-minimalistic-line-duotone",
+    title: "DFM",
+    subtitle: "Design for Manufacturing",
+    description:
+      "Expert guidance on making your robotic designs production-ready",
+  },
+  {
+    icon: "solar:box-minimalistic-line-duotone",
+    title: "CM",
+    subtitle: "Contract Manufacturing",
+    description: "End-to-end manufacturing services for robotics hardware",
+  },
+  {
+    icon: "solar:database-line-duotone",
+    title: "Inventory",
+    subtitle: "Inventory Management",
+    description: "Storage and inventory solutions for robotics components",
+  },
+  {
+    icon: "solar:cart-large-2-line-duotone",
+    title: "Sales",
+    subtitle: "Sales & Distribution",
+    description: "Connect with the robotics research community",
+  },
+  {
+    icon: "solar:delivery-line-duotone",
+    title: "Shipping",
+    subtitle: "Global Shipping",
+    description: "Worldwide delivery of robotics platforms",
+  },
+  {
+    icon: "solar:headphones-round-line-duotone",
+    title: "Support",
+    subtitle: "Technical Support",
+    description: "Ongoing support for hardware platforms",
+  },
+];
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">Hardware</h1>
+
+  <!-- Hero Section with CTAs -->
+  <Section id="hardware-cta">
+    <div class="max-w-4xl mx-auto text-center mb-12">
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Community-driven robotics hardware for reproducible science and
+        human-centered robotics.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="#products"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          Get
+        </a>
+        <a
+          href="#products"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+        >
+          Rent
+        </a>
+        <a
+          href="#products"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-two hover:bg-accent-two/10 transition-all"
+        >
+          Buy
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Services Section -->
+  <Section
+    id="services"
+    title="Our Services"
+    subtitle="Comprehensive support for robotics hardware development and deployment"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          services.map((service) => (
+            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <Icon
+                name={service.icon}
+                class="w-12 h-12 mb-4 text-accent-two"
+              />
+              <h3 class="text-lg font-semibold mb-1">{service.title}</h3>
+              <p class="text-sm font-medium text-accent-one mb-2">
+                {service.subtitle}
+              </p>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                {service.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <!-- Products Section -->
+  <Section
+    id="products"
+    title="Our Platforms"
+    subtitle="Open-source robotics hardware for research and education"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map((product) => <ProductCard {...product} compact />)}
+      </div>
+    </div>
+  </Section>
+</PageLayout>

@@ -1,0 +1,69 @@
+# Pagefind Configuration
+# See: https://pagefind.app/docs/config-options/
+
+# Source directory (where built HTML files are)
+site: dist
+
+# Output directory for pagefind files
+output_path: dist/pagefind
+
+# Force language detection
+force_language: en
+
+# Include all HTML files by default
+glob: "**/*.html"
+
+# Exclude certain selectors from being indexed
+exclude_selectors:
+  # Navigation and UI elements
+  - "nav"
+  - "header nav"
+  - ".navbar"
+  - ".navigation"
+
+  # Search interface itself
+  - ".search-container"
+  - "#citrus__search"
+  - "site-search"
+
+  # Scripts and styles
+  - "script"
+  - "style"
+  - "noscript"
+
+  # Footer elements that shouldn't be searchable
+  - "footer .social-links"
+  - ".copyright"
+
+  # Skip buttons and form controls
+  - "button"
+  - ".btn"
+  - ".button"
+
+# Include specific selectors that contain main content
+include_selectors:
+  # Main content areas
+  - "main"
+  - "[data-pagefind-body]"
+  - ".content"
+  - ".prose"
+
+  # Specific content sections
+  - "h1, h2, h3, h4, h5, h6"
+  - "p"
+  - ".organizer-card"
+  - ".speaker-card"
+  - ".section-content"
+
+# Configure how content is processed
+process_images: false
+process_links: true
+
+# Keep HTML structure for better excerpts
+keep_html: false
+
+# Configure excerpt length
+excerpt_length: 30
+
+# Enable verbose logging during build
+verbose: true

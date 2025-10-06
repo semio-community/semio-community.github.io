@@ -1,0 +1,445 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import { Icon } from "astro-icon/components";
+
+const meta = {
+  title: "Get Involved",
+  description:
+    "Join the Semio Community - donate, volunteer, and help advance human-centered robotics and AI",
+};
+
+// Volunteer opportunities section removed per specification.
+
+// Donation impacts section removed per specification.
+
+// Membership benefits section removed per specification.
+---
+
+<PageLayout meta={meta}>
+  <h1 class="title mb-6">Get Involved</h1>
+
+  <!-- Hero Section -->
+  <Section id="get-involved-hero">
+    <div class="max-w-4xl mx-auto text-center mb-12">
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Be part of a global community advancing human-centered robotics and
+        artificial intelligence. Your support helps us foster reproducible
+        science and develop reusable systems for HRI.
+      </p>
+
+      <!-- Main CTAs -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="#donate"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:heart-bold" class="w-5 h-5 mr-2" />
+          Donate
+        </a>
+        <a
+          href="#volunteer"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+        >
+          <Icon name="solar:user-hands-line-duotone" class="w-5 h-5 mr-2" />
+          Volunteer
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Donate Section -->
+  <Section
+    id="donate"
+    title="Support Semio Community"
+    subtitle="Your donations enable us to advance open science in robotics"
+  >
+    <div class="max-w-5xl mx-auto">
+      <!-- Why Donate -->
+      <div
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20 mb-8"
+      >
+        <h3 class="text-2xl font-semibold mb-4 text-center gradient-brand-text">
+          Why Your Support Matters
+        </h3>
+        <p class="text-center mb-6 text-color-600 dark:text-color-400">
+          As a 501(c)(3) nonprofit organization, we rely on donations to sustain
+          our mission of making robotics research more accessible, reproducible,
+          and impactful.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="text-center">
+            <Icon
+              name="solar:shield-check-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h4 class="font-semibold mb-2">Tax Deductible</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              All donations are tax-deductible to the fullest extent of the law
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="solar:eye-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h4 class="font-semibold mb-2">Transparent</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Annual reports show exactly how your donations are used
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="solar:target-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h4 class="font-semibold mb-2">Impactful</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              100% of donations directly support our programs and initiatives
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a
+            href="https://donate.stripe.com/semio-community"
+            class="inline-flex items-center justify-center h-12 px-10 text-lg font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+          >
+            <Icon name="solar:heart-bold" class="w-5 h-5 mr-2" />
+            Donate Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Other Ways to Give -->
+      <div class="bg-surface rounded-lg p-6 border border-special">
+        <h3 class="text-lg font-semibold mb-4 text-center">
+          Other Ways to Give
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+          <div>
+            <Icon
+              name="solar:buildings-2-line-duotone"
+              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+            />
+            <h4 class="font-semibold mb-2">Corporate Sponsorship</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Partner with us through corporate giving programs
+            </p>
+          </div>
+          <div>
+            <Icon
+              name="solar:gift-line-duotone"
+              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+            />
+            <h4 class="font-semibold mb-2">In-Kind Donations</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Donate equipment, software licenses, or services
+            </p>
+          </div>
+          <div>
+            <Icon
+              name="solar:hand-money-line-duotone"
+              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+            />
+            <h4 class="font-semibold mb-2">Planned Giving</h4>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Include Semio Community in your estate planning
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Volunteer Section -->
+  <Section
+    id="volunteer"
+    title="Join the Community"
+    subtitle="Share your skills and passion to advance human-centered robotics"
+  >
+    <div class="max-w-5xl mx-auto">
+      <!-- Volunteer Opportunities section removed per specification. -->
+
+      <!-- Volunteer Benefits -->
+      <div
+        class="bg-gradient-to-r from-accent-two/10 to-special/10 rounded-lg p-8 border border-accent-two/20"
+      >
+        <h3 class="text-xl font-semibold mb-6 text-center">
+          Volunteer Benefits
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="flex items-start gap-3">
+            <Icon
+              name="solar:check-circle-bold"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+            />
+            <div>
+              <h4 class="font-semibold mb-1">Skill Development</h4>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                Gain hands-on experience with cutting-edge robotics technology
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <Icon
+              name="solar:check-circle-bold"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+            />
+            <div>
+              <h4 class="font-semibold mb-1">Professional Network</h4>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                Connect with researchers and professionals in HRI
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <Icon
+              name="solar:check-circle-bold"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+            />
+            <div>
+              <h4 class="font-semibold mb-1">Recognition</h4>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                Receive certificates and LinkedIn recommendations
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <Icon
+              name="solar:check-circle-bold"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+            />
+            <div>
+              <h4 class="font-semibold mb-1">Flexible Commitment</h4>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                Choose projects that fit your schedule and interests
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a
+            href="#volunteer-form"
+            class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+          >
+            <Icon name="solar:user-hands-line-duotone" class="w-5 h-5 mr-2" />
+            Become a Volunteer
+          </a>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Mailing List Section -->
+  <Section
+    id="mailing-list"
+    title="Join Our Mailing List"
+    subtitle="Stay connected with the latest news, events, and opportunities"
+  >
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-special-lighter rounded-lg p-8 border border-special">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div>
+            <h3 class="text-lg font-semibold mb-4">What You'll Receive:</h3>
+            <ul class="space-y-2">
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:letter-line-duotone"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm"
+                  >Monthly newsletter with community updates</span
+                >
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:calendar-mark-line-duotone"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm"
+                  >Early announcements for events and workshops</span
+                >
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:test-tube-line-duotone"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm">Research highlights and findings</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <Icon
+                  name="solar:users-group-two-rounded-line-duotone"
+                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                />
+                <span class="text-sm"
+                  >Volunteer and collaboration opportunities</span
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Subscribe Now:</h3>
+            <form class="space-y-4" action="#" method="POST">
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your email address"
+                  required
+                  class="w-full px-4 py-2 rounded-lg border border-color-300 dark:border-color-700 bg-surface focus:outline-none focus:ring-2 focus:ring-accent-one"
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your name (optional)"
+                  class="w-full px-4 py-2 rounded-lg border border-color-300 dark:border-color-700 bg-surface focus:outline-none focus:ring-2 focus:ring-accent-one"
+                />
+              </div>
+              <div class="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="gdpr"
+                  name="gdpr"
+                  required
+                  class="mt-1"
+                />
+                <label
+                  for="gdpr"
+                  class="text-xs text-color-600 dark:text-color-400"
+                >
+                  I agree to receive emails from Semio Community and understand
+                  I can unsubscribe at any time.
+                </label>
+              </div>
+              <button
+                type="submit"
+                class="w-full h-12 font-semibold rounded-lg shadow-lg gradient-brand-horizontal text-surface hover:brightness-110 transition-all"
+              >
+                Subscribe to Mailing List
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="text-center text-sm text-color-600 dark:text-color-400">
+          <p>
+            We respect your privacy and never share your information with third
+            parties.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Membership Section -->
+  <Section
+    id="membership"
+    title="Become a Member"
+    subtitle="Join as an official member for additional benefits and voting rights"
+  >
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-surface rounded-lg p-8 border border-special">
+        <h3 class="text-xl font-semibold mb-6 text-center gradient-brand-text">
+          Membership Benefits
+        </h3>
+
+        <!-- Membership Benefits section removed per specification. -->
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <!-- Student Membership -->
+          <div class="text-center p-6 bg-special-lighter rounded-lg">
+            <h4 class="font-semibold mb-2">Student</h4>
+            <div class="text-2xl font-bold gradient-brand-text mb-2">
+              $25/year
+            </div>
+            <p class="text-xs text-color-600 dark:text-color-400 mb-4">
+              For enrolled students with valid ID
+            </p>
+            <a
+              href="#"
+              class="inline-block px-4 py-2 rounded-lg border border-special hover:bg-special-lightest transition-all text-sm font-semibold"
+            >
+              Join as Student
+            </a>
+          </div>
+
+          <!-- Individual Membership -->
+          <div
+            class="text-center p-6 bg-gradient-to-br from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20"
+          >
+            <h4 class="font-semibold mb-2">Individual</h4>
+            <div class="text-2xl font-bold gradient-brand-text mb-2">
+              $100/year
+            </div>
+            <p class="text-xs text-color-600 dark:text-color-400 mb-4">
+              For professionals and researchers
+            </p>
+            <a
+              href="#"
+              class="inline-block px-4 py-2 rounded-lg shadow-lg gradient-brand-horizontal text-surface hover:brightness-110 transition-all text-sm font-semibold"
+            >
+              Join as Individual
+            </a>
+          </div>
+
+          <!-- Institutional Membership -->
+          <div class="text-center p-6 bg-special-lighter rounded-lg">
+            <h4 class="font-semibold mb-2">Institution</h4>
+            <div class="text-2xl font-bold gradient-brand-text mb-2">
+              $1000/year
+            </div>
+            <p class="text-xs text-color-600 dark:text-color-400 mb-4">
+              For organizations and universities
+            </p>
+            <a
+              href="#"
+              class="inline-block px-4 py-2 rounded-lg border border-special hover:bg-special-lightest transition-all text-sm font-semibold"
+            >
+              Join as Institution
+            </a>
+          </div>
+        </div>
+
+        <p class="text-center text-sm text-color-600 dark:text-color-400">
+          All memberships include voting rights and help support our mission.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Contact Section -->
+  <Section
+    id="contact"
+    title="Get in Touch"
+    subtitle="Have questions or want to learn more about getting involved?"
+  >
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="mb-6 text-color-600 dark:text-color-400">
+        We'd love to hear from you! Whether you're interested in donating,
+        volunteering, or partnering with us, we're here to help.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="mailto:ross@community.semio.ai"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:letter-line-duotone" class="w-5 h-5 mr-2" />
+          Email Us
+        </a>
+        <a
+          href="/about/"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special-lighter transition-all"
+        >
+          Learn More About Us
+        </a>
+      </div>
+    </div>
+  </Section>
+</PageLayout>
