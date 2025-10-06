@@ -24,7 +24,12 @@ export const siteConfig: SiteConfig = {
 };
 
 // Used to generate links in both the Header & Footer.
-export const menuLinks: { path: string; title: string; inHeader: boolean }[] = [
+export const menuLinks: {
+  path: string;
+  title: string;
+  inHeader: boolean;
+  callToAction?: boolean;
+}[] = [
   {
     path: "/",
     title: "Home",
@@ -43,7 +48,7 @@ export const menuLinks: { path: string; title: string; inHeader: boolean }[] = [
   {
     path: "/studies/",
     title: "Studies",
-    inHeader: true,
+    inHeader: false,
   },
   {
     path: "/events/",
@@ -56,13 +61,14 @@ export const menuLinks: { path: string; title: string; inHeader: boolean }[] = [
     inHeader: true,
   },
   {
-    path: "/get-involved/",
-    title: "Get Involved",
-    inHeader: true,
-  },
-  {
     path: "/about/",
     title: "About",
     inHeader: true,
+  },
+  {
+    path: "/get-involved/",
+    title: "Get Involved",
+    inHeader: true,
+    callToAction: true,
   },
 ];

@@ -1,0 +1,389 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import PageLayout from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import { Icon } from "astro-icon/components";
+import { getRelatedHardware } from "@/data/hardware";
+
+export async function getStaticPaths() {
+  const hardware = await getCollection("hardware");
+  return hardware.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<"hardware">;
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+
+// Get related hardware
+const relatedHardware = await getRelatedHardware(entry, 3);
+
+// Format status for display
+const statusColors = {
+  available: "text-green-600 dark:text-green-400",
+  experimental: "text-yellow-600 dark:text-yellow-400",
+  "coming-soon": "text-blue-600 dark:text-blue-400",
+  discontinued: "text-red-600 dark:text-red-400",
+};
+
+const statusLabels = {
+  available: "Available",
+  experimental: "Experimental",
+  "coming-soon": "Coming Soon",
+  discontinued: "Discontinued",
+};
+
+const categoryLabels = {
+  mobile: "Mobile Robot",
+  social: "Social Robot",
+  assistive: "Assistive Robot",
+  research: "Research Platform",
+  educational: "Educational Robot",
+};
+
+const meta = {
+  title: `${data.name} - Hardware Platform`,
+  description: data.description,
+};
+---
+
+<PageLayout meta={meta}>
+  <article class="hardware-detail">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 class="title mb-4">{data.name}</h1>
+          <p class="text-xl text-color-600 dark:text-color-400 mb-4">
+            {data.shortDescription}
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <span
+            class={`px-3 py-1 rounded-full text-sm font-medium ${
+              statusColors[data.status]
+            } bg-color-100 dark:bg-special-dark`}
+          >
+            {statusLabels[data.status]}
+          </span>
+          {
+            data.featured && (
+              <span class="px-3 py-1 rounded-full text-sm font-medium text-accent-two bg-accent-two/10">
+                Featured
+              </span>
+            )
+          }
+        </div>
+      </div>
+
+      <!-- Quick Info -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <p class="text-sm text-color-500 mb-1">Category</p>
+          <p class="font-semibold">{categoryLabels[data.category]}</p>
+        </div>
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <p class="text-sm text-color-500 mb-1">Research Areas</p>
+          <p class="font-semibold">{data.researchAreas.length} Areas</p>
+        </div>
+        <div class="p-4 bg-special-lighter rounded-lg">
+          <p class="text-sm text-color-500 mb-1">Institutions</p>
+          <p class="font-semibold">{data.institutions.length} Partners</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        {
+          data.links.purchase && (
+            <a
+              href={data.links.purchase}
+              class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+            >
+              <Icon
+                name="solar:cart-large-2-line-duotone"
+                class="w-5 h-5 mr-2"
+              />
+              Purchase
+            </a>
+          )
+        }
+        {
+          data.links.rental && (
+            <a
+              href={data.links.rental}
+              class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+            >
+              <Icon name="solar:calendar-line-duotone" class="w-5 h-5 mr-2" />
+              Rent
+            </a>
+          )
+        }
+        {
+          data.links.documentation && (
+            <a
+              href={data.links.documentation}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+            >
+              <Icon name="solar:book-line-duotone" class="w-5 h-5 mr-2" />
+              Documentation
+            </a>
+          )
+        }
+        {
+          data.links.github && (
+            <a
+              href={data.links.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+            >
+              <Icon
+                name="solar:code-square-line-duotone"
+                class="w-5 h-5 mr-2"
+              />
+              GitHub
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2">
+        <!-- Content from MDX -->
+        <div class="prose prose-lg dark:prose-invert max-w-none">
+          <Content />
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-1">
+        <!-- Specifications -->
+        {
+          data.specifications && (
+            <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+              <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <Icon
+                  name="solar:settings-minimalistic-line-duotone"
+                  class="w-5 h-5 mr-2"
+                />
+                Specifications
+              </h3>
+              <dl class="space-y-3">
+                {data.specifications.height && (
+                  <div>
+                    <dt class="text-sm text-color-500">Height</dt>
+                    <dd class="font-medium">{data.specifications.height}</dd>
+                  </div>
+                )}
+                {data.specifications.weight && (
+                  <div>
+                    <dt class="text-sm text-color-500">Weight</dt>
+                    <dd class="font-medium">{data.specifications.weight}</dd>
+                  </div>
+                )}
+                {data.specifications.battery && (
+                  <div>
+                    <dt class="text-sm text-color-500">Battery Life</dt>
+                    <dd class="font-medium">{data.specifications.battery}</dd>
+                  </div>
+                )}
+                {data.specifications.computePlatform && (
+                  <div>
+                    <dt class="text-sm text-color-500">Compute Platform</dt>
+                    <dd class="font-medium">
+                      {data.specifications.computePlatform}
+                    </dd>
+                  </div>
+                )}
+                {data.specifications.sensors &&
+                  data.specifications.sensors.length > 0 && (
+                    <div>
+                      <dt class="text-sm text-color-500 mb-1">Sensors</dt>
+                      <dd>
+                        <ul class="text-sm space-y-1">
+                          {data.specifications.sensors.map((sensor) => (
+                            <li class="flex items-start">
+                              <span class="text-accent-two mr-2">•</span>
+                              {sensor}
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  )}
+              </dl>
+            </div>
+          )
+        }
+
+        <!-- Features -->
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="solar:star-line-duotone" class="w-5 h-5 mr-2" />
+            Key Features
+          </h3>
+          <ul class="space-y-2">
+            {
+              data.features.map((feature) => (
+                <li class="flex items-start">
+                  <Icon
+                    name="solar:check-circle-line-duotone"
+                    class="w-5 h-5 mr-2 text-accent-two flex-shrink-0 mt-0.5"
+                  />
+                  <span class="text-sm">{feature}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Pricing -->
+        {
+          data.pricing && (
+            <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+              <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <Icon
+                  name="solar:tag-price-line-duotone"
+                  class="w-5 h-5 mr-2"
+                />
+                Pricing
+              </h3>
+              <div class="space-y-3">
+                {data.pricing.purchase && (
+                  <div>
+                    <p class="text-sm text-color-500">Purchase</p>
+                    <p class="text-2xl font-bold">
+                      ${data.pricing.purchase.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+                {data.pricing.rental && (
+                  <div>
+                    <p class="text-sm text-color-500 mb-2">Rental Options</p>
+                    <div class="space-y-1">
+                      {data.pricing.rental.daily && (
+                        <p class="text-sm">
+                          <span class="font-medium">Daily:</span> $
+                          {data.pricing.rental.daily}/day
+                        </p>
+                      )}
+                      {data.pricing.rental.weekly && (
+                        <p class="text-sm">
+                          <span class="font-medium">Weekly:</span> $
+                          {data.pricing.rental.weekly}/week
+                        </p>
+                      )}
+                      {data.pricing.rental.monthly && (
+                        <p class="text-sm">
+                          <span class="font-medium">Monthly:</span> $
+                          {data.pricing.rental.monthly}/month
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        <!-- Applications -->
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="solar:rocket-line-duotone" class="w-5 h-5 mr-2" />
+            Applications
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {
+              data.applications.map((app) => (
+                <span class="px-3 py-1 bg-accent-one/10 text-sm rounded-full">
+                  {app}
+                </span>
+              ))
+            }
+          </div>
+        </div>
+
+        <!-- Maintainers -->
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon
+              name="solar:users-group-two-rounded-line-duotone"
+              class="w-5 h-5 mr-2"
+            />
+            Maintained By
+          </h3>
+          <ul class="space-y-2">
+            {
+              data.maintainers.map((maintainer) => (
+                <li class="text-sm">{maintainer}</li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Tags -->
+        {
+          data.tags && data.tags.length > 0 && (
+            <div class="mb-6">
+              <h3 class="text-lg font-semibold mb-3">Tags</h3>
+              <div class="flex flex-wrap gap-2">
+                {data.tags.map((tag) => (
+                  <a
+                    href={`/tags/${tag}`}
+                    class="px-3 py-1 bg-special-lighter hover:bg-special text-sm rounded-full transition-colors"
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      </aside>
+    </div>
+
+    <!-- Related Hardware -->
+    {
+      relatedHardware.length > 0 && (
+        <Section
+          title="Related Hardware"
+          subtitle="Other platforms you might be interested in"
+          className="mt-12"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedHardware.map((related) => (
+              <a
+                href={`/hardware/${related.id}`}
+                class="p-6 bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105"
+              >
+                <h4 class="font-semibold mb-2">{related.data.name}</h4>
+                <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                  {related.data.shortDescription}
+                </p>
+                <div class="flex items-center justify-between">
+                  <span class={`text-sm ${statusColors[related.data.status]}`}>
+                    {statusLabels[related.data.status]}
+                  </span>
+                  <Icon name="solar:arrow-right-line-duotone" class="w-5 h-5" />
+                </div>
+              </a>
+            ))}
+          </div>
+        </Section>
+      )
+    }
+  </article>
+</PageLayout>

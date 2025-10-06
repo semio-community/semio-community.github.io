@@ -1,0 +1,218 @@
+{
+  "$ref": "#/definitions/hardware",
+  "definitions": {
+    "hardware": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "shortDescription": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "social",
+            "assistive",
+            "research",
+            "educational"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "available",
+            "experimental",
+            "coming-soon",
+            "discontinued"
+          ]
+        },
+        "specifications": {
+          "type": "object",
+          "properties": {
+            "height": {
+              "type": "string"
+            },
+            "weight": {
+              "type": "string"
+            },
+            "battery": {
+              "type": "string"
+            },
+            "sensors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "actuators": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "computePlatform": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "applications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "researchAreas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "properties": {
+            "purchase": {
+              "type": "number"
+            },
+            "rental": {
+              "type": "object",
+              "properties": {
+                "daily": {
+                  "type": "number"
+                },
+                "weekly": {
+                  "type": "number"
+                },
+                "monthly": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "documentation": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            },
+            "paper": {
+              "type": "string"
+            },
+            "purchase": {
+              "type": "string"
+            },
+            "rental": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "images": {
+          "type": "object",
+          "properties": {
+            "hero": {
+              "type": "string"
+            },
+            "gallery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "hero"
+          ],
+          "additionalProperties": false
+        },
+        "maintainers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "institutions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "featured": {
+          "type": "boolean",
+          "default": false
+        },
+        "publishDate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "integer",
+                  "format": "unix-time"
+                }
+              ]
+            }
+          ],
+          "default": "2025-10-06T18:10:13.304Z"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "shortDescription",
+        "category",
+        "status",
+        "features",
+        "applications",
+        "researchAreas",
+        "links",
+        "maintainers",
+        "institutions"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

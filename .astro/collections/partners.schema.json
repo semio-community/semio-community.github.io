@@ -1,0 +1,159 @@
+{
+  "$ref": "#/definitions/partners",
+  "definitions": {
+    "partners": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "academic",
+            "industry",
+            "nonprofit",
+            "government",
+            "community"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "research",
+            "development",
+            "funding",
+            "infrastructure",
+            "outreach"
+          ]
+        },
+        "website": {
+          "type": "string"
+        },
+        "logo": {
+          "type": "string"
+        },
+        "collaboration": {
+          "type": "object",
+          "properties": {
+            "areas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "projects": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "startDate": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    {
+                      "type": "integer",
+                      "format": "unix-time"
+                    }
+                  ]
+                }
+              ]
+            },
+            "active": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": [
+            "areas",
+            "startDate"
+          ],
+          "additionalProperties": false
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "representative": {
+              "type": "string"
+            },
+            "department": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "socialMedia": {
+          "type": "object",
+          "properties": {
+            "twitter": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "city",
+            "country"
+          ],
+          "additionalProperties": false
+        },
+        "featured": {
+          "type": "boolean",
+          "default": false
+        },
+        "order": {
+          "type": "number",
+          "default": 999
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "type",
+        "category",
+        "website",
+        "collaboration",
+        "location"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

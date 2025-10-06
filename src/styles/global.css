@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../assets/fonts/Gilroy.css";
 
 @theme {
   /* Content paths */
@@ -55,7 +56,7 @@
   --color-accent-three: hsl(var(--theme-accent-three));
 
   /* Font families */
-  --font-sans: "SFProRounded", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Gilroy", "SFProRounded", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "CascadiaCode", ui-serif, Georgia, serif;
   --font-mono:
     ui-monospace, "Menlo", "Monaco", "Cascadia Code", "Segoe UI Mono",
@@ -494,6 +495,7 @@
   }
 
   html {
+    @apply font-sans;
     letter-spacing: 0.025em;
   }
 

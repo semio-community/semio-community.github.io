@@ -1,0 +1,155 @@
+{
+  "$ref": "#/definitions/studies",
+  "definitions": {
+    "studies": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "string"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "affiliation": {
+                "type": "string"
+              },
+              "orcid": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "paper",
+            "thesis",
+            "report",
+            "preprint",
+            "dataset",
+            "benchmark"
+          ]
+        },
+        "venue": {
+          "type": "string"
+        },
+        "year": {
+          "type": "number"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "researchArea": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relatedHardware": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relatedSoftware": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "pdf": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "arxiv": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "video": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "citations": {
+          "type": "number",
+          "default": 0
+        },
+        "featured": {
+          "type": "boolean",
+          "default": false
+        },
+        "publishDate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "integer",
+                  "format": "unix-time"
+                }
+              ]
+            }
+          ]
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "abstract",
+        "authors",
+        "type",
+        "year",
+        "keywords",
+        "researchArea",
+        "links",
+        "publishDate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

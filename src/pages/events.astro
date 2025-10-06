@@ -3,6 +3,16 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import EventCard from "@/components/EventCard.astro";
 import { Icon } from "astro-icon/components";
+import {
+  getAllEvents,
+  getUpcomingEvents,
+  getPastEvents,
+  getCurrentEvents,
+  getFeaturedEvents,
+  getEventCountByType,
+  getUniqueEventTopics,
+  groupEventsByMonth,
+} from "@/data/events";
 
 const meta = {
   title: "Events",
@@ -10,550 +20,554 @@ const meta = {
     "Conferences, workshops, and training events for the human-robot interaction community",
 };
 
-// Events data organized by year and status
-const upcomingEvents = {
-  2025: [
-    {
-      name: "Unitree G1 Humanoid Training",
-      dateRange: "November 6-7, 2025",
-      location: "TBD",
-      type: "training" as const,
-      description:
-        "Hands-on training workshop for the Unitree G1 humanoid robot platform",
-    },
-    {
-      name: "UR-RAD 2025",
-      dateRange: "November 6-8, 2025",
-      location: "Arlington, VA, USA",
-      type: "symposium" as const,
-      description:
-        "3rd AAAI Fall Symposium on Unifying Representations for Robot Application Development",
-      link: "https://ur-rad.org",
-    },
-    {
-      name: "Humanoids Summit 2025",
-      dateRange: "December 11-12, 2025",
-      location: "TBD",
-      type: "summit" as const,
-      description:
-        "Annual summit on humanoid robotics research and applications",
-    },
-  ],
-  2026: [
-    {
-      name: "HRI 2026",
-      dateRange: "March 16-19, 2026",
-      location: "TBD",
-      type: "conference" as const,
-      description:
-        "ACM/IEEE International Conference on Human-Robot Interaction",
-      link: "https://humanrobotinteraction.org",
-    },
-  ],
+// Fetch events from content collections
+const allEvents = await getAllEvents();
+const upcomingEvents = await getUpcomingEvents();
+const pastEvents = await getPastEvents();
+const currentEvents = await getCurrentEvents();
+const featuredEvents = await getFeaturedEvents();
+const eventTypeCounts = await getEventCountByType();
+// Get event types from actual events
+const eventTypes = [...new Set(allEvents.map((e) => e.data.type))];
+
+// Get current year for grouping
+const currentYear = new Date().getFullYear();
+const nextYear = currentYear + 1;
+
+// Group upcoming events by year
+const upcomingEventsByYear: Record<number, typeof upcomingEvents> = {};
+upcomingEvents.forEach((event) => {
+  const year = event.data.startDate.getFullYear();
+  if (!upcomingEventsByYear[year]) {
+    upcomingEventsByYear[year] = [];
+  }
+  upcomingEventsByYear[year].push(event);
+});
+
+// Get recent past events (last 6 months)
+const sixMonthsAgo = new Date();
+sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+const recentPastEvents = pastEvents.filter(
+  (event) => event.data.endDate >= sixMonthsAgo,
+);
+
+// Event type info for display
+const eventTypeInfo: Record<
+  string,
+  { icon: string; color: string; description: string }
+> = {
+  conference: {
+    icon: "solar:users-group-two-rounded-line-duotone",
+    color: "text-blue-500",
+    description: "Major academic and industry conferences",
+  },
+  workshop: {
+    icon: "solar:presentation-graph-line-duotone",
+    color: "text-green-500",
+    description: "Hands-on workshops and tutorials",
+  },
+  symposium: {
+    icon: "solar:chat-round-dots-line-duotone",
+    color: "text-purple-500",
+    description: "Focused symposia on specific topics",
+  },
+  summit: {
+    icon: "solar:ranking-line-duotone",
+    color: "text-orange-500",
+    description: "High-level summits and leadership meetings",
+  },
+  training: {
+    icon: "solar:graduation-cap-line-duotone",
+    color: "text-red-500",
+    description: "Professional training and certification",
+  },
+  meetup: {
+    icon: "solar:map-point-wave-line-duotone",
+    color: "text-indigo-500",
+    description: "Local community meetups",
+  },
+  webinar: {
+    icon: "solar:monitor-smartphone-line-duotone",
+    color: "text-teal-500",
+    description: "Online webinars and virtual events",
+  },
+  competition: {
+    icon: "solar:cup-star-line-duotone",
+    color: "text-yellow-500",
+    description: "Robotics competitions and challenges",
+  },
 };
 
-const pastEvents = {
-  2025: [
-    {
-      name: "Actuate 2025",
-      dateRange: "September 23-24, 2025",
-      location: "TBD",
-      type: "conference" as const,
-      description: "Conference on actuation technologies for robotics",
-    },
-    {
-      name: "ICSR 2025",
-      dateRange: "September 10-12, 2025",
-      location: "TBD",
-      type: "conference" as const,
-      description: "International Conference on Social Robotics",
-    },
-    {
-      name: "RO-MAN 2025",
-      dateRange: "August 25-29, 2025",
-      location: "TBD",
-      type: "conference" as const,
-      description:
-        "IEEE International Symposium on Robot and Human Interactive Communication",
-    },
-    {
-      name: "ICRA 2025",
-      dateRange: "May 19-23, 2025",
-      location: "Atlanta, GA, USA",
-      type: "conference" as const,
-      description: "IEEE International Conference on Robotics and Automation",
-      link: "https://icra2025.org",
-    },
-    {
-      name: "HRI 2025",
-      dateRange: "March 4-6, 2025",
-      location: "Melbourne, Australia",
-      type: "conference" as const,
-      description:
-        "ACM/IEEE International Conference on Human-Robot Interaction",
-      link: "https://humanrobotinteraction.org/2025",
-    },
-  ],
-  2024: [
-    {
-      name: "Humanoids Summit 2024",
-      dateRange: "December 11-12, 2024",
-      location: "San Francisco, CA, USA",
-      type: "summit" as const,
-      description:
-        "Annual summit on humanoid robotics research and applications",
-    },
-    {
-      name: "UR-RAD 2024",
-      dateRange: "November 7-9, 2024",
-      location: "Arlington, VA, USA",
-      type: "symposium" as const,
-      description:
-        "2nd AAAI Fall Symposium on Unifying Representations for Robot Application Development",
-    },
-    {
-      name: "ICSR 2024",
-      dateRange: "October 23-26, 2024",
-      location: "Odense, Denmark",
-      type: "conference" as const,
-      description: "International Conference on Social Robotics",
-    },
-    {
-      name: "Chatbot Conference 2024",
-      dateRange: "September 24-26, 2024",
-      location: "Online",
-      type: "conference" as const,
-      description: "Conference on conversational AI and chatbot technologies",
-    },
-    {
-      name: "RO-MAN 2024",
-      dateRange: "August 26-30, 2024",
-      location: "Pasadena, CA, USA",
-      type: "conference" as const,
-      description:
-        "IEEE International Symposium on Robot and Human Interactive Communication",
-    },
-    {
-      name: "HRI 2024",
-      dateRange: "March 11-15, 2024",
-      location: "Boulder, CO, USA",
-      type: "conference" as const,
-      description:
-        "ACM/IEEE International Conference on Human-Robot Interaction",
-    },
-    {
-      name: "TAHRI 2024",
-      dateRange: "March 9-10, 2024",
-      location: "Boulder, CO, USA",
-      type: "workshop" as const,
-      description: "Workshop on Trust and Agency in Human-Robot Interaction",
-    },
-  ],
-  2023: [
-    {
-      name: "UR-RAD 2023",
-      dateRange: "October 25-27, 2023",
-      location: "Arlington, VA, USA",
-      type: "symposium" as const,
-      description:
-        "1st AAAI Fall Symposium on Unifying Representations for Robot Application Development",
-    },
-  ],
-};
-
-// Helper to get current date for comparison
-const currentDate = new Date();
-const currentYear = currentDate.getFullYear();
-const currentMonth = currentDate.getMonth() + 1;
-const currentDay = currentDate.getDate();
-
-// Function to check if an event is actually past (for 2025 events)
-const isEventPast = (dateRange: string): boolean => {
-  // This is a simplified check - in production you'd parse the actual dates
-  // For now, we'll consider all 2024 and 2023 events as past
-  // and check 2025 events based on current date
-  if (dateRange.includes("2024") || dateRange.includes("2023")) return true;
-
-  // Parse month from date range for 2025 events
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  const monthMatch = months.findIndex((m) => dateRange.includes(m));
-
-  if (currentYear > 2025) return true;
-  if (currentYear < 2025) return false;
-
-  // If we're in 2025, check the month
-  return monthMatch !== -1 && monthMatch < currentMonth - 1;
-};
+const services = [
+  {
+    icon: "solar:calendar-mark-line-duotone",
+    title: "Event Organization",
+    description: "Full-service conference and workshop planning",
+  },
+  {
+    icon: "solar:ticket-line-duotone",
+    title: "Registration Management",
+    description: "Streamlined registration and ticketing services",
+  },
+  {
+    icon: "solar:video-frame-play-horizontal-line-duotone",
+    title: "Hybrid Events",
+    description: "Combined in-person and virtual event hosting",
+  },
+  {
+    icon: "solar:speaker-line-duotone",
+    title: "Speaker Coordination",
+    description: "Expert speaker recruitment and management",
+  },
+  {
+    icon: "solar:users-group-rounded-line-duotone",
+    title: "Community Building",
+    description: "Networking and community engagement activities",
+  },
+  {
+    icon: "solar:medal-ribbons-star-line-duotone",
+    title: "Sponsorships",
+    description: "Sponsorship packages and partnership opportunities",
+  },
+];
 ---
 
 <PageLayout meta={meta}>
   <h1 class="title mb-6">Events</h1>
 
-  <!-- Hero Section -->
-  <Section id="events-hero">
+  <!-- Hero Section with CTAs -->
+  <Section id="events-cta">
     <div class="max-w-4xl mx-auto text-center mb-12">
       <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Join us at conferences, workshops, and training events advancing the
-        field of human-robot interaction.
+        Connect, learn, and advance HRI through conferences, workshops, and
+        community gatherings worldwide.
       </p>
 
-      <!-- Quick Stats -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">
-            {Object.values(upcomingEvents).flat().length}
-          </div>
-          <div class="text-sm text-color-600 dark:text-color-400">
-            Upcoming Events
-          </div>
-        </div>
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">10+</div>
-          <div class="text-sm text-color-600 dark:text-color-400">
-            Annual Events
-          </div>
-        </div>
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">Global</div>
-          <div class="text-sm text-color-600 dark:text-color-400">Reach</div>
-        </div>
-      </div>
-
       <!-- CTA Buttons -->
-      <div class="flex flex-wrap justify-center gap-4">
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
         <a
           href="#upcoming"
           class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
         >
-          <Icon name="solar:calendar-mark-line-duotone" class="w-5 h-5 mr-2" />
+          <Icon name="solar:calendar-line-duotone" class="w-5 h-5 mr-2" />
           View Upcoming Events
         </a>
         <a
-          href="/get-involved/"
+          href="/get-involved"
           class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
         >
           <Icon name="solar:add-square-line-duotone" class="w-5 h-5 mr-2" />
           Host an Event
         </a>
       </div>
-    </div>
-  </Section>
 
-  <!-- Upcoming Events Section -->
-  <Section
-    id="upcoming"
-    title="Upcoming Events"
-    subtitle="Don't miss these upcoming opportunities to engage with the HRI community"
-  >
-    <div class="max-w-5xl mx-auto">
-      {
-        Object.entries(upcomingEvents).map(([year, events]) => (
-          <div class="mb-8">
-            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Icon
-                name="solar:calendar-bold"
-                class="w-6 h-6 text-accent-two"
-              />
-              <span class="gradient-brand-text">{year}</span>
-            </h3>
-            <div class="space-y-4">
-              {events.map((event) => (
-                <EventCard
-                  name={event.name}
-                  date={event.dateRange}
-                  location={event.location}
-                  type={event.type}
-                  description={event.description}
-                  link={"link" in event ? event.link : undefined}
-                />
-              ))}
+      <!-- Event Statistics -->
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        {
+          upcomingEvents.length > 0 && (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+              <span>{upcomingEvents.length} Upcoming</span>
             </div>
-          </div>
-        ))
-      }
+          )
+        }
+        {
+          currentEvents.length > 0 && (
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
+              <span>{currentEvents.length} Ongoing</span>
+            </div>
+          )
+        }
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
+          <span>{allEvents.length} Total Events</span>
+        </div>
+        {
+          Object.keys(eventTypeCounts).length > 0 && (
+            <div class="flex items-center gap-2">
+              <Icon
+                name="solar:layers-line-duotone"
+                class="w-4 h-4 text-accent-two"
+              />
+              <span>{eventTypes.length} Event Types</span>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </Section>
 
-      <!-- Newsletter CTA -->
-      <div
-        class="mt-12 p-6 bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20 text-center"
+  <!-- Current/Ongoing Events (if any) -->
+  {
+    currentEvents.length > 0 && (
+      <Section
+        id="current"
+        title="Happening Now"
+        subtitle="Events currently in progress"
       >
-        <h3 class="text-lg font-semibold mb-2">Never Miss an Event</h3>
-        <p class="text-sm text-color-600 dark:text-color-400 mb-4">
-          Subscribe to our mailing list to get notified about upcoming events
-          and opportunities.
-        </p>
-        <a
-          href="/#connect"
-          class="inline-flex items-center justify-center h-10 px-6 text-sm font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-        >
-          Subscribe to Updates
-        </a>
-      </div>
-    </div>
-  </Section>
-
-  <!-- Past Events Section -->
-  <Section
-    id="past"
-    title="Past Events"
-    subtitle="Archive of previous conferences and workshops"
-  >
-    <div class="max-w-5xl mx-auto">
-      <div class="mb-6">
-        <p class="text-color-600 dark:text-color-400">
-          Explore our history of successful events and access recordings,
-          proceedings, and resources from past gatherings.
-        </p>
-      </div>
-
-      {
-        Object.entries(pastEvents)
-          .reverse()
-          .map(([year, events]) => (
-            <details class="mb-6 group">
-              <summary class="cursor-pointer list-none">
-                <div class="flex items-center justify-between p-4 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all">
-                  <h3 class="text-lg font-semibold flex items-center gap-2">
-                    <Icon
-                      name="solar:history-line-duotone"
-                      class="w-5 h-5 text-accent-two"
-                    />
-                    <span>{year}</span>
-                    <span class="text-sm font-normal text-color-600 dark:text-color-400">
-                      ({events.length} events)
-                    </span>
-                  </h3>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-5 h-5 text-accent-one transition-transform group-open:rotate-180"
-                  />
+        <div class="max-w-5xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {currentEvents.map((event) => (
+              <div class="relative p-6 bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20">
+                <div class="absolute top-4 right-4">
+                  <span class="flex items-center gap-1 text-xs px-2 py-1 bg-green-500/20 text-green-700 dark:text-green-300 rounded-full">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Live Now
+                  </span>
                 </div>
-              </summary>
-              <div class="mt-4 space-y-4 pl-4">
-                {events.map((event) => (
-                  <EventCard
-                    name={event.name}
-                    date={event.dateRange}
-                    location={event.location}
-                    type={event.type}
-                    description={event.description}
-                    link={"link" in event ? event.link : undefined}
-                    isPast={true}
-                  />
-                ))}
+                <EventCard
+                  name={event.data.name}
+                  date={event.data.startDate.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  location={
+                    event.data.location
+                      ? `${event.data.location.city}, ${event.data.location.country}`
+                      : undefined
+                  }
+                  description={event.data.description}
+                  link={event.data.links?.website}
+                  type="conference"
+                />
               </div>
-            </details>
-          ))
-      }
-    </div>
-  </Section>
+            ))}
+          </div>
+        </div>
+      </Section>
+    )
+  }
 
-  <!-- Event Types Section -->
+  <!-- Featured Events -->
+  {
+    featuredEvents.length > 0 && (
+      <Section
+        id="featured"
+        title="Featured Events"
+        subtitle="Don't miss these highlighted opportunities"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredEvents.slice(0, 6).map((event) => {
+              const typeInfo =
+                eventTypeInfo[event.data.type] || eventTypeInfo.conference;
+              return (
+                <article class="group relative bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all overflow-hidden">
+                  {event.data.banner && (
+                    <div class="aspect-video overflow-hidden">
+                      <img
+                        src={event.data.banner.src}
+                        alt={`${event.data.name} banner`}
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div class="p-6">
+                    <div class="flex items-center justify-between mb-3">
+                      <div class="flex items-center gap-2">
+                        <Icon
+                          name={typeInfo?.icon || "solar:calendar-line-duotone"}
+                          class={`w-5 h-5 ${typeInfo?.color || "text-gray-500"}`}
+                        />
+                        <span class="text-xs font-medium capitalize">
+                          {event.data.type}
+                        </span>
+                      </div>
+                      {event.data.featured && (
+                        <Icon
+                          name="solar:star-bold"
+                          class="w-4 h-4 text-yellow-500"
+                        />
+                      )}
+                    </div>
+                    <h3 class="font-semibold mb-2 group-hover:text-accent-one transition-colors">
+                      {event.data.name}
+                    </h3>
+                    <p class="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2">
+                      {event.data.description}
+                    </p>
+                    <div class="space-y-1 text-xs">
+                      <div class="flex items-center gap-2">
+                        <Icon
+                          name="solar:calendar-line-duotone"
+                          class="w-4 h-4 text-accent-one"
+                        />
+                        <span>
+                          {event.data.startDate.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                          {event.data.endDate &&
+                            event.data.endDate.getTime() !==
+                              event.data.startDate.getTime() &&
+                            ` - ${event.data.endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
+                          , {event.data.startDate.getFullYear()}
+                        </span>
+                      </div>
+                      {event.data.location && (
+                        <div class="flex items-center gap-2">
+                          <Icon
+                            name="solar:map-point-line-duotone"
+                            class="w-4 h-4 text-accent-two"
+                          />
+                          <span>
+                            {event.data.location.city},{" "}
+                            {event.data.location.country}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <a
+                    href={`/events/${event.id}`}
+                    class="absolute inset-0"
+                    aria-label={`Learn more about ${event.data.name}`}
+                  />
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- Upcoming Events -->
+  {
+    upcomingEvents.length > 0 && (
+      <Section
+        id="upcoming"
+        title="Upcoming Events"
+        subtitle="Plan ahead for these future gatherings"
+      >
+        <div class="max-w-5xl mx-auto">
+          {Object.keys(upcomingEventsByYear)
+            .sort()
+            .map((year) => (
+              <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 gradient-brand-text">
+                  {year}
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {upcomingEventsByYear[Number(year)]?.map((event) => (
+                    <EventCard
+                      name={event.data.name}
+                      date={event.data.startDate.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                      dateRange={
+                        event.data.endDate &&
+                        event.data.endDate.getTime() !==
+                          event.data.startDate.getTime()
+                          ? `${event.data.startDate.toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                              },
+                            )} - ${event.data.endDate.toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}`
+                          : undefined
+                      }
+                      location={
+                        event.data.location
+                          ? `${event.data.location.city}, ${event.data.location.country}`
+                          : undefined
+                      }
+                      description={event.data.description}
+                      link={event.data.links?.website}
+                      type="conference"
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- Event Types -->
+  {
+    eventTypes.length > 0 && (
+      <Section
+        id="event-types"
+        title="Event Types"
+        subtitle="Diverse formats for learning and collaboration"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {eventTypes.map((type: string) => {
+              const info = eventTypeInfo[type] || {
+                icon: "solar:calendar-line-duotone",
+                color: "text-gray-500",
+                description: "Events in this category",
+              };
+              const count = eventTypeCounts[type] || 0;
+
+              return (
+                <div class="p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+                  <Icon
+                    name={info?.icon || "solar:calendar-line-duotone"}
+                    class={`w-8 h-8 mb-2 ${info?.color || "text-gray-500"}`}
+                  />
+                  <h3 class="font-semibold mb-1 capitalize">{type}</h3>
+                  <p class="text-xs text-accent-one mb-1">
+                    {count} {count === 1 ? "Event" : "Events"}
+                  </p>
+                  <p class="text-xs text-color-600 dark:text-color-400">
+                    {info.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- Services Section -->
   <Section
-    id="event-types"
-    title="Types of Events"
-    subtitle="We support various event formats to serve the diverse needs of the HRI community"
+    id="services"
+    title="Event Services"
+    subtitle="Professional support for organizing successful HRI events"
   >
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:presentation-graph-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Conferences</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Major academic conferences featuring paper presentations, keynotes,
-            and networking
-          </p>
-        </div>
-
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:users-group-two-rounded-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Workshops</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Focused sessions on specific topics with hands-on activities and
-            discussions
-          </p>
-        </div>
-
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:square-academic-cap-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Training</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Educational sessions for learning new platforms, tools, and
-            techniques
-          </p>
-        </div>
-
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:chat-round-dots-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Symposiums</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Gatherings for in-depth exploration of emerging topics and
-            challenges
-          </p>
-        </div>
-
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:crown-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Summits</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            High-level meetings bringing together leaders in robotics and AI
-          </p>
-        </div>
-
-        <div class="p-6 bg-special-lighter rounded-lg text-center">
-          <Icon
-            name="solar:devices-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2">Virtual Events</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Online gatherings making HRI events accessible globally
-          </p>
-        </div>
+        {
+          services.map((service) => (
+            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <Icon
+                name={service.icon}
+                class="w-12 h-12 mb-4 text-accent-two"
+              />
+              <h3 class="text-lg font-semibold mb-2">{service.title}</h3>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                {service.description}
+              </p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </Section>
 
-  <!-- Host an Event Section -->
-  <Section
-    id="host"
-    title="Host an Event with Us"
-    subtitle="Partner with Semio Community to organize your next HRI event"
-  >
-    <div class="max-w-4xl mx-auto">
-      <div class="bg-surface rounded-lg p-8 border border-special">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
-              What We Provide
-            </h3>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Event planning and logistics support</span
-                >
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Access to our community network</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Marketing and promotion assistance</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm"
-                  >Technical infrastructure and platforms</span
-                >
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Post-event archival and distribution</span
-                >
-              </li>
-            </ul>
+  <!-- Recent Past Events -->
+  {
+    recentPastEvents.length > 0 && (
+      <Section
+        id="recent-past"
+        title="Recent Events"
+        subtitle="Events from the past 6 months"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div class="space-y-3">
+            {recentPastEvents.slice(0, 5).map((event) => {
+              const typeInfo =
+                eventTypeInfo[event.data.type] || eventTypeInfo.conference;
+              return (
+                <article class="group p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-3 mb-2">
+                        <Icon
+                          name={typeInfo?.icon || "solar:calendar-line-duotone"}
+                          class={`w-4 h-4 ${typeInfo?.color || "text-gray-500"}`}
+                        />
+                        <h3 class="font-semibold group-hover:text-accent-one transition-colors">
+                          <a href={`/events/${event.id}`}>{event.data.name}</a>
+                        </h3>
+                      </div>
+                      <div class="flex items-center gap-4 text-xs text-color-600 dark:text-color-400">
+                        <span>
+                          {event.data.startDate.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </span>
+                        {event.data.location && (
+                          <>
+                            <span>•</span>
+                            <span>
+                              {event.data.location.city},{" "}
+                              {event.data.location.country}
+                            </span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span class="capitalize">{event.data.type}</span>
+                      </div>
+                    </div>
+                    {event.data.links?.recordings && (
+                      <a
+                        href={event.data.links.recordings}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-center gap-1 text-xs text-link hover:underline"
+                      >
+                        <Icon
+                          name="solar:play-circle-line-duotone"
+                          class="w-4 h-4"
+                        />
+                        Recording
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
-
-          <div>
-            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
-              Event Types We Support
-            </h3>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Academic conferences and symposiums</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Industry workshops and training</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Hackathons and competitions</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Community meetups and gatherings</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Virtual and hybrid events</span>
-              </li>
-            </ul>
-          </div>
+          {recentPastEvents.length > 5 && (
+            <div class="mt-4 text-center">
+              <a
+                href="/events/archive"
+                class="inline-flex items-center gap-2 text-sm text-link hover:underline"
+              >
+                View all past events
+                <Icon name="solar:arrow-right-line-duotone" class="w-4 h-4" />
+              </a>
+            </div>
+          )}
         </div>
+      </Section>
+    )
+  }
 
-        <div class="text-center">
-          <p class="mb-6 text-color-600 dark:text-color-400">
-            Let's work together to create impactful events that advance the
-            field of human-robot interaction.
-          </p>
-          <a
-            href="/get-involved/"
-            class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-          >
-            <Icon name="solar:letter-line-duotone" class="w-5 h-5 mr-2" />
-            Contact Us About Hosting
-          </a>
-        </div>
+  <!-- Call to Action -->
+  <Section id="events-contribute">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-4">Host Your Event</h2>
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Planning an HRI conference, workshop, or community gathering? Partner
+        with us to reach the global HRI community.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="/get-involved"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:add-circle-line-duotone" class="w-5 h-5 mr-2" />
+          Submit Event
+        </a>
+        <a
+          href="/partners"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+        >
+          <Icon name="solar:hand-shake-line-duotone" class="w-5 h-5 mr-2" />
+          Become a Partner
+        </a>
       </div>
     </div>
   </Section>

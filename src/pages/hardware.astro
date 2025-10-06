@@ -3,6 +3,7 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import ProductCard from "@/components/ProductCard.astro";
 import { Icon } from "astro-icon/components";
+import { getAllHardware, getHardwareCountByStatus } from "@/data/hardware";
 
 const meta = {
   title: "Hardware",
@@ -10,64 +11,23 @@ const meta = {
     "Community-driven robotics hardware platforms for human-robot interaction research",
 };
 
-// Placeholder product data - to be expanded with actual content
-const products = [
-  {
-    name: "Quori",
-    type: "hardware" as const,
-    description: "Lorem ipsum dolor sit amet, Quori hardware platform.",
-    status: "available" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
+// Fetch hardware from content collections
+const allHardware = await getAllHardware();
+const hardwareCounts = await getHardwareCountByStatus();
+
+// Transform hardware data for ProductCard component
+const products = allHardware.map((hw) => ({
+  name: hw.data.name,
+  type: "hardware" as const,
+  description: hw.data.shortDescription,
+  status: hw.data.status,
+  links: {
+    primary: {
+      label: hw.data.status === "available" ? "Get" : "Learn More",
+      url: `/hardware/${hw.id}`,
     },
   },
-  {
-    name: "Ommie",
-    type: "hardware" as const,
-    description: "Lorem ipsum dolor sit amet, Ommie hardware platform.",
-    status: "available" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
-    },
-  },
-  {
-    name: "MuSoHu (GMU Helmet)",
-    type: "hardware" as const,
-    description:
-      "Lorem ipsum dolor sit amet, MuSoHu (GMU Helmet) hardware platform.",
-    status: "experimental" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
-    },
-  },
-  {
-    name: "BeholderBot",
-    type: "hardware" as const,
-    description: "Lorem ipsum dolor sit amet, BeholderBot hardware platform.",
-    status: "available" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
-    },
-  },
-  {
-    name: "Jibo",
-    type: "hardware" as const,
-    description: "Lorem ipsum dolor sit amet, Jibo hardware platform.",
-    status: "coming-soon" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
-    },
-  },
-  {
-    name: "Blossom",
-    type: "hardware" as const,
-    description: "Lorem ipsum dolor sit amet, Blossom hardware platform.",
-    status: "coming-soon" as const,
-    links: {
-      primary: { label: "Get", url: "#" },
-    },
-  },
-];
+}));
 
 const services = [
   {
@@ -120,7 +80,7 @@ const services = [
         Community-driven robotics hardware for reproducible science and
         human-centered robotics.
       </p>
-      <div class="flex flex-wrap justify-center gap-4">
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
         <a
           href="#products"
           class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
@@ -140,6 +100,26 @@ const services = [
           Buy
         </a>
       </div>
+
+      <!-- Platform Statistics -->
+      {
+        Object.keys(hardwareCounts).length > 0 && (
+          <div class="flex flex-wrap justify-center gap-6 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-green-500 rounded-full" />
+              <span>{hardwareCounts.available || 0} Available</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-yellow-500 rounded-full" />
+              <span>{hardwareCounts.experimental || 0} Experimental</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-blue-500 rounded-full" />
+              <span>{hardwareCounts["coming-soon"] || 0} Coming Soon</span>
+            </div>
+          </div>
+        )
+      }
     </div>
   </Section>
 
@@ -179,8 +159,51 @@ const services = [
     subtitle="Open-source robotics hardware for research and education"
   >
     <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.map((product) => <ProductCard {...product} compact />)}
+      {
+        products.length > 0 ? (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <ProductCard {...product} compact />
+            ))}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <Icon
+              name="solar:box-minimalistic-line-duotone"
+              class="w-24 h-24 mx-auto mb-4 text-color-300"
+            />
+            <p class="text-lg text-color-600 dark:text-color-400">
+              Hardware platforms coming soon! Check back later for updates.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </Section>
+
+  <!-- Call to Action -->
+  <Section id="hardware-contribute">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-3xl font-bold mb-4">Contribute Your Platform</h2>
+      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+        Have a robotics platform that could benefit the community? We're always
+        looking for new hardware to support.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a
+          href="/get-involved"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:add-circle-line-duotone" class="w-5 h-5 mr-2" />
+          Submit Platform
+        </a>
+        <a
+          href="/about"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+        >
+          <Icon name="solar:info-circle-line-duotone" class="w-5 h-5 mr-2" />
+          Learn More
+        </a>
       </div>
     </div>
   </Section>

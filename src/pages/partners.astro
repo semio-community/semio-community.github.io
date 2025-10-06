@@ -3,6 +3,16 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import PartnerCard from "@/components/PartnerCard.astro";
 import { Icon } from "astro-icon/components";
+import {
+  getAllPartners,
+  getPartnersByType,
+  getPartnersByCategory,
+  getFeaturedPartners,
+  getPartnerCountByType,
+  getPartnerCountByCategory,
+  getUniquePartnerTypes,
+  getUniquePartnerCategories,
+} from "@/data/partners";
 
 const meta = {
   title: "Partners",
@@ -10,394 +20,455 @@ const meta = {
     "Academic, industry, and public sector partners advancing human-centered robotics and AI together",
 };
 
-// Partner data organized by type
-const partners = {
-  universities: [
-    {
-      name: "George Mason University",
-      website: "https://www.gmu.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "Oregon State University",
-      website: "https://oregonstate.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "University of Pennsylvania",
-      website: "https://www.upenn.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "University of Southern California",
-      website: "https://www.usc.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "Tufts University",
-      website: "https://www.tufts.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "Yale University",
-      website: "https://www.yale.edu",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-  ],
-  nonprofit: [
-    {
-      name: "KISS Institute for Practical Robotics (KIPR)",
-      website: "https://www.kipr.org",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "Peerbots",
-      website: "#",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-  ],
-  private: [
-    {
-      name: "OLogic, Inc.",
-      website: "https://ologic.com",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-    {
-      name: "Semio AI, Inc.",
-      website: "https://semio.ai",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-  ],
-  public: [
-    {
-      name: "National Institute of Standards and Technology (NIST)",
-      website: "https://www.nist.gov",
-      description: "Lorem ipsum dolor sit amet.",
-    },
-  ],
+// Fetch partners from content collections
+const allPartners = await getAllPartners();
+const featuredPartners = await getFeaturedPartners();
+const partnerTypeCounts = await getPartnerCountByType();
+const partnerCategoryCounts = await getPartnerCountByCategory();
+const partnerTypes = await getUniquePartnerTypes();
+const partnerCategories = await getUniquePartnerCategories();
+
+// Group partners by type for display
+const partnersByType: Record<string, typeof allPartners> = {};
+for (const partner of allPartners) {
+  if (!partnersByType[partner.data.type]) {
+    partnersByType[partner.data.type] = [];
+  }
+  partnersByType[partner.data.type]!.push(partner);
+}
+
+// Partner type info for display
+const partnerTypeInfo: Record<
+  string,
+  { title: string; icon: string; description: string }
+> = {
+  academic: {
+    title: "Academic Partners",
+    icon: "solar:square-academic-cap-line-duotone",
+    description: "Leading universities and research institutions",
+  },
+  industry: {
+    title: "Industry Partners",
+    icon: "solar:buildings-2-line-duotone",
+    description: "Companies driving innovation in robotics and AI",
+  },
+  nonprofit: {
+    title: "Non-Profit Partners",
+    icon: "solar:heart-hand-line-duotone",
+    description: "Organizations advancing social impact through technology",
+  },
+  government: {
+    title: "Government Partners",
+    icon: "solar:flag-2-line-duotone",
+    description: "Public sector organizations and agencies",
+  },
+  community: {
+    title: "Community Partners",
+    icon: "solar:users-group-rounded-line-duotone",
+    description: "Local and global community organizations",
+  },
 };
+
+// Partner category info
+const categoryInfo: Record<string, { icon: string; color: string }> = {
+  research: {
+    icon: "solar:test-tube-minimalistic-line-duotone",
+    color: "text-blue-500",
+  },
+  development: {
+    icon: "solar:code-2-line-duotone",
+    color: "text-green-500",
+  },
+  education: {
+    icon: "solar:book-2-line-duotone",
+    color: "text-purple-500",
+  },
+  funding: {
+    icon: "solar:wallet-money-line-duotone",
+    color: "text-yellow-500",
+  },
+  infrastructure: {
+    icon: "solar:server-line-duotone",
+    color: "text-orange-500",
+  },
+  outreach: {
+    icon: "solar:megaphone-line-duotone",
+    color: "text-pink-500",
+  },
+};
+
+const benefits = [
+  {
+    icon: "solar:users-group-rounded-line-duotone",
+    title: "Community Access",
+    description:
+      "Connect with a global network of HRI researchers and practitioners",
+  },
+  {
+    icon: "solar:test-tube-minimalistic-line-duotone",
+    title: "Research Collaboration",
+    description: "Partner on cutting-edge HRI research projects and studies",
+  },
+  {
+    icon: "solar:rocket-line-duotone",
+    title: "Innovation Pipeline",
+    description: "Access to emerging technologies and research breakthroughs",
+  },
+  {
+    icon: "solar:square-academic-cap-line-duotone",
+    title: "Talent Development",
+    description: "Build relationships with the next generation of HRI experts",
+  },
+  {
+    icon: "solar:chart-2-line-duotone",
+    title: "Market Intelligence",
+    description: "Gain insights into HRI trends and opportunities",
+  },
+  {
+    icon: "solar:star-shine-line-duotone",
+    title: "Brand Visibility",
+    description: "Showcase your organization's commitment to HRI advancement",
+  },
+];
 ---
 
 <PageLayout meta={meta}>
   <h1 class="title mb-6">Partners</h1>
 
-  <!-- Hero Section -->
-  <Section id="partners-intro">
+  <!-- Hero Section with CTAs -->
+  <Section id="partners-cta">
     <div class="max-w-4xl mx-auto text-center mb-12">
       <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Semio Community brings together leading institutions from academia,
-        industry, and the public sector to advance human-centered robotics and
-        artificial intelligence through collaborative innovation.
+        Join a collaborative ecosystem of organizations advancing human-robot
+        interaction through shared resources, expertise, and vision.
       </p>
 
-      <!-- Partner Stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">
-            {partners.universities.length}
-          </div>
-          <div class="text-xs text-color-600 dark:text-color-400">
-            Universities
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <a
+          href="#become-partner"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        >
+          <Icon name="solar:hand-shake-line-duotone" class="w-5 h-5 mr-2" />
+          Become a Partner
+        </a>
+        <a
+          href="#current-partners"
+          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+        >
+          <Icon name="solar:eye-line-duotone" class="w-5 h-5 mr-2" />
+          View Partners
+        </a>
+      </div>
+
+      <!-- Partner Statistics -->
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        <div class="flex items-center gap-2">
+          <Icon
+            name="solar:buildings-2-line-duotone"
+            class="w-4 h-4 text-accent-one"
+          />
+          <span>{allPartners.length} Partners</span>
+        </div>
+        {
+          partnerTypes.length > 0 && (
+            <div class="flex items-center gap-2">
+              <Icon
+                name="solar:layers-line-duotone"
+                class="w-4 h-4 text-accent-two"
+              />
+              <span>{partnerTypes.length} Sectors</span>
+            </div>
+          )
+        }
+        {
+          partnerCategories.length > 0 && (
+            <div class="flex items-center gap-2">
+              <Icon
+                name="solar:widget-2-line-duotone"
+                class="w-4 h-4 text-special"
+              />
+              <span>{partnerCategories.length} Areas</span>
+            </div>
+          )
+        }
+        <div class="flex items-center gap-2">
+          <Icon
+            name="solar:global-line-duotone"
+            class="w-4 h-4 text-green-500"
+          />
+          <span>Global Reach</span>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Featured Partners -->
+  {
+    featuredPartners.length > 0 && (
+      <Section
+        id="featured-partners"
+        title="Featured Partners"
+        subtitle="Organizations leading the way in HRI innovation"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredPartners.slice(0, 6).map((partner) => (
+              <article class="group relative bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all overflow-hidden">
+                {partner.data.logo && (
+                  <div class="aspect-[3/2] p-6 bg-surface flex items-center justify-center">
+                    <img
+                      src={partner.data.logo.src}
+                      alt={`${partner.data.name} logo`}
+                      class="max-h-20 max-w-full object-contain"
+                    />
+                  </div>
+                )}
+                <div class="p-6">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs px-2 py-1 bg-accent-two/20 rounded capitalize">
+                      {partner.data.type}
+                    </span>
+                    {partner.data.featured && (
+                      <Icon
+                        name="solar:star-bold"
+                        class="w-4 h-4 text-yellow-500"
+                      />
+                    )}
+                  </div>
+                  <h3 class="font-semibold mb-2 group-hover:text-accent-one transition-colors">
+                    {partner.data.name}
+                  </h3>
+                  <p class="text-sm text-color-600 dark:text-color-400 line-clamp-3 mb-3">
+                    {partner.data.description}
+                  </p>
+                  {partner.data.category && (
+                    <div class="flex flex-wrap gap-2">
+                      <span class="text-xs px-2 py-1 bg-special/50 rounded">
+                        {partner.data.category}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <a
+                  href={`/partners/${partner.id}`}
+                  class="absolute inset-0"
+                  aria-label={`Learn more about ${partner.data.name}`}
+                />
+              </article>
+            ))}
           </div>
         </div>
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">
-            {partners.nonprofit.length}
+      </Section>
+    )
+  }
+
+  <!-- Current Partners by Type -->
+  <Section
+    id="current-partners"
+    title="Our Partners"
+    subtitle="Organizations committed to advancing HRI together"
+  >
+    <div class="max-w-6xl mx-auto">
+      {
+        partnerTypes.length > 0 ? (
+          partnerTypes.map((type) => {
+            const partners = partnersByType[type];
+            const info = partnerTypeInfo[type];
+            if (!partners || partners.length === 0) return null;
+
+            return (
+              <div class="mb-10">
+                <div class="flex items-center gap-3 mb-6">
+                  <Icon
+                    name={info?.icon || "solar:folder-line-duotone"}
+                    class="w-6 h-6 text-accent-two"
+                  />
+                  <h3 class="text-xl font-semibold">{info?.title || type}</h3>
+                  <span class="text-sm px-2 py-1 bg-accent-one/20 rounded">
+                    {partners.length}
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {partners.map((partner) => (
+                    <PartnerCard
+                      name={partner.data.name}
+                      type={
+                        partner.data.type === "academic"
+                          ? "university"
+                          : partner.data.type === "industry"
+                            ? "private"
+                            : partner.data.type === "government"
+                              ? "public"
+                              : "nonprofit"
+                      }
+                      website={
+                        partner.data.website || `/partners/${partner.id}`
+                      }
+                      description={partner.data.description}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div class="text-center py-12">
+            <Icon
+              name="solar:buildings-2-line-duotone"
+              class="w-24 h-24 mx-auto mb-4 text-color-300"
+            />
+            <p class="text-lg text-color-600 dark:text-color-400">
+              Partner information coming soon! Check back later for updates.
+            </p>
           </div>
-          <div class="text-xs text-color-600 dark:text-color-400">
-            Non-profits
+        )
+      }
+    </div>
+  </Section>
+
+  <!-- Partner Benefits -->
+  <Section
+    id="benefits"
+    title="Partner Benefits"
+    subtitle="What you gain by joining our partner network"
+  >
+    <div class="max-w-6xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {
+          benefits.map((benefit) => (
+            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <Icon
+                name={benefit.icon}
+                class="w-12 h-12 mb-4 text-accent-two"
+              />
+              <h3 class="text-lg font-semibold mb-2">{benefit.title}</h3>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                {benefit.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <!-- Partnership Categories -->
+  {
+    partnerCategories.length > 0 && (
+      <Section
+        id="categories"
+        title="Partnership Areas"
+        subtitle="Multiple ways to collaborate and contribute"
+      >
+        <div class="max-w-5xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {partnerCategories.map((category) => {
+              const info = categoryInfo[category];
+              const count = partnerCategoryCounts[category] || 0;
+
+              return (
+                <div class="flex items-start gap-3 p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+                  <Icon
+                    name={info?.icon || "solar:folder-line-duotone"}
+                    class={`w-6 h-6 flex-shrink-0 ${info?.color || "text-gray-500"}`}
+                  />
+                  <div>
+                    <h4 class="font-semibold mb-1 capitalize">{category}</h4>
+                    <p class="text-xs text-accent-one mb-1">
+                      {count} {count === 1 ? "Partner" : "Partners"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">
-            {partners.private.length}
-          </div>
-          <div class="text-xs text-color-600 dark:text-color-400">
-            Private Sector
-          </div>
-        </div>
-        <div class="p-4 bg-special-lighter rounded-lg">
-          <div class="text-2xl font-bold gradient-brand-text mb-1">
-            {partners.public.length}
-          </div>
-          <div class="text-xs text-color-600 dark:text-color-400">
-            Public Sector
-          </div>
-        </div>
-      </div>
-    </div>
-  </Section>
+      </Section>
+    )
+  }
 
-  <!-- Universities Section -->
-  <Section
-    id="universities"
-    title="University Partners"
-    subtitle="Leading academic institutions driving HRI research"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {partners.universities.map((partner) => <PartnerCard {...partner} />)}
-      </div>
-    </div>
-  </Section>
-
-  <!-- Non-profit Section -->
-  <Section
-    id="nonprofit"
-    title="Not-for-Profit Partners"
-    subtitle="Organizations advancing robotics for social good"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {partners.nonprofit.map((partner) => <PartnerCard {...partner} />)}
-      </div>
-    </div>
-  </Section>
-
-  <!-- Private Sector Section -->
-  <Section
-    id="private"
-    title="Private Sector Partners"
-    subtitle="Industry leaders bringing innovation to market"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {partners.private.map((partner) => <PartnerCard {...partner} />)}
-      </div>
-    </div>
-  </Section>
-
-  <!-- Public Sector Section -->
-  <Section
-    id="public"
-    title="Public Sector Partners"
-    subtitle="Government organizations supporting robotics advancement"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {partners.public.map((partner) => <PartnerCard {...partner} />)}
-      </div>
-    </div>
-  </Section>
-
-  <!-- Become a Partner Section -->
+  <!-- Become a Partner -->
   <Section
     id="become-partner"
     title="Become a Partner"
-    subtitle="Join our growing network of organizations advancing human-centered robotics"
+    subtitle="Join us in shaping the future of human-robot interaction"
   >
     <div class="max-w-4xl mx-auto">
       <div
         class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20"
       >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
-              Who Can Partner?
-            </h3>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm"
-                  >Academic institutions and research labs</span
-                >
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Non-profit organizations</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Technology companies and startups</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Government agencies and labs</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:check-circle-bold"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Industry consortiums</span>
-              </li>
-            </ul>
-          </div>
+        <h3 class="text-2xl font-semibold mb-4 text-center gradient-brand-text">
+          Partnership Opportunities
+        </h3>
 
-          <div>
-            <h3 class="text-lg font-semibold mb-4 gradient-brand-text">
-              Partnership Types
-            </h3>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Research collaborations</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Technology development partnerships</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Educational initiatives</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Event sponsorships</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <Icon
-                  name="solar:star-bold"
-                  class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-                />
-                <span class="text-sm">Resource sharing agreements</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="text-center">
-          <h3 class="text-2xl font-semibold mb-4 gradient-brand-text">
-            Ready to Partner with Us?
-          </h3>
-          <p class="mb-6 text-color-600 dark:text-color-400">
-            Let's work together to advance the field of human-centered robotics
-            and create positive impact.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="mailto:ross@community.semio.ai"
-              class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="text-center">
+            <div
+              class="w-12 h-12 mx-auto mb-3 rounded-full bg-accent-one/20 flex items-center justify-center"
             >
-              <Icon name="solar:letter-line-duotone" class="w-5 h-5 mr-2" />
-              Contact Us
-            </a>
-            <a
-              href="/about/"
-              class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special-lighter transition-all"
+              <Icon
+                name="solar:test-tube-minimalistic-line-duotone"
+                class="w-6 h-6 text-accent-one"
+              />
+            </div>
+            <h4 class="font-semibold mb-1">Research</h4>
+            <p class="text-xs text-color-600 dark:text-color-400">
+              Collaborate on groundbreaking studies
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="w-12 h-12 mx-auto mb-3 rounded-full bg-accent-two/20 flex items-center justify-center"
             >
-              Learn More About Us
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Section>
-
-  <!-- Collaboration Opportunities -->
-  <Section
-    id="opportunities"
-    title="Current Opportunities"
-    subtitle="Active projects and initiatives seeking partners"
-  >
-    <div class="max-w-4xl mx-auto">
-      <div class="space-y-4">
-        <div
-          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
-        >
-          <div class="flex items-start gap-4">
-            <Icon
-              name="solar:cpu-bolt-line-duotone"
-              class="w-8 h-8 text-accent-two flex-shrink-0"
-            />
-            <div class="flex-1">
-              <h3 class="font-semibold mb-2">Hardware Development Partners</h3>
-              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                We're seeking partners for developing and manufacturing
-                next-generation social robot platforms.
-              </p>
-              <a href="/hardware/" class="text-sm text-link hover:underline">
-                Learn more →
-              </a>
+              <Icon
+                name="solar:dollar-line-duotone"
+                class="w-6 h-6 text-accent-two"
+              />
             </div>
+            <h4 class="font-semibold mb-1">Funding</h4>
+            <p class="text-xs text-color-600 dark:text-color-400">
+              Support HRI research and development
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="w-12 h-12 mx-auto mb-3 rounded-full bg-special/40 flex items-center justify-center"
+            >
+              <Icon
+                name="solar:presentation-graph-line-duotone"
+                class="w-6 h-6 text-special-darkest"
+              />
+            </div>
+            <h4 class="font-semibold mb-1">Resources</h4>
+            <p class="text-xs text-color-600 dark:text-color-400">
+              Share expertise and infrastructure
+            </p>
           </div>
         </div>
 
-        <div
-          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
-        >
-          <div class="flex items-start gap-4">
-            <Icon
-              name="solar:code-square-line-duotone"
-              class="w-8 h-8 text-accent-two flex-shrink-0"
-            />
-            <div class="flex-1">
-              <h3 class="font-semibold mb-2">Open Source Contributors</h3>
-              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                Join our open-source initiatives to develop reusable software
-                for HRI research.
-              </p>
-              <a href="/software/" class="text-sm text-link hover:underline">
-                Learn more →
-              </a>
-            </div>
-          </div>
-        </div>
+        <p class="text-center mb-6 text-color-600 dark:text-color-400">
+          Whether you're an academic institution, industry leader, or community
+          organization, there's a place for you in our partner network.
+        </p>
 
-        <div
-          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
-        >
-          <div class="flex items-start gap-4">
-            <Icon
-              name="solar:test-tube-line-duotone"
-              class="w-8 h-8 text-accent-two flex-shrink-0"
-            />
-            <div class="flex-1">
-              <h3 class="font-semibold mb-2">Research Collaborators</h3>
-              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                Participate in multi-site studies and contribute to reproducible
-                HRI research.
-              </p>
-              <a href="/studies/" class="text-sm text-link hover:underline">
-                Learn more →
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all"
-        >
-          <div class="flex items-start gap-4">
-            <Icon
-              name="hugeicons:calendar-03"
-              class="w-8 h-8 text-accent-two flex-shrink-0"
-            />
-            <div class="flex-1">
-              <h3 class="font-semibold mb-2">Event Sponsors</h3>
-              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                Support conferences, workshops, and training events for the HRI
-                community.
-              </p>
-              <a href="/events/" class="text-sm text-link hover:underline">
-                Learn more →
-              </a>
-            </div>
-          </div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/get-involved"
+            class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+          >
+            <Icon name="solar:letter-line-duotone" class="w-5 h-5 mr-2" />
+            Contact Us
+          </a>
+          <a
+            href="/about"
+            class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special-lighter transition-all"
+          >
+            <Icon name="solar:info-circle-line-duotone" class="w-5 h-5 mr-2" />
+            Learn More
+          </a>
         </div>
       </div>
     </div>
