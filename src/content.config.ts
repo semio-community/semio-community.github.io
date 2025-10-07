@@ -116,6 +116,12 @@ const software = defineCollection({
         npm: z.string().optional(),
       }),
       logo: image().optional(),
+      images: z
+        .object({
+          hero: image(),
+          gallery: z.array(image()).optional(),
+        })
+        .optional(),
       maintainers: z.array(z.string()),
       institutions: z.array(z.string()),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),

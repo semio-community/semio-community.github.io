@@ -2,35 +2,35 @@
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import DetailLayout from "@/components/DetailLayout.astro";
-import { getRelatedHardware } from "@/data/hardware";
+import { getRelatedSoftware } from "@/data/software";
 
 export async function getStaticPaths() {
-  const hardware = await getCollection("hardware");
-  return hardware.map((entry) => ({
+  const software = await getCollection("software");
+  return software.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
   }));
 }
 
 type Props = {
-  entry: CollectionEntry<"hardware">;
+  entry: CollectionEntry<"software">;
 };
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { data } = entry;
 
-// Get related hardware
-const relatedHardware = await getRelatedHardware(entry, 3);
+// Get related software
+const relatedSoftware = await getRelatedSoftware(entry, 3);
 
 const meta = {
-  title: `${data.name} - Hardware Platform`,
+  title: `${data.name} - Software Platform`,
   description: data.description,
 };
 ---
 
 <PageLayout meta={meta}>
-  <DetailLayout type="hardware" data={data} relatedItems={relatedHardware}>
+  <DetailLayout type="software" data={data} relatedItems={relatedSoftware}>
     <Content />
   </DetailLayout>
 </PageLayout>

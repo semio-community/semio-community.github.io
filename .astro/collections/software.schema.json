@@ -119,6 +119,24 @@
         "logo": {
           "type": "string"
         },
+        "images": {
+          "type": "object",
+          "properties": {
+            "hero": {
+              "type": "string"
+            },
+            "gallery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "hero"
+          ],
+          "additionalProperties": false
+        },
         "maintainers": {
           "type": "array",
           "items": {
@@ -187,7 +205,7 @@
               ]
             }
           ],
-          "default": "2025-10-06T23:40:06.607Z"
+          "default": "2025-10-07T16:44:09.328Z"
         },
         "$schema": {
           "type": "string"

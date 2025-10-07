@@ -1,27 +1,41 @@
 ---
 name: "Arora"
-description: "A robotics orchestration platform for managing multi-robot systems"
-shortDescription: "Orchestration platform for multi-robot systems"
+description: "A software-as-a-service platform for creating, deploying, and executing multimodal natural language-based applications for interactive personal robots and digital/virtual characters. Provides tools for voice scripting, animation, and custom functionality development."
+shortDescription: "SaaS platform for natural language robot applications"
 category: "framework"
-status: "stable"
+status: "experimental"
 license: "MIT"
-language: ["Python", "TypeScript"]
-platform: ["Linux", "Docker"]
+language: ["Python", "TypeScript", "JavaScript"]
+platform: ["Linux", "Docker", "Cloud"]
+requirements:
+  runtime: ["Node.js 18+", "Python 3.8+"]
+  hardware: ["Compatible robot platform"]
+  dependencies: ["ROS/ROS2 (optional)", "WebRTC"]
 features:
-  - "Multi-robot fleet management"
-  - "Behavior orchestration"
-  - "Data collection pipeline"
+  - "Voice script creation for conversational HRI"
+  - "Animation tools for expressive movements"
+  - "JavaScript SDK for custom functionality"
+  - "Real-time simulation and testing"
+  - "Multi-robot fleet orchestration"
+  - "Cloud-based deployment pipeline"
+  - "Usage analytics and monitoring"
+  - "Natural language interaction engine"
 useCases:
+  - "Conversational robot applications"
   - "Multi-robot research studies"
-  - "Fleet coordination"
-  - "Data collection automation"
+  - "Interactive character development"
+  - "Human-robot interaction experiments"
+  - "Fleet coordination and management"
+  - "Behavior animation and scripting"
+images:
+  hero: "@/assets/images/software/arora-hero.png"
 links:
   documentation: "https://arora.readthedocs.io"
   github: "https://github.com/semio-community/arora"
-  website: "https://arora.semio.ai"
-maintainers: ["Semio Community"]
-institutions: ["Semio Community"]
-tags: ["orchestration", "fleet-management", "multi-robot"]
+  website: "https://semio.ai"
+maintainers: ["Semio Community", "Semio AI Inc."]
+institutions: ["Semio"]
+tags: ["orchestration", "fleet-management", "multi-robot", "natural-language", "saas", "animation", "voice", "conversational-ai"]
 featured: true
 lastUpdate: 2024-11-20
 publishDate: 2023-06-15
@@ -29,15 +43,6 @@ publishDate: 2023-06-15
 
 ## Overview
 
-Arora is a robotics orchestration platform designed to simplify the management of multi-robot systems in research environments.
+Arora is Semio's comprehensive software-as-a-service platform designed to streamline the development and deployment of natural language-based applications for robots and virtual characters. Built on the principle that natural language should be the primary interface for human-robot interaction, Arora provides an integrated suite of tools that significantly reduces development time - aiming to cut content creation time by 60%, software integration by 75%, and product launch timelines by 90%.
 
-## Features
-
-- Multi-robot fleet management
-- Behavior orchestration engine
-- Real-time monitoring
-- Data collection automation
-
-## Getting Started
-
-Documentation and installation instructions are available at [https://arora.readthedocs.io](https://arora.readthedocs.io).
+The platform will developers and researchers to rapidly prototype and deploy sophisticated robot behaviors through its three core modules: voice scripting for conversational interactions, animation tools for expressive movements, and a JavaScript SDK for custom functionality. This unified approach allows teams to create, test in simulation, deploy to hardware, and analyze usage data all within a single ecosystem, making it ideal for both research institutions conducting HRI studies and companies developing commercial robot applications.

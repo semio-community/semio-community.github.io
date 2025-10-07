@@ -28,6 +28,7 @@ const products = allSoftware.map((sw) => ({
   name: sw.data.name,
   type: "software" as const,
   description: sw.data.shortDescription,
+  image: sw.data.images?.hero || sw.data.logo,
   status:
     sw.data.status === "stable"
       ? ("available" as const)
@@ -38,7 +39,6 @@ const products = allSoftware.map((sw) => ({
           : sw.data.status === "experimental"
             ? ("experimental" as const)
             : ("coming-soon" as const),
-  badge: sw.data.status,
   features: sw.data.features?.slice(0, 3) || [],
   links: {
     primary: {

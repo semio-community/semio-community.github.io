@@ -1,0 +1,674 @@
+---
+import { Image } from "astro:assets";
+import Section from "@/components/Section.astro";
+import { Icon } from "astro-icon/components";
+
+interface HardwareData {
+  name: string;
+  shortDescription: string;
+  description: string;
+  category: "mobile" | "social" | "assistive" | "research" | "educational";
+  status: "available" | "experimental" | "coming-soon" | "discontinued";
+  featured?: boolean;
+  specifications?: {
+    height?: string;
+    weight?: string;
+    battery?: string;
+    computePlatform?: string;
+    sensors?: string[];
+    actuators?: string[];
+  };
+  features: string[];
+  applications: string[];
+  researchAreas?: string[];
+  pricing?: {
+    purchase?: number;
+    rental?: {
+      daily?: number;
+      weekly?: number;
+      monthly?: number;
+    };
+  };
+  links: {
+    website?: string;
+    documentation?: string;
+    github?: string;
+    purchase?: string;
+    rental?: string;
+  };
+  images?: {
+    hero?: any;
+    gallery?: any[];
+  };
+  maintainers: string[];
+  institutions?: string[];
+  tags?: string[];
+}
+
+interface SoftwareData {
+  name: string;
+  shortDescription: string;
+  description: string;
+  category: "framework" | "library" | "tool" | "simulation" | "dataset" | "model";
+  status: "stable" | "beta" | "alpha" | "experimental" | "deprecated";
+  featured?: boolean;
+  license?: string;
+  language?: string[];
+  platform?: string[];
+  requirements?: {
+    runtime?: string[];
+    hardware?: string[];
+    dependencies?: string[];
+  };
+  features: string[];
+  useCases: string[];
+  links: {
+    website?: string;
+    documentation?: string;
+    github?: string;
+    demo?: string;
+    pypi?: string;
+    npm?: string;
+  };
+  images?: {
+    hero?: any;
+    gallery?: any[];
+  };
+  maintainers: string[];
+  institutions?: string[];
+  tags?: string[];
+}
+
+interface RelatedItem {
+  id: string;
+  data: HardwareData | SoftwareData;
+}
+
+export interface Props {
+  type: "hardware" | "software";
+  data: HardwareData | SoftwareData;
+  relatedItems?: RelatedItem[];
+}
+
+const { type, data, relatedItems = [] } = Astro.props;
+
+// Type-specific configurations
+const typeConfig = {
+  hardware: {
+    statusColors: {
+      available: "text-green-600 dark:text-green-400",
+      experimental: "text-yellow-600 dark:text-yellow-400",
+      "coming-soon": "text-blue-600 dark:text-blue-400",
+      discontinued: "text-red-600 dark:text-red-400",
+    },
+    statusLabels: {
+      available: "Available",
+      experimental: "Experimental",
+      "coming-soon": "Coming Soon",
+      discontinued: "Discontinued",
+    },
+    categoryLabels: {
+      mobile: "Mobile Robot",
+      social: "Social Robot",
+      assistive: "Assistive Robot",
+      research: "Research Platform",
+      educational: "Educational Robot",
+    },
+    specsTitle: "Specifications",
+    specsIcon: "solar:settings-minimalistic-line-duotone",
+    applicationsTitle: "Applications",
+  },
+  software: {
+    statusColors: {
+      stable: "text-green-600 dark:text-green-400",
+      beta: "text-blue-600 dark:text-blue-400",
+      alpha: "text-yellow-600 dark:text-yellow-400",
+      experimental: "text-orange-600 dark:text-orange-400",
+      deprecated: "text-red-600 dark:text-red-400",
+    },
+    statusLabels: {
+      stable: "Stable",
+      beta: "Beta",
+      alpha: "Alpha",
+      experimental: "Experimental",
+      deprecated: "Deprecated",
+    },
+    categoryLabels: {
+      framework: "Framework",
+      library: "Library",
+      tool: "Tool",
+      simulation: "Simulation",
+      dataset: "Dataset",
+      model: "Model",
+    },
+    specsTitle: "Requirements",
+    specsIcon: "solar:code-2-line-duotone",
+    applicationsTitle: "Use Cases",
+  },
+};
+
+const config = typeConfig[type];
+const statusColors = config.statusColors as Record<string, string>;
+const statusLabels = config.statusLabels as Record<string, string>;
+const categoryLabels = config.categoryLabels as Record<string, string>;
+
+// Type guards
+const isHardwareData = (d: HardwareData | SoftwareData): d is HardwareData => {
+  return type === "hardware";
+};
+
+const isSoftwareData = (d: HardwareData | SoftwareData): d is SoftwareData => {
+  return type === "software";
+};
+
+// Determine which fields to show based on type
+const showPricing = isHardwareData(data) && data.pricing;
+const showLicense = isSoftwareData(data) && data.license;
+const showLanguages = isSoftwareData(data) && data.language;
+const showPlatforms = isSoftwareData(data) && data.platform;
+const applications = isHardwareData(data) ? data.applications : isSoftwareData(data) ? data.useCases : [];
+---
+
+<article class="detail-layout">
+  <!-- Hero Image with Title Overlay -->
+  {
+    data.images?.hero && (
+      <div class="relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-xl overflow-hidden">
+        <div class="aspect-[21/9] overflow-hidden bg-gradient-to-b from-special-lighter to-special">
+          <Image
+            src={data.images.hero}
+            alt={`${data.name} hero image`}
+            class="w-full h-full object-cover"
+            loading="eager"
+          />
+          <!-- Overlay gradient -->
+          <div class="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent" />
+
+          <!-- Title, description and status overlay -->
+          <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+            <div class="max-w-7xl mx-auto">
+              <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                {data.name}
+              </h1>
+              <p class="text-lg md:text-xl text-white/90 mb-4 max-w-3xl drop-shadow">
+                {data.shortDescription}
+              </p>
+              <div class="flex gap-2">
+                <span
+                  class={`px-3 py-1 rounded-full text-sm font-medium ${
+                    data.status === 'available' || data.status === 'stable'
+                      ? 'bg-green-500/80 text-white'
+                      : data.status === 'experimental'
+                      ? 'bg-orange-500/80 text-white'
+                      : (data as SoftwareData).status === 'alpha'
+                      ? 'bg-yellow-500/80 text-white'
+                      : (data as SoftwareData).status === 'beta'
+                      ? 'bg-blue-500/80 text-white'
+                      : (data as HardwareData).status === 'coming-soon'
+                      ? 'bg-blue-500/80 text-white'
+                      : 'bg-gray-500/80 text-white'
+                  } backdrop-blur-sm`}
+                >
+                  {statusLabels[data.status as keyof typeof statusLabels]}
+                </span>
+                {data.featured && (
+                  <span class="px-3 py-1 rounded-full text-sm font-medium bg-accent-two/80 text-white backdrop-blur-sm">
+                    Featured
+                  </span>
+                )}
+                {showLicense && isSoftwareData(data) && data.license && (
+                  <span class="px-3 py-1 rounded-full text-sm font-medium bg-special/80 text-white backdrop-blur-sm">
+                    {data.license}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <!-- Header (for when there's no hero image) -->
+  {!data.images?.hero && (
+    <header class="mb-8">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h1 class="title mb-4">{data.name}</h1>
+          <p class="text-xl text-color-600 dark:text-color-400 mb-4">
+            {data.shortDescription}
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <span
+            class={`px-3 py-1 rounded-full text-sm font-medium ${
+              statusColors[data.status]
+            } bg-color-100 dark:bg-special-dark`}
+          >
+            {statusLabels[data.status as keyof typeof statusLabels]}
+          </span>
+          {data.featured && (
+            <span class="px-3 py-1 rounded-full text-sm font-medium text-accent-two bg-accent-two/10">
+              Featured
+            </span>
+          )}
+          {showLicense && isSoftwareData(data) && data.license && (
+            <span class="px-3 py-1 rounded-full text-sm font-medium text-special bg-special/10">
+              {data.license}
+            </span>
+          )}
+        </div>
+      </div>
+    </header>
+  )}
+
+  <!-- Quick Info -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="p-4 bg-special-lighter rounded-lg">
+      <p class="text-sm text-color-500 mb-1">Category</p>
+      <p class="font-semibold">{categoryLabels[data.category as keyof typeof categoryLabels]}</p>
+    </div>
+    <div class="p-4 bg-special-lighter rounded-lg">
+      <p class="text-sm text-color-500 mb-1">
+        {type === "hardware" ? "Research Areas" : "Technologies"}
+      </p>
+      <p class="font-semibold">
+        {isHardwareData(data)
+          ? `${data.researchAreas?.length || 0} Areas`
+          : `${(data as SoftwareData).language?.length || 0} Languages`}
+      </p>
+    </div>
+    <div class="p-4 bg-special-lighter rounded-lg">
+      <p class="text-sm text-color-500 mb-1">
+        {type === "hardware" ? "Institutions" : "Maintainers"}
+      </p>
+      <p class="font-semibold">
+        {isHardwareData(data)
+          ? `${data.institutions?.length || 0} Partners`
+          : `${data.maintainers?.length || 0} Teams`}
+      </p>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex flex-wrap gap-3 mb-6">
+    {data.links?.website && (
+      <a
+        href={data.links.website}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+      >
+        <Icon name="solar:global-line-duotone" class="w-5 h-5 mr-2" />
+        Website
+      </a>
+    )}
+    {isHardwareData(data) && data.links?.purchase && (
+      <a
+        href={data.links.purchase}
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
+      >
+        <Icon name="solar:cart-large-2-line-duotone" class="w-5 h-5 mr-2" />
+        Purchase
+      </a>
+    )}
+    {isHardwareData(data) && data.links?.rental && (
+      <a
+        href={data.links.rental}
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
+      >
+        <Icon name="solar:calendar-line-duotone" class="w-5 h-5 mr-2" />
+        Rent
+      </a>
+    )}
+    {data.links?.documentation && (
+      <a
+        href={data.links.documentation}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+      >
+        <Icon name="solar:book-line-duotone" class="w-5 h-5 mr-2" />
+        Documentation
+      </a>
+    )}
+    {data.links?.github && (
+      <a
+        href={data.links.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+      >
+        <Icon name="solar:code-square-line-duotone" class="w-5 h-5 mr-2" />
+        GitHub
+      </a>
+    )}
+    {isSoftwareData(data) && data.links?.demo && (
+      <a
+        href={data.links.demo}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg gradient-brand-horizontal text-surface shadow-lg hover:brightness-110 transition-all"
+      >
+        <Icon name="solar:play-bold" class="w-5 h-5 mr-2" />
+        Try Demo
+      </a>
+    )}
+    {isSoftwareData(data) && data.links?.pypi && (
+      <a
+        href={data.links.pypi}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+      >
+        <Icon name="simple-icons:pypi" class="w-5 h-5 mr-2" />
+        PyPI
+      </a>
+    )}
+    {isSoftwareData(data) && data.links?.npm && (
+      <a
+        href={data.links.npm}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
+      >
+        <Icon name="simple-icons:npm" class="w-5 h-5 mr-2" />
+        NPM
+      </a>
+    )}
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Content -->
+    <div class="lg:col-span-2">
+      <!-- Content from MDX -->
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <slot />
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="lg:col-span-1">
+      <!-- Specifications/Requirements -->
+      {isHardwareData(data) && data.specifications && (
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name={config.specsIcon} class="w-5 h-5 mr-2" />
+            {config.specsTitle}
+          </h3>
+          <dl class="space-y-3">
+            {data.specifications.height && (
+              <div>
+                <dt class="text-sm text-color-500">Height</dt>
+                <dd class="font-medium">{data.specifications.height}</dd>
+              </div>
+            )}
+            {data.specifications.weight && (
+              <div>
+                <dt class="text-sm text-color-500">Weight</dt>
+                <dd class="font-medium">{data.specifications.weight}</dd>
+              </div>
+            )}
+            {data.specifications.battery && (
+              <div>
+                <dt class="text-sm text-color-500">Battery Life</dt>
+                <dd class="font-medium">{data.specifications.battery}</dd>
+              </div>
+            )}
+            {data.specifications.computePlatform && (
+              <div>
+                <dt class="text-sm text-color-500">Compute Platform</dt>
+                <dd class="font-medium">{data.specifications.computePlatform}</dd>
+              </div>
+            )}
+            {data.specifications.sensors && data.specifications.sensors.length > 0 && (
+              <div>
+                <dt class="text-sm text-color-500 mb-1">Sensors</dt>
+                <dd>
+                  <ul class="text-sm space-y-1">
+                    {data.specifications.sensors.map((sensor: string) => (
+                      <li class="flex items-start">
+                        <span class="text-accent-two mr-2">•</span>
+                        {sensor}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      )}
+
+      {isSoftwareData(data) && data.requirements && (
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name={config.specsIcon} class="w-5 h-5 mr-2" />
+            {config.specsTitle}
+          </h3>
+          <dl class="space-y-3">
+            {data.requirements.runtime && data.requirements.runtime.length > 0 && (
+              <div>
+                <dt class="text-sm text-color-500 mb-1">Runtime</dt>
+                <dd>
+                  <ul class="text-sm space-y-1">
+                    {data.requirements.runtime.map((item: string) => (
+                      <li class="flex items-start">
+                        <span class="text-accent-two mr-2">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {data.requirements.hardware && data.requirements.hardware.length > 0 && (
+              <div>
+                <dt class="text-sm text-color-500 mb-1">Hardware</dt>
+                <dd>
+                  <ul class="text-sm space-y-1">
+                    {data.requirements.hardware.map((item: string) => (
+                      <li class="flex items-start">
+                        <span class="text-accent-two mr-2">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+            {data.requirements.dependencies && data.requirements.dependencies.length > 0 && (
+              <div>
+                <dt class="text-sm text-color-500 mb-1">Dependencies</dt>
+                <dd>
+                  <ul class="text-sm space-y-1">
+                    {data.requirements.dependencies.map((item: string) => (
+                      <li class="flex items-start">
+                        <span class="text-accent-two mr-2">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      )}
+
+      <!-- Languages & Platforms (Software only) -->
+      {isSoftwareData(data) && (showLanguages || showPlatforms) && (
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="solar:code-circle-line-duotone" class="w-5 h-5 mr-2" />
+            Technologies
+          </h3>
+          <div class="space-y-3">
+            {showLanguages && data.language && (
+              <div>
+                <p class="text-sm text-color-500 mb-2">Languages</p>
+                <div class="flex flex-wrap gap-2">
+                  {data.language.map((lang: string) => (
+                    <span class="px-2 py-1 bg-accent-one/10 text-xs rounded">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {showPlatforms && data.platform && (
+              <div>
+                <p class="text-sm text-color-500 mb-2">Platforms</p>
+                <div class="flex flex-wrap gap-2">
+                  {data.platform.map((plat: string) => (
+                    <span class="px-2 py-1 bg-special/10 text-xs rounded">
+                      {plat}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <!-- Features -->
+      <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+          <Icon name="solar:star-line-duotone" class="w-5 h-5 mr-2" />
+          Key Features
+        </h3>
+        <ul class="space-y-2">
+          {data.features.map((feature: string) => (
+            <li class="flex items-start">
+              <Icon
+                name="solar:check-circle-line-duotone"
+                class="w-5 h-5 mr-2 text-accent-two flex-shrink-0 mt-0.5"
+              />
+              <span class="text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Pricing (Hardware only) -->
+      {showPricing && isHardwareData(data) && data.pricing && (
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="solar:tag-price-line-duotone" class="w-5 h-5 mr-2" />
+            Pricing
+          </h3>
+          <div class="space-y-3">
+            {data.pricing.purchase && (
+              <div>
+                <p class="text-sm text-color-500">Purchase</p>
+                <p class="text-2xl font-bold">
+                  ${data.pricing.purchase.toLocaleString()}
+                </p>
+              </div>
+            )}
+            {data.pricing.rental && (
+              <div>
+                <p class="text-sm text-color-500 mb-2">Rental Options</p>
+                <div class="space-y-1">
+                  {data.pricing.rental.daily && (
+                    <p class="text-sm">
+                      <span class="font-medium">Daily:</span> ${data.pricing.rental.daily}/day
+                    </p>
+                  )}
+                  {data.pricing.rental.weekly && (
+                    <p class="text-sm">
+                      <span class="font-medium">Weekly:</span> ${data.pricing.rental.weekly}/week
+                    </p>
+                  )}
+                  {data.pricing.rental.monthly && (
+                    <p class="text-sm">
+                      <span class="font-medium">Monthly:</span> ${data.pricing.rental.monthly}/month
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <!-- Applications/Use Cases -->
+      {applications && applications.length > 0 && (
+        <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <Icon name="solar:rocket-line-duotone" class="w-5 h-5 mr-2" />
+            {config.applicationsTitle}
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {applications.map((app: string) => (
+              <span class="px-3 py-1 bg-accent-one/10 text-sm rounded-full">
+                {app}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Maintainers -->
+      <div class="mb-6 p-6 bg-special-lighter rounded-lg">
+        <h3 class="text-lg font-semibold mb-4 flex items-center">
+          <Icon name="solar:users-group-two-rounded-line-duotone" class="w-5 h-5 mr-2" />
+          Maintained By
+        </h3>
+        <ul class="space-y-2">
+          {data.maintainers.map((maintainer: string) => (
+            <li class="text-sm">{maintainer}</li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Tags -->
+      {data.tags && data.tags.length > 0 && (
+        <div class="mb-6">
+          <h3 class="text-lg font-semibold mb-3">Tags</h3>
+          <div class="flex flex-wrap gap-2">
+            {data.tags.map((tag: string) => (
+              <a
+                href={`/tags/${tag}`}
+                class="px-3 py-1 bg-special-lighter hover:bg-special text-sm rounded-full transition-colors"
+              >
+                #{tag}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </aside>
+  </div>
+
+  <!-- Related Items -->
+  {relatedItems.length > 0 && (
+    <Section
+      title={`Related ${type === "hardware" ? "Hardware" : "Software"}`}
+      subtitle={`Other ${type === "hardware" ? "platforms" : "packages"} you might be interested in`}
+      className="mt-12"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {relatedItems.map((related) => (
+          <a
+            href={`/${type}/${related.id}`}
+            class="p-6 bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105"
+          >
+            <h4 class="font-semibold mb-2">{related.data.name}</h4>
+            <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+              {related.data.shortDescription}
+            </p>
+            <div class="flex items-center justify-between">
+              <span class={`text-sm ${statusColors[related.data.status as keyof typeof statusColors]}`}>
+                {statusLabels[related.data.status as keyof typeof statusLabels]}
+              </span>
+              <Icon name="solar:arrow-right-line-duotone" class="w-5 h-5" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </Section>
+  )}
+</article>
