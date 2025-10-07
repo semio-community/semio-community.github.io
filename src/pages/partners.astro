@@ -2,11 +2,10 @@
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import PartnerCard from "@/components/PartnerCard.astro";
+import FeatureCard from "@/components/FeatureCard.astro";
 import { Icon } from "astro-icon/components";
 import {
   getAllPartners,
-  getPartnersByType,
-  getPartnersByCategory,
   getFeaturedPartners,
   getPartnerCountByType,
   getPartnerCountByCategory,
@@ -214,48 +213,16 @@ const benefits = [
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredPartners.slice(0, 6).map((partner) => (
-              <article class="group relative bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all overflow-hidden">
-                {partner.data.logo && (
-                  <div class="aspect-[3/2] p-6 bg-surface flex items-center justify-center">
-                    <img
-                      src={partner.data.logo.src}
-                      alt={`${partner.data.name} logo`}
-                      class="max-h-20 max-w-full object-contain"
-                    />
-                  </div>
-                )}
-                <div class="p-6">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs px-2 py-1 bg-accent-two/20 rounded capitalize">
-                      {partner.data.type}
-                    </span>
-                    {partner.data.featured && (
-                      <Icon
-                        name="solar:star-bold"
-                        class="w-4 h-4 text-yellow-500"
-                      />
-                    )}
-                  </div>
-                  <h3 class="font-semibold mb-2 group-hover:text-accent-one transition-colors">
-                    {partner.data.name}
-                  </h3>
-                  <p class="text-sm text-color-600 dark:text-color-400 line-clamp-3 mb-3">
-                    {partner.data.description}
-                  </p>
-                  {partner.data.category && (
-                    <div class="flex flex-wrap gap-2">
-                      <span class="text-xs px-2 py-1 bg-special/50 rounded">
-                        {partner.data.category}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <a
-                  href={`/partners/${partner.id}`}
-                  class="absolute inset-0"
-                  aria-label={`Learn more about ${partner.data.name}`}
-                />
-              </article>
+              <PartnerCard
+                name={partner.data.name}
+                description={partner.data.description}
+                logo={partner.data.logo}
+                link={partner.data.website || `/partners/${partner.id}`}
+                type={partner.data.type}
+                category={partner.data.category}
+                featured={partner.data.featured}
+                class="h-full"
+              />
             ))}
           </div>
         </div>
@@ -293,19 +260,13 @@ const benefits = [
                   {partners.map((partner) => (
                     <PartnerCard
                       name={partner.data.name}
-                      type={
-                        partner.data.type === "academic"
-                          ? "university"
-                          : partner.data.type === "industry"
-                            ? "private"
-                            : partner.data.type === "government"
-                              ? "public"
-                              : "nonprofit"
-                      }
-                      website={
-                        partner.data.website || `/partners/${partner.id}`
-                      }
                       description={partner.data.description}
+                      logo={partner.data.logo}
+                      link={partner.data.website || `/partners/${partner.id}`}
+                      type={partner.data.type}
+                      category={partner.data.category}
+                      featured={partner.data.featured}
+                      class="h-full"
                     />
                   ))}
                 </div>
@@ -337,16 +298,11 @@ const benefits = [
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {
           benefits.map((benefit) => (
-            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-              <Icon
-                name={benefit.icon}
-                class="w-12 h-12 mb-4 text-accent-two"
-              />
-              <h3 class="text-lg font-semibold mb-2">{benefit.title}</h3>
-              <p class="text-sm text-color-600 dark:text-color-400">
-                {benefit.description}
-              </p>
-            </div>
+            <FeatureCard
+              icon={benefit.icon}
+              title={benefit.title}
+              description={benefit.description}
+            />
           ))
         }
       </div>
@@ -368,7 +324,7 @@ const benefits = [
               const count = partnerCategoryCounts[category] || 0;
 
               return (
-                <div class="flex items-start gap-3 p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+                <div class="flex items-start gap-3 p-4 bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all">
                   <Icon
                     name={info?.icon || "solar:folder-line-duotone"}
                     class={`w-6 h-6 flex-shrink-0 ${info?.color || "text-gray-500"}`}

@@ -2,6 +2,7 @@
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import EventCard from "@/components/EventCard.astro";
+import FeatureCard from "@/components/FeatureCard.astro";
 import { Icon } from "astro-icon/components";
 import {
   getAllEvents,
@@ -250,84 +251,37 @@ const services = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredEvents.slice(0, 6).map((event) => {
-              const typeInfo =
-                eventTypeInfo[event.data.type] || eventTypeInfo.conference;
-              return (
-                <article class="group relative bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all overflow-hidden">
-                  {event.data.banner && (
-                    <div class="aspect-video overflow-hidden">
-                      <img
-                        src={event.data.banner.src}
-                        alt={`${event.data.name} banner`}
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  <div class="p-6">
-                    <div class="flex items-center justify-between mb-3">
-                      <div class="flex items-center gap-2">
-                        <Icon
-                          name={typeInfo?.icon || "solar:calendar-line-duotone"}
-                          class={`w-5 h-5 ${typeInfo?.color || "text-gray-500"}`}
-                        />
-                        <span class="text-xs font-medium capitalize">
-                          {event.data.type}
-                        </span>
-                      </div>
-                      {event.data.featured && (
-                        <Icon
-                          name="solar:star-bold"
-                          class="w-4 h-4 text-yellow-500"
-                        />
-                      )}
-                    </div>
-                    <h3 class="font-semibold mb-2 group-hover:text-accent-one transition-colors">
-                      {event.data.name}
-                    </h3>
-                    <p class="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2">
-                      {event.data.description}
-                    </p>
-                    <div class="space-y-1 text-xs">
-                      <div class="flex items-center gap-2">
-                        <Icon
-                          name="solar:calendar-line-duotone"
-                          class="w-4 h-4 text-accent-one"
-                        />
-                        <span>
-                          {event.data.startDate.toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                          {event.data.endDate &&
-                            event.data.endDate.getTime() !==
-                              event.data.startDate.getTime() &&
-                            ` - ${event.data.endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
-                          , {event.data.startDate.getFullYear()}
-                        </span>
-                      </div>
-                      {event.data.location && (
-                        <div class="flex items-center gap-2">
-                          <Icon
-                            name="solar:map-point-line-duotone"
-                            class="w-4 h-4 text-accent-two"
-                          />
-                          <span>
-                            {event.data.location.city},{" "}
-                            {event.data.location.country}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <a
-                    href={`/events/${event.id}`}
-                    class="absolute inset-0"
-                    aria-label={`Learn more about ${event.data.name}`}
-                  />
-                </article>
-              );
-            })}
+            {featuredEvents.slice(0, 6).map((event) => (
+              <EventCard
+                name={event.data.name}
+                date={event.data.startDate.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                dateRange={
+                  event.data.endDate &&
+                  event.data.endDate.getTime() !==
+                    event.data.startDate.getTime()
+                    ? `${event.data.startDate.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })} - ${event.data.endDate.toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}, ${event.data.startDate.getFullYear()}`
+                    : undefined
+                }
+                location={
+                  event.data.location
+                    ? `${event.data.location.city}, ${event.data.location.country}`
+                    : undefined
+                }
+                description={event.data.description}
+                link={`/events/${event.id}`}
+                type={event.data.type}
+              />
+            ))}
           </div>
         </div>
       </Section>
@@ -416,19 +370,18 @@ const services = [
               const count = eventTypeCounts[type] || 0;
 
               return (
-                <div class="p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-                  <Icon
-                    name={info?.icon || "solar:calendar-line-duotone"}
-                    class={`w-8 h-8 mb-2 ${info?.color || "text-gray-500"}`}
-                  />
-                  <h3 class="font-semibold mb-1 capitalize">{type}</h3>
+                <FeatureCard
+                  icon={info?.icon || "solar:calendar-line-duotone"}
+                  title={type}
+                  class="capitalize"
+                >
                   <p class="text-xs text-accent-one mb-1">
                     {count} {count === 1 ? "Event" : "Events"}
                   </p>
                   <p class="text-xs text-color-600 dark:text-color-400">
                     {info.description}
                   </p>
-                </div>
+                </FeatureCard>
               );
             })}
           </div>
@@ -447,16 +400,11 @@ const services = [
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {
           services.map((service) => (
-            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-              <Icon
-                name={service.icon}
-                class="w-12 h-12 mb-4 text-accent-two"
-              />
-              <h3 class="text-lg font-semibold mb-2">{service.title}</h3>
-              <p class="text-sm text-color-600 dark:text-color-400">
-                {service.description}
-              </p>
-            </div>
+            <FeatureCard
+              icon={service.icon}
+              title={service.title}
+              description={service.description}
+            />
           ))
         }
       </div>
@@ -472,62 +420,26 @@ const services = [
         subtitle="Events from the past 6 months"
       >
         <div class="max-w-4xl mx-auto">
-          <div class="space-y-3">
-            {recentPastEvents.slice(0, 5).map((event) => {
-              const typeInfo =
-                eventTypeInfo[event.data.type] || eventTypeInfo.conference;
-              return (
-                <article class="group p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-                  <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1">
-                      <div class="flex items-center gap-3 mb-2">
-                        <Icon
-                          name={typeInfo?.icon || "solar:calendar-line-duotone"}
-                          class={`w-4 h-4 ${typeInfo?.color || "text-gray-500"}`}
-                        />
-                        <h3 class="font-semibold group-hover:text-accent-one transition-colors">
-                          <a href={`/events/${event.id}`}>{event.data.name}</a>
-                        </h3>
-                      </div>
-                      <div class="flex items-center gap-4 text-xs text-color-600 dark:text-color-400">
-                        <span>
-                          {event.data.startDate.toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                        {event.data.location && (
-                          <>
-                            <span>•</span>
-                            <span>
-                              {event.data.location.city},{" "}
-                              {event.data.location.country}
-                            </span>
-                          </>
-                        )}
-                        <span>•</span>
-                        <span class="capitalize">{event.data.type}</span>
-                      </div>
-                    </div>
-                    {event.data.links?.recordings && (
-                      <a
-                        href={event.data.links.recordings}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-1 text-xs text-link hover:underline"
-                      >
-                        <Icon
-                          name="solar:play-circle-line-duotone"
-                          class="w-4 h-4"
-                        />
-                        Recording
-                      </a>
-                    )}
-                  </div>
-                </article>
-              );
-            })}
+          <div class="grid grid-cols-1 gap-4">
+            {recentPastEvents.slice(0, 5).map((event) => (
+              <EventCard
+                name={event.data.name}
+                date={event.data.startDate.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+                location={
+                  event.data.location
+                    ? `${event.data.location.city}, ${event.data.location.country}`
+                    : undefined
+                }
+                description={event.data.description}
+                link={`/events/${event.id}`}
+                type={event.data.type}
+                isPast={true}
+              />
+            ))}
           </div>
           {recentPastEvents.length > 5 && (
             <div class="mt-4 text-center">

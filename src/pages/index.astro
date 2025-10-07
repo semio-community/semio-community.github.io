@@ -3,6 +3,8 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import ContactCard from "@/components/ContactCard.astro";
 import Hero from "@/components/Hero.astro";
+import FeatureCard from "@/components/FeatureCard.astro";
+import LinkCard from "@/components/LinkCard.astro";
 import { url } from "@/utils/url";
 import { Icon } from "astro-icon/components";
 ---
@@ -85,44 +87,23 @@ import { Icon } from "astro-icon/components";
       <div
         class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-12 px-2 sm:px-0"
       >
-        <div class="text-center p-4 sm:p-6 bg-special-lighter rounded-lg">
-          <Icon
-            name="hugeicons:user-multiple"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2 gradient-brand-text">
-            Community-Driven
-          </h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Fostering collaboration and knowledge sharing across disciplines
-          </p>
-        </div>
+        <FeatureCard
+          icon="hugeicons:user-multiple"
+          title="Community-Driven"
+          description="Fostering collaboration and knowledge sharing across disciplines"
+        />
 
-        <div class="text-center p-4 sm:p-6 bg-special-lighter rounded-lg">
-          <Icon
-            name="solar:cpu-bolt-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2 gradient-brand-text">
-            Human-Centered AI
-          </h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Prioritizing ethical and accessible robotics technologies
-          </p>
-        </div>
+        <FeatureCard
+          icon="solar:cpu-bolt-line-duotone"
+          title="Human-Centered AI"
+          description="Prioritizing ethical and accessible robotics technologies"
+        />
 
-        <div class="text-center p-4 sm:p-6 bg-special-lighter rounded-lg">
-          <Icon
-            name="hugeicons:book-open-01"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two"
-          />
-          <h3 class="text-lg font-semibold mb-2 gradient-brand-text">
-            Open Science
-          </h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Promoting reproducible research and reusable systems
-          </p>
-        </div>
+        <FeatureCard
+          icon="hugeicons:book-open-01"
+          title="Open Science"
+          description="Promoting reproducible research and reusable systems"
+        />
       </div>
     </div>
   </Section>
@@ -231,61 +212,33 @@ import { Icon } from "astro-icon/components";
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
       >
-        <a
+        <LinkCard
           href={url("hardware/")}
-          class="group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center"
-        >
-          <Icon
-            name="solar:cpu-bolt-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
-          />
-          <h3 class="text-lg font-semibold mb-2">Hardware</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Community-driven robotics platforms
-          </p>
-        </a>
+          icon="solar:cpu-bolt-line-duotone"
+          title="Hardware"
+          description="Community-driven robotics platforms"
+        />
 
-        <a
+        <LinkCard
           href={url("software/")}
-          class="group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center"
-        >
-          <Icon
-            name="solar:code-square-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
-          />
-          <h3 class="text-lg font-semibold mb-2">Software</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Open-source tools and frameworks
-          </p>
-        </a>
+          icon="solar:code-square-line-duotone"
+          title="Software"
+          description="Open-source tools and frameworks"
+        />
 
-        <a
+        <LinkCard
           href={url("studies/")}
-          class="group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center"
-        >
-          <Icon
-            name="solar:test-tube-line-duotone"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
-          />
-          <h3 class="text-lg font-semibold mb-2">Studies</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Reproducible research initiatives
-          </p>
-        </a>
+          icon="solar:test-tube-line-duotone"
+          title="Studies"
+          description="Reproducible research initiatives"
+        />
 
-        <a
+        <LinkCard
           href={url("events/")}
-          class="group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center"
-        >
-          <Icon
-            name="hugeicons:calendar-03"
-            class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
-          />
-          <h3 class="text-lg font-semibold mb-2">Events</h3>
-          <p class="text-sm text-color-600 dark:text-color-400">
-            Workshops and symposiums
-          </p>
-        </a>
+          icon="hugeicons:calendar-03"
+          title="Events"
+          description="Workshops and symposiums"
+        />
       </div>
     </div>
   </Section>

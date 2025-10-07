@@ -1,6 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
+import FeatureCard from "@/components/FeatureCard.astro";
 import { Icon } from "astro-icon/components";
 import {
   getAllStudies,
@@ -211,19 +212,11 @@ const benefits = [
               };
 
               return (
-                <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-                  <Icon
-                    name={info.icon}
-                    class="w-12 h-12 mb-4 text-accent-two"
-                  />
-                  <h3 class="text-lg font-semibold mb-1">{info.title}</h3>
-                  <p class="text-sm font-medium text-accent-one mb-2">
-                    {count} {count === 1 ? "Study" : "Studies"}
-                  </p>
-                  <p class="text-sm text-color-600 dark:text-color-400">
-                    {info.description}
-                  </p>
-                </div>
+                <FeatureCard
+                  icon={info.icon}
+                  title={info.title}
+                  description={`${count} ${count === 1 ? "Study" : "Studies"} • ${info.description}`}
+                />
               );
             })}
           </div>
@@ -242,15 +235,11 @@ const benefits = [
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {
           services.map((service) => (
-            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-              <Icon
-                name={service.icon}
-                class="w-12 h-12 mb-4 text-accent-two"
-              />
-              <h3 class="text-lg font-semibold mb-2">{service.title}</h3>
-              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                {service.description}
-              </p>
+            <FeatureCard
+              icon={service.icon}
+              title={service.title}
+              description={service.description}
+            >
               <ul class="space-y-1">
                 {service.features.map((feature) => (
                   <li class="flex items-center gap-2 text-xs">
@@ -262,7 +251,7 @@ const benefits = [
                   </li>
                 ))}
               </ul>
-            </div>
+            </FeatureCard>
           ))
         }
       </div>
@@ -284,7 +273,7 @@ const benefits = [
               return (
                 <a
                   href={`/studies/area/${area.toLowerCase().replace(/\s+/g, "-")}`}
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-special-lighter rounded-full border border-special hover:border-accent-one/40 transition-all text-sm"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-special-lighter rounded-full border-2 hover:border-accent-two border-accent-one/40 transition-all text-sm"
                 >
                   <span>{area}</span>
                   <span class="text-xs px-2 py-0.5 bg-accent-one/20 rounded-full">
@@ -310,7 +299,7 @@ const benefits = [
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredStudies.slice(0, 6).map((study) => (
-              <article class="group relative flex flex-col bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all overflow-hidden">
+              <article class="group relative flex flex-col bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all overflow-hidden">
                 <div class="p-6 flex-1">
                   <div class="flex items-center gap-2 mb-3">
                     <span class="text-xs px-2 py-1 bg-accent-two/20 rounded">
@@ -364,7 +353,7 @@ const benefits = [
         <div class="max-w-4xl mx-auto">
           <div class="space-y-4">
             {recentStudies.map((study) => (
-              <article class="group p-4 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
+              <article class="group p-4 bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all">
                 <div class="flex items-start justify-between gap-4">
                   <div class="flex-1 min-w-0">
                     <h3 class="font-semibold mb-1 line-clamp-1 group-hover:text-accent-one transition-colors">

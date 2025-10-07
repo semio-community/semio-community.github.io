@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  href: string;
+  icon: string;
+  title: string;
+  description?: string;
+  class?: string;
+}
+
+const { href, icon, title, description, class: className = "" } = Astro.props;
+---
+
+<a
+  href={href}
+  class={`group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center ${className}`}
+>
+  <Icon
+    name={icon}
+    class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
+  />
+  <h3 class="text-lg font-semibold mb-2">{title}</h3>
+  {
+    description && (
+      <p class="text-sm text-color-600 dark:text-color-400">{description}</p>
+    )
+  }
+</a>

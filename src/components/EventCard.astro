@@ -1,4 +1,6 @@
 ---
+import Card from "./Card.astro";
+
 export interface Props {
   name: string;
   date: string;
@@ -6,7 +8,16 @@ export interface Props {
   location?: string | undefined;
   description?: string | undefined;
   link?: string | undefined;
-  type?: "conference" | "workshop" | "symposium" | "summit" | "training";
+  type?:
+    | "conference"
+    | "workshop"
+    | "hackathon"
+    | "symposium"
+    | "summit"
+    | "training"
+    | "meetup"
+    | "webinar"
+    | "competition";
   isPast?: boolean | undefined;
 }
 
@@ -27,61 +38,34 @@ const typeColors = {
   symposium: "from-special to-accent-one",
   summit: "from-accent-base to-accent-one",
   training: "from-accent-two to-accent-base",
+  hackathon: "from-purple-500 to-pink-500",
+  meetup: "from-indigo-500 to-blue-500",
+  webinar: "from-teal-500 to-cyan-500",
+  competition: "from-yellow-500 to-orange-500",
 };
 
 const gradientColor = typeColors[type] || typeColors.conference;
+
+// Build the subtitle from date and location
+const subtitleParts = [];
+if (dateRange || date) {
+  subtitleParts.push(dateRange || date);
+}
+if (location) {
+  subtitleParts.push(`📍 ${location}`);
+}
+const subtitle = subtitleParts.join(" | ");
 ---
 
-<div
-  class={`relative p-6 rounded-lg border transition-all ${
-    isPast
-      ? "bg-surface/50 border-color-300 dark:border-color-700 opacity-75"
-      : "bg-special-lighter border-special hover:border-accent-one/40"
-  }`}
->
-  {/* Event type badge */}
-  <div
-    class={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-semibold text-white bg-gradient-to-r ${gradientColor}`}
-  >
-    {type}
-  </div>
-
-  <div class="pr-20">
-    <h3
-      class={`text-lg font-semibold mb-2 ${isPast ? "text-color-600 dark:text-color-400" : "gradient-brand-text"}`}
-    >
-      {
-        link ? (
-          <a
-            href={link}
-            class="hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {name}
-          </a>
-        ) : (
-          name
-        )
-      }
-    </h3>
-
-    <div class="space-y-1 text-sm">
-      <p class="font-medium text-accent-two">
-        {dateRange || date}
-      </p>
-
-      {
-        location && (
-          <p class="text-color-600 dark:text-color-400">📍 {location}</p>
-        )
-      }
-
-      {
-        description && (
-          <p class="mt-2 text-color-600 dark:text-color-400">{description}</p>
-        )
-      }
-    </div>
-  </div>
-</div>
+<Card
+  title={name}
+  subtitle={subtitle}
+  description={description}
+  link={link}
+  isPast={isPast}
+  status={{
+    label: type,
+    color: `bg-gradient-to-r ${gradientColor}`,
+  }}
+  class="event-card"
+/>

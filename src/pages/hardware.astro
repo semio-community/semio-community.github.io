@@ -2,6 +2,7 @@
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import ProductCard from "@/components/ProductCard.astro";
+import FeatureCard from "@/components/FeatureCard.astro";
 import { Icon } from "astro-icon/components";
 import { getAllHardware, getHardwareCountByStatus } from "@/data/hardware";
 
@@ -135,7 +136,7 @@ const services = [
         products.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <ProductCard {...product} compact />
+              <ProductCard {...product} />
             ))}
           </div>
         ) : (
@@ -163,19 +164,11 @@ const services = [
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {
           services.map((service) => (
-            <div class="p-6 bg-special-lighter rounded-lg border border-special hover:border-accent-one/40 transition-all">
-              <Icon
-                name={service.icon}
-                class="w-12 h-12 mb-4 text-accent-two"
-              />
-              <h3 class="text-lg font-semibold mb-1">{service.title}</h3>
-              <p class="text-sm font-medium text-accent-one mb-2">
-                {service.subtitle}
-              </p>
-              <p class="text-sm text-color-600 dark:text-color-400">
-                {service.description}
-              </p>
-            </div>
+            <FeatureCard
+              icon={service.icon}
+              title={service.title}
+              description={`${service.subtitle} • ${service.description}`}
+            />
           ))
         }
       </div>
