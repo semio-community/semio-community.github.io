@@ -1,7 +1,7 @@
 ---
 name: "Quori v2.0"
-description: "A modular, affordable socially interactive robot platform developed for enabling human-robot interaction research. Features an expressive projected face, gesturing arms with shoulder-like articulation, flexible spine, and omnidirectional mobility."
-shortDescription: "Modular social robot platform for HRI research with projected face and expressive gestures"
+description: "An advanced modular socially interactive robot platform with enhanced sensing and interaction capabilities. Features a touchscreen display, dual speakers, 14-DOF articulation including 4-DOF arms, multiple IMUs and laser rangefinders, programmable light arrays, and 3-DOF holonomic mobility."
+shortDescription: "Advanced modular social robot with touchscreen, enhanced sensors, and 14-DOF articulation"
 category: "social"
 status: "coming-soon"
 images:
@@ -10,20 +10,27 @@ specifications:
   height: "1.35 meters (resting position)"
   weight: "Approx. 45-50 kg"
   battery: "Onboard rechargeable battery system"
-  sensors: ["Depth camera", "RGB camera", "Microphone array", "Touch sensors", "Proximity sensors"]
-  actuators: ["2 DOF shoulder joints per arm", "Omnidirectional base motors", "Spine articulation motors", "Turret rotation motor"]
-  computePlatform: "Intel NUC with ROS integration"
+  sensors: ["RGB+D camera", "Microphone array", "Laser rangefinders (x2)", "IMUs (x4)"]
+  actuators: ["14 DOFs total", "2-DOF head", "1-DOF neck", "4-DOF arms (x2)", "3-DOF holonomic base"]
+  computePlatform: "Onboard computer"
+  audioSystem: ["Speakers (x2)"]
+  display: "Touchscreen display"
+  lighting: "Light arrays (x4)"
+  storage: "Onboard storage bin"
 features:
-  - "Rear-projected animated face for flexible expression design"
-  - "Two gesturing arms with shoulder-like ball joint articulation (2 DOF each)"
-  - "Bowing spine mechanism for body language expression"
-  - "Omnidirectional mobile base (0.8 m/s linear, 180°/s rotational)"
-  - "Modular panelized design with magnetic attachment system"
+  - "Touchscreen display for interactive communication"
+  - "Dual speakers for enhanced audio output"
+  - "Two articulated arms with 4 DOF each for complex gestures"
+  - "2-DOF head with 1-DOF neck for expressive movements"
+  - "3-DOF holonomic base for smooth omnidirectional mobility"
+  - "Dual laser rangefinders for precise navigation"
+  - "Four IMUs for enhanced motion sensing and stability"
+  - "Four programmable light arrays for visual feedback"
+  - "Onboard storage bin for carrying items"
+  - "Customizable badge for personalization"
+  - "Enhanced modular design and functionality"
   - "ROS-based control interfaces at multiple abstraction levels"
   - "Browser-based content creation and animation tools"
-  - "Built-in text-to-speech capabilities"
-  - "ADA-compliant base dimensions"
-  - "Low noise operation (quiet at 1 meter distance)"
 applications:
   - "Human-robot interaction studies"
   - "Social robotics research"
@@ -45,16 +52,16 @@ links:
   documentation: "https://quori-robot.github.io/quori_v1_documentation/"
 maintainers: ["Semio", "Oregon State University"]
 institutions: ["Oregon State University", "Semio"]
-tags: ["social-robotics", "hri", "research-platform", "modular", "open-hardware", "ros", "screen", "mobile"]
+tags: ["social-robotics", "hri", "research-platform", "modular", "open-hardware", "ros", "touchscreen", "mobile", "14-dof", "multi-sensor", "interactive-display"]
 featured: true
 publishDate: 2024-01-15
 ---
 
 ## Overview
 
-Quori is an affordable, modular social robot platform developed through a National Science Foundation initiative to democratize human-robot interaction research. Created through extensive community consultation, the robot features a distinctive rear-projected animated face for flexible expression design, two articulated arms with shoulder-like movement, a bowing spine mechanism, and an omnidirectional mobile base capable of smooth navigation in both laboratory and real-world settings. The platform's modular architecture allows researchers to customize and extend capabilities while maintaining standardization across the ten units distributed to U.S. research institutions.
+Quori v2.0 represents a significant advancement in socially interactive robot platforms, building upon the successful foundation established by the National Science Foundation initiative. This enhanced version features a comprehensive sensor suite including an RGB+D camera, dual laser rangefinders, and four IMUs for superior environmental perception and stability. The robot's interaction capabilities have been dramatically expanded with a touchscreen display for direct user engagement, dual speakers for immersive audio experiences, and four programmable light arrays that enable rich visual communication patterns.
 
-The robot bridges technical accessibility gaps by providing control interfaces at multiple levels - from low-level ROS commands for direct hardware control to browser-based tools for creating conversational content and animations without extensive programming expertise. This tiered approach, combined with open-source hardware documentation and swappable components, enables diverse research applications ranging from non-verbal communication studies to field deployments in public spaces, all while maintaining ADA compliance and quiet operation suitable for human interaction contexts.
+The mechanical design has evolved to offer 14 degrees of freedom, including sophisticated 4-DOF arms (8 DOF total) for complex gestural expression, a 2-DOF head with 1-DOF neck for nuanced non-verbal communication, and a 3-DOF holonomic base for smooth omnidirectional navigation. Additional features like the onboard storage bin enable practical applications in service scenarios, while the customizable badge system allows for personalization in multi-robot deployments. This modular architecture maintains backward compatibility while offering researchers unprecedented flexibility in customizing and extending the platform's capabilities for diverse human-robot interaction studies.
 
 ## Research Publications
 
