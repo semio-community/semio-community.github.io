@@ -152,7 +152,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                     </Dialog.Title>
                     <Dialog.Close asChild>
                       <button
-                        className="relative h-8 w-8 rounded-lg bg-color-100 hover:bg-accent-base/10 text-accent-base flex items-center justify-center transition-colors"
+                        className="relative h-8 w-8 rounded-lg bg-color-100 hover:bg-accent-base/10 text-accent-base flex items-center justify-center transition-colors focus:outline-2 focus:outline-accent-two outline-offset-2"
                         aria-label="Close navigation"
                       >
                         <CloseIcon />
@@ -190,7 +190,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                               className={clsx(
                                 "block px-4 py-3 rounded-lg transition-all duration-200",
                                 link.callToAction
-                                  ? "bg-gradient-to-r from-accent-one to-accent-two text-white font-semibold hover:shadow-lg hover:scale-[1.02]"
+                                  ? "outline-2 outline-accent-two bg-accent-two/10 hover:bg-accent-two/100 hover:text-surface text-accent-two font-semibold hover:shadow-lg hover:scale-[1.02]"
                                   : currentPath === link.path
                                     ? "bg-accent-base/10 text-accent-two font-semibold"
                                     : "text-foreground hover:bg-accent-base/5 hover:text-accent-base",
