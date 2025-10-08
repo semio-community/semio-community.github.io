@@ -116,7 +116,7 @@ export default defineConfig({
   // https://docs.astro.build/en/guides/prefetch/
   prefetch: true,
   // ! Please remember to replace the following site property with your own domain
-  site: "https://semio-community.github.io/",
+  site: "https://semio.community/",
   // Add dynamic base path for PR previews
   base: process.env.PR_PREVIEW_PATH || "/",
   vite: {
