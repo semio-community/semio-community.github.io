@@ -94,6 +94,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                         "font-semibold text-foreground",
                     )}
                     href={url(link.path)}
+                    data-astro-prefetch
                   >
                     {link.title}
                   </NavigationMenu.Link>
@@ -139,6 +140,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                     {/* Main page link */}
                     <a
                       href={url(link.path)}
+                      data-astro-prefetch
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent-base/10 transition-colors mb-3 group/link"
                     >
                       <div className="w-10 h-10 rounded-lg bg-accent-base/10 flex items-center justify-center flex-shrink-0">
@@ -177,6 +179,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                           <a
                             key={section.href}
                             href={url(section.href)}
+                            data-astro-prefetch
                             className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                           >
                             <span className="text-sm text-foreground group-hover/link:text-accent-base transition-colors">
@@ -200,6 +203,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                               <a
                                 key={item.id}
                                 href={url(`/hardware/${item.id}`)}
+                                data-astro-prefetch
                                 className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                               >
                                 <div
@@ -228,6 +232,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                             {hardwareItems.length > maxItemsInDropdown && (
                               <a
                                 href={url("/hardware/#products")}
+                                data-astro-prefetch
                                 className="flex items-center justify-center gap-2 p-2 text-xs font-medium text-accent-base hover:text-accent-one transition-colors"
                               >
                                 View all {hardwareItems.length} platforms
@@ -260,6 +265,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                               <a
                                 key={item.id}
                                 href={url(`/software/${item.id}`)}
+                                data-astro-prefetch
                                 className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                               >
                                 <div
@@ -287,6 +293,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                             {softwareItems.length > maxItemsInDropdown && (
                               <a
                                 href={url("/software/#products")}
+                                data-astro-prefetch
                                 className="flex items-center justify-center gap-2 p-2 text-xs font-medium text-accent-base hover:text-accent-one transition-colors"
                               >
                                 View all {softwareItems.length} tools

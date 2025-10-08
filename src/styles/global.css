@@ -635,3 +635,8 @@
     @apply bg-transparent;
   }
 }
+
+/* Prevent body scroll when mobile nav dialog is open */
+body:has([data-radix-dialog-overlay]) {
+  overflow: hidden;
+}

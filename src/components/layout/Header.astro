@@ -2,8 +2,8 @@
 import Search from "@/components/Search.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
 import { NavigationMenuComponent } from "@/components/navigation/NavigationMenu.tsx";
+import { MobileNavigation } from "@/components/navigation/MobileNavigation.tsx";
 import { siteConfig, menuLinks } from "@/site.config";
-import { Icon } from "astro-icon/components";
 import { homeUrl, url } from "@/utils/url";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
@@ -64,7 +64,7 @@ const menuSections = {
 
 <header
   id="main-header"
-  class="fixed px-2 sm:px-4 md:px-6 lg:px-8 left-0 z-50 flex items-center lg:relative top-0 h-16 w-full bg-surface lg:bg-transparent overflow-hidden lg:overflow-visible xl:max-w-6xl xl:mx-auto"
+  class="fixed px-2 sm:px-4 md:px-6 lg:px-8 left-0 z-1 flex items-center lg:relative top-0 h-16 w-full bg-surface lg:bg-transparent overflow-hidden lg:overflow-visible xl:max-w-6xl xl:mx-auto"
 >
   <!-- Background
 			TODO: This approach is not optimal and requires improvements.
@@ -158,167 +158,15 @@ const menuSections = {
         <ThemeToggle />
       </div>
 
-      <mobile-button
-        aria-expanded="false"
-        aria-haspopup="menu"
-        aria-label="Open main menu"
-        class="group relative h-8 w-8 rounded-lg bg-color-100 hover:bg-accent-base/10 text-accent-base md:invisible md:hidden"
-        id="toggle-nav-menu-mobile"
-        type="button"
-      >
-        <Icon
-          id="open-nav-menu-icon"
-          aria-hidden="true"
-          class="absolute start-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all"
-          focusable="false"
-          name="hugeicons:menu-01"
+      <!-- Mobile Navigation with Radix UI Dialog -->
+      <div class="md:hidden">
+        <MobileNavigation
+          client:load
+          menuLinks={menuLinks}
+          currentPath={Astro.url.pathname}
+          urlPrefix=""
         />
-        <Icon
-          id="close-nav-menu-icon"
-          aria-hidden="true"
-          class="absolute start-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all"
-          focusable="false"
-          name="hugeicons:cancel-01"
-        />
-      </mobile-button>
+      </div>
     </div>
   </div>
 </header>
-
-<div id="drawer" class="fixed inset-0 z-40 hidden" aria-hidden="true">
-  <div
-    id="drawer-body"
-    class="absolute inset-0 -translate-y-full transform bg-surface transition-all duration-300 ease-in-out"
-  >
-    <!-- Background
-			TODO: This approach is not optimal and requires improvements.
-  			- Too many absolutely positioned elements can affect performance.
-  		-->
-    <div
-      class="fixed top-0 left-1/2 -ml-[50vw] w-screen pointer-events-none min-h-screen overflow-x-hidden overflow-y-visible blur-2xl"
-    >
-      <!--
-				<div class="fixed blur-xl top-0 left-0 w-full h-16 md:h-20 bg-gradient-to-b from-indigo-300 via-purple-300 to-transparent opacity-10 dark:opacity-5"></div>
-				-->
-      <div
-        class="absolute top-[-90%] right-[25%] w-[75%] h-full bg-gradient-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-40 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-90%] left-[25%] w-[75%] h-full bg-gradient-to-b from-amber-400 via-teal-400 to-transparent rounded-full opacity-40 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-85%] right-[25%] w-[55%] h-full bg-gradient-to-b from-teal-400 via-orange-500 to-transparent rounded-full opacity-40 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-85%] left-[25%] w-[55%] h-full bg-gradient-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-40 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-75%] left-[-25%] w-[65%] h-full bg-gradient-to-b from-teal-400 via-amber-400 to-transparent rounded-full opacity-30 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-75%] right-[-25%] w-[65%] h-full bg-gradient-to-b from-amber-400 via-teal-400 to-transparent rounded-full opacity-30 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-85%] left-[-30%] w-[85%] h-full bg-gradient-to-b from-orange-500 via-teal-400 to-transparent rounded-full opacity-60 dark:opacity-5"
-      >
-      </div>
-      <div
-        class="absolute top-[-85%] right-[-30%] w-[85%] h-full bg-gradient-to-b from-teal-400 via-orange-500 to-transparent rounded-full opacity-60 dark:opacity-5"
-      >
-      </div>
-    </div>
-
-    <!-- Backdrop overlay for better readability -->
-    <div class="absolute inset-0 bg-surface/95 backdrop-blur-md"></div>
-
-    <nav
-      aria-label="Mobile navigation menu"
-      class="text-base sm:text-lg absolute inset-0 flex flex-col items-center justify-center gap-y-3 sm:gap-y-4 text-center font-medium text-accent-two z-50 px-4"
-      id="nav-menu-mobile"
-    >
-      <!-- Menu -->
-      {
-        menuLinks.map((link) => (
-          <a
-            aria-current={Astro.url.pathname === link.path ? "page" : false}
-            class={
-              link.callToAction
-                ? "px-6 py-3 rounded-lg bg-gradient-to-r from-accent-one to-accent-two text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 aria-[current=page]:shadow-xl"
-                : "px-4 py-2 rounded-lg underline-offset-2 hover:text-accent-base hover:bg-accent-base/10 aria-[current=page]:text-foreground aria-[current=page]:font-semibold transition-colors"
-            }
-            data-astro-prefetch
-            href={url(link.path)}
-          >
-            {link.title}
-          </a>
-        ))
-      }
-    </nav>
-  </div>
-</div>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggleNavMenuMobileButton = document.getElementById(
-      "toggle-nav-menu-mobile",
-    );
-    const openMenuIcon = document.getElementById("open-nav-menu-icon");
-    const closeMenuIcon = document.getElementById("close-nav-menu-icon");
-    const drawer = document.getElementById("drawer");
-
-    // Проверяем существование элементов
-    if (
-      !toggleNavMenuMobileButton ||
-      !openMenuIcon ||
-      !closeMenuIcon ||
-      !drawer
-    ) {
-      console.error("One or more required elements are missing in the DOM.");
-      return;
-    }
-
-    const drawerBody = document.getElementById("drawer-body");
-    if (!drawerBody) {
-      console.error("Drawer body element is missing in the DOM.");
-      return;
-    }
-
-    toggleNavMenuMobileButton.addEventListener("click", () => {
-      const isOpen =
-        toggleNavMenuMobileButton.getAttribute("aria-expanded") === "true";
-
-      if (isOpen) {
-        // Закрываем меню
-        drawerBody.classList.add("opacity-0", "-translate-y-full");
-        drawerBody.classList.remove("translate-y-0");
-
-        setTimeout(() => {
-          drawer.classList.add("hidden");
-        }, 300);
-
-        openMenuIcon.classList.add("scale-100", "opacity-100");
-        closeMenuIcon.classList.add("scale-0", "opacity-0");
-        closeMenuIcon.classList.remove("scale-100", "opacity-100");
-      } else {
-        drawer.classList.remove("hidden");
-        drawerBody.classList.add("translate-y-0");
-        drawerBody.classList.remove("opacity-0", "-translate-y-full");
-
-        openMenuIcon.classList.add("scale-0", "opacity-0");
-        closeMenuIcon.classList.add("scale-100", "opacity-100");
-        openMenuIcon.classList.remove("scale-100", "opacity-100");
-      }
-
-      toggleNavMenuMobileButton.setAttribute(
-        "aria-expanded",
-        (!isOpen).toString(),
-      );
-    });
-  });
-</script>
