@@ -1,14 +1,70 @@
 ---
 import Search from "@/components/Search.astro";
 import ThemeToggle from "@/components/ThemeToggle.astro";
+import { NavigationMenuComponent } from "@/components/navigation/NavigationMenu.tsx";
 import { siteConfig, menuLinks } from "@/site.config";
 import { Icon } from "astro-icon/components";
 import { homeUrl, url } from "@/utils/url";
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+
+// Fetch data for navigation and simplify for React component
+const allHardware = await getAllHardware();
+const allSoftware = await getAllSoftware();
+
+// Simplify data for serialization to React component
+const hardwareItems = allHardware.map((item) => ({
+  id: item.id,
+  name: item.data.name,
+  shortDescription: item.data.shortDescription,
+  status: item.data.status,
+}));
+
+const softwareItems = allSoftware.map((item) => ({
+  id: item.id,
+  name: item.data.name,
+  shortDescription: item.data.shortDescription,
+  status: item.data.status,
+}));
+
+// Define menu sections
+const menuSections = {
+  "/hardware/": [
+    { title: "Products", href: "/hardware/#products" },
+    { title: "Services", href: "/hardware/#services" },
+    { title: "Contribute", href: "/hardware/#hardware-contribute" },
+  ],
+  "/software/": [
+    { title: "Products", href: "/software/#products" },
+    { title: "Services", href: "/software/#services" },
+    { title: "Resources", href: "/software/#software-resources" },
+  ],
+  "/events/": [
+    { title: "Upcoming Events", href: "/events/#upcoming" },
+    { title: "Past Events", href: "/events/#past" },
+    { title: "Host an Event", href: "/events/#host" },
+  ],
+  "/partners/": [
+    { title: "Current Partners", href: "/partners/#current" },
+    { title: "Become a Partner", href: "/partners/#become" },
+    { title: "Benefits", href: "/partners/#benefits" },
+  ],
+  "/get-involved/": [
+    { title: "Contribute", href: "/get-involved/#contribute" },
+    { title: "Donate", href: "/get-involved/#donate" },
+    { title: "Volunteer", href: "/get-involved/#volunteer" },
+    { title: "Join Community", href: "/get-involved/#community" },
+  ],
+};
 ---
+
+<style>
+  @import "@/components/navigation/navigation-menu.css";
+</style>
 
 <header
   id="main-header"
-  class="fixed px-2 sm:px-4 md:px-8 left-0 z-20 flex items-center md:relative top-0 h-16 w-full bg-surface md:bg-transparent overflow-hidden md:max-w-6xl md:mx-auto"
+  class="fixed px-2 sm:px-4 md:px-6 lg:px-8 left-0 z-50 flex items-center lg:relative top-0 h-16 w-full bg-surface lg:bg-transparent overflow-hidden lg:overflow-visible xl:max-w-6xl xl:mx-auto"
 >
   <!-- Background
 			TODO: This approach is not optimal and requires improvements.
@@ -51,138 +107,55 @@ import { homeUrl, url } from "@/utils/url";
     </div>
   </div>
 
-  <div class="w-full justify-between md:flex-row md:items-center">
-    <div class="flex items-center gap-x-1 sm:gap-x-2">
-      <a
-        aria-label={siteConfig.title}
-        aria-current={Astro.url.pathname === "/" ? "page" : false}
-        class="group flex h-8 items-center hover:filter-none sm:relative"
-        href={homeUrl()}
-      >
-        <!-- Logo -->
-        <!--
+  <div class="w-full flex justify-between items-center">
+    <!-- Logo section -->
+    <a
+      aria-label={siteConfig.title}
+      aria-current={Astro.url.pathname === "/" ? "page" : false}
+      class="group flex h-8 items-center hover:filter-none sm:relative"
+      href={homeUrl()}
+    >
+      <!-- Logo -->
+      <!--
 				<div class="pt-1.5">
 					<svg class="inline-block size-8 fill-current text-accent-base drop-shadow-[0px_2.5px_2.5px_rgba(0,0,0,0.35)]">
 						<use href="/brand.svg#brand"></use>
 					</svg>
 				</div>
 				-->
-        <div title={siteConfig.title}>
-          <svg
-            class="inline-block size-5 fill-current text-accent-base dark:text-accent-two drop-shadow-[0px_2.5px_2.5px_rgba(0,0,0,0.15)]"
-          >
-            <use href={url("brand.svg#brand")}></use>
-          </svg>
-        </div>
-
-        <strong
-          class="'max-[320px]:hidden' lowercase text-base hidden md:block z-10 mb-0.5 ms-2 md:text-base lg:text-lg xl:text-xl hover:opacity-90 whitespace-nowrap"
+      <div title={siteConfig.title}>
+        <svg
+          class="inline-block size-5 fill-current text-accent-base dark:text-accent-two drop-shadow-[0px_2.5px_2.5px_rgba(0,0,0,0.15)]"
         >
-          {siteConfig.title}
-        </strong>
-      </a>
-      <nav
-        aria-label="Main menu"
-        class="top-20 text-xs sm:text-sm mx-auto ml-auto hidden flex-col items-end justify-center gap-x-2 sm:gap-x-3 md:gap-x-4 rounded-md bg-bg font-medium text-accent-two shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex md:static md:z-auto md:flex-row md:items-center md:rounded-none md:bg-transparent md:shadow-none md:backdrop-blur-none md:flex"
-        id="main-navigation-menu"
+          <use href={url("brand.svg#brand")}></use>
+        </svg>
+      </div>
+
+      <strong
+        class="'max-[320px]:hidden' lowercase text-base hidden lg:block z-10 mb-0.5 ms-2 lg:text-base xl:text-lg hover:opacity-90 whitespace-nowrap"
       >
-        <!--
-				<a
-					aria-current={Astro.url.pathname === "/" ? "page" : false}
-					class="flex gap-x-1 h-8 items-center justify-center rounded-lg underline-offset-2 hover:underline"
-					href="/"
-				>
-					<Icon
-						class="size-4 drop-shadow-[0px_1.5px_1.5px_rgba(0,0,0,0.175)]"
-						name="solar:home-2-bold"
-					/>
-					Home
-				</a>
-				<a
-					aria-current={Astro.url.pathname === "/" ? "page" : false}
-					class="flex gap-x-1 h-8 items-center justify-center rounded-lg underline-offset-2 hover:underline"
-					href="/"
-				>
-					<Icon
-						class="size-4 drop-shadow-[0px_1.5px_1.5px_rgba(0,0,0,0.175)]"
-						name="solar:archive-bold"
-					/>
-					Blog
-				</a>
-				-->
+        {siteConfig.title}
+      </strong>
+    </a>
 
-        {
-          menuLinks
-            .filter((link) => link.inHeader)
-            .map((link) => (
-              <a
-                aria-current={Astro.url.pathname === link.path ? "page" : false}
-                class={
-                  link.callToAction
-                    ? "px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-accent-one to-accent-two text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-200 whitespace-nowrap text-xs sm:text-sm leading-tight aria-[current=page]:shadow-xl"
-                    : "px-1 sm:px-2 md:px-3 py-1 rounded underline-offset-2 hover:text-accent-base aria-[current=page]:text-foreground aria-[current=page]:font-semibold whitespace-nowrap text-xs sm:text-sm leading-tight"
-                }
-                data-astro-prefetch
-                href={url(link.path)}
-              >
-                {link.title}
-              </a>
-            ))
-        }
+    <!-- Desktop Navigation with Radix UI -->
+    <nav class="hidden md:flex ml-auto mr-2 lg:mr-6 items-center">
+      <NavigationMenuComponent
+        client:load
+        currentPath={Astro.url.pathname}
+        menuLinks={menuLinks}
+        hardwareItems={hardwareItems}
+        softwareItems={softwareItems}
+        menuSections={menuSections}
+        urlPrefix=""
+      />
+    </nav>
 
-        <!-- Dropdown menu button for large screens. Needs improvement. -->
-        <!--
-				<button
-					aria-expanded="false"
-					aria-haspopup="menu"
-					aria-label="Open main menu"
-					class="hidden md:flex group text-sm relative h-8 w-16 font-medium items-center justify-center px-4 rounded-lg bg-accent-base/5 text-accent-base hover:bg-accent-base/10"
-					id="toggle-navigation-menu"
-					type="button"
-				>
-					Menu
-				</button>
-				-->
-      </nav>
-
-      <!-- Dropdown menu for large screens. Needs improvement. -->
-      <!--
-			<div id="menu" class="absolute left-0 right-0 w-fit ml-auto top-16 z-10 hidden" aria-hidden="true">
-				<div
-					id="menu-body"
-					class="fixed bg-bg rounded-lg -ml-56 w-56"
-				>
-					<nav
-						aria-label="Main menu"
-						class="px-4 py-4 rounded-lg border border-special-lighter bg-special-light shadow-[0px_10px_25px_rgba(0,0,0,0.15)] text-sm flex flex-col gap-y-2 font-medium"
-						id="main-navigation-menu"
-					>
-						{
-							menuLinks.map((link) => (
-								<a
-									aria-current={Astro.url.pathname === link.path ? "page" : false}
-									class="text-accent-two underline-offset-2 hover:underline rounded-lg h-8 gap-x-1 px-2 flex justify-center items-center"
-									data-astro-prefetch
-									href={link.path}
-								>
-									{link.title}
-								</a>
-							))
-						}
-
-					</nav>
-				</div>
-			</div>
-			-->
-
-      <div class="ml-auto w-fit md:ml-6">
-        <div
-          id="buttons-panel"
-          class="top-4 md:top-8 flex space-x-1 sm:space-x-2"
-        >
-          <Search />
-          <ThemeToggle />
-        </div>
+    <!-- Right side buttons and mobile menu -->
+    <div class="flex items-center gap-x-1 md:gap-x-2">
+      <div id="buttons-panel" class="flex space-x-1 md:space-x-2">
+        <Search />
+        <ThemeToggle />
       </div>
 
       <mobile-button
@@ -212,7 +185,7 @@ import { homeUrl, url } from "@/utils/url";
   </div>
 </header>
 
-<div id="drawer" class="fixed inset-0 z-10 hidden" aria-hidden="true">
+<div id="drawer" class="fixed inset-0 z-40 hidden" aria-hidden="true">
   <div
     id="drawer-body"
     class="absolute inset-0 -translate-y-full transform bg-surface transition-all duration-300 ease-in-out"
@@ -262,11 +235,11 @@ import { homeUrl, url } from "@/utils/url";
     </div>
 
     <!-- Backdrop overlay for better readability -->
-    <div class="absolute inset-0 bg-surface/80 backdrop-blur-md"></div>
+    <div class="absolute inset-0 bg-surface/95 backdrop-blur-md"></div>
 
     <nav
       aria-label="Mobile navigation menu"
-      class="text-base sm:text-lg absolute inset-0 flex flex-col items-center justify-center gap-y-3 sm:gap-y-4 text-center font-medium text-accent-two z-10 px-4"
+      class="text-base sm:text-lg absolute inset-0 flex flex-col items-center justify-center gap-y-3 sm:gap-y-4 text-center font-medium text-accent-two z-50 px-4"
       id="nav-menu-mobile"
     >
       <!-- Menu -->

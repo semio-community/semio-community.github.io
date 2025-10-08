@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import mdx from "@astrojs/mdx";
+import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 // import tailwind from "@astrojs/tailwind"; // Removed for Tailwind v4
 import icon from "astro-icon";
@@ -32,6 +33,7 @@ export default defineConfig({
   },
   integrations: [
     icon(),
+    react(),
     // Tailwind v4 is handled via Vite plugin below
     sitemap(),
     mdx(),
