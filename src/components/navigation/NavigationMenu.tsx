@@ -1,20 +1,21 @@
 import React from "react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
+import { CallToActionButton } from "../CallToActionButton";
 
 // Simplified type for serialized data
 type HardwareItem = {
   id: string;
   name: string;
   shortDescription: string;
-  status: "available" | "experimental" | "coming-soon" | "discontinued";
+  status: "available" | "in-progress" | "coming-soon" | "discontinued";
 };
 
 type SoftwareItem = {
   id: string;
   name: string;
   shortDescription: string;
-  status: "stable" | "beta" | "alpha" | "experimental" | "deprecated";
+  status: "stable" | "beta" | "alpha" | "in-progress" | "deprecated";
 };
 
 interface NavigationMenuProps {
@@ -81,16 +82,27 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
 
             if (!hasDropdown || link.callToAction) {
               // Simple link without dropdown
+              if (link.callToAction) {
+                return (
+                  <NavigationMenu.Item key={link.path}>
+                    <CallToActionButton
+                      href={url(link.path)}
+                      size="small"
+                      className="text-xs sm:text-sm px-2 md:px-3 py-1.5 md:py-2"
+                    >
+                      {link.title}
+                    </CallToActionButton>
+                  </NavigationMenu.Item>
+                );
+              }
+
               return (
                 <NavigationMenu.Item key={link.path}>
                   <NavigationMenu.Link
                     className={clsx(
                       "block select-none rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm font-medium leading-none no-underline transition-all duration-200 whitespace-nowrap",
-                      link.callToAction
-                        ? "outline-2 outline-accent-two bg-accent-two/10 hover:bg-accent-two/100 hover:text-surface text-accent-two font-semibold hover:shadow-lg hover:scale-[1.02]"
-                        : "text-accent-two hover:text-accent-base focus:text-accent-base",
+                      "text-accent-two hover:text-accent-base focus:text-accent-base",
                       currentPath === link.path &&
-                        !link.callToAction &&
                         "font-semibold text-foreground",
                     )}
                     href={url(link.path)}
@@ -207,7 +219,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                                     "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
                                     item.status === "available" &&
                                       "bg-green-500",
-                                    item.status === "experimental" &&
+                                    item.status === "in-progress" &&
                                       "bg-yellow-500",
                                     item.status === "coming-soon" &&
                                       "bg-blue-500",
@@ -268,7 +280,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                                     item.status === "stable" && "bg-green-500",
                                     item.status === "beta" && "bg-yellow-500",
                                     item.status === "alpha" && "bg-orange-500",
-                                    item.status === "experimental" &&
+                                    item.status === "in-progress" &&
                                       "bg-purple-500",
                                     item.status === "deprecated" &&
                                       "bg-gray-500",

@@ -3,6 +3,8 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import EventCard from "@/components/EventCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
+import Timeline from "@/components/Timeline.astro";
+import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 import {
   getAllEvents,
@@ -146,20 +148,17 @@ const services = [
 
       <!-- CTA Buttons -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <a
+        <CallToActionButton
           href="#upcoming"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-        >
-          <Icon name="solar:calendar-line-duotone" class="w-5 h-5 mr-2" />
-          View Upcoming Events
-        </a>
-        <a
+          text="View Upcoming Events"
+          size="large"
+        />
+        <CallToActionButton
           href="/get-involved"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
-        >
-          <Icon name="solar:add-square-line-duotone" class="w-5 h-5 mr-2" />
-          Host an Event
-        </a>
+          text="Host Event"
+          size="large"
+          variant="secondary"
+        />
       </div>
 
       <!-- Event Statistics -->
@@ -466,20 +465,17 @@ const services = [
         with us to reach the global HRI community.
       </p>
       <div class="flex flex-wrap justify-center gap-4">
-        <a
+        <CallToActionButton
           href="/get-involved"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-        >
-          <Icon name="solar:add-circle-line-duotone" class="w-5 h-5 mr-2" />
-          Submit Event
-        </a>
-        <a
+          text="Propose an Event"
+          size="large"
+        />
+        <CallToActionButton
           href="/partners"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-        >
-          <Icon name="solar:hand-shake-line-duotone" class="w-5 h-5 mr-2" />
-          Become a Partner
-        </a>
+          text="Partner With Us"
+          size="large"
+          variant="tertiary"
+        />
       </div>
     </div>
   </Section>

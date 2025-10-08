@@ -2,6 +2,7 @@ import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
+import { CallToActionButton } from "../CallToActionButton";
 
 interface MobileNavigationProps {
   menuLinks: Array<{
@@ -185,19 +186,28 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                               visible: { opacity: 1, x: 0 },
                             }}
                           >
-                            <a
-                              href={url(link.path)}
-                              className={clsx(
-                                "block px-4 py-3 rounded-lg transition-all duration-200",
-                                link.callToAction
-                                  ? "outline-2 outline-accent-two bg-accent-two/10 hover:bg-accent-two/100 hover:text-surface text-accent-two font-semibold hover:shadow-lg hover:scale-[1.02]"
-                                  : currentPath === link.path
+                            {link.callToAction ? (
+                              <CallToActionButton
+                                href={url(link.path)}
+                                size="medium"
+                                fullWidth
+                                className="text-center"
+                              >
+                                {link.title}
+                              </CallToActionButton>
+                            ) : (
+                              <a
+                                href={url(link.path)}
+                                className={clsx(
+                                  "block px-4 py-3 rounded-lg transition-all duration-200",
+                                  currentPath === link.path
                                     ? "bg-accent-base/10 text-accent-two font-semibold"
                                     : "text-foreground hover:bg-accent-base/5 hover:text-accent-base",
-                              )}
-                            >
-                              {link.title}
-                            </a>
+                                )}
+                              >
+                                {link.title}
+                              </a>
+                            )}
                           </motion.li>
                         ))}
                     </motion.ul>

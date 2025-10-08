@@ -1,0 +1,72 @@
+---
+import { CallToActionButton as CallToActionButtonReact } from './CallToActionButton.tsx';
+
+export interface Props {
+  /** The text to display in the button */
+  text: string;
+  /** The size of the button */
+  size?: "small" | "medium" | "large";
+  /** Visual variant of the button */
+  variant?: "default" | "primary" | "secondary" | "tertiary";
+  /** The URL to link to (if provided, renders as an anchor tag) */
+  href?: string;
+  /** Additional CSS classes */
+  class?: string;
+  /** HTML type attribute for button element */
+  type?: "button" | "submit" | "reset";
+  /** Whether the button should take full width */
+  fullWidth?: boolean;
+  /** Aria label for accessibility */
+  ariaLabel?: string;
+  /** Target attribute for links */
+  target?: string;
+  /** Rel attribute for links */
+  rel?: string;
+  /** Click handler (only used when href is not provided) */
+  onClick?: string;
+}
+
+const {
+  text,
+  size = "medium",
+  variant = "primary",
+  href,
+  class: className,
+  type = "button",
+  fullWidth = false,
+  ariaLabel,
+  target,
+  rel,
+  onClick
+} = Astro.props;
+
+// Convert onClick string to a client-side function if needed
+const clickHandler = onClick ? `(${onClick})()` : undefined;
+---
+
+<CallToActionButtonReact
+  size={size}
+  variant={variant}
+  href={href}
+  className={className}
+  type={type}
+  fullWidth={fullWidth}
+  ariaLabel={ariaLabel}
+  target={target}
+  rel={rel}
+  client:load={onClick ? true : false}
+  data-onclick={clickHandler}
+>
+  {text}
+</CallToActionButtonReact>
+
+{onClick && <script define:vars={{ clickHandler }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const button = document.querySelector('[data-onclick]');
+    if (button) {
+      button.addEventListener('click', () => {
+        eval(button.dataset.onclick);
+      });
+    }
+  });
+</script>}

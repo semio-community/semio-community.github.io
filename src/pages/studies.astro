@@ -1,7 +1,9 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
+import StudyCard from "@/components/StudyCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
+import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 import {
   getAllStudies,
@@ -140,20 +142,13 @@ const benefits = [
 
       <!-- CTA Buttons -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <a
-          href="#browse"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-        >
-          <Icon name="solar:eye-line-duotone" class="w-5 h-5 mr-2" />
-          Browse Studies
-        </a>
-        <a
+        <CallToActionButton href="#browse" text="Browse Studies" size="large" />
+        <CallToActionButton
           href="/get-involved"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
-        >
-          <Icon name="solar:add-square-line-duotone" class="w-5 h-5 mr-2" />
-          Contribute Study
-        </a>
+          text="Contribute"
+          size="large"
+          variant="secondary"
+        />
       </div>
 
       <!-- Study Statistics -->
@@ -402,13 +397,11 @@ const benefits = [
       <p class="mb-6 text-color-600 dark:text-color-400">
         Explore our complete collection of {allStudies.length} HRI research studies
       </p>
-      <a
+      <CallToActionButton
         href="/studies/all"
-        class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-      >
-        <Icon name="solar:archive-line-duotone" class="w-5 h-5 mr-2" />
-        View All Studies
-      </a>
+        text="View All Studies"
+        size="large"
+      />
     </div>
   </Section>
 
@@ -449,20 +442,17 @@ const benefits = [
         community. Help advance the field through open, reproducible science.
       </p>
       <div class="flex flex-wrap justify-center gap-4">
-        <a
+        <CallToActionButton
           href="/get-involved"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-        >
-          <Icon name="solar:add-circle-line-duotone" class="w-5 h-5 mr-2" />
-          Submit Your Study
-        </a>
-        <a
+          text="Contribute a Study"
+          size="large"
+        />
+        <CallToActionButton
           href="/about"
-          class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-        >
-          <Icon name="solar:info-circle-line-duotone" class="w-5 h-5 mr-2" />
-          Learn More
-        </a>
+          text="Learn More"
+          size="large"
+          variant="tertiary"
+        />
       </div>
     </div>
   </Section>

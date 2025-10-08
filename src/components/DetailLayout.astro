@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Section from "@/components/Section.astro";
+import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 
 interface HardwareData {
@@ -8,7 +9,7 @@ interface HardwareData {
   shortDescription: string;
   description: string;
   category: "mobile" | "social" | "assistive" | "research" | "educational";
-  status: "available" | "experimental" | "coming-soon" | "discontinued";
+  status: "available" | "in-progress" | "coming-soon" | "discontinued";
   featured?: boolean;
   specifications?: {
     height?: string;
@@ -50,7 +51,7 @@ interface SoftwareData {
   shortDescription: string;
   description: string;
   category: "framework" | "library" | "tool" | "simulation" | "dataset" | "model";
-  status: "stable" | "beta" | "alpha" | "experimental" | "deprecated";
+  status: "stable" | "beta" | "alpha" | "in-progress" | "deprecated";
   featured?: boolean;
   license?: string;
   language?: string[];
@@ -198,7 +199,7 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
                   class={`px-3 py-1 rounded-full text-sm font-medium ${
                     data.status === 'available' || data.status === 'stable'
                       ? 'bg-green-500/80 text-white'
-                      : data.status === 'experimental'
+                      : data.status === 'in-progress'
                       ? 'bg-orange-500/80 text-white'
                       : (data as SoftwareData).status === 'alpha'
                       ? 'bg-yellow-500/80 text-white'
@@ -293,88 +294,78 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
   <!-- Action Buttons -->
   <div class="flex flex-wrap gap-3 mb-6">
     {data.links?.website && (
-      <a
+      <CallToActionButton
         href={data.links.website}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-      >
-        <Icon name="solar:global-line-duotone" class="w-5 h-5 mr-2" />
-        Website
-      </a>
+        text="Visit Website"
+        size="large"
+        variant="tertiary"
+      />
     )}
     {isHardwareData(data) && data.links?.purchase && (
-      <a
+      <CallToActionButton
         href={data.links.purchase}
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-      >
-        <Icon name="solar:cart-large-2-line-duotone" class="w-5 h-5 mr-2" />
-        Purchase
-      </a>
+        text="Purchase"
+        size="large"
+        variant="primary"
+      />
     )}
     {isHardwareData(data) && data.links?.rental && (
-      <a
+      <CallToActionButton
         href={data.links.rental}
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-accent-one hover:bg-accent-one/10 transition-all"
-      >
-        <Icon name="solar:calendar-line-duotone" class="w-5 h-5 mr-2" />
-        Rent
-      </a>
+        text="Rent"
+        size="large"
+        variant="secondary"
+      />
     )}
     {data.links?.documentation && (
-      <a
+      <CallToActionButton
         href={data.links.documentation}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-      >
-        <Icon name="solar:book-line-duotone" class="w-5 h-5 mr-2" />
-        Documentation
-      </a>
+        text="Documentation"
+        size="large"
+        variant="tertiary"
+      />
     )}
     {data.links?.github && (
-      <a
+      <CallToActionButton
         href={data.links.github}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-      >
-        <Icon name="solar:code-square-line-duotone" class="w-5 h-5 mr-2" />
-        GitHub
-      </a>
+        text="GitHub"
+        size="large"
+        variant="tertiary"
+      />
     )}
     {isSoftwareData(data) && data.links?.demo && (
-      <a
+      <CallToActionButton
         href={data.links.demo}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg gradient-brand-horizontal text-surface shadow-lg hover:brightness-110 transition-all"
-      >
-        <Icon name="solar:play-bold" class="w-5 h-5 mr-2" />
-        Try Demo
-      </a>
+        text="Try Demo"
+        size="large"
+        variant="primary"
+      />
     )}
     {isSoftwareData(data) && data.links?.pypi && (
-      <a
+      <CallToActionButton
         href={data.links.pypi}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-      >
-        <Icon name="simple-icons:pypi" class="w-5 h-5 mr-2" />
-        PyPI
-      </a>
+        text="PyPI"
+        size="large"
+        variant="tertiary"
+      />
     )}
     {isSoftwareData(data) && data.links?.npm && (
-      <a
+      <CallToActionButton
         href={data.links.npm}
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center justify-center h-12 px-6 text-base font-semibold rounded-lg border-2 border-special hover:bg-special/10 transition-all"
-      >
-        <Icon name="simple-icons:npm" class="w-5 h-5 mr-2" />
-        NPM
-      </a>
+        text="npm"
+        size="large"
+        variant="tertiary"
+      />
     )}
   </div>
 

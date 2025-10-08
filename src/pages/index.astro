@@ -4,6 +4,7 @@ import Section from "@/components/Section.astro";
 import Hero from "@/components/Hero.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import LinkCard from "@/components/LinkCard.astro";
+import CallToActionButton from "@/components/CallToActionButton.astro";
 import { url } from "@/utils/url";
 import { Icon } from "astro-icon/components";
 ---
@@ -22,8 +23,13 @@ import { Icon } from "astro-icon/components";
         <span class="text-accent-three font-semibold uppercase tracking-wide"
           >Reproducible</span
         >{" "}
-        <span class="uppercase tracking-wide font-semibold">Robot Science</span
-        >{" "}
+        <span class="text-accent-one font-semibold uppercase tracking-wide"
+          >Robot</span
+        >
+        <span class="text-accent-two font-semibold uppercase tracking-wide"
+          >Science</span
+        >
+        {" "}
         <!-- <span class="uppercase tracking-wide"></span>{" "}
         <span class="text-accent-three font-semibold uppercase tracking-wide"
           >Robot</span
@@ -44,12 +50,11 @@ import { Icon } from "astro-icon/components";
       </p>
 
       <!-- CTA Button -->
-      <a
+      <CallToActionButton
         href="#connect"
-        class="inline-flex items-center justify-center h-11 sm:h-12 md:h-14 px-6 sm:px-8 md:px-10 text-sm sm:text-base md:text-lg font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-      >
-        Join the Mailing List
-      </a>
+        text="Join the Mailing List"
+        size="large"
+      />
     </Hero>
   </div>
 
@@ -139,12 +144,12 @@ import { Icon } from "astro-icon/components";
             required
             class="w-full md:flex-1 min-w-0 px-3 sm:px-4 py-2 rounded-lg border border-color-300 dark:border-color-700 bg-surface focus:outline-none focus:ring-2 focus:ring-accent-one"
           />
-          <button
+          <CallToActionButton
             type="submit"
-            class="w-full md:w-auto px-4 sm:px-6 py-2 rounded-lg shadow-lg gradient-brand-horizontal text-surface font-semibold hover:brightness-110 transition-all whitespace-nowrap"
-          >
-            Subscribe
-          </button>
+            text="Subscribe"
+            size="medium"
+            class="w-full md:w-auto whitespace-nowrap"
+          />
         </form>
       </div>
 

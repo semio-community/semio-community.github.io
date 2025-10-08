@@ -1,6 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
+import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 
 const meta = {
@@ -343,51 +344,50 @@ const contact = {
                 <p class="text-sm text-color-600 dark:text-color-400 mb-4">
                   Have a question or want to learn more about our work?
                 </p>
-                <a
+                <CallToActionButton
                   href="/#connect"
-                  class="inline-flex items-center justify-center h-12 px-8 text-base font-semibold rounded-lg shadow-lg hover:brightness-110 transition-all gradient-brand-horizontal text-surface"
-                >
-                  Join Our Mailing List
-                </a>
-              </div>
-            </div>
-          </div>
-        </Section>
-
-        <!-- Legal Section -->
-        <Section
-          id="legal"
-          title="Legal Information"
-          subtitle="Transparency and compliance"
-        >
-          <div class="max-w-4xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="p-6 bg-special-lighter rounded-lg">
-                <h3 class="font-semibold mb-3">Tax-Exempt Status</h3>
-                <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                  Semio Community is recognized as a tax-exempt organization
-                  under section 501(c)(3) of the Internal Revenue Code.
-                  Donations are tax-deductible to the extent allowed by law.
-                </p>
-                <p class="text-sm">
-                  <strong>EIN:</strong> XX-XXXXXXX
-                </p>
-              </div>
-
-              <div class="p-6 bg-special-lighter rounded-lg">
-                <h3 class="font-semibold mb-3">Annual Reports</h3>
-                <p class="text-sm text-color-600 dark:text-color-400 mb-3">
-                  We maintain full transparency through annual reports detailing
-                  our activities, finances, and impact.
-                </p>
-                <a href="#" class="text-sm text-link hover:underline">
-                  View Annual Reports →
-                </a>
+                  text="Join Our Mailing List"
+                  size="large"
+                />
               </div>
             </div>
           </div>
         </Section>
       </div>
-    </div></Section
-  ></PageLayout
+
+      <!-- Legal Section -->
+      <Section
+        id="legal"
+        title="Legal Information"
+        subtitle="Transparency and compliance"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-6 bg-special-lighter rounded-lg">
+              <h3 class="font-semibold mb-3">Tax-Exempt Status</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                Semio Community is recognized as a tax-exempt organization under
+                section 501(c)(3) of the Internal Revenue Code. Donations are
+                tax-deductible to the extent allowed by law.
+              </p>
+              <p class="text-sm">
+                <strong>EIN:</strong> XX-XXXXXXX
+              </p>
+            </div>
+
+            <div class="p-6 bg-special-lighter rounded-lg">
+              <h3 class="font-semibold mb-3">Annual Reports</h3>
+              <p class="text-sm text-color-600 dark:text-color-400 mb-3">
+                We maintain full transparency through annual reports detailing
+                our activities, finances, and impact.
+              </p>
+              <a href="#" class="text-sm text-link hover:underline">
+                View Annual Reports →
+              </a>
+            </div>
+          </div>
+        </div>
+      </Section>
+    </div>
+  </Section></PageLayout
 >

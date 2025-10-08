@@ -12,7 +12,7 @@ export interface Props {
     | "available"
     | "coming-soon"
     | "beta"
-    | "experimental"
+    | "in-progress"
     | "discontinued";
   features?: string[];
   links?: {
@@ -40,7 +40,7 @@ const statusColors = {
   available: "bg-green-500",
   "coming-soon": "bg-yellow-500",
   beta: "bg-blue-500",
-  experimental: "bg-purple-500",
+  "in-progress": "bg-purple-500",
   discontinued: "bg-gray-500",
 };
 
@@ -48,7 +48,7 @@ const statusLabels = {
   available: "Available",
   "coming-soon": "Coming Soon",
   beta: "Beta",
-  experimental: "Experimental",
+  "in-progress": "Experimental",
   discontinued: "Discontinued",
 };
 

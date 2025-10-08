@@ -31,7 +31,7 @@
             "stable",
             "beta",
             "alpha",
-            "experimental",
+            "in-progress",
             "deprecated"
           ]
         },
@@ -205,7 +205,7 @@
               ]
             }
           ],
-          "default": "2025-10-08T21:22:34.947Z"
+          "default": "2025-10-08T23:10:41.235Z"
         },
         "$schema": {
           "type": "string"

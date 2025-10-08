@@ -22,7 +22,7 @@ const hardware = defineCollection({
       ]),
       status: z.enum([
         "available",
-        "experimental",
+        "in-progress",
         "coming-soon",
         "discontinued",
       ]),
@@ -93,7 +93,7 @@ const software = defineCollection({
         "dataset",
         "model",
       ]),
-      status: z.enum(["stable", "beta", "alpha", "experimental", "deprecated"]),
+      status: z.enum(["stable", "beta", "alpha", "in-progress", "deprecated"]),
       license: z.string(),
       language: z.array(z.string()), // Programming languages
       platform: z.array(z.string()), // OS/platforms supported
