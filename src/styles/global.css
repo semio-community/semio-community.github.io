@@ -122,14 +122,6 @@
     border-color: hsl(var(--theme-accent-three));
   }
 
-  .citrus-link {
-    @apply no-underline text-link;
-
-    &:hover {
-      @apply underline underline-offset-2;
-    }
-  }
-
   .title {
     @apply font-semibold text-accent-base;
   }

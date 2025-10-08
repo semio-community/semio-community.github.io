@@ -85,9 +85,9 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                 <NavigationMenu.Item key={link.path}>
                   <NavigationMenu.Link
                     className={clsx(
-                      "block select-none rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm font-medium leading-none no-underline outline-none transition-colors whitespace-nowrap",
+                      "block select-none rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm font-medium leading-none no-underline transition-all duration-200 whitespace-nowrap",
                       link.callToAction
-                        ? "bg-gradient-to-r from-accent-one to-accent-two text-white hover:shadow-lg hover:scale-105"
+                        ? "outline-2 outline-accent-two bg-accent-two/10 hover:bg-accent-two/100 hover:text-surface text-accent-two font-semibold hover:shadow-lg hover:scale-[1.02]"
                         : "text-accent-two hover:text-accent-base focus:text-accent-base",
                       currentPath === link.path &&
                         !link.callToAction &&
