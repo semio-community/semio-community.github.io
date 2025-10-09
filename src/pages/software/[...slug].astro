@@ -5,7 +5,10 @@ import DetailLayout from "@/components/DetailLayout.astro";
 import { getRelatedSoftware } from "@/data/software";
 
 export async function getStaticPaths() {
-  const software = await getCollection("software");
+  const software = await getCollection("software", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return software.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },

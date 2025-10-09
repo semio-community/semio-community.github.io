@@ -5,6 +5,25 @@ function removeDupsAndLowerCase(array: string[]) {
   return [...new Set(array.map((str) => str.toLowerCase()))];
 }
 
+const contact = defineCollection({
+  loader: glob({ base: "./src/content/contacts", pattern: "**/*.{md,mdx}" }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      email: z.string().email().optional(),
+      affiliation: z.string().optional(),
+      links: z.object({
+        github: z.string().optional(),
+        website: z.string().optional(),
+        twitter: z.string().optional(),
+        bluesky: z.string().optional(),
+        mastodon: z.string().optional(),
+        linkedin: z.string().optional(),
+      }),
+      image: image().optional(),
+    }),
+});
+
 // NEW: Hardware platforms collection
 const hardware = defineCollection({
   loader: glob({ base: "./src/content/hardware", pattern: "**/*.{md,mdx}" }),
@@ -69,6 +88,7 @@ const hardware = defineCollection({
       institutions: z.array(z.string()),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       featured: z.boolean().default(false),
+      draft: z.boolean().optional(),
       publishDate: z
         .string()
         .or(z.date())
@@ -126,6 +146,7 @@ const software = defineCollection({
       institutions: z.array(z.string()),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       featured: z.boolean().default(false),
+      draft: z.boolean().optional(),
       lastUpdate: z
         .string()
         .or(z.date())
@@ -178,6 +199,7 @@ const studies = defineCollection({
       thumbnail: image().optional(),
       citations: z.number().default(0),
       featured: z.boolean().default(false),
+      draft: z.boolean().optional(),
       publishDate: z
         .string()
         .or(z.date())
@@ -263,6 +285,7 @@ const events = defineCollection({
       capacity: z.number().optional(),
       banner: image().optional(),
       featured: z.boolean().default(false),
+      draft: z.boolean().optional(),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
     }),
 });
@@ -318,12 +341,14 @@ const partners = defineCollection({
         country: z.string(),
       }),
       featured: z.boolean().default(false),
+      draft: z.boolean().optional(),
       order: z.number().default(999), // For manual sorting
     }),
 });
 
 // Export all collections
 export const collections = {
+  contact,
   hardware,
   software,
   studies,

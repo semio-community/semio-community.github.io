@@ -135,6 +135,9 @@
           "type": "boolean",
           "default": false
         },
+        "draft": {
+          "type": "boolean"
+        },
         "order": {
           "type": "number",
           "default": 999

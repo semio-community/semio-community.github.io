@@ -246,6 +246,9 @@
           "type": "boolean",
           "default": false
         },
+        "draft": {
+          "type": "boolean"
+        },
         "tags": {
           "type": "array",
           "items": {

@@ -110,6 +110,9 @@
           "type": "boolean",
           "default": false
         },
+        "draft": {
+          "type": "boolean"
+        },
         "publishDate": {
           "anyOf": [
             {

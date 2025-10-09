@@ -2,14 +2,17 @@ import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all software entries, sorted by featured status and name */
 export async function getAllSoftware(): Promise<CollectionEntry<"software">[]> {
-  const software = await getCollection("software");
+  const software = await getCollection("software", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return software.sort((a, b) => {
     // Sort by featured first, then by status priority, then by name
     if (a.data.featured !== b.data.featured) {
       return a.data.featured ? -1 : 1;
     }
 
-    // Status priority: stable > beta > alpha > experimental > deprecated
+    // Status priority: stable > beta > alpha > in-progress > deprecated
     const statusPriority = {
       stable: 0,
       beta: 1,
@@ -45,7 +48,7 @@ export async function getSoftwareByCategory(
 
 /** Get software filtered by status */
 export async function getSoftwareByStatus(
-  status: "stable" | "beta" | "alpha" | "experimental" | "deprecated",
+  status: "stable" | "beta" | "alpha" | "in-progress" | "deprecated",
 ): Promise<CollectionEntry<"software">[]> {
   const software = await getAllSoftware();
   return software.filter((item) => item.data.status === status);

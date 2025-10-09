@@ -11,7 +11,8 @@
     "format": "npm run format:code && npm run format:imports",
     "format:code": "biome format . --write && prettier -w \"**/*\" \"!**/*.{md,mdx}\" --ignore-unknown --cache",
     "format:imports": "biome check --formatter-enabled=false --write",
-    "check": "astro check"
+    "check": "astro check",
+    "verify:drafts": "node test/verify-drafts.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.1",

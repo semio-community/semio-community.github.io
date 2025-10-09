@@ -1,0 +1,56 @@
+{
+  "$ref": "#/definitions/contact",
+  "definitions": {
+    "contact": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "affiliation": {
+          "type": "string"
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "github": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            },
+            "twitter": {
+              "type": "string"
+            },
+            "bluesky": {
+              "type": "string"
+            },
+            "mastodon": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "image": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "links"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

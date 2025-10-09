@@ -14,7 +14,6 @@ export interface Props {
     | "beta"
     | "in-progress"
     | "discontinued";
-  features?: string[];
   links?: {
     primary?: { label: string; url: string };
     github?: string;
@@ -31,7 +30,6 @@ const {
   image,
   imageUrl,
   status = "available",
-  features = [],
   links,
   badge,
 } = Astro.props;
@@ -48,7 +46,7 @@ const statusLabels = {
   available: "Available",
   "coming-soon": "Coming Soon",
   beta: "Beta",
-  "in-progress": "Experimental",
+  "in-progress": "In Progress",
   discontinued: "Discontinued",
 };
 

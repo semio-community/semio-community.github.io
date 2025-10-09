@@ -2,7 +2,10 @@ import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all partners, sorted by featured status, order, and name */
 export async function getAllPartners(): Promise<CollectionEntry<"partners">[]> {
-  const partners = await getCollection("partners");
+  const partners = await getCollection("partners", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return partners.sort((a, b) => {
     // Sort by featured first
     if (a.data.featured !== b.data.featured) {

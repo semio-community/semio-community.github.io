@@ -5,7 +5,10 @@ import DetailLayout from "@/components/DetailLayout.astro";
 import { getRelatedHardware } from "@/data/hardware";
 
 export async function getStaticPaths() {
-  const hardware = await getCollection("hardware");
+  const hardware = await getCollection("hardware", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return hardware.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },

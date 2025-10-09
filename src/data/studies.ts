@@ -2,7 +2,10 @@ import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all studies, sorted by featured status, citations, and year */
 export async function getAllStudies(): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getCollection("studies");
+  const studies = await getCollection("studies", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return studies.sort((a, b) => {
     // Sort by featured first
     if (a.data.featured !== b.data.featured) {

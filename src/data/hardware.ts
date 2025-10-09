@@ -2,7 +2,10 @@ import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all hardware entries, sorted by featured status and name */
 export async function getAllHardware(): Promise<CollectionEntry<"hardware">[]> {
-  const hardware = await getCollection("hardware");
+  const hardware = await getCollection("hardware", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   return hardware.sort((a, b) => {
     // Sort by featured first, then by status priority, then by name
     if (a.data.featured !== b.data.featured) {
