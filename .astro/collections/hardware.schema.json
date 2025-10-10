@@ -30,7 +30,7 @@
             "available",
             "in-progress",
             "coming-soon",
-            "discontinued"
+            "deprecated"
           ]
         },
         "specifications": {
@@ -147,13 +147,72 @@
           ],
           "additionalProperties": false
         },
-        "maintainers": {
+        "contributors": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "person",
+                  "organization"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              },
+              "startDate": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "integer",
+                    "format": "unix-time"
+                  }
+                ]
+              },
+              "endDate": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "integer",
+                    "format": "unix-time"
+                  }
+                ]
+              },
+              "current": {
+                "type": "boolean",
+                "default": true
+              }
+            },
+            "required": [
+              "type",
+              "id"
+            ],
+            "additionalProperties": false
           }
         },
-        "institutions": {
+        "leadOrganization": {
+          "type": "string"
+        },
+        "supportingOrganizations": {
           "type": "array",
           "items": {
             "type": "string"
@@ -195,7 +254,7 @@
               ]
             }
           ],
-          "default": "2025-10-09T17:00:25.619Z"
+          "default": "2025-10-10T00:38:57.531Z"
         },
         "$schema": {
           "type": "string"
@@ -210,9 +269,7 @@
         "features",
         "applications",
         "researchAreas",
-        "links",
-        "maintainers",
-        "institutions"
+        "links"
       ],
       "additionalProperties": false
     }

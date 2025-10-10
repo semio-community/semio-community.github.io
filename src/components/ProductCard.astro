@@ -8,12 +8,7 @@ export interface Props {
   description?: string;
   image?: ImageMetadata;
   imageUrl?: string;
-  status?:
-    | "available"
-    | "coming-soon"
-    | "beta"
-    | "in-progress"
-    | "discontinued";
+  status?: "available" | "coming-soon" | "beta" | "in-progress" | "deprecated";
   links?: {
     primary?: { label: string; url: string };
     github?: string;
@@ -39,7 +34,7 @@ const statusColors = {
   "coming-soon": "bg-yellow-500",
   beta: "bg-blue-500",
   "in-progress": "bg-purple-500",
-  discontinued: "bg-gray-500",
+  deprecated: "bg-gray-500",
 };
 
 const statusLabels = {
@@ -47,7 +42,7 @@ const statusLabels = {
   "coming-soon": "Coming Soon",
   beta: "Beta",
   "in-progress": "In Progress",
-  discontinued: "Discontinued",
+  deprecated: "Deprecated",
 };
 
 const typeIcons = {

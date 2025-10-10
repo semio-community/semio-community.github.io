@@ -254,14 +254,12 @@ export async function searchEvents(
       event.data.tags.some((tag) => tag.includes(lowerQuery)) ||
       event.data.location.city.toLowerCase().includes(lowerQuery) ||
       event.data.location.country.toLowerCase().includes(lowerQuery) ||
-      event.data.organizers.some(
-        (org) =>
-          org.name.toLowerCase().includes(lowerQuery) ||
-          (org.affiliation?.toLowerCase().includes(lowerQuery) ?? false),
+      event.data.organizers.some((org) =>
+        org.id.toLowerCase().includes(lowerQuery),
       ) ||
       (event.data.speakers?.some(
         (speaker) =>
-          speaker.name.toLowerCase().includes(lowerQuery) ||
+          speaker.personId.toLowerCase().includes(lowerQuery) ||
           (speaker.topic?.toLowerCase().includes(lowerQuery) ?? false),
       ) ??
         false)
@@ -432,7 +430,7 @@ export async function getEventsByOrganizer(
   const events = await getAllEvents();
   return events.filter((event) =>
     event.data.organizers.some((org) =>
-      org.name.toLowerCase().includes(organizerName.toLowerCase()),
+      org.id.toLowerCase().includes(organizerName.toLowerCase()),
     ),
   );
 }

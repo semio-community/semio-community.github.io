@@ -97,15 +97,16 @@ export async function getSoftwareByLicense(
 }
 
 /** Get software by institution */
-export async function getSoftwareByInstitution(
-  institution: string,
+export async function getSoftwareByOrganization(
+  organizationId: string,
 ): Promise<CollectionEntry<"software">[]> {
   const software = await getAllSoftware();
-  return software.filter((item) =>
-    item.data.institutions.some(
-      (inst) => inst.toLowerCase() === institution.toLowerCase(),
-    ),
-  );
+  return software.filter((item) => {
+    const isLead = item.data.leadOrganization === organizationId;
+    const isSupporting =
+      item.data.supportingOrganizations?.includes(organizationId);
+    return isLead || isSupporting;
+  });
 }
 
 /** Get all unique tags from software entries */
@@ -144,11 +145,21 @@ export async function getUniqueLicenses(): Promise<string[]> {
   return [...new Set(licenses)].sort();
 }
 
-/** Get all unique institutions */
-export async function getUniqueInstitutions(): Promise<string[]> {
+/** Get all unique organizations */
+export async function getUniqueOrganizations(): Promise<string[]> {
   const software = await getAllSoftware();
-  const institutions = software.flatMap((item) => item.data.institutions);
-  return [...new Set(institutions)].sort();
+  const organizations: string[] = [];
+
+  software.forEach((item) => {
+    if (item.data.leadOrganization) {
+      organizations.push(item.data.leadOrganization);
+    }
+    if (item.data.supportingOrganizations) {
+      organizations.push(...item.data.supportingOrganizations);
+    }
+  });
+
+  return [...new Set(organizations)].sort();
 }
 
 /** Get software count by category */
@@ -216,12 +227,12 @@ export async function searchSoftware(
       item.data.platform.some((plat) =>
         plat.toLowerCase().includes(lowerQuery),
       ) ||
-      item.data.institutions.some((inst) =>
-        inst.toLowerCase().includes(lowerQuery),
-      ) ||
-      item.data.useCases.some((useCase) =>
-        useCase.toLowerCase().includes(lowerQuery),
-      )
+      (item.data.leadOrganization &&
+        item.data.leadOrganization.toLowerCase().includes(lowerQuery)) ||
+      (item.data.supportingOrganizations &&
+        item.data.supportingOrganizations.some((org) =>
+          org.toLowerCase().includes(lowerQuery),
+        ))
     );
   });
 }

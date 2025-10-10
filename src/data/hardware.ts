@@ -12,16 +12,16 @@ export async function getAllHardware(): Promise<CollectionEntry<"hardware">[]> {
       return a.data.featured ? -1 : 1;
     }
 
-    // Status priority: available > in-progress > coming-soon > discontinued
-    const statusPriority = {
+    // Status priority: available > in-progress > coming-soon > deprecated
+    const statusPriority: Record<string, number> = {
       available: 0,
       "in-progress": 1,
       "coming-soon": 2,
-      discontinued: 3,
+      deprecated: 3,
     };
 
-    const aPriority = statusPriority[a.data.status];
-    const bPriority = statusPriority[b.data.status];
+    const aPriority = statusPriority[a.data.status] ?? 999;
+    const bPriority = statusPriority[b.data.status] ?? 999;
 
     if (aPriority !== bPriority) {
       return aPriority - bPriority;
@@ -41,7 +41,7 @@ export async function getHardwareByCategory(
 
 /** Get hardware filtered by status */
 export async function getHardwareByStatus(
-  status: "available" | "in-progress" | "coming-soon" | "discontinued",
+  status: "available" | "in-progress" | "coming-soon" | "deprecated",
 ): Promise<CollectionEntry<"hardware">[]> {
   const hardware = await getAllHardware();
   return hardware.filter((item) => item.data.status === status);
@@ -67,16 +67,17 @@ export async function getHardwareByResearchArea(
   );
 }
 
-/** Get hardware by institution */
-export async function getHardwareByInstitution(
-  institution: string,
+/** Get hardware by organization */
+export async function getHardwareByOrganization(
+  organizationId: string,
 ): Promise<CollectionEntry<"hardware">[]> {
   const hardware = await getAllHardware();
-  return hardware.filter((item) =>
-    item.data.institutions.some(
-      (inst) => inst.toLowerCase() === institution.toLowerCase(),
-    ),
-  );
+  return hardware.filter((item) => {
+    const isLead = item.data.leadOrganization === organizationId;
+    const isSupporting =
+      item.data.supportingOrganizations?.includes(organizationId);
+    return isLead || isSupporting;
+  });
 }
 
 /** Get all unique tags from hardware entries */
@@ -101,11 +102,21 @@ export async function getUniqueResearchAreas(): Promise<string[]> {
   return [...new Set(areas)].sort();
 }
 
-/** Get all unique institutions */
-export async function getUniqueInstitutions(): Promise<string[]> {
+/** Get all unique organizations */
+export async function getUniqueOrganizations(): Promise<string[]> {
   const hardware = await getAllHardware();
-  const institutions = hardware.flatMap((item) => item.data.institutions);
-  return [...new Set(institutions)].sort();
+  const organizations: string[] = [];
+
+  hardware.forEach((item) => {
+    if (item.data.leadOrganization) {
+      organizations.push(item.data.leadOrganization);
+    }
+    if (item.data.supportingOrganizations) {
+      organizations.push(...item.data.supportingOrganizations);
+    }
+  });
+
+  return [...new Set(organizations)].sort();
 }
 
 /** Get hardware count by category */
@@ -154,9 +165,12 @@ export async function searchHardware(
       item.data.researchAreas.some((area) =>
         area.toLowerCase().includes(lowerQuery),
       ) ||
-      item.data.institutions.some((inst) =>
-        inst.toLowerCase().includes(lowerQuery),
-      )
+      (item.data.leadOrganization &&
+        item.data.leadOrganization.toLowerCase().includes(lowerQuery)) ||
+      (item.data.supportingOrganizations &&
+        item.data.supportingOrganizations.some((org) =>
+          org.toLowerCase().includes(lowerQuery),
+        ))
     );
   });
 }

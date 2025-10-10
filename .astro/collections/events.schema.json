@@ -142,18 +142,23 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "person",
+                  "organization"
+                ]
+              },
+              "id": {
                 "type": "string"
               },
               "role": {
                 "type": "string"
-              },
-              "affiliation": {
-                "type": "string"
               }
             },
             "required": [
-              "name"
+              "type",
+              "id"
             ],
             "additionalProperties": false
           }
@@ -163,21 +168,52 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": {
+              "personId": {
                 "type": "string"
               },
               "title": {
                 "type": "string"
               },
-              "affiliation": {
-                "type": "string"
-              },
               "topic": {
                 "type": "string"
+              },
+              "sessionType": {
+                "type": "string",
+                "enum": [
+                  "keynote",
+                  "talk",
+                  "panel",
+                  "workshop"
+                ]
               }
             },
             "required": [
-              "name"
+              "personId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sponsors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "partnerId": {
+                "type": "string"
+              },
+              "level": {
+                "type": "string",
+                "enum": [
+                  "platinum",
+                  "gold",
+                  "silver",
+                  "bronze",
+                  "supporter"
+                ]
+              }
+            },
+            "required": [
+              "partnerId"
             ],
             "additionalProperties": false
           }

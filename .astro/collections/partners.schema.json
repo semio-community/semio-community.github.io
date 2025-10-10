@@ -4,7 +4,13 @@
     "partners": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "name": {
+          "type": "string"
+        },
+        "shortName": {
           "type": "string"
         },
         "description": {
@@ -30,11 +36,40 @@
             "outreach"
           ]
         },
-        "website": {
-          "type": "string"
+        "contact": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "department": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         },
-        "logo": {
-          "type": "string"
+        "keyContacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "personId": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "personId",
+              "role"
+            ],
+            "additionalProperties": false
+          }
         },
         "collaboration": {
           "type": "object",
@@ -54,23 +89,32 @@
             "startDate": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "format": "date-time"
                 },
                 {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    {
-                      "type": "string",
-                      "format": "date"
-                    },
-                    {
-                      "type": "integer",
-                      "format": "unix-time"
-                    }
-                  ]
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "integer",
+                  "format": "unix-time"
+                }
+              ]
+            },
+            "endDate": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "integer",
+                  "format": "unix-time"
                 }
               ]
             },
@@ -85,20 +129,11 @@
           ],
           "additionalProperties": false
         },
-        "contact": {
-          "type": "object",
-          "properties": {
-            "email": {
-              "type": "string"
-            },
-            "representative": {
-              "type": "string"
-            },
-            "department": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
+        "website": {
+          "type": "string"
+        },
+        "logo": {
+          "type": "string"
         },
         "socialMedia": {
           "type": "object",
@@ -147,12 +182,13 @@
         }
       },
       "required": [
+        "id",
         "name",
         "description",
         "type",
         "category",
-        "website",
         "collaboration",
+        "website",
         "location"
       ],
       "additionalProperties": false

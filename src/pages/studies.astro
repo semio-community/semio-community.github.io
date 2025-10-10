@@ -15,6 +15,7 @@ import {
   getRecentStudies,
   getStudyStatistics,
 } from "@/data/studies";
+import { getFormattedAuthors, getAuthorNamesForStudy } from "@/data/people";
 
 const meta = {
   title: "Studies",
@@ -31,6 +32,21 @@ const studyTypeCount = await getStudyCountByType();
 const researchAreaCount = await getStudyCountByResearchArea();
 const researchAreas = await getUniqueResearchAreas();
 const statistics = await getStudyStatistics();
+
+// Pre-fetch author names for featured and recent studies
+const featuredStudiesWithAuthors = await Promise.all(
+  featuredStudies.slice(0, 6).map(async (study) => ({
+    ...study,
+    authorString: await getFormattedAuthors(study.data.authors, 1),
+  })),
+);
+
+const recentStudiesWithAuthors = await Promise.all(
+  recentStudies.map(async (study) => ({
+    ...study,
+    authorString: await getFormattedAuthors(study.data.authors, 3),
+  })),
+);
 
 const services = [
   {
@@ -293,7 +309,7 @@ const benefits = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredStudies.slice(0, 6).map((study) => (
+            {featuredStudiesWithAuthors.map((study) => (
               <article class="group relative flex flex-col bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all overflow-hidden">
                 <div class="p-6 flex-1">
                   <div class="flex items-center gap-2 mb-3">
@@ -311,10 +327,7 @@ const benefits = [
                     {study.data.abstract}
                   </p>
                   <div class="flex items-center justify-between text-xs">
-                    <span class="text-color-500">
-                      {study.data.authors[0]?.name}
-                      {study.data.authors.length > 1 && ` et al.`}
-                    </span>
+                    <span class="text-color-500">{study.authorString}</span>
                     <div class="flex items-center gap-1">
                       <Icon
                         name="solar:document-text-line-duotone"
@@ -347,7 +360,7 @@ const benefits = [
       >
         <div class="max-w-4xl mx-auto">
           <div class="space-y-4">
-            {recentStudies.map((study) => (
+            {recentStudiesWithAuthors.map((study) => (
               <article class="group p-4 bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all">
                 <div class="flex items-start justify-between gap-4">
                   <div class="flex-1 min-w-0">
@@ -355,7 +368,7 @@ const benefits = [
                       <a href={`/studies/${study.id}`}>{study.data.title}</a>
                     </h3>
                     <p class="text-sm text-color-600 dark:text-color-400 mb-2">
-                      {study.data.authors.map((a) => a.name).join(", ")}
+                      {study.authorString}
                     </p>
                     <div class="flex items-center gap-3 text-xs">
                       <span class="px-2 py-1 bg-accent-two/20 rounded">

@@ -8,7 +8,7 @@ type HardwareItem = {
   id: string;
   name: string;
   shortDescription: string;
-  status: "available" | "in-progress" | "coming-soon" | "discontinued";
+  status: "available" | "in-progress" | "coming-soon" | "deprecated";
 };
 
 type SoftwareItem = {
@@ -223,7 +223,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                                       "bg-yellow-500",
                                     item.status === "coming-soon" &&
                                       "bg-blue-500",
-                                    item.status === "discontinued" &&
+                                    item.status === "deprecated" &&
                                       "bg-gray-500",
                                   )}
                                 ></div>

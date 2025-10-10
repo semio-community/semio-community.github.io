@@ -1,0 +1,36 @@
+---
+import { getEntry } from "astro:content";
+import { PersonPopover } from "./PersonPopover";
+
+interface Props {
+  personId: string;
+  role?: string;
+}
+
+const { personId, role } = Astro.props;
+const person = await getEntry("people", personId);
+
+// Get current affiliation details if available
+let currentAffiliation:
+  | { partnerId: string; partnerName?: string; role: string }
+  | undefined;
+if (person?.data.affiliations) {
+  const current = person.data.affiliations.find((a) => a.current);
+  if (current) {
+    const partner = await getEntry("partners", current.partnerId);
+    currentAffiliation = {
+      partnerId: current.partnerId,
+      partnerName: partner?.data.name || current.partnerId,
+      role: current.role,
+    };
+  }
+}
+---
+
+<PersonPopover
+  client:load
+  person={person?.data || null}
+  personId={personId}
+  role={role}
+  currentAffiliation={currentAffiliation}
+/>

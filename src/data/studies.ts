@@ -74,14 +74,14 @@ export async function getStudiesByResearchArea(
   );
 }
 
-/** Get studies by author name */
+/** Get studies by author */
 export async function getStudiesByAuthor(
   authorName: string,
 ): Promise<CollectionEntry<"studies">[]> {
   const studies = await getAllStudies();
   return studies.filter((study) =>
     study.data.authors.some((author) =>
-      author.name.toLowerCase().includes(authorName.toLowerCase()),
+      author.personId.toLowerCase().includes(authorName.toLowerCase()),
     ),
   );
 }
@@ -94,8 +94,9 @@ export async function getStudiesByAffiliation(
   return studies.filter((study) =>
     study.data.authors.some(
       (author) =>
-        author.affiliation?.toLowerCase().includes(affiliation.toLowerCase()) ??
-        false,
+        author.affiliationSnapshot
+          ?.toLowerCase()
+          .includes(affiliation.toLowerCase()) ?? false,
     ),
   );
 }
@@ -205,16 +206,17 @@ export async function getUniqueAuthors(): Promise<
 
   studies.forEach((study) => {
     study.data.authors.forEach((author) => {
-      const existing = authorMap.get(author.name);
+      const existing = authorMap.get(author.personId);
       if (existing) {
         existing.count++;
-        // Update affiliation if not set
-        if (!existing.affiliation && author.affiliation) {
-          existing.affiliation = author.affiliation;
+        if (!existing.affiliation && author.affiliationSnapshot) {
+          existing.affiliation = author.affiliationSnapshot;
         }
       } else {
-        authorMap.set(author.name, {
-          ...(author.affiliation && { affiliation: author.affiliation }),
+        authorMap.set(author.personId, {
+          ...(author.affiliationSnapshot && {
+            affiliation: author.affiliationSnapshot,
+          }),
           count: 1,
         });
       }
@@ -222,7 +224,7 @@ export async function getUniqueAuthors(): Promise<
   });
 
   return Array.from(authorMap.entries())
-    .map(([name, data]) => ({ name, ...data }))
+    .map(([personId, data]) => ({ name: personId, ...data }))
     .sort((a, b) => b.count - a.count);
 }
 
@@ -287,8 +289,9 @@ export async function searchStudies(
       ) ||
       study.data.authors.some(
         (author) =>
-          author.name.toLowerCase().includes(lowerQuery) ||
-          (author.affiliation?.toLowerCase().includes(lowerQuery) ?? false),
+          author.personId.toLowerCase().includes(lowerQuery) ||
+          (author.affiliationSnapshot?.toLowerCase().includes(lowerQuery) ??
+            false),
       ) ||
       (study.data.venue?.toLowerCase().includes(lowerQuery) ?? false)
     );
@@ -326,7 +329,7 @@ export async function getRelatedStudies(
     // Score for shared authors
     const sharedAuthors = study.data.authors.filter((author) =>
       currentStudy.data.authors.some(
-        (currentAuthor) => currentAuthor.name === author.name,
+        (currentAuthor) => currentAuthor.personId === author.personId,
       ),
     );
     score += sharedAuthors.length * 5;
@@ -471,7 +474,7 @@ export async function filterStudies(criteria: {
     studies = studies.filter((study) =>
       criteria.authors!.some((author) =>
         study.data.authors.some((studyAuthor) =>
-          studyAuthor.name.toLowerCase().includes(author.toLowerCase()),
+          studyAuthor.personId.toLowerCase().includes(author.toLowerCase()),
         ),
       ),
     );
@@ -576,8 +579,8 @@ export async function getCoAuthorshipNetwork(): Promise<{
       for (let j = i + 1; j < authors.length; j++) {
         const author1 = authors[i];
         const author2 = authors[j];
-        if (author1?.name && author2?.name) {
-          const key = [author1.name, author2.name].sort().join("|||");
+        if (author1?.personId && author2?.personId) {
+          const key = [author1.personId, author2.personId].sort().join("|||");
           edges.set(key, (edges.get(key) || 0) + 1);
         }
       }

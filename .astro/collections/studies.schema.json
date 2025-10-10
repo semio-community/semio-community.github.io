@@ -15,18 +15,27 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": {
+              "personId": {
                 "type": "string"
               },
-              "affiliation": {
-                "type": "string"
+              "order": {
+                "type": "number"
               },
-              "orcid": {
+              "corresponding": {
+                "type": "boolean",
+                "default": false
+              },
+              "equalContribution": {
+                "type": "boolean",
+                "default": false
+              },
+              "affiliationSnapshot": {
                 "type": "string"
               }
             },
             "required": [
-              "name"
+              "personId",
+              "order"
             ],
             "additionalProperties": false
           }
@@ -55,6 +64,18 @@
           }
         },
         "researchArea": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "affiliatedOrganizations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fundingOrganizations": {
           "type": "array",
           "items": {
             "type": "string"

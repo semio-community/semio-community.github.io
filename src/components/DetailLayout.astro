@@ -2,14 +2,18 @@
 import { Image } from "astro:assets";
 import Section from "@/components/Section.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
+import BasicChip from "./BasicChip.astro";
 import { Icon } from "astro-icon/components";
+import { getEntry } from "astro:content";
+import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/OrganizationChip.astro";
 
 interface HardwareData {
   name: string;
   shortDescription: string;
   description: string;
   category: "mobile" | "social" | "assistive" | "research" | "educational";
-  status: "available" | "in-progress" | "coming-soon" | "discontinued";
+  status: "available" | "in-progress" | "coming-soon" | "deprecated";
   featured?: boolean;
   specifications?: {
     height?: string;
@@ -41,8 +45,16 @@ interface HardwareData {
     hero?: any;
     gallery?: any[];
   };
-  maintainers: string[];
-  institutions?: string[];
+  contributors?: Array<{
+    type: "person" | "organization";
+    id: string;
+    role?: string;
+    startDate?: Date;
+    endDate?: Date;
+    current?: boolean;
+  }>;
+  leadOrganization?: string;
+  supportingOrganizations?: string[];
   tags?: string[];
 }
 
@@ -75,8 +87,16 @@ interface SoftwareData {
     hero?: any;
     gallery?: any[];
   };
-  maintainers: string[];
-  institutions?: string[];
+  contributors?: Array<{
+    type: "person" | "organization";
+    id: string;
+    role?: string;
+    startDate?: Date;
+    endDate?: Date;
+    current?: boolean;
+  }>;
+  leadOrganization?: string;
+  supportingOrganizations?: string[];
   tags?: string[];
 }
 
@@ -93,6 +113,39 @@ export interface Props {
 
 const { type, data, relatedItems = [] } = Astro.props;
 
+// Get organization details
+const leadOrg = data.leadOrganization ?
+  await getEntry("partners", data.leadOrganization) : null;
+const supportingOrgs = data.supportingOrganizations ?
+  await Promise.all(data.supportingOrganizations.map(id =>
+    getEntry("partners", id)
+  )) : [];
+
+// Get contributors with their full data
+const contributors = data.contributors || [];
+const peopleContributors = await Promise.all(
+  contributors
+    .filter(c => c.type === "person")
+    .map(async (contributor) => {
+      const person = await getEntry("people", contributor.id);
+      return {
+        ...contributor,
+        data: person?.data
+      };
+    })
+);
+const orgContributors = await Promise.all(
+  contributors
+    .filter(c => c.type === "organization")
+    .map(async (contributor) => {
+      const org = await getEntry("partners", contributor.id);
+      return {
+        ...contributor,
+        data: org?.data
+      };
+    })
+);
+
 // Type-specific configurations
 const typeConfig = {
   hardware: {
@@ -100,13 +153,13 @@ const typeConfig = {
       available: "text-green-600 dark:text-green-400",
       "in-progress": "text-yellow-600 dark:text-yellow-400",
       "coming-soon": "text-blue-600 dark:text-blue-400",
-      discontinued: "text-red-600 dark:text-red-400",
+      deprecated: "text-red-600 dark:text-red-400",
     },
     statusLabels: {
       available: "Available",
       "in-progress": "In Progress",
       "coming-soon": "Coming Soon",
-      discontinued: "Discontinued",
+      deprecated: "Deprecated",
     },
     categoryLabels: {
       mobile: "Mobile Robot",
@@ -174,7 +227,7 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
   <!-- Hero Image with Title Overlay -->
   {
     data.images?.hero && (
-      <div class="relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-xl overflow-hidden">
+      <div class="relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-none md:rounded-xl overflow-hidden">
         <div class="aspect-[21/9] overflow-hidden bg-gradient-to-b from-special-lighter to-special">
           <Image
             src={data.images.hero}
@@ -263,33 +316,78 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
     </header>
   )}
 
-  <!-- Quick Info -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="p-4 bg-special-lighter rounded-lg">
-      <p class="text-sm text-color-500 mb-1">Category</p>
-      <p class="font-semibold">{categoryLabels[data.category as keyof typeof categoryLabels]}</p>
-    </div>
-    <div class="p-4 bg-special-lighter rounded-lg">
-      <p class="text-sm text-color-500 mb-1">
-        {type === "hardware" ? "Research Areas" : "Technologies"}
-      </p>
-      <p class="font-semibold">
-        {isHardwareData(data)
-          ? `${data.researchAreas?.length || 0} Areas`
-          : `${(data as SoftwareData).language?.length || 0} Languages`}
-      </p>
-    </div>
-    <div class="p-4 bg-special-lighter rounded-lg">
-      <p class="text-sm text-color-500 mb-1">
-        {type === "hardware" ? "Institutions" : "Maintainers"}
-      </p>
-      <p class="font-semibold">
-        {isHardwareData(data)
-          ? `${data.institutions?.length || 0} Partners`
-          : `${data.maintainers?.length || 0} Teams`}
-      </p>
-    </div>
-  </div>
+  <!-- Contributors and Organizations Section -->
+  {(leadOrg || supportingOrgs.length > 0 || contributors.length > 0) && (
+    <section class="contributors-section mb-8">
+      <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+
+
+        {/* Organizations Section */}
+        {(orgContributors.length > 0) && (
+          <div class="organizations mb-6">
+            <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">ORGANIZATIONS</h3>
+            <div class="flex flex-wrap gap-2">
+              {orgContributors.map(contributor => (
+                <OrganizationChip
+                  partnerId={contributor.id}
+                  role={contributor.role || "Contributing Organization"}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* People Contributors Section */}
+        {peopleContributors.length > 0 && (
+          <div class="people-contributors">
+            <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">CONTRIBUTORS</h3>
+            <div class="flex flex-wrap gap-2">
+              {peopleContributors.map(contributor => (
+                <PersonPopoverWrapper
+                  personId={contributor.id}
+                  role={contributor.role}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Chips row for category, research areas/languages */}
+        <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
+            {categoryLabels[data.category as keyof typeof categoryLabels] && <BasicChip text={categoryLabels[data.category as keyof typeof categoryLabels]!} variant='tertiary' />}
+            {isHardwareData(data) && data.researchAreas && data.researchAreas.map(area => (
+              <BasicChip text={area} variant='default' />
+            ))}
+            {isSoftwareData(data) && (data as SoftwareData).language && (data as SoftwareData).language!.map(lang => (
+              <BasicChip text={lang} variant='default' />
+            ))}
+        </div>
+
+        {/* Stats Row */}
+        <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
+          {leadOrg && (
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">Lead:</span>
+              <span>{leadOrg.data?.shortName || leadOrg.data?.name}</span>
+            </div>
+          )}
+          {supportingOrgs.length > 0 && (
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">Supporting:</span>
+              <span>{supportingOrgs.length} org{supportingOrgs.length !== 1 ? 's' : ''}</span>
+            </div>
+          )}
+          {peopleContributors.length > 0 && (
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">Contributors:</span>
+              <span>{peopleContributors.length} {peopleContributors.length === 1 ? 'person' : 'people'}</span>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </section>
+  )}
 
   <!-- Action Buttons -->
   <div class="flex flex-wrap gap-3 mb-6">
@@ -602,18 +700,7 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
         </div>
       )}
 
-      <!-- Maintainers -->
-      <div class="mb-6 p-6 bg-special-lighter rounded-lg">
-        <h3 class="text-lg font-semibold mb-4 flex items-center">
-          <Icon name="solar:users-group-two-rounded-line-duotone" class="w-5 h-5 mr-2" />
-          Maintained By
-        </h3>
-        <ul class="space-y-2">
-          {data.maintainers.map((maintainer: string) => (
-            <li class="text-sm">{maintainer}</li>
-          ))}
-        </ul>
-      </div>
+
 
       <!-- Tags -->
       {data.tags && data.tags.length > 0 && (

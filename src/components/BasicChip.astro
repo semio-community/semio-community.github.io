@@ -1,0 +1,25 @@
+---
+interface Props {
+  text: string;
+  variant: "default" | "primary" | "secondary" | "tertiary";
+}
+
+const styleLookup = {
+  default: "border-accent-base/50 text-accent-base/50",
+  primary: "border-accent-two text-accent-two",
+  secondary: "border-accent-one text-accent-one",
+  tertiary: "border-accent-three text-accent-three",
+};
+
+const { text, variant = "default" } = Astro.props;
+---
+
+{
+  (
+    <a
+      class={`org-chip inline-flex items-center gap-2 px-3 py-1.5 bg-surface-lighter rounded-full border-2 group ${styleLookup[variant]}`}
+    >
+      <span class="text-sm font-medium">{text}</span>
+    </a>
+  )
+}

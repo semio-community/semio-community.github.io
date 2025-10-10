@@ -93,19 +93,42 @@
 * **Become a Partner**
 * **Universities:**
   * George Mason University
+    * Xuesu Xiao \<[xiao@gmu.edu](mailto:xiao@gmu.edu)\>
   * Oregon State University
+    * Bill Smart \<[bill.smart@oregonstate.edu](mailto:bill.smart@oregonstate.edu)\>
+    * Naomi Fitter \<[naomi.fitter@oregonstate.edu](mailto:naomi.fitter@oregonstate.edu)\>
   * University of Pennsylvania
+    * Mark Yim \<[yim@seas.upenn.edu](mailto:yim@seas.upenn.edu)\>
+    * Simon Kim \<[simonkim@design.upenn.edu](mailto:simonkim@design.upenn.edu)\>
   * University of Southern California
+    * Maja Matarić \<[mataric@usc.edu](mailto:mataric@usc.edu)\>
   * Tufts University
+    * Reuth Mirsky \<[Reuth.Mirsky@tufts.edu](mailto:Reuth.Mirsky@tufts.edu)\>
   * Yale University
+    * Brian Scassellati \<[brian.scassellati@yale.edu](mailto:brian.scassellati@yale.edu)\>
+    * Kayla Matheus \<[kayla.matheus@yale.edu](mailto:kayla.matheus@yale.edu)\>
 * **Not-for-profit:**
   * KISS Institute for Practical Robotics (KIPR)
+    * Steve Goodgame \<[sgoodgame@kipr.org](mailto:sgoodgame@kipr.org)\>
   * Peerbots
+    * Saad Elbeleidy \<[saad@peerbots.org](mailto:saad@peerbots.org)\>
 * **Private Sector:**
+  * IK Studio
+    * Simon Kim \<[simon.kim@i-k-studio.com](mailto:simon.kim@i-k-studio.com)\>
+    * Nicholas Houser \<[nick.houser@i-k-studio.com](mailto:nick.houser@i-k-studio.com)\>
   * OLogic, Inc.
+    * Ted Larson \<[ted@ologicinc.com](mailto:ted@ologicinc.com)\>
+    * Andrea Alcorn \<[andrea@ologicinc.com](mailto:andrea@ologicinc.com)\>
   * Semio AI, Inc.
+    * Ross Mead \<[ross@semio.ai](mailto:ross@semio.ai)\>
+    * Andy Schoen \<[andy@semio.ai](mailto:andy@semio.ai)\>
+    * Chris Birmingham \<[chris@semio.ai](mailto:chris@semio.ai)\>
 * **Public Sector:**
   * National Institute of Standards and Technology (NIST)
+    * Jeremy Marvel \<[jeremy.marvel@nist.gov](mailto:jeremy.marvel@nist.gov)\>
+    * Shelly Bagchi \<[shelly.bagchi@nist.gov](mailto:shelly.bagchi@nist.gov)\>
+    * Megan Zimmerman \<[megan.zimmerman@nist.gov](mailto:megan.zimmerman@nist.gov)\>
+
 
 ## **2.7	Get Involved (/get-involved)** {#2.7-get-involved-(/get-involved)}
 
