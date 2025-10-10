@@ -1,0 +1,564 @@
+---
+import {
+  type CollectionEntry,
+  getCollection,
+  render,
+  getEntry,
+} from "astro:content";
+import PageLayout from "@/layouts/Base.astro";
+import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
+import { DetailHero } from "@/components/detail/DetailHero";
+import { DetailHeader } from "@/components/detail/DetailHeader";
+import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
+import { MetadataCard } from "@/components/detail/MetadataCard";
+import { ChipsCard } from "@/components/detail/ChipsCard";
+import { TagsSection } from "@/components/detail/TagsSection";
+import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import ContentSection from "@/components/detail/ContentSection.astro";
+import { ItemCard } from "@/components/ItemCard";
+import {
+  getPerson,
+  getPeopleByExpertise,
+  getPeopleByOrganization,
+} from "@/data/people";
+import { getAllStudies } from "@/data/studies";
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+import { getAllEvents } from "@/data/events";
+import OrganizationChip from "@/components/OrganizationChip.astro";
+import BasicChip from "@/components/BasicChip.astro";
+import { Fragment } from "react";
+import Icon from "@/components/Icon.astro";
+
+export async function getStaticPaths() {
+  const people = await getCollection("people", ({ data }) => {
+    // In production, exclude drafts and private people. In development, show all.
+    return import.meta.env.PROD
+      ? data.draft !== true && data.visibility === "public"
+      : true;
+  });
+  return people.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<"people">;
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+
+// Get related people (by expertise or organization)
+async function getRelatedPeople(
+  person: CollectionEntry<"people">,
+  limit: number = 3,
+) {
+  const relatedPeople: CollectionEntry<"people">[] = [];
+  const seenIds = new Set<string>([person.id]);
+
+  // Find people with similar expertise
+  if (person.data.expertise && person.data.expertise.length > 0) {
+    for (const expertise of person.data.expertise.slice(0, 2)) {
+      const expertisePeople = await getPeopleByExpertise(expertise);
+      for (const p of expertisePeople) {
+        if (!seenIds.has(p.id) && relatedPeople.length < limit) {
+          relatedPeople.push(p);
+          seenIds.add(p.id);
+        }
+      }
+    }
+  }
+
+  // If not enough, find people from same organization
+  if (
+    relatedPeople.length < limit &&
+    person.data.affiliations &&
+    person.data.affiliations.length > 0
+  ) {
+    const currentAffiliations = person.data.affiliations.filter(
+      (aff) => aff.current,
+    );
+    for (const aff of currentAffiliations) {
+      const orgPeople = await getPeopleByOrganization(aff.partnerId);
+      for (const p of orgPeople) {
+        if (!seenIds.has(p.id) && relatedPeople.length < limit) {
+          relatedPeople.push(p);
+          seenIds.add(p.id);
+        }
+      }
+    }
+  }
+
+  return relatedPeople.slice(0, limit);
+}
+
+const relatedPeople = await getRelatedPeople(entry, 3);
+
+// Get related content by this person
+async function getPersonRelatedContent(personId: string) {
+  // Get studies where this person is an author
+  const allStudies = await getAllStudies();
+  const studies = allStudies.filter((study) =>
+    study.data.authors?.some((author) => author.personId === personId),
+  );
+
+  // Get hardware where this person is a contributor
+  const allHardware = await getAllHardware();
+  const hardware = allHardware.filter((hw) =>
+    hw.data.contributors?.some(
+      (contributor) =>
+        contributor.type === "person" && contributor.id === personId,
+    ),
+  );
+
+  // Get software where this person is a contributor
+  const allSoftware = await getAllSoftware();
+  const software = allSoftware.filter((sw) =>
+    sw.data.contributors?.some(
+      (contributor) =>
+        contributor.type === "person" && contributor.id === personId,
+    ),
+  );
+
+  // Get events where this person is a speaker or organizer
+  const allEvents = await getAllEvents();
+  const events = allEvents.filter((event) => {
+    const isSpeaker = event.data.speakers?.some(
+      (speaker) => speaker.personId === personId,
+    );
+    const isOrganizer = event.data.organizers?.some(
+      (org) => org.type === "person" && org.id === personId,
+    );
+    return isSpeaker || isOrganizer;
+  });
+
+  return { studies, hardware, software, events };
+}
+
+const relatedContent = await getPersonRelatedContent(entry.id);
+
+const meta = {
+  title: `${data.displayName || data.name} - Researcher Profile`,
+  description: data.bio || `Profile of ${data.displayName || data.name}`,
+};
+
+// Prepare status badges
+const badges = [];
+if (data.pronouns) {
+  badges.push({
+    text: data.pronouns,
+    color: "gray" as const,
+    variant: "outline" as const,
+  });
+}
+
+// Prepare action buttons
+const actionButtons = [];
+if (data.website) {
+  actionButtons.push({
+    href: data.website,
+    text: "Personal Website",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.github) {
+  actionButtons.push({
+    href: `https://github.com/${data.links.github}`,
+    text: "GitHub",
+    variant: "secondary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.email) {
+  actionButtons.push({
+    href: `mailto:${data.email}`,
+    text: "Email",
+    variant: "tertiary" as const,
+  });
+}
+if (data.links?.linkedin) {
+  actionButtons.push({
+    href: `https://linkedin.com/in/${data.links.linkedin}`,
+    text: "LinkedIn",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.twitter) {
+  actionButtons.push({
+    href: `https://twitter.com/${data.links.twitter}`,
+    text: "Twitter",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+
+// Prepare affiliations for display in main content
+const currentAffiliations = await Promise.all(
+  (data.affiliations || [])
+    .filter((aff) => aff.current)
+    .map(async (aff) => {
+      const org = await getEntry("partners", aff.partnerId);
+      return {
+        ...aff,
+        organization: org,
+      };
+    }),
+);
+
+const pastAffiliations = await Promise.all(
+  (data.affiliations || [])
+    .filter((aff) => !aff.current)
+    .map(async (aff) => {
+      const org = await getEntry("partners", aff.partnerId);
+      return {
+        ...aff,
+        organization: org,
+      };
+    }),
+);
+
+// Prepare academic profile items
+const academicProfileItems = [];
+if (data.orcid) {
+  academicProfileItems.push({
+    label: "ORCID",
+    value: data.orcid,
+    link: `https://orcid.org/${data.orcid}`,
+    external: true,
+  });
+}
+if (data.googleScholar) {
+  academicProfileItems.push({
+    label: "Google Scholar",
+    value: "View Profile",
+    link: `https://scholar.google.com/citations?user=${data.googleScholar}`,
+    external: true,
+  });
+}
+
+// Prepare social media items
+const socialMediaItems = [];
+if (data.links?.twitter) {
+  socialMediaItems.push({
+    label: "Twitter",
+    value: `@${data.links.twitter}`,
+    link: `https://twitter.com/${data.links.twitter}`,
+    external: true,
+  });
+}
+if (data.links?.bluesky) {
+  socialMediaItems.push({
+    label: "Bluesky",
+    value: data.links.bluesky,
+    link: `https://bsky.app/profile/${data.links.bluesky}`,
+    external: true,
+  });
+}
+if (data.links?.mastodon) {
+  socialMediaItems.push({
+    label: "Mastodon",
+    value: data.links.mastodon,
+    link: data.links.mastodon,
+    external: true,
+  });
+}
+---
+
+<PageLayout meta={meta}>
+  <BaseDetailLayout showSidebar={false}>
+    <Fragment slot="hero">
+      {
+        data.avatar ? (
+          <DetailHero
+            client:load
+            image={data.avatar}
+            title={data.displayName || data.name}
+            subtitle={data.title}
+            badges={badges}
+            featured={data.featured}
+          />
+        ) : (
+          <DetailHeader
+            client:load
+            title={data.displayName || data.name}
+            subtitle={data.title}
+            badges={badges}
+            featured={data.featured}
+          />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="contributors">
+      {/* Affiliations Section */}
+      {
+        (currentAffiliations.length > 0 || pastAffiliations.length > 0) && (
+          <div class="affiliations-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                AFFILIATIONS
+              </h3>
+
+              {/* Current Affiliations */}
+              {currentAffiliations.length > 0 && (
+                <div class="mb-4">
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Current
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
+                    {currentAffiliations.map((aff) => (
+                      <OrganizationChip
+                        partnerId={aff.partnerId}
+                        role={
+                          aff.department
+                            ? `${aff.role}, ${aff.department}`
+                            : aff.role
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Past Affiliations */}
+              {pastAffiliations.length > 0 && (
+                <div>
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Past
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
+                    {pastAffiliations.map((aff) => (
+                      <OrganizationChip
+                        partnerId={aff.partnerId}
+                        role={
+                          aff.department
+                            ? `${aff.role}, ${aff.department}`
+                            : aff.role
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      }
+
+      {/* Links/Email and Academic Profiles */}
+      {
+        (actionButtons.length > 0 || academicProfileItems.length > 0) && (
+          <div class="links-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                LINKS & PROFILES
+              </h3>
+              <div class="flex flex-wrap gap-3">
+                {actionButtons.map((button) => (
+                  <a
+                    href={button.href}
+                    target={button.target}
+                    rel={button.rel}
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
+                  >
+                    {button.text}
+                  </a>
+                ))}
+                {academicProfileItems.map((item) => (
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Expertise Areas */}
+      {
+        data.expertise && data.expertise.length > 0 && (
+          <div class="expertise-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                EXPERTISE AREAS
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {data.expertise.map((skill) => (
+                  <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Biography */}
+      <ContentSection title="BIOGRAPHY" content={data.bio} />
+    </Fragment>
+
+    <!-- Main content from MDX file -->
+    <!-- <Content /> -->
+
+    <Fragment slot="related">
+      {/* Contributions & Involvement Section */}
+      {
+        (relatedContent.studies.length > 0 ||
+          relatedContent.hardware.length > 0 ||
+          relatedContent.software.length > 0 ||
+          relatedContent.events.length > 0) && (
+          <div class="mt-12">
+            <h2 class="text-2xl font-bold mb-2">Contributions & Involvement</h2>
+            <p class="text-color-600 dark:text-color-400 mb-8">
+              Research, projects, and events
+            </p>
+
+            {/* Studies Grid */}
+            {relatedContent.studies.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Studies</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedContent.studies.map((study) => (
+                    <ItemCard
+                      client:load
+                      title={study.data.title}
+                      description={study.data.abstract}
+                      href={`/studies/${study.id}`}
+                      type="studies"
+                      featured={study.data.featured}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Hardware Grid */}
+            {relatedContent.hardware.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Hardware</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedContent.hardware.map((hw) => (
+                    <ItemCard
+                      client:load
+                      title={hw.data.name}
+                      description={
+                        hw.data.shortDescription || hw.data.description
+                      }
+                      href={`/hardware/${hw.id}`}
+                      type="hardware"
+                      status={hw.data.status}
+                      category={hw.data.category}
+                      featured={hw.data.featured}
+                      imageUrl={hw.data.images?.hero?.src}
+                      imageAlt={hw.data.images?.hero?.alt}
+                      links={{
+                        github: hw.data.links?.github,
+                        docs: hw.data.links?.documentation,
+                        website: hw.data.links?.website,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Software Grid */}
+            {relatedContent.software.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Software</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedContent.software.map((sw) => (
+                    <ItemCard
+                      client:load
+                      title={sw.data.name}
+                      description={
+                        sw.data.shortDescription || sw.data.description
+                      }
+                      href={`/software/${sw.id}`}
+                      type="software"
+                      status={sw.data.status}
+                      category={sw.data.category}
+                      featured={sw.data.featured}
+                      imageUrl={sw.data.images?.hero?.src}
+                      imageAlt={sw.data.images?.hero?.alt}
+                      links={{
+                        github: sw.data.links?.github,
+                        docs: sw.data.links?.documentation,
+                        demo: sw.data.links?.demo,
+                        website: sw.data.links?.website,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Events Grid */}
+            {relatedContent.events.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Events</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {relatedContent.events.map((event) => (
+                    <ItemCard
+                      client:load
+                      title={event.data.name}
+                      description={event.data.description}
+                      href={`/events/${event.id}`}
+                      type="events"
+                      category={event.data.type}
+                      featured={event.data.featured}
+                      imageUrl={event.data.banner?.src}
+                      imageAlt={event.data.banner?.alt}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+
+      {/* Related Researchers */}
+      {
+        relatedPeople && relatedPeople.length > 0 && (
+          <div class="mt-12">
+            <RelatedItemsGrid
+              client:load
+              title="Related Researchers"
+              subtitle="Researchers with similar expertise or affiliations"
+              items={relatedPeople.map((person) => ({
+                id: person.id,
+                data: {
+                  ...person.data,
+                  name: person.data.displayName || person.data.name,
+                  description: person.data.bio || person.data.title || "",
+                  shortDescription: person.data.title || "",
+                  image: person.data.avatar,
+                  featured: person.data.featured,
+                },
+              }))}
+              itemType="people"
+              columns={3}
+            />
+          </div>
+        )
+      }
+    </Fragment>
+  </BaseDetailLayout>
+</PageLayout>

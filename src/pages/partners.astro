@@ -114,10 +114,10 @@ const transformPartner = (partner: any) => {
     description: partner.data.description,
     category: [typeLabel, categoryLabel].filter(Boolean).join(" • "),
     featured: partner.data.featured,
-    href: partner.data.website || `/partners/${partner.id}`,
+    href: `/partners/${partner.id}`,
     ...(partner.data.logo && { image: partner.data.logo }),
     links: {
-      ...(partner.data.website && { demo: partner.data.website }),
+      ...(partner.data.website && { website: partner.data.website }),
     },
   };
 };

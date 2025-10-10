@@ -180,3 +180,57 @@ export async function getPeopleStatistics() {
     uniqueOrganizationCount: Object.keys(orgCounts).length,
   };
 }
+
+/** Get related people based on expertise and affiliations */
+export async function getRelatedPeople(
+  currentPerson: CollectionEntry<"people">,
+  limit: number = 3,
+): Promise<CollectionEntry<"people">[]> {
+  const allPeople = await getAllPeople();
+
+  // Filter out the current person
+  const otherPeople = allPeople.filter((p) => p.id !== currentPerson.id);
+
+  // Score each person based on similarity
+  const scoredPeople = otherPeople.map((person) => {
+    let score = 0;
+
+    // Score for shared expertise areas
+    if (currentPerson.data.expertise && person.data.expertise) {
+      const currentExpertise = new Set(
+        currentPerson.data.expertise.map((e) => e.toLowerCase()),
+      );
+      const sharedExpertise = person.data.expertise.filter((e) =>
+        currentExpertise.has(e.toLowerCase()),
+      );
+      score += sharedExpertise.length * 3;
+    }
+
+    // Score for shared current affiliations
+    if (currentPerson.data.affiliations && person.data.affiliations) {
+      const currentOrgs = new Set(
+        currentPerson.data.affiliations
+          .filter((a) => a.current)
+          .map((a) => a.partnerId),
+      );
+      const sharedOrgs = person.data.affiliations.filter(
+        (a) => a.current && currentOrgs.has(a.partnerId),
+      );
+      score += sharedOrgs.length * 2;
+    }
+
+    // Bonus for featured people
+    if (person.data.featured) {
+      score += 0.5;
+    }
+
+    return { person, score };
+  });
+
+  // Sort by score and return top matches
+  return scoredPeople
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ person }) => person);
+}

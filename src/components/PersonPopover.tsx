@@ -114,7 +114,10 @@ export function PersonPopover({
           sideOffset={5}
           align="start"
         >
-          <div className="flex items-start gap-4">
+          <a
+            href={`/people/${person.id}`}
+            className="flex items-start gap-4 no-underline hover:opacity-90 transition-opacity"
+          >
             <Avatar.Root className="w-16 h-16 flex-shrink-0">
               <Avatar.Image
                 src={person.avatar?.src || ""}
@@ -127,7 +130,7 @@ export function PersonPopover({
             </Avatar.Root>
 
             <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-base">
+              <h4 className="font-semibold text-base text-color">
                 {person.displayName || person.name}
                 {person.pronouns && (
                   <span className="ml-2 text-xs font-normal text-accent-base">
@@ -146,7 +149,7 @@ export function PersonPopover({
                 </p>
               )}
             </div>
-          </div>
+          </a>
 
           {person.bio && (
             <p className="mt-3 text-sm text-accent-base line-clamp-3">
@@ -178,6 +181,22 @@ export function PersonPopover({
           )}
 
           <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 text-xs">
+            <a
+              href={`/people/${person.id}`}
+              className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1 font-medium"
+            >
+              <svg
+                className="w-3 h-3"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View Profile
+            </a>
             {person.links?.github && (
               <a
                 href={`https://github.com/${person.links.github}`}

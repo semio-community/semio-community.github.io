@@ -16,6 +16,7 @@ import { PricingCard } from "@/components/detail/PricingCard";
 import { ChipsCard } from "@/components/detail/ChipsCard";
 import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import ContentSection from "@/components/detail/ContentSection.astro";
 import { getRelatedHardware } from "@/data/hardware";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
@@ -183,6 +184,8 @@ const specificationItems = data.specifications || {};
     </Fragment>
 
     <Fragment slot="contributors">
+      <ContentSection title="DESCRIPTION" content={data.description} />
+
       {
         (orgContributors.length > 0 || validPeopleContributors.length > 0) && (
           <div class="contributors-section mb-8">

@@ -16,6 +16,7 @@ export interface ItemCardProps {
     github?: string;
     docs?: string;
     demo?: string;
+    website?: string;
   };
 }
 
@@ -252,6 +253,26 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     >
                       <circle cx="12" cy="12" r="10"></circle>
                       <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                    </svg>
+                  </button>
+                )}
+                {links.website && (
+                  <button
+                    type="button"
+                    className="text-color-600 hover:text-accent-one transition-colors p-0 bg-transparent border-0"
+                    title="Website"
+                    onClick={(e) => handleLinkClick(e, links.website!)}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
                     </svg>
                   </button>
                 )}

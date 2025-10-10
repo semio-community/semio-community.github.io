@@ -134,7 +134,7 @@ const transformEvent = (event: any) => {
     href: `/events/${event.id}`,
     ...(event.data.banner && { image: event.data.banner }),
     links: {
-      ...(event.data.links?.website && { demo: event.data.links.website }),
+      ...(event.data.links?.website && { website: event.data.links.website }),
     },
   };
 };

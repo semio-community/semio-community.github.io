@@ -1,0 +1,516 @@
+---
+import {
+  type CollectionEntry,
+  getCollection,
+  render,
+  getEntry,
+} from "astro:content";
+import PageLayout from "@/layouts/Base.astro";
+import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
+import { DetailHero } from "@/components/detail/DetailHero";
+import { DetailHeader } from "@/components/detail/DetailHeader";
+import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
+import { MetadataCard } from "@/components/detail/MetadataCard";
+import { ChipsCard } from "@/components/detail/ChipsCard";
+import { TagsSection } from "@/components/detail/TagsSection";
+import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import ContentSection from "@/components/detail/ContentSection.astro";
+import { getAllStudies } from "@/data/studies";
+import { getPerson, getFormattedAuthors } from "@/data/people";
+import { getRelatedHardware } from "@/data/hardware";
+import { getRelatedSoftware } from "@/data/software";
+import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/OrganizationChip.astro";
+import BasicChip from "@/components/BasicChip.astro";
+import { Fragment } from "react";
+
+export async function getStaticPaths() {
+  const studies = await getCollection("studies", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+  return studies.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<"studies">;
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+
+// Get related studies (by keywords or research areas)
+async function getRelatedStudies(
+  study: CollectionEntry<"studies">,
+  limit: number = 3,
+) {
+  const allStudies = await getAllStudies();
+  const relatedStudies: CollectionEntry<"studies">[] = [];
+
+  // Filter out the current study
+  const otherStudies = allStudies.filter((s) => s.id !== study.id);
+
+  // Score each study based on similarity
+  const scoredStudies = otherStudies.map((s) => {
+    let score = 0;
+
+    // Same type gets points
+    if (s.data.type === study.data.type) score += 2;
+
+    // Same venue gets points
+    if (s.data.venue && s.data.venue === study.data.venue) score += 3;
+
+    // Close year gets points (within 2 years)
+    const yearDiff = Math.abs(s.data.year - study.data.year);
+    if (yearDiff <= 2) score += 3 - yearDiff;
+
+    // Overlapping keywords get points
+    const studyKeywords = new Set(study.data.keywords || []);
+    const otherKeywords = s.data.keywords || [];
+    const keywordOverlap = otherKeywords.filter((kw) =>
+      studyKeywords.has(kw),
+    ).length;
+    score += keywordOverlap * 2;
+
+    // Overlapping research areas get points
+    const studyAreas = new Set(study.data.researchArea || []);
+    const otherAreas = s.data.researchArea || [];
+    const areaOverlap = otherAreas.filter((area) =>
+      studyAreas.has(area),
+    ).length;
+    score += areaOverlap * 2;
+
+    // Shared authors get high points
+    const studyAuthors = new Set(study.data.authors.map((a) => a.personId));
+    const otherAuthors = s.data.authors.map((a) => a.personId);
+    const authorOverlap = otherAuthors.filter((id) =>
+      studyAuthors.has(id),
+    ).length;
+    score += authorOverlap * 5;
+
+    return { study: s, score };
+  });
+
+  // Sort by score and take the top ones
+  scoredStudies.sort((a, b) => b.score - a.score);
+
+  return scoredStudies
+    .filter((ss) => ss.score > 0)
+    .slice(0, limit)
+    .map((ss) => ss.study);
+}
+
+const relatedStudies = await getRelatedStudies(entry, 3);
+
+// Get formatted authors string
+const authorsString = await getFormattedAuthors(data.authors);
+
+const meta = {
+  title: `${data.title} - Research Study`,
+  description: data.abstract,
+};
+
+// Prepare status badges
+const badges = [];
+
+// Type badge
+const typeLabels = {
+  paper: "Research Paper",
+  thesis: "Thesis",
+  report: "Technical Report",
+  preprint: "Preprint",
+  dataset: "Dataset",
+  benchmark: "Benchmark",
+};
+badges.push({
+  text: typeLabels[data.type] || data.type,
+  color: "blue" as const,
+  variant: "solid" as const,
+});
+
+// Year badge
+badges.push({
+  text: data.year.toString(),
+  color: "gray" as const,
+  variant: "outline" as const,
+});
+
+if (data.featured) {
+  badges.push({
+    text: "Featured",
+    color: "accent" as const,
+    variant: "solid" as const,
+  });
+}
+
+// Prepare action buttons
+const actionButtons = [];
+if (data.links?.pdf) {
+  actionButtons.push({
+    href: data.links.pdf,
+    text: "View PDF",
+    variant: "primary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.doi) {
+  actionButtons.push({
+    href: `https://doi.org/${data.links.doi}`,
+    text: "DOI",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.arxiv) {
+  actionButtons.push({
+    href: data.links.arxiv,
+    text: "arXiv",
+    variant: "secondary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.code) {
+  actionButtons.push({
+    href: data.links.code,
+    text: "Code",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.data) {
+  actionButtons.push({
+    href: data.links.data,
+    text: "Dataset",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.video) {
+  actionButtons.push({
+    href: data.links.video,
+    text: "Video",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.website) {
+  actionButtons.push({
+    href: data.links.website,
+    text: "Project Website",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+
+// Get author details with PersonPopover
+const authorsWithData = await Promise.all(
+  data.authors.map(async (author) => {
+    const person = await getPerson(author.personId);
+    return {
+      ...author,
+      person: person?.data,
+    };
+  }),
+);
+
+// Sort by order
+authorsWithData.sort((a, b) => a.order - b.order);
+
+// Filter out authors where person data couldn't be found
+const validAuthors = authorsWithData.filter((a) => a.person);
+
+// Prepare publication details
+const publicationItems = [];
+if (data.venue) {
+  publicationItems.push({
+    label: "Venue",
+    value: data.venue,
+  });
+}
+publicationItems.push({
+  label: "Year",
+  value: data.year.toString(),
+});
+if (data.citations && data.citations > 0) {
+  publicationItems.push({
+    label: "Citations",
+    value: data.citations.toString(),
+  });
+}
+if (data.publishDate) {
+  const pubDate = new Date(data.publishDate);
+  publicationItems.push({
+    label: "Published",
+    value: pubDate.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
+  });
+}
+
+// Get affiliated organizations
+const affiliatedOrgs = await Promise.all(
+  (data.affiliatedOrganizations || []).map((id) => getEntry("partners", id)),
+);
+const validAffiliatedOrgs = affiliatedOrgs.filter((org) => org !== undefined);
+
+// Get funding organizations
+const fundingOrgs = await Promise.all(
+  (data.fundingOrganizations || []).map((id) => getEntry("partners", id)),
+);
+const validFundingOrgs = fundingOrgs.filter((org) => org !== undefined);
+
+// Get related hardware
+const relatedHardwareItems = data.relatedHardware
+  ? await Promise.all(
+      data.relatedHardware.map((id) => getEntry("hardware", id)),
+    )
+  : [];
+const validRelatedHardware = relatedHardwareItems.filter(
+  (item) => item !== undefined,
+);
+
+// Get related software
+const relatedSoftwareItems = data.relatedSoftware
+  ? await Promise.all(
+      data.relatedSoftware.map((id) => getEntry("software", id)),
+    )
+  : [];
+const validRelatedSoftware = relatedSoftwareItems.filter(
+  (item) => item !== undefined,
+);
+
+// Prepare related resources metadata
+const relatedResourcesItems = [];
+validRelatedHardware.forEach((hw) => {
+  if (hw) {
+    relatedResourcesItems.push({
+      label: "Hardware",
+      value: hw.data.name,
+      link: `/hardware/${hw.id}`,
+    });
+  }
+});
+validRelatedSoftware.forEach((sw) => {
+  if (sw) {
+    relatedResourcesItems.push({
+      label: "Software",
+      value: sw.data.name,
+      link: `/software/${sw.id}`,
+    });
+  }
+});
+---
+
+<PageLayout meta={meta}>
+  <BaseDetailLayout>
+    <Fragment slot="hero">
+      {
+        data.thumbnail ? (
+          <DetailHero
+            client:load
+            image={data.thumbnail}
+            title={data.title}
+            subtitle={authorsString}
+            badges={badges}
+            featured={data.featured}
+          />
+        ) : (
+          <DetailHeader
+            client:load
+            title={data.title}
+            subtitle={authorsString}
+            badges={badges}
+            featured={data.featured}
+          />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="actions">
+      {
+        actionButtons.length > 0 && (
+          <ActionButtonGroup client:load buttons={actionButtons} />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="contributors">
+      <ContentSection title="ABSTRACT" content={data.abstract} />
+
+      {/* Authors Section */}
+      {
+        validAuthors.length > 0 && (
+          <div class="authors-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                AUTHORS
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {validAuthors.map((author) => (
+                  <div class="flex items-center gap-1">
+                    <PersonPopoverWrapper
+                      personId={author.personId}
+                      role={author.affiliationSnapshot}
+                    />
+                    {author.corresponding && (
+                      <span
+                        class="text-xs text-accent-one"
+                        title="Corresponding Author"
+                      >
+                        ✉
+                      </span>
+                    )}
+                    {author.equalContribution && (
+                      <span
+                        class="text-xs text-color-500"
+                        title="Equal Contribution"
+                      >
+                        *
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Organizations Section */}
+      {
+        (validAffiliatedOrgs.length > 0 || validFundingOrgs.length > 0) && (
+          <div class="organizations-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              {validAffiliatedOrgs.length > 0 && (
+                <div class="mb-4">
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    AFFILIATED INSTITUTIONS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {validAffiliatedOrgs.map(
+                      (org) =>
+                        org && (
+                          <OrganizationChip
+                            partnerId={org.id}
+                            role="Affiliated Institution"
+                          />
+                        ),
+                    )}
+                  </div>
+                </div>
+              )}
+              {validFundingOrgs.length > 0 && (
+                <div>
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    FUNDING ORGANIZATIONS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {validFundingOrgs.map(
+                      (org) =>
+                        org && (
+                          <OrganizationChip
+                            partnerId={org.id}
+                            role="Funding Partner"
+                          />
+                        ),
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="sidebar">
+      {
+        publicationItems.length > 0 && (
+          <MetadataCard
+            client:load
+            title="Publication Details"
+            icon="solar:document-text-bold-duotone"
+            items={publicationItems}
+          />
+        )
+      }
+
+      {
+        data.keywords && data.keywords.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Keywords"
+            icon="solar:tag-bold-duotone"
+            items={data.keywords}
+            variant="default"
+          />
+        )
+      }
+
+      {
+        data.researchArea && data.researchArea.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Research Areas"
+            icon="solar:book-bold-duotone"
+            items={data.researchArea}
+            variant="primary"
+          />
+        )
+      }
+
+      {
+        relatedResourcesItems.length > 0 && (
+          <MetadataCard
+            client:load
+            title="Related Resources"
+            icon="solar:link-bold-duotone"
+            items={relatedResourcesItems}
+          />
+        )
+      }
+    </Fragment>
+
+    <!-- Main content from MDX file -->
+    <Content />
+
+    <Fragment slot="related">
+      {
+        relatedStudies && relatedStudies.length > 0 && (
+          <RelatedItemsGrid
+            client:load
+            title="Related Studies"
+            subtitle="Similar research papers and reports"
+            items={relatedStudies.map((study) => ({
+              id: study.id,
+              data: {
+                ...study.data,
+                // Map study data to expected format for card
+                name: study.data.title,
+                description: study.data.abstract,
+                shortDescription: `${typeLabels[study.data.type] || study.data.type} • ${study.data.year}`,
+                image: study.data.thumbnail,
+                featured: study.data.featured,
+              },
+            }))}
+            itemType="studies"
+            columns={3}
+          />
+        )
+      }
+    </Fragment>
+  </BaseDetailLayout>
+</PageLayout>

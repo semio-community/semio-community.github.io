@@ -1,0 +1,635 @@
+---
+import {
+  type CollectionEntry,
+  getCollection,
+  render,
+  getEntry,
+} from "astro:content";
+import PageLayout from "@/layouts/Base.astro";
+import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
+import { DetailHero } from "@/components/detail/DetailHero";
+import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
+import { MetadataCard } from "@/components/detail/MetadataCard";
+import { PricingCard } from "@/components/detail/PricingCard";
+import { ChipsCard } from "@/components/detail/ChipsCard";
+import { TagsSection } from "@/components/detail/TagsSection";
+import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import ContentSection from "@/components/detail/ContentSection.astro";
+import { getAllEvents } from "@/data/events";
+import { getPerson } from "@/data/people";
+import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/OrganizationChip.astro";
+import BasicChip from "@/components/BasicChip.astro";
+import { Fragment } from "react";
+
+export async function getStaticPaths() {
+  const events = await getCollection("events", ({ data }) => {
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+  return events.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<"events">;
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+
+// Get related events (by type, format, or topics)
+async function getRelatedEvents(
+  event: CollectionEntry<"events">,
+  limit: number = 3,
+) {
+  const allEvents = await getAllEvents();
+  const relatedEvents: CollectionEntry<"events">[] = [];
+
+  // Filter out the current event and past events (unless current is also past)
+  const currentDate = new Date();
+  const isCurrentPast = new Date(event.data.endDate) < currentDate;
+
+  const otherEvents = allEvents.filter((e) => {
+    if (e.id === event.id) return false;
+    // If current event is past, include all; otherwise prefer upcoming
+    if (!isCurrentPast) {
+      const eventDate = new Date(e.data.startDate);
+      if (eventDate < currentDate) return false;
+    }
+    return true;
+  });
+
+  // Score each event based on similarity
+  const scoredEvents = otherEvents.map((e) => {
+    let score = 0;
+
+    // Same type gets points
+    if (e.data.type === event.data.type) score += 3;
+
+    // Same format gets points
+    if (e.data.format === event.data.format) score += 2;
+
+    // Same city gets points
+    if (e.data.location.city === event.data.location.city) score += 2;
+
+    // Same country gets points
+    if (e.data.location.country === event.data.location.country) score += 1;
+
+    // Overlapping topics get points
+    const eventTopics = new Set(event.data.topics || []);
+    const otherTopics = e.data.topics || [];
+    const topicOverlap = otherTopics.filter((topic) =>
+      eventTopics.has(topic),
+    ).length;
+    score += topicOverlap * 2;
+
+    // Overlapping tracks get points
+    const eventTracks = new Set(event.data.tracks || []);
+    const otherTracks = e.data.tracks || [];
+    const trackOverlap = otherTracks.filter((track) =>
+      eventTracks.has(track),
+    ).length;
+    score += trackOverlap;
+
+    // Temporal proximity (within 3 months) gets points
+    const timeDiff = Math.abs(
+      new Date(e.data.startDate).getTime() -
+        new Date(event.data.startDate).getTime(),
+    );
+    const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
+    if (monthsDiff <= 3) score += 3 - Math.floor(monthsDiff);
+
+    return { event: e, score };
+  });
+
+  // Sort by score and take the top ones
+  scoredEvents.sort((a, b) => b.score - a.score);
+
+  return scoredEvents
+    .filter((se) => se.score > 0)
+    .slice(0, limit)
+    .map((se) => se.event);
+}
+
+const relatedEvents = await getRelatedEvents(entry, 3);
+
+const meta = {
+  title: `${data.name} - Event`,
+  description: data.description,
+};
+
+// Determine event status
+const currentDate = new Date();
+const startDate = new Date(data.startDate);
+const endDate = new Date(data.endDate);
+const registrationDeadline = data.registrationDeadline
+  ? new Date(data.registrationDeadline)
+  : null;
+
+let eventStatus = "upcoming";
+if (currentDate > endDate) {
+  eventStatus = "past";
+} else if (currentDate >= startDate && currentDate <= endDate) {
+  eventStatus = "ongoing";
+}
+
+// Prepare status badges
+const badges = [];
+
+// Status badge
+if (eventStatus === "ongoing") {
+  badges.push({
+    text: "Ongoing",
+    color: "green" as const,
+    variant: "solid" as const,
+  });
+} else if (eventStatus === "upcoming") {
+  badges.push({
+    text: "Upcoming",
+    color: "blue" as const,
+    variant: "solid" as const,
+  });
+} else {
+  badges.push({
+    text: "Past Event",
+    color: "gray" as const,
+    variant: "outline" as const,
+  });
+}
+
+// Format badge
+const formatLabels = {
+  "in-person": "In-Person",
+  virtual: "Virtual",
+  hybrid: "Hybrid",
+};
+badges.push({
+  text: formatLabels[data.format] || data.format,
+  color: "yellow" as const,
+  variant: "outline" as const,
+});
+
+// Type badge
+const typeLabels = {
+  conference: "Conference",
+  workshop: "Workshop",
+  hackathon: "Hackathon",
+  meetup: "Meetup",
+  webinar: "Webinar",
+  competition: "Competition",
+};
+badges.push({
+  text: typeLabels[data.type] || data.type,
+  color: "blue" as const,
+  variant: "outline" as const,
+});
+
+if (data.featured) {
+  badges.push({
+    text: "Featured",
+    color: "accent" as const,
+    variant: "solid" as const,
+  });
+}
+
+// Prepare action buttons
+const actionButtons = [];
+if (
+  data.links?.registration &&
+  eventStatus !== "past" &&
+  (!registrationDeadline || currentDate < registrationDeadline)
+) {
+  actionButtons.push({
+    href: data.links.registration,
+    text: "Register Now",
+    variant: "primary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.website) {
+  actionButtons.push({
+    href: data.links.website,
+    text: "Event Website",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.program) {
+  actionButtons.push({
+    href: data.links.program,
+    text: "Program",
+    variant: "secondary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.proceedings && eventStatus === "past") {
+  actionButtons.push({
+    href: data.links.proceedings,
+    text: "Proceedings",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+if (data.links?.recordings && eventStatus === "past") {
+  actionButtons.push({
+    href: data.links.recordings,
+    text: "Recordings",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  });
+}
+
+// Format dates for display
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const formatTime = (date: Date) => {
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+};
+
+// Prepare event details
+const eventDetailsItems = [];
+eventDetailsItems.push({
+  label: "Start Date",
+  value: formatDate(startDate),
+});
+eventDetailsItems.push({
+  label: "End Date",
+  value: formatDate(endDate),
+});
+if (registrationDeadline) {
+  eventDetailsItems.push({
+    label: "Registration Deadline",
+    value: formatDate(registrationDeadline),
+  });
+}
+if (data.capacity) {
+  eventDetailsItems.push({
+    label: "Capacity",
+    value: `${data.capacity} attendees`,
+  });
+}
+
+// Prepare location details
+const locationItems = [];
+if (data.location.venue) {
+  locationItems.push({
+    label: "Venue",
+    value: data.location.venue,
+  });
+}
+locationItems.push({
+  label: "Location",
+  value: `${data.location.city}, ${data.location.country}`,
+});
+if (data.location.online) {
+  locationItems.push({
+    label: "Online Access",
+    value: "Available",
+  });
+}
+if (data.location.coordinates) {
+  locationItems.push({
+    label: "Map",
+    value: "View on Google Maps",
+    link: `https://maps.google.com/?q=${data.location.coordinates.lat},${data.location.coordinates.lng}`,
+    external: true,
+  });
+}
+
+// Get organizers with data
+const organizersWithData = await Promise.all(
+  data.organizers.map(async (org) => {
+    if (org.type === "person") {
+      const person = await getPerson(org.id);
+      return {
+        ...org,
+        data: person?.data,
+      };
+    } else {
+      const organization = await getEntry("partners", org.id);
+      return {
+        ...org,
+        data: organization?.data,
+      };
+    }
+  }),
+);
+
+// Filter out invalid organizers
+const validOrganizers = organizersWithData.filter((o) => o.data);
+
+// Get speakers with data
+const speakersWithData = await Promise.all(
+  (data.speakers || []).map(async (speaker) => {
+    const person = await getPerson(speaker.personId);
+    return {
+      ...speaker,
+      person: person?.data,
+    };
+  }),
+);
+
+// Filter out invalid speakers
+const validSpeakers = speakersWithData.filter((s) => s.person);
+
+// Get sponsors with data
+const sponsorsWithData = await Promise.all(
+  (data.sponsors || []).map(async (sponsor) => {
+    const organization = await getEntry("partners", sponsor.partnerId);
+    return {
+      ...sponsor,
+      organization: organization?.data,
+    };
+  }),
+);
+
+// Filter out invalid sponsors
+const validSponsors = sponsorsWithData.filter((s) => s.organization);
+
+// Group sponsors by level
+const sponsorsByLevel = {
+  platinum: validSponsors.filter((s) => s.level === "platinum"),
+  gold: validSponsors.filter((s) => s.level === "gold"),
+  silver: validSponsors.filter((s) => s.level === "silver"),
+  bronze: validSponsors.filter((s) => s.level === "bronze"),
+  supporter: validSponsors.filter((s) => s.level === "supporter"),
+};
+
+// Prepare pricing data for PricingCard
+const pricingData = data.pricing
+  ? {
+      purchase: {
+        amount: data.pricing.industry,
+        currency: "USD",
+      },
+      rental:
+        data.pricing.student || data.pricing.academic || data.pricing.virtual
+          ? {
+              daily: data.pricing.student
+                ? {
+                    amount: data.pricing.student,
+                    currency: "USD",
+                    label: "Student",
+                  }
+                : undefined,
+              weekly: data.pricing.academic
+                ? {
+                    amount: data.pricing.academic,
+                    currency: "USD",
+                    label: "Academic",
+                  }
+                : undefined,
+              monthly: data.pricing.virtual
+                ? {
+                    amount: data.pricing.virtual,
+                    currency: "USD",
+                    label: "Virtual",
+                  }
+                : undefined,
+            }
+          : undefined,
+    }
+  : null;
+---
+
+<PageLayout meta={meta}>
+  <BaseDetailLayout>
+    <Fragment slot="hero">
+      <DetailHero
+        client:load
+        image={data.banner}
+        title={data.name}
+        subtitle={`${typeLabels[data.type]} • ${data.location.city}, ${data.location.country}`}
+        badges={badges}
+        featured={data.featured}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      {
+        actionButtons.length > 0 && (
+          <ActionButtonGroup client:load buttons={actionButtons} />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="contributors">
+      <ContentSection title="ABOUT THE EVENT" content={data.description} />
+
+      {/* Organizers Section */}
+      {
+        validOrganizers.length > 0 && (
+          <div class="organizers-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                ORGANIZERS
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {validOrganizers.map((organizer) =>
+                  organizer.type === "person" ? (
+                    <PersonPopoverWrapper
+                      personId={organizer.id}
+                      role={organizer.role || "Organizer"}
+                    />
+                  ) : (
+                    <OrganizationChip
+                      partnerId={organizer.id}
+                      role={organizer.role || "Organizing Institution"}
+                    />
+                  ),
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Speakers Section */}
+      {
+        validSpeakers.length > 0 && (
+          <div class="speakers-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                SPEAKERS
+              </h3>
+              <div class="grid gap-3">
+                {validSpeakers.map((speaker) => (
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <PersonPopoverWrapper
+                        personId={speaker.personId}
+                        role={speaker.title}
+                      />
+                      {speaker.sessionType && (
+                        <BasicChip
+                          text={
+                            speaker.sessionType === "keynote"
+                              ? "Keynote"
+                              : speaker.sessionType
+                          }
+                          variant={
+                            speaker.sessionType === "keynote"
+                              ? "accent"
+                              : "default"
+                          }
+                        />
+                      )}
+                    </div>
+                    {speaker.topic && (
+                      <span class="text-sm text-accent-base">
+                        {speaker.topic}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Sponsors Section */}
+      {
+        validSponsors.length > 0 && (
+          <div class="sponsors-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                SPONSORS
+              </h3>
+              <div class="space-y-4">
+                {Object.entries(sponsorsByLevel).map(
+                  ([level, sponsors]) =>
+                    sponsors.length > 0 && (
+                      <div key={level}>
+                        <h4 class="text-xs font-medium mb-2 text-color-500 capitalize">
+                          {level}
+                        </h4>
+                        <div class="flex flex-wrap gap-2">
+                          {sponsors.map((sponsor) => (
+                            <OrganizationChip
+                              partnerId={sponsor.partnerId}
+                              role={`${level.charAt(0).toUpperCase() + level.slice(1)} Sponsor`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ),
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="sidebar">
+      {
+        eventDetailsItems.length > 0 && (
+          <MetadataCard
+            client:load
+            title="Event Details"
+            icon="solar:calendar-bold-duotone"
+            items={eventDetailsItems}
+          />
+        )
+      }
+
+      {
+        locationItems.length > 0 && (
+          <MetadataCard
+            client:load
+            title="Location"
+            icon="solar:map-point-bold-duotone"
+            items={locationItems}
+          />
+        )
+      }
+
+      {
+        pricingData && (
+          <PricingCard
+            client:load
+            purchase={pricingData.purchase}
+            rental={pricingData.rental}
+          />
+        )
+      }
+
+      {
+        data.topics && data.topics.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Topics"
+            icon="solar:hashtag-bold-duotone"
+            items={data.topics}
+            variant="primary"
+          />
+        )
+      }
+
+      {
+        data.tracks && data.tracks.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Tracks"
+            icon="solar:layers-minimalistic-bold-duotone"
+            items={data.tracks}
+            variant="secondary"
+          />
+        )
+      }
+
+      {
+        data.tags && data.tags.length > 0 && (
+          <TagsSection client:load tags={data.tags} baseUrl="/events/tags" />
+        )
+      }
+    </Fragment>
+
+    <!-- Main content from MDX file -->
+    <Content />
+
+    <Fragment slot="related">
+      {
+        relatedEvents && relatedEvents.length > 0 && (
+          <RelatedItemsGrid
+            client:load
+            title="Related Events"
+            subtitle="Similar upcoming and past events"
+            items={relatedEvents.map((event) => ({
+              id: event.id,
+              data: {
+                ...event.data,
+                // Map event data to expected format for card
+                image: event.data.banner,
+                shortDescription: `${formatLabels[event.data.format]} • ${event.data.location.city}`,
+              },
+            }))}
+            itemType="events"
+            columns={3}
+          />
+        )
+      }
+    </Fragment>
+  </BaseDetailLayout>
+</PageLayout>

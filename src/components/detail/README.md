@@ -15,6 +15,7 @@ BaseDetailLayout.astro (Slot-based structure)
     ├── StatusBadge.tsx
     ├── ActionButtonGroup.tsx
     ├── ContributorsSection.tsx
+    ├── ContentSection.astro
     ├── SpecificationsCard.tsx
     ├── MetadataCard.tsx
     ├── FeaturesCard.tsx
@@ -92,6 +93,32 @@ A convenience wrapper that simplifies common detail page patterns by handling st
 - `organizations`, `people`, `leadOrg`, `supportingOrgs` - Contributors data
 - `actionButtons` - Array of action button configurations
 - `relatedItems`, `relatedTitle`, `relatedSubtitle` - Related content
+
+### Astro Components
+
+#### ContentSection
+Displays text content in a styled box with title and gradient background. Used for biography, description, abstract, and similar content sections.
+
+```astro
+<ContentSection title="BIOGRAPHY" content={data.bio} />
+```
+
+Or with custom HTML/components:
+
+```astro
+<ContentSection title="ABOUT">
+  <p>{data.description}</p>
+  <ul>
+    <li>Custom content here</li>
+  </ul>
+</ContentSection>
+```
+
+**Props:**
+- `title` (string, required) - Section title displayed in uppercase
+- `content` (string, optional) - Plain text or HTML content
+- `className` (string, optional) - Additional CSS classes
+- *default slot* - Alternative to content prop for complex content
 
 ### React Components
 
