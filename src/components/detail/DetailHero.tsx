@@ -45,7 +45,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
       orange: "bg-orange-500/80 text-white",
       red: "bg-red-500/80 text-white",
       yellow: "bg-yellow-500/80 text-white",
-      gray: "bg-gray-500/80 text-white",
+      gray: "bg-neutral-500/80 text-white",
       accent: "bg-accent-two/80 text-white",
       special: "bg-special/80 text-white",
     };

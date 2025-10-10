@@ -2,6 +2,7 @@ import React from "react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
 import { CallToActionButton } from "../CallToActionButton";
+import { getStatusColor } from "@/config/statusConfig";
 
 // Simplified type for serialized data
 type HardwareItem = {
@@ -18,6 +19,14 @@ type SoftwareItem = {
   status: "stable" | "beta" | "alpha" | "in-progress" | "deprecated";
 };
 
+type StudyItem = {
+  id: string;
+  title: string;
+  type: string;
+  year: number;
+  citations: number;
+};
+
 interface NavigationMenuProps {
   currentPath: string;
   menuLinks: Array<{
@@ -28,6 +37,7 @@ interface NavigationMenuProps {
   }>;
   hardwareItems: HardwareItem[];
   softwareItems: SoftwareItem[];
+  studyItems?: StudyItem[];
   menuSections: Record<
     string,
     Array<{
@@ -55,6 +65,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   menuLinks,
   hardwareItems,
   softwareItems,
+  studyItems = [],
   menuSections,
   urlPrefix,
 }) => {
@@ -62,6 +73,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   const maxItemsInDropdown = 4;
   const hardwareForDropdown = hardwareItems.slice(0, maxItemsInDropdown);
   const softwareForDropdown = softwareItems.slice(0, maxItemsInDropdown);
+  const studiesForDropdown = studyItems.slice(0, 3);
 
   // Fallback if no menu links
   if (!menuLinks || menuLinks.length === 0) {
@@ -75,9 +87,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
           .filter((link) => link.inHeader)
           .map((link) => {
             const hasDropdown =
-              (menuSections[link.path] ||
-                link.path === "/hardware/" ||
-                link.path === "/software/") &&
+              (menuSections[link.path] || link.path === "/projects/") &&
               !link.callToAction;
 
             if (!hasDropdown || link.callToAction) {
@@ -199,124 +209,110 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                       </div>
                     )}
 
-                    {/* Hardware Items */}
-                    {link.path === "/hardware/" &&
-                      hardwareForDropdown.length > 0 && (
-                        <>
-                          <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
-                          <div className="space-y-2">
-                            <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
-                              Featured Platforms
-                            </div>
-                            {hardwareForDropdown.map((item) => (
-                              <a
-                                key={item.id}
-                                href={url(`/hardware/${item.id}`)}
-                                className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
-                              >
-                                <div
-                                  className={clsx(
-                                    "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
-                                    item.status === "available" &&
-                                      "bg-green-500",
-                                    item.status === "in-progress" &&
-                                      "bg-yellow-500",
-                                    item.status === "coming-soon" &&
-                                      "bg-blue-500",
-                                    item.status === "deprecated" &&
-                                      "bg-gray-500",
-                                  )}
-                                ></div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors truncate">
-                                    {item.name}
-                                  </div>
-                                  <div className="text-xs text-color-500 line-clamp-1">
-                                    {item.shortDescription}
-                                  </div>
-                                </div>
-                              </a>
-                            ))}
-                            {hardwareItems.length > maxItemsInDropdown && (
-                              <a
-                                href={url("/hardware/#products")}
-                                className="flex items-center justify-center gap-2 p-2 text-xs font-medium text-accent-base hover:text-accent-one transition-colors"
-                              >
-                                View all {hardwareItems.length} platforms
-                                <svg
-                                  className="w-3 h-3"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
+                    {/* Projects Page - Combined Hardware, Software, Studies */}
+                    {link.path === "/projects/" && (
+                      <>
+                        {/* Hardware Items */}
+                        {hardwareForDropdown.length > 0 && (
+                          <>
+                            <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
+                            <div className="space-y-2">
+                              <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
+                                Featured Hardware
+                              </div>
+                              {hardwareForDropdown.slice(0, 2).map((item) => (
+                                <a
+                                  key={item.id}
+                                  href={url(`/hardware/${item.id}`)}
+                                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                                 >
-                                  <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                              </a>
-                            )}
-                          </div>
-                        </>
-                      )}
+                                  <div
+                                    className={clsx(
+                                      "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
+                                      getStatusColor(item.status, "bullet"),
+                                    )}
+                                  ></div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors truncate">
+                                      {item.name}
+                                    </div>
+                                    <div className="text-xs text-color-500 line-clamp-1">
+                                      {item.shortDescription}
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        )}
 
-                    {/* Software Items */}
-                    {link.path === "/software/" &&
-                      softwareForDropdown.length > 0 && (
-                        <>
-                          <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
-                          <div className="space-y-2">
-                            <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
-                              Featured Software
-                            </div>
-                            {softwareForDropdown.map((item) => (
-                              <a
-                                key={item.id}
-                                href={url(`/software/${item.id}`)}
-                                className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
-                              >
-                                <div
-                                  className={clsx(
-                                    "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
-                                    item.status === "stable" && "bg-green-500",
-                                    item.status === "beta" && "bg-yellow-500",
-                                    item.status === "alpha" && "bg-orange-500",
-                                    item.status === "in-progress" &&
-                                      "bg-purple-500",
-                                    item.status === "deprecated" &&
-                                      "bg-gray-500",
-                                  )}
-                                ></div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors truncate">
-                                    {item.name}
-                                  </div>
-                                  <div className="text-xs text-color-500 line-clamp-1">
-                                    {item.shortDescription}
-                                  </div>
-                                </div>
-                              </a>
-                            ))}
-                            {softwareItems.length > maxItemsInDropdown && (
-                              <a
-                                href={url("/software/#products")}
-                                className="flex items-center justify-center gap-2 p-2 text-xs font-medium text-accent-base hover:text-accent-one transition-colors"
-                              >
-                                View all {softwareItems.length} tools
-                                <svg
-                                  className="w-3 h-3"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
+                        {/* Software Items */}
+                        {softwareForDropdown.length > 0 && (
+                          <>
+                            <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
+                            <div className="space-y-2">
+                              <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
+                                Featured Software
+                              </div>
+                              {softwareForDropdown.slice(0, 2).map((item) => (
+                                <a
+                                  key={item.id}
+                                  href={url(`/software/${item.id}`)}
+                                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                                 >
-                                  <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                              </a>
-                            )}
-                          </div>
-                        </>
-                      )}
+                                  <div
+                                    className={clsx(
+                                      "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
+                                      getStatusColor(item.status, "bullet"),
+                                    )}
+                                  ></div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors truncate">
+                                      {item.name}
+                                    </div>
+                                    <div className="text-xs text-color-500 line-clamp-1">
+                                      {item.shortDescription}
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        )}
+
+                        {/* Studies Items */}
+                        {studiesForDropdown.length > 0 && (
+                          <>
+                            <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
+                            <div className="space-y-2">
+                              <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
+                                Featured Studies
+                              </div>
+                              {studiesForDropdown.map((item) => (
+                                <a
+                                  key={item.id}
+                                  href={url(`/studies/${item.id}`)}
+                                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
+                                >
+                                  <div className="min-w-0 flex-1">
+                                    <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors line-clamp-2">
+                                      {item.title}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-color-500">
+                                      <span>{item.type}</span>
+                                      <span>•</span>
+                                      <span>{item.year}</span>
+                                      <span>•</span>
+                                      <span>{item.citations} citations</span>
+                                    </div>
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
                   </div>
                 </NavigationMenu.Content>
               </NavigationMenu.Item>

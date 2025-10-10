@@ -218,7 +218,7 @@ const services = [
           )
         }
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-gray-400 rounded-full"></span>
+          <span class="w-3 h-3 bg-neutral-400 rounded-full"></span>
           <span>{allEvents.length} Total Events</span>
         </div>
         {
@@ -328,7 +328,7 @@ const services = [
             {eventTypes.map((type: string) => {
               const info = eventTypeInfo[type] || {
                 icon: "solar:calendar-line-duotone",
-                color: "text-gray-500",
+                color: "text-neutral-500",
                 description: "Events in this category",
               };
               const count = eventTypeCounts[type] || 0;

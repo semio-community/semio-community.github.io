@@ -36,19 +36,14 @@ export const menuLinks: {
     inHeader: false,
   },
   {
-    path: "/hardware/",
-    title: "Hardware",
+    path: "/projects/",
+    title: "Projects",
     inHeader: true,
   },
   {
-    path: "/software/",
-    title: "Software",
+    path: "/services/",
+    title: "Services",
     inHeader: true,
-  },
-  {
-    path: "/studies/",
-    title: "Studies",
-    inHeader: false,
   },
   {
     path: "/events/",

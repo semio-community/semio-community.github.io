@@ -7,9 +7,11 @@ import { siteConfig, menuLinks } from "@/site.config";
 import { homeUrl, url } from "@/utils/url";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
+import { getFeaturedStudies } from "@/data/studies";
 
 // Fetch data for navigation and simplify for React component
 const allHardware = await getAllHardware();
+const featuredStudies = await getFeaturedStudies();
 const allSoftware = await getAllSoftware();
 
 // Simplify data for serialization to React component
@@ -20,25 +22,38 @@ const hardwareItems = allHardware.map((item) => ({
   status: item.data.status,
 }));
 
-const softwareItems = allSoftware.map((item) => ({
-  id: item.id,
-  name: item.data.name,
-  shortDescription: item.data.shortDescription,
-  status: item.data.status,
+// Simplify software data for React component
+const softwareItems = allSoftware.map((sw) => ({
+  id: sw.id,
+  name: sw.data.name,
+  shortDescription: sw.data.shortDescription,
+  status: sw.data.status,
+}));
+
+// Simplify studies data for React component
+const studyItems = featuredStudies.map((study) => ({
+  id: study.id,
+  title: study.data.title,
+  type: study.data.type,
+  year: study.data.year,
+  citations: study.data.citations,
 }));
 
 // Define menu sections
 const menuSections = {
-  "/hardware/": [
-    { title: "Products", href: "/hardware/#products" },
-    { title: "Services", href: "/hardware/#services" },
-    { title: "Contribute", href: "/hardware/#hardware-contribute" },
+  "/projects/": [
+    { title: "Hardware", href: "/projects/#hardware" },
+    { title: "Software", href: "/projects/#software" },
+    { title: "Studies", href: "/projects/#studies" },
+    { title: "Contribute", href: "/projects/#contribute" },
   ],
-  "/software/": [
-    { title: "Products", href: "/software/#products" },
-    { title: "Services", href: "/software/#services" },
-    { title: "Resources", href: "/software/#software-resources" },
+  "/services/": [
+    { title: "Hardware Services", href: "/services/#hardware-services" },
+    { title: "Software Services", href: "/services/#software-services" },
+    { title: "Research Services", href: "/services/#research-services" },
+    { title: "Get Started", href: "/services/#get-started" },
   ],
+
   "/events/": [
     { title: "Upcoming Events", href: "/events/#upcoming" },
     { title: "Past Events", href: "/events/#past" },
@@ -146,6 +161,7 @@ const menuSections = {
         menuLinks={menuLinks}
         hardwareItems={hardwareItems}
         softwareItems={softwareItems}
+        studyItems={studyItems}
         menuSections={menuSections}
         urlPrefix=""
       />

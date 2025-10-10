@@ -56,7 +56,7 @@ export function PersonPopover({
     return (
       <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface rounded-full">
         <svg
-          className="w-5 h-5 text-gray-400"
+          className="w-5 h-5 text-neutral-400"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +69,7 @@ export function PersonPopover({
             strokeLinecap="round"
           />
         </svg>
-        <span className="text-sm text-gray-500">Unknown Person</span>
+        <span className="text-sm text-neutral-500">Unknown Person</span>
       </span>
     );
   }
@@ -159,7 +159,7 @@ export function PersonPopover({
 
           {person.expertise && person.expertise.length > 0 && (
             <div className="mt-3">
-              <p className="text-xs font-semibold mb-1 text-gray-600 dark:text-gray-400">
+              <p className="text-xs font-semibold mb-1 text-neutral-600 dark:text-neutral-400">
                 Expertise:
               </p>
               <div className="flex flex-wrap gap-1">
@@ -172,7 +172,7 @@ export function PersonPopover({
                   </span>
                 ))}
                 {person.expertise.length > 5 && (
-                  <span className="text-xs px-2 py-0.5 text-gray-500">
+                  <span className="text-xs px-2 py-0.5 text-neutral-500">
                     +{person.expertise.length - 5} more
                   </span>
                 )}
@@ -180,7 +180,7 @@ export function PersonPopover({
             </div>
           )}
 
-          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 text-xs">
+          <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 flex flex-wrap gap-3 text-xs">
             <a
               href={`/people/${person.id}`}
               className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1 font-medium"

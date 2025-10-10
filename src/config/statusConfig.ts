@@ -23,66 +23,76 @@ export const STATUS_COLORS = {
   available: {
     text: "text-green-600 dark:text-green-400",
     bg: "bg-green-500/80",
+    bullet: "bg-green-500",
     border: "border-green-500",
     chip: "green" as const,
   },
   stable: {
     text: "text-green-600 dark:text-green-400",
     bg: "bg-green-500/80",
+    bullet: "bg-green-500",
     border: "border-green-500",
     chip: "green" as const,
   },
   ongoing: {
     text: "text-green-600 dark:text-green-400",
     bg: "bg-green-500/80",
+    bullet: "bg-green-500",
     border: "border-green-500",
     chip: "green" as const,
   },
 
-  // In Development/Beta states - Blue
+  // In Development states - Yellow for in-progress, Blue for beta
   "in-progress": {
-    text: "text-blue-600 dark:text-blue-400",
-    bg: "bg-blue-500/80",
-    border: "border-blue-500",
-    chip: "blue" as const,
+    text: "text-yellow-600 dark:text-yellow-400",
+    bg: "bg-yellow-500/80",
+    bullet: "bg-yellow-500",
+    border: "border-yellow-500",
+    chip: "yellow" as const,
   },
   beta: {
     text: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-500/80",
+    bullet: "bg-blue-500",
     border: "border-blue-500",
     chip: "blue" as const,
   },
   upcoming: {
     text: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-500/80",
+    bullet: "bg-blue-500",
     border: "border-blue-500",
     chip: "blue" as const,
   },
 
-  // Early/Planning states - Yellow
+  // Early/Planning states - Blue for coming-soon, Orange for alpha
   "coming-soon": {
-    text: "text-yellow-600 dark:text-yellow-400",
-    bg: "bg-yellow-500/80",
-    border: "border-yellow-500",
-    chip: "yellow" as const,
+    text: "text-blue-600 dark:text-blue-400",
+    bg: "bg-blue-500/80",
+    bullet: "bg-blue-500",
+    border: "border-blue-500",
+    chip: "blue" as const,
   },
   alpha: {
-    text: "text-yellow-600 dark:text-yellow-400",
-    bg: "bg-yellow-500/80",
-    border: "border-yellow-500",
-    chip: "yellow" as const,
+    text: "text-orange-600 dark:text-orange-400",
+    bg: "bg-orange-500/80",
+    bullet: "bg-orange-500",
+    border: "border-orange-500",
+    chip: "orange" as const,
   },
 
   // Deprecated/Past states - Gray
   deprecated: {
     text: "text-neutral-600 dark:text-neutral-400",
     bg: "bg-neutral-500/80",
+    bullet: "bg-neutral-500",
     border: "border-neutral-500",
     chip: "neutral" as const,
   },
   past: {
     text: "text-neutral-600 dark:text-neutral-400",
     bg: "bg-neutral-500/80",
+    bullet: "bg-neutral-500",
     border: "border-neutral-500",
     chip: "gray" as const,
   },
@@ -112,10 +122,12 @@ export const STATUS_LABELS: Record<GenericStatus, string> = {
 // Helper function to get status color
 export function getStatusColor(
   status: string | undefined,
-  colorType: "text" | "bg" | "border" | "chip" = "text",
+  colorType: "text" | "bg" | "bullet" | "border" | "chip" = "text",
 ): string {
   if (!status || !(status in STATUS_COLORS)) {
-    return colorType === "chip" ? "gray" : "text-gray-600 dark:text-gray-400";
+    return colorType === "chip"
+      ? "gray"
+      : "text-neutral-600 dark:text-neutral-400";
   }
 
   const statusConfig = STATUS_COLORS[status as keyof typeof STATUS_COLORS];
@@ -125,6 +137,8 @@ export function getStatusColor(
       return statusConfig.text;
     case "bg":
       return statusConfig.bg;
+    case "bullet":
+      return statusConfig.bullet;
     case "border":
       return statusConfig.border;
     case "chip":
