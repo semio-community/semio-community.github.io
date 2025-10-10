@@ -70,31 +70,30 @@ const featuredStudiesWithAuthors = await Promise.all(
 ---
 
 <PageLayout meta={meta}>
-  <h1 class="title mb-6">Projects</h1>
+  <!-- <h1 class="title mb-6">Projects</h1> -->
 
   <!-- Hero Section -->
   <Section id="projects-hero">
     <div class="max-w-4xl mx-auto text-center mb-12">
       <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Discover and contribute to our growing ecosystem of open-source robotics
-        hardware, software, and research studies. All projects are designed to
-        be reproducible, accessible, and community-driven.
+        Discover and contribute to our growing ecosystem of community-driven
+        robotics hardware, software, and research studies.
       </p>
       <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href="#hardware"
-          text="Hardware Platforms"
+          text="Hardware Projects"
           size="large"
         />
         <CallToActionButton
           href="#software"
-          text="Software Tools"
+          text="Software Projects"
           size="large"
           variant="secondary"
         />
         <CallToActionButton
           href="#studies"
-          text="Research Studies"
+          text="Research Projects"
           size="large"
           variant="tertiary"
         />
@@ -109,10 +108,7 @@ const featuredStudiesWithAuthors = await Promise.all(
                 name="solar:cpu-bolt-line-duotone"
                 class="w-5 h-5 text-accent-one"
               />
-              <span>
-                {allHardware.length} Hardware{" "}
-                {allHardware.length === 1 ? "Platform" : "Platforms"}
-              </span>
+              <span>{allHardware.length} Hardware Projects</span>
             </div>
           )
         }
@@ -123,10 +119,7 @@ const featuredStudiesWithAuthors = await Promise.all(
                 name="solar:code-2-line-duotone"
                 class="w-5 h-5 text-accent-two"
               />
-              <span>
-                {allSoftware.length} Software{" "}
-                {allSoftware.length === 1 ? "Tool" : "Tools"}
-              </span>
+              <span>{allSoftware.length} Software Projects</span>
             </div>
           )
         }
@@ -137,10 +130,7 @@ const featuredStudiesWithAuthors = await Promise.all(
                 name="solar:document-text-line-duotone"
                 class="w-5 h-5 text-special"
               />
-              <span>
-                {studyStatistics.total}{" "}
-                {studyStatistics.total === 1 ? "Study" : "Studies"}
-              </span>
+              <span>{studyStatistics.total} Research Projects</span>
             </div>
           )
         }
@@ -151,7 +141,7 @@ const featuredStudiesWithAuthors = await Promise.all(
   <!-- Hardware Section -->
   <Section
     id="hardware"
-    title="Hardware Platforms"
+    title="Hardware Projects"
     subtitle="Open-source robotics hardware for research and education"
   >
     <div class="max-w-6xl mx-auto">
@@ -211,7 +201,7 @@ const featuredStudiesWithAuthors = await Promise.all(
   <!-- Software Section -->
   <Section
     id="software"
-    title="Software Tools"
+    title="Software Projects"
     subtitle="Comprehensive tools for every aspect of HRI development"
   >
     <div class="max-w-6xl mx-auto">
@@ -271,7 +261,7 @@ const featuredStudiesWithAuthors = await Promise.all(
   <!-- Studies Section -->
   <Section
     id="studies"
-    title="Research Studies"
+    title="Research Projects"
     subtitle="Reproducible human-robot interaction research advancing the field"
   >
     <div class="max-w-6xl mx-auto">
@@ -357,31 +347,6 @@ const featuredStudiesWithAuthors = await Promise.all(
           </div>
         )
       }
-    </div>
-  </Section>
-
-  <!-- Contribution Section -->
-  <Section id="contribute">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4">Contribute Your Project</h2>
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Have a robotics platform, software tool, or research study that could
-        benefit the community? We're always looking for new contributions to
-        support open, reproducible HRI research.
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <CallToActionButton
-          href="/get-involved"
-          text="Submit Your Project"
-          size="large"
-        />
-        <CallToActionButton
-          href="/about"
-          text="Learn More"
-          size="large"
-          variant="tertiary"
-        />
-      </div>
     </div>
   </Section>
 </PageLayout>
