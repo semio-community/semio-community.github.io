@@ -1,6 +1,7 @@
 ---
 import { getEntry } from "astro:content";
 import { PersonPopover } from "./PersonPopover";
+import { getPerson } from "@/data/people";
 
 interface Props {
   personId: string;
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const { personId, role } = Astro.props;
-const person = await getEntry("people", personId);
+const person = await getPerson(personId);
 
 // Get current affiliation details if available
 let currentAffiliation:

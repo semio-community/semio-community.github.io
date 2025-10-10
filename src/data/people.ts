@@ -4,8 +4,11 @@ import type { CollectionEntry } from "astro:content";
 /** Get all people entries */
 export async function getAllPeople(): Promise<CollectionEntry<"people">[]> {
   return await getCollection("people", ({ data }) => {
-    // In production, only show public people. In development, show all.
-    return import.meta.env.PROD ? data.visibility === "public" : true;
+    // In production, exclude drafts and only show public people. In development, show all.
+    if (import.meta.env.PROD) {
+      return data.draft !== true && data.visibility === "public";
+    }
+    return true;
   });
 }
 
@@ -13,7 +16,14 @@ export async function getAllPeople(): Promise<CollectionEntry<"people">[]> {
 export async function getPerson(
   id: string,
 ): Promise<CollectionEntry<"people"> | undefined> {
-  return await getEntry("people", id);
+  const person = await getEntry("people", id);
+  // In production, return undefined if the person is a draft or not public
+  if (person && import.meta.env.PROD) {
+    if (person.data.draft === true || person.data.visibility !== "public") {
+      return undefined;
+    }
+  }
+  return person;
 }
 
 /** Get people by organization */

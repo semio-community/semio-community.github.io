@@ -7,6 +7,7 @@ import { Icon } from "astro-icon/components";
 import { getEntry } from "astro:content";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
+import { getPerson } from "@/data/people";
 
 interface HardwareData {
   name: string;
@@ -127,13 +128,15 @@ const peopleContributors = await Promise.all(
   contributors
     .filter(c => c.type === "person")
     .map(async (contributor) => {
-      const person = await getEntry("people", contributor.id);
+      const person = await getPerson(contributor.id);
       return {
         ...contributor,
         data: person?.data
       };
     })
 );
+// Filter out any contributors whose person data couldn't be found (e.g., drafts)
+const validPeopleContributors = peopleContributors.filter(c => c.data !== undefined);
 const orgContributors = await Promise.all(
   contributors
     .filter(c => c.type === "organization")
@@ -338,11 +341,11 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
         )}
 
         {/* People Contributors Section */}
-        {peopleContributors.length > 0 && (
+        {validPeopleContributors.length > 0 && (
           <div class="people-contributors">
             <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">CONTRIBUTORS</h3>
             <div class="flex flex-wrap gap-2">
-              {peopleContributors.map(contributor => (
+              {validPeopleContributors.map(contributor => (
                 <PersonPopoverWrapper
                   personId={contributor.id}
                   role={contributor.role}
@@ -377,10 +380,10 @@ const applications = isHardwareData(data) ? data.applications : isSoftwareData(d
               <span>{supportingOrgs.length} org{supportingOrgs.length !== 1 ? 's' : ''}</span>
             </div>
           )}
-          {peopleContributors.length > 0 && (
+          {validPeopleContributors.length > 0 && (
             <div class="flex items-center gap-2">
               <span class="font-semibold">Contributors:</span>
-              <span>{peopleContributors.length} {peopleContributors.length === 1 ? 'person' : 'people'}</span>
+              <span>{validPeopleContributors.length} {validPeopleContributors.length === 1 ? 'person' : 'people'}</span>
             </div>
           )}
         </div>
