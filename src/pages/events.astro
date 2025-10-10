@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import EventCard from "@/components/EventCard.astro";
+import ItemCard from "@/components/ItemCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import Timeline from "@/components/Timeline.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
@@ -99,6 +99,44 @@ const eventTypeInfo: Record<
     color: "text-yellow-500",
     description: "Robotics competitions and challenges",
   },
+};
+
+// Transform events data for ItemCard component
+const transformEvent = (event: any) => {
+  const dateStr = event.data.startDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const endDateStr =
+    event.data.endDate &&
+    event.data.endDate.getTime() !== event.data.startDate.getTime()
+      ? ` - ${event.data.endDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}`
+      : "";
+
+  const location = event.data.location
+    ? `${event.data.location.city}, ${event.data.location.country}`
+    : "Virtual";
+
+  const description = `${dateStr}${endDateStr} | 📍 ${location} | ${event.data.description}`;
+
+  return {
+    title: event.data.name,
+    type: "events" as const,
+    description: description,
+    category: event.data.type,
+    featured: event.data.featured,
+    href: `/events/${event.id}`,
+    ...(event.data.banner && { image: event.data.banner }),
+    links: {
+      ...(event.data.links?.website && { demo: event.data.links.website }),
+    },
+  };
 };
 
 const services = [
@@ -206,34 +244,22 @@ const services = [
         title="Happening Now"
         subtitle="Events currently in progress"
       >
-        <div class="max-w-5xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {currentEvents.map((event) => (
-              <div class="relative p-6 bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20">
-                <div class="absolute top-4 right-4">
-                  <span class="flex items-center gap-1 text-xs px-2 py-1 bg-green-500/20 text-green-700 dark:text-green-300 rounded-full">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    Live Now
-                  </span>
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentEvents.map((event) => {
+              const cardData = transformEvent(event);
+              return (
+                <div class="relative">
+                  <div class="absolute top-4 right-4 z-10">
+                    <span class="flex items-center gap-1 text-xs px-2 py-1 bg-green-500/20 text-green-700 dark:text-green-300 rounded-full">
+                      <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      Live Now
+                    </span>
+                  </div>
+                  <ItemCard {...cardData} />
                 </div>
-                <EventCard
-                  name={event.data.name}
-                  date={event.data.startDate.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                  location={
-                    event.data.location
-                      ? `${event.data.location.city}, ${event.data.location.country}`
-                      : undefined
-                  }
-                  description={event.data.description}
-                  link={event.data.links?.website}
-                  type="conference"
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </Section>
@@ -250,37 +276,10 @@ const services = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredEvents.slice(0, 6).map((event) => (
-              <EventCard
-                name={event.data.name}
-                date={event.data.startDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-                dateRange={
-                  event.data.endDate &&
-                  event.data.endDate.getTime() !==
-                    event.data.startDate.getTime()
-                    ? `${event.data.startDate.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })} - ${event.data.endDate.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}, ${event.data.startDate.getFullYear()}`
-                    : undefined
-                }
-                location={
-                  event.data.location
-                    ? `${event.data.location.city}, ${event.data.location.country}`
-                    : undefined
-                }
-                description={event.data.description}
-                link={`/events/${event.id}`}
-                type={event.data.type}
-              />
-            ))}
+            {featuredEvents.slice(0, 6).map((event) => {
+              const cardData = transformEvent(event);
+              return <ItemCard {...cardData} />;
+            })}
           </div>
         </div>
       </Section>
@@ -295,7 +294,7 @@ const services = [
         title="Upcoming Events"
         subtitle="Plan ahead for these future gatherings"
       >
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-6xl mx-auto">
           {Object.keys(upcomingEventsByYear)
             .sort()
             .map((year) => (
@@ -303,45 +302,11 @@ const services = [
                 <h3 class="text-2xl font-semibold mb-4 gradient-brand-text">
                   {year}
                 </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {upcomingEventsByYear[Number(year)]?.map((event) => (
-                    <EventCard
-                      name={event.data.name}
-                      date={event.data.startDate.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                      dateRange={
-                        event.data.endDate &&
-                        event.data.endDate.getTime() !==
-                          event.data.startDate.getTime()
-                          ? `${event.data.startDate.toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )} - ${event.data.endDate.toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              },
-                            )}`
-                          : undefined
-                      }
-                      location={
-                        event.data.location
-                          ? `${event.data.location.city}, ${event.data.location.country}`
-                          : undefined
-                      }
-                      description={event.data.description}
-                      link={event.data.links?.website}
-                      type="conference"
-                    />
-                  ))}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {upcomingEventsByYear[Number(year)]?.map((event) => {
+                    const cardData = transformEvent(event);
+                    return <ItemCard {...cardData} />;
+                  })}
                 </div>
               </div>
             ))}
@@ -418,30 +383,15 @@ const services = [
         title="Recent Events"
         subtitle="Events from the past 6 months"
       >
-        <div class="max-w-4xl mx-auto">
-          <div class="grid grid-cols-1 gap-4">
-            {recentPastEvents.slice(0, 5).map((event) => (
-              <EventCard
-                name={event.data.name}
-                date={event.data.startDate.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-                location={
-                  event.data.location
-                    ? `${event.data.location.city}, ${event.data.location.country}`
-                    : undefined
-                }
-                description={event.data.description}
-                link={`/events/${event.id}`}
-                type={event.data.type}
-                isPast={true}
-              />
-            ))}
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentPastEvents.slice(0, 6).map((event) => {
+              const cardData = transformEvent(event);
+              return <ItemCard {...cardData} />;
+            })}
           </div>
-          {recentPastEvents.length > 5 && (
-            <div class="mt-4 text-center">
+          {recentPastEvents.length > 6 && (
+            <div class="mt-6 text-center">
               <a
                 href="/events/archive"
                 class="inline-flex items-center gap-2 text-sm text-link hover:underline"

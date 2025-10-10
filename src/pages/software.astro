@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import ProductCard from "@/components/ProductCard.astro";
+import ItemCard from "@/components/ItemCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
@@ -24,35 +24,17 @@ const statusCounts = await getSoftwareCountByStatus();
 const categoryCounts = await getSoftwareCountByCategory();
 const categories = await getUniqueCategories();
 
-// Transform software data for ProductCard component
+// Transform software data for ItemCard component
 const products = allSoftware.map((sw) => ({
-  name: sw.data.name,
+  title: sw.data.name,
   type: "software" as const,
   description: sw.data.shortDescription,
-  image: sw.data.images?.hero || sw.data.logo,
-  status:
-    sw.data.status === "stable"
-      ? ("available" as const)
-      : sw.data.status === "beta"
-        ? ("beta" as const)
-        : sw.data.status === "alpha"
-          ? ("in-progress" as const)
-          : sw.data.status === "in-progress"
-            ? ("in-progress" as const)
-            : ("coming-soon" as const),
-  features: sw.data.features?.slice(0, 3) || [],
+  status: sw.data.status === "stable" ? "stable" : sw.data.status,
+  featured: sw.data.featured,
+  href: `/software/${sw.id}`,
+  ...(sw.data.images?.hero && { image: sw.data.images.hero }),
+  ...(sw.data.logo && !sw.data.images?.hero && { imageUrl: sw.data.logo }),
   links: {
-    primary: {
-      label:
-        sw.data.status === "stable"
-          ? "Get Started"
-          : sw.data.status === "beta"
-            ? "Try Beta"
-            : sw.data.status === "alpha"
-              ? "Try Alpha"
-              : "Learn More",
-      url: `/software/${sw.id}`,
-    },
     ...(sw.data.links?.github && { github: sw.data.links.github }),
     ...(sw.data.links?.documentation && { docs: sw.data.links.documentation }),
     ...(sw.data.links?.demo && { demo: sw.data.links.demo }),
@@ -241,9 +223,9 @@ const categoryInfo: Record<
     <div class="max-w-6xl mx-auto">
       {
         products.length > 0 ? (
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <ProductCard {...product} />
+              <ItemCard {...product} />
             ))}
           </div>
         ) : (

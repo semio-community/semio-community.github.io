@@ -1,8 +1,33 @@
 ---
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import {
+  type CollectionEntry,
+  getCollection,
+  render,
+  getEntry,
+} from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
-import DetailLayout from "@/components/DetailLayout.astro";
+import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
+import { DetailHero } from "@/components/detail/DetailHero";
+import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
+import { ContributorsSection } from "@/components/detail/ContributorsSection";
+import { SpecificationsCard } from "@/components/detail/SpecificationsCard";
+import { FeaturesCard } from "@/components/detail/FeaturesCard";
+import { PricingCard } from "@/components/detail/PricingCard";
+import { ChipsCard } from "@/components/detail/ChipsCard";
+import { TagsSection } from "@/components/detail/TagsSection";
+import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import { getRelatedHardware } from "@/data/hardware";
+import { getPerson } from "@/data/people";
+import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/OrganizationChip.astro";
+import BasicChip from "@/components/BasicChip.astro";
+import { Fragment } from "react";
+import {
+  getStatusLabel,
+  getStatusColor,
+  getCategoryLabel,
+  CATEGORY_LABELS,
+} from "@/config/statusConfig";
 
 export async function getStaticPaths() {
   const hardware = await getCollection("hardware", ({ data }) => {
@@ -30,10 +55,285 @@ const meta = {
   title: `${data.name} - Hardware Platform`,
   description: data.description,
 };
+
+// Prepare status badges using centralized configuration
+const badges = [
+  {
+    text: getStatusLabel(data.status),
+    color: getStatusColor(data.status, "chip") as any,
+    variant: "solid" as const,
+  },
+].filter(Boolean) as Array<{
+  text: string;
+  color: "green" | "blue" | "orange" | "red" | "yellow" | "gray" | "accent";
+  variant: "solid" | "outline";
+}>;
+
+// Prepare action buttons
+const actionButtons = [
+  data.links?.website && {
+    href: data.links.website,
+    text: "Visit Website",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.purchase && {
+    href: data.links.purchase,
+    text: "Purchase",
+    variant: "primary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.rental && {
+    href: data.links.rental,
+    text: "Rental Options",
+    variant: "secondary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.documentation && {
+    href: data.links.documentation,
+    text: "Documentation",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.github && {
+    href: data.links.github,
+    text: "GitHub",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+].filter(Boolean) as Array<{
+  href: string;
+  text: string;
+  variant: "default" | "primary" | "secondary" | "tertiary";
+  target?: string;
+  rel?: string;
+}>;
+
+// Get organization details
+const leadOrg = data.leadOrganization
+  ? await getEntry("partners", data.leadOrganization)
+  : null;
+const supportingOrgs = data.supportingOrganizations
+  ? await Promise.all(
+      data.supportingOrganizations.map((id) => getEntry("partners", id)),
+    )
+  : [];
+
+// Get contributors with their full data
+const contributors = data.contributors || [];
+const peopleContributors = await Promise.all(
+  contributors
+    .filter((c) => c.type === "person")
+    .map(async (contributor) => {
+      const person = await getPerson(contributor.id);
+      return {
+        ...contributor,
+        data: person?.data,
+      };
+    }),
+);
+// Filter out any contributors whose person data couldn't be found (e.g., drafts)
+const validPeopleContributors = peopleContributors.filter(
+  (c) => c.data !== undefined,
+);
+
+const orgContributors = await Promise.all(
+  contributors
+    .filter((c) => c.type === "organization")
+    .map(async (contributor) => {
+      const org = await getEntry("partners", contributor.id);
+      return {
+        ...contributor,
+        data: org?.data,
+      };
+    }),
+);
+
+// Get category label using centralized configuration
+const categoryLabel = getCategoryLabel("hardware", data.category);
+
+// Prepare specifications for display
+const specificationItems = data.specifications || {};
 ---
 
 <PageLayout meta={meta}>
-  <DetailLayout type="hardware" data={data} relatedItems={relatedHardware}>
+  <BaseDetailLayout>
+    <Fragment slot="hero">
+      <DetailHero
+        client:load
+        image={data.images?.hero}
+        title={data.name}
+        subtitle={data.shortDescription}
+        badges={badges}
+        featured={data.featured}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      {
+        actionButtons.length > 0 && (
+          <ActionButtonGroup client:load buttons={actionButtons} />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="contributors">
+      {
+        (orgContributors.length > 0 || validPeopleContributors.length > 0) && (
+          <div class="contributors-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              {/* Organizations Section */}
+              {orgContributors.length > 0 && (
+                <div class="organizations mb-6">
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    ORGANIZATIONS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {orgContributors.map((contributor) => (
+                      <OrganizationChip
+                        partnerId={contributor.id}
+                        role={contributor.role || "Contributing Organization"}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* People Contributors Section */}
+              {validPeopleContributors.length > 0 && (
+                <div class="people-contributors">
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    CONTRIBUTORS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {validPeopleContributors.map((contributor) => (
+                      <PersonPopoverWrapper
+                        personId={contributor.id}
+                        role={contributor.role}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Chips row for category and research areas */}
+              <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-2">
+                {categoryLabel && (
+                  <BasicChip text={categoryLabel} variant="tertiary" />
+                )}
+                {data.researchAreas &&
+                  data.researchAreas.map((area: string) => (
+                    <BasicChip text={area} variant="default" />
+                  ))}
+              </div>
+
+              {/* Stats Row */}
+              <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
+                {leadOrg && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Lead:</span>
+                    <span>{leadOrg.data?.shortName || leadOrg.data?.name}</span>
+                  </div>
+                )}
+                {supportingOrgs.length > 0 && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Supporting:</span>
+                    <span>
+                      {supportingOrgs.length} org
+                      {supportingOrgs.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                )}
+                {validPeopleContributors.length > 0 && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Contributors:</span>
+                    <span>
+                      {validPeopleContributors.length}{" "}
+                      {validPeopleContributors.length === 1
+                        ? "person"
+                        : "people"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="sidebar">
+      {
+        data.specifications && Object.keys(data.specifications).length > 0 && (
+          <SpecificationsCard
+            client:load
+            title="Specifications"
+            icon="solar:settings-minimalistic-line-duotone"
+            items={data.specifications}
+          />
+        )
+      }
+
+      {
+        data.features && data.features.length > 0 && (
+          <FeaturesCard
+            client:load
+            title="Key Features"
+            icon="solar:star-bold-duotone"
+            features={data.features}
+          />
+        )
+      }
+
+      {
+        data.pricing && (
+          <PricingCard
+            client:load
+            purchase={data.pricing.purchase}
+            rental={data.pricing.rental}
+          />
+        )
+      }
+
+      {
+        data.applications && data.applications.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Applications"
+            icon="solar:layers-minimalistic-bold-duotone"
+            items={data.applications}
+            variant="default"
+          />
+        )
+      }
+
+      {
+        data.tags && data.tags.length > 0 && (
+          <TagsSection client:load tags={data.tags} baseUrl="/hardware/tags" />
+        )
+      }
+    </Fragment>
+
     <Content />
-  </DetailLayout>
+
+    <Fragment slot="related">
+      {
+        relatedHardware && relatedHardware.length > 0 && (
+          <RelatedItemsGrid
+            client:load
+            title="Related Hardware"
+            subtitle="Explore similar robotic platforms"
+            items={relatedHardware}
+            itemType="hardware"
+            columns={3}
+          />
+        )
+      }
+    </Fragment>
+  </BaseDetailLayout>
 </PageLayout>

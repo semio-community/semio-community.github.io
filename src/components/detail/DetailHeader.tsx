@@ -1,9 +1,10 @@
 import React from "react";
+import { getStatusColor } from "@/config/statusConfig";
 
 export interface DetailHeaderBadge {
   text: string;
   color?: string;
-  variant?: 'solid' | 'outline';
+  variant?: "solid" | "outline";
 }
 
 export interface DetailHeaderProps {
@@ -22,33 +23,34 @@ export const DetailHeader: React.FC<DetailHeaderProps> = ({
   const getBadgeClasses = (badge: DetailHeaderBadge) => {
     const baseClasses = "px-3 py-1 rounded-full text-sm font-medium";
 
-    // Map color strings to status colors from DetailLayout
+    // Map color strings to status colors from centralized config
     const colorMap: Record<string, string> = {
       // Hardware status colors
-      'available': 'text-green-600 dark:text-green-400',
-      'in-progress': 'text-yellow-600 dark:text-yellow-400',
-      'coming-soon': 'text-blue-600 dark:text-blue-400',
-      'deprecated': 'text-red-600 dark:text-red-400',
+      available: "text-green-600 dark:text-green-400",
+      "in-progress": "text-yellow-600 dark:text-yellow-400",
+      "coming-soon": "text-blue-600 dark:text-blue-400",
+      deprecated: "text-red-600 dark:text-red-400",
       // Software status colors
-      'stable': 'text-green-600 dark:text-green-400',
-      'beta': 'text-blue-600 dark:text-blue-400',
-      'alpha': 'text-yellow-600 dark:text-yellow-400',
+      stable: "text-green-600 dark:text-green-400",
+      beta: "text-blue-600 dark:text-blue-400",
+      alpha: "text-yellow-600 dark:text-yellow-400",
       // Generic colors
-      'featured': 'text-accent-two',
-      'license': 'text-special',
+      featured: "text-accent-two",
+      license: "text-special",
     };
 
-    if (badge.variant === 'outline') {
-      return `${baseClasses} ${colorMap[badge.color || ''] || 'text-accent-base'} border-2 border-current`;
+    if (badge.variant === "outline") {
+      return `${baseClasses} ${colorMap[badge.color || ""] || "text-accent-base"} border-2 border-current`;
     }
 
-    const bgClasses = badge.color === 'featured'
-      ? 'bg-accent-two/10'
-      : badge.color === 'license'
-      ? 'bg-special/10'
-      : 'bg-color-100 dark:bg-special-dark';
+    const bgClasses =
+      badge.color === "featured"
+        ? "bg-accent-two/10"
+        : badge.color === "license"
+          ? "bg-special/10"
+          : "bg-color-100 dark:bg-special-dark";
 
-    return `${baseClasses} ${colorMap[badge.color || ''] || 'text-accent-base'} ${bgClasses}`;
+    return `${baseClasses} ${colorMap[badge.color || ""] || "text-accent-base"} ${bgClasses}`;
   };
 
   return (
@@ -65,10 +67,7 @@ export const DetailHeader: React.FC<DetailHeaderProps> = ({
         {badges.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             {badges.map((badge, index) => (
-              <span
-                key={index}
-                className={getBadgeClasses(badge)}
-              >
+              <span key={index} className={getBadgeClasses(badge)}>
                 {badge.text}
               </span>
             ))}

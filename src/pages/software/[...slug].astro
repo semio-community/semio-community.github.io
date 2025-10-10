@@ -1,8 +1,32 @@
 ---
-import { type CollectionEntry, getCollection, render } from "astro:content";
+import {
+  type CollectionEntry,
+  getCollection,
+  render,
+  getEntry,
+} from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
-import DetailLayout from "@/components/DetailLayout.astro";
+import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
+import { DetailHero } from "@/components/detail/DetailHero";
+import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
+import { ContributorsSection } from "@/components/detail/ContributorsSection";
+import { TechnologiesCard } from "@/components/detail/TechnologiesCard";
+import { FeaturesCard } from "@/components/detail/FeaturesCard";
+import { ChipsCard } from "@/components/detail/ChipsCard";
+import { TagsSection } from "@/components/detail/TagsSection";
+import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import { MetadataCard } from "@/components/detail/MetadataCard";
 import { getRelatedSoftware } from "@/data/software";
+import { getPerson } from "@/data/people";
+import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/OrganizationChip.astro";
+import BasicChip from "@/components/BasicChip.astro";
+import { Fragment } from "react";
+import {
+  getStatusLabel,
+  getStatusColor,
+  getCategoryLabel,
+} from "@/config/statusConfig";
 
 export async function getStaticPaths() {
   const software = await getCollection("software", ({ data }) => {
@@ -30,10 +54,339 @@ const meta = {
   title: `${data.name} - Software Platform`,
   description: data.description,
 };
+
+// Prepare status badges using centralized configuration
+const badges = [
+  data.status && {
+    text: getStatusLabel(data.status),
+    color: getStatusColor(data.status, "chip") as any,
+    variant: "solid" as const,
+  },
+  data.license && {
+    text: data.license,
+    color: "blue" as const,
+    variant: "outline" as const,
+  },
+].filter(Boolean) as Array<{
+  text: string;
+  color: "green" | "blue" | "orange" | "red" | "accent";
+  variant: "solid" | "outline";
+}>;
+
+// Prepare action buttons
+const actionButtons = [
+  data.links?.website && {
+    href: data.links.website,
+    text: "Visit Website",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.github && {
+    href: data.links.github,
+    text: "GitHub",
+    variant: "primary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.demo && {
+    href: data.links.demo,
+    text: "View Demo",
+    variant: "secondary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.pypi && {
+    href: data.links.pypi,
+    text: "PyPI",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.npm && {
+    href: data.links.npm,
+    text: "npm",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+  data.links?.documentation && {
+    href: data.links.documentation,
+    text: "Documentation",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+  },
+].filter(Boolean) as Array<{
+  href: string;
+  text: string;
+  variant: "default" | "primary" | "secondary" | "tertiary";
+  target?: string;
+  rel?: string;
+}>;
+
+// Get organization details
+const leadOrg = data.leadOrganization
+  ? await getEntry("partners", data.leadOrganization)
+  : null;
+const supportingOrgs = data.supportingOrganizations
+  ? await Promise.all(
+      data.supportingOrganizations.map((id) => getEntry("partners", id)),
+    )
+  : [];
+
+// Get contributors with their full data
+const contributors = data.contributors || [];
+const peopleContributors = await Promise.all(
+  contributors
+    .filter((c) => c.type === "person")
+    .map(async (contributor) => {
+      const person = await getPerson(contributor.id);
+      return {
+        ...contributor,
+        data: person?.data,
+      };
+    }),
+);
+// Filter out any contributors whose person data couldn't be found (e.g., drafts)
+const validPeopleContributors = peopleContributors.filter(
+  (c) => c.data !== undefined,
+);
+
+const orgContributors = await Promise.all(
+  contributors
+    .filter((c) => c.type === "organization")
+    .map(async (contributor) => {
+      const org = await getEntry("partners", contributor.id);
+      return {
+        ...contributor,
+        data: org?.data,
+      };
+    }),
+);
+
+// Category labels for software
+const categoryLabels = {
+  framework: "Framework",
+  library: "Library",
+  tool: "Tool",
+  simulation: "Simulation",
+  dataset: "Dataset",
+  model: "Model",
+};
+
+// Prepare requirements for display
+const requirementItems = [];
+if (data.requirements) {
+  if (data.requirements.runtime) {
+    requirementItems.push({
+      label: "Runtime",
+      value: Array.isArray(data.requirements.runtime)
+        ? data.requirements.runtime.join(", ")
+        : data.requirements.runtime,
+    });
+  }
+  if (data.requirements.hardware) {
+    requirementItems.push({
+      label: "Hardware",
+      value: Array.isArray(data.requirements.hardware)
+        ? data.requirements.hardware.join(", ")
+        : data.requirements.hardware,
+    });
+  }
+  if (data.requirements.dependencies) {
+    requirementItems.push({
+      label: "Dependencies",
+      value: Array.isArray(data.requirements.dependencies)
+        ? data.requirements.dependencies.join(", ")
+        : data.requirements.dependencies,
+    });
+  }
+}
 ---
 
 <PageLayout meta={meta}>
-  <DetailLayout type="software" data={data} relatedItems={relatedSoftware}>
+  <BaseDetailLayout>
+    <Fragment slot="hero">
+      <DetailHero
+        client:load
+        image={data.images?.hero}
+        title={data.name}
+        subtitle={data.shortDescription}
+        badges={badges}
+        featured={data.featured}
+      />
+    </Fragment>
+
+    <Fragment slot="actions">
+      {
+        actionButtons.length > 0 && (
+          <ActionButtonGroup client:load buttons={actionButtons} />
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="contributors">
+      {
+        (orgContributors.length > 0 || validPeopleContributors.length > 0) && (
+          <div class="contributors-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              {/* Organizations Section */}
+              {orgContributors.length > 0 && (
+                <div class="organizations mb-6">
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    ORGANIZATIONS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {orgContributors.map((contributor) => (
+                      <OrganizationChip
+                        partnerId={contributor.id}
+                        role={contributor.role || "Contributing Organization"}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* People Contributors Section */}
+              {validPeopleContributors.length > 0 && (
+                <div class="people-contributors">
+                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+                    CONTRIBUTORS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {validPeopleContributors.map((contributor) => (
+                      <PersonPopoverWrapper
+                        personId={contributor.id}
+                        role={contributor.role}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Chips row for category and languages */}
+              <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-2">
+                {categoryLabels[
+                  data.category as keyof typeof categoryLabels
+                ] && (
+                  <BasicChip
+                    text={
+                      categoryLabels[
+                        data.category as keyof typeof categoryLabels
+                      ]
+                    }
+                    variant="tertiary"
+                  />
+                )}
+                {data.language &&
+                  data.language.map((lang: string) => (
+                    <BasicChip text={lang} variant="default" />
+                  ))}
+              </div>
+
+              {/* Stats Row */}
+              <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
+                {leadOrg && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Lead:</span>
+                    <span>{leadOrg.data?.shortName || leadOrg.data?.name}</span>
+                  </div>
+                )}
+                {supportingOrgs.length > 0 && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Supporting:</span>
+                    <span>
+                      {supportingOrgs.length} org
+                      {supportingOrgs.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                )}
+                {validPeopleContributors.length > 0 && (
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">Contributors:</span>
+                    <span>
+                      {validPeopleContributors.length}{" "}
+                      {validPeopleContributors.length === 1
+                        ? "person"
+                        : "people"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </Fragment>
+
+    <Fragment slot="sidebar">
+      {
+        requirementItems.length > 0 && (
+          <MetadataCard
+            client:load
+            title="System Requirements"
+            icon="solar:settings-minimalistic-line-duotone"
+            items={requirementItems}
+          />
+        )
+      }
+
+      {
+        (data.language?.length > 0 || data.platform?.length > 0) && (
+          <TechnologiesCard
+            client:load
+            languages={data.language}
+            platforms={data.platform}
+          />
+        )
+      }
+
+      {
+        data.features && data.features.length > 0 && (
+          <FeaturesCard
+            client:load
+            title="Key Features"
+            icon="solar:star-bold-duotone"
+            features={data.features}
+          />
+        )
+      }
+
+      {
+        data.useCases && data.useCases.length > 0 && (
+          <ChipsCard
+            client:load
+            title="Use Cases"
+            icon="solar:layers-minimalistic-bold-duotone"
+            items={data.useCases}
+            variant="primary"
+          />
+        )
+      }
+
+      {
+        data.tags && data.tags.length > 0 && (
+          <TagsSection client:load tags={data.tags} baseUrl="/software/tags" />
+        )
+      }
+    </Fragment>
+
     <Content />
-  </DetailLayout>
+
+    <Fragment slot="related">
+      {
+        relatedSoftware && relatedSoftware.length > 0 && (
+          <RelatedItemsGrid
+            client:load
+            title="Related Software"
+            subtitle="Discover similar tools and frameworks"
+            items={relatedSoftware}
+            itemType="software"
+            columns={3}
+          />
+        )
+      }
+    </Fragment>
+  </BaseDetailLayout>
 </PageLayout>

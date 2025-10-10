@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import PartnerCard from "@/components/PartnerCard.astro";
+import ItemCard from "@/components/ItemCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
@@ -95,6 +95,31 @@ const categoryInfo: Record<string, { icon: string; color: string }> = {
     icon: "solar:share-line-duotone",
     color: "text-pink-500",
   },
+};
+
+// Transform partner data for ItemCard component
+const transformPartner = (partner: any) => {
+  // Build category label
+  const typeLabel = partner.data.type
+    ? partner.data.type.charAt(0).toUpperCase() + partner.data.type.slice(1)
+    : "";
+  const categoryLabel = partner.data.category
+    ? partner.data.category.charAt(0).toUpperCase() +
+      partner.data.category.slice(1)
+    : "";
+
+  return {
+    title: partner.data.name,
+    type: "partners" as const,
+    description: partner.data.description,
+    category: [typeLabel, categoryLabel].filter(Boolean).join(" • "),
+    featured: partner.data.featured,
+    href: partner.data.website || `/partners/${partner.id}`,
+    ...(partner.data.logo && { image: partner.data.logo }),
+    links: {
+      ...(partner.data.website && { demo: partner.data.website }),
+    },
+  };
 };
 
 const benefits = [
@@ -210,18 +235,10 @@ const benefits = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPartners.slice(0, 6).map((partner) => (
-              <PartnerCard
-                name={partner.data.name}
-                description={partner.data.description}
-                logo={partner.data.logo}
-                link={partner.data.website || `/partners/${partner.id}`}
-                type={partner.data.type}
-                category={partner.data.category}
-                featured={partner.data.featured}
-                class="h-full"
-              />
-            ))}
+            {featuredPartners.slice(0, 6).map((partner) => {
+              const cardData = transformPartner(partner);
+              return <ItemCard {...cardData} />;
+            })}
           </div>
         </div>
       </Section>
@@ -254,19 +271,11 @@ const benefits = [
                     {partners.length}
                   </span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {partners.map((partner) => (
-                    <PartnerCard
-                      name={partner.data.name}
-                      description={partner.data.description}
-                      logo={partner.data.logo}
-                      link={partner.data.website || `/partners/${partner.id}`}
-                      type={partner.data.type}
-                      category={partner.data.category}
-                      featured={partner.data.featured}
-                      class="h-full"
-                    />
-                  ))}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {partners.map((partner) => {
+                    const cardData = transformPartner(partner);
+                    return <ItemCard {...cardData} />;
+                  })}
                 </div>
               </div>
             );

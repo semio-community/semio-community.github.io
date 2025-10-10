@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import ProductCard from "@/components/ProductCard.astro";
+import ItemCard from "@/components/ItemCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
@@ -17,18 +17,18 @@ const meta = {
 const allHardware = await getAllHardware();
 const hardwareCounts = await getHardwareCountByStatus();
 
-// Transform hardware data for ProductCard component
+// Transform hardware data for ItemCard component
 const products = allHardware.map((hw) => ({
-  name: hw.data.name,
+  title: hw.data.name,
   type: "hardware" as const,
   description: hw.data.shortDescription,
   status: hw.data.status,
+  featured: hw.data.featured,
+  href: `/hardware/${hw.id}`,
   ...(hw.data.images?.hero && { image: hw.data.images.hero }),
   links: {
-    primary: {
-      label: hw.data.status === "available" ? "Get" : "Learn More",
-      url: `/hardware/${hw.id}`,
-    },
+    ...(hw.data.links?.github && { github: hw.data.links.github }),
+    ...(hw.data.links?.documentation && { docs: hw.data.links.documentation }),
   },
 }));
 
@@ -136,7 +136,7 @@ const services = [
         products.length > 0 ? (
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <ProductCard {...product} />
+              <ItemCard {...product} />
             ))}
           </div>
         ) : (

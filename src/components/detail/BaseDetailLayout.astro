@@ -20,15 +20,15 @@ const {
 } = Astro.props;
 
 // Check which slots have content
-const hasHero = showHero && Astro.slots.has('hero');
-const hasHeader = showHeader && Astro.slots.has('header');
-const hasActions = showActions && Astro.slots.has('actions');
-const hasContributors = showContributors && Astro.slots.has('contributors');
-const hasSidebar = showSidebar && Astro.slots.has('sidebar');
-const hasRelated = showRelated && Astro.slots.has('related');
-const hasTopActions = Astro.slots.has('top-actions');
-const hasBreadcrumbs = Astro.slots.has('breadcrumbs');
-const hasMetaSection = Astro.slots.has('meta-section');
+const hasHero = showHero && Astro.slots.has("hero");
+const hasHeader = showHeader && Astro.slots.has("header");
+const hasActions = showActions && Astro.slots.has("actions");
+const hasContributors = showContributors && Astro.slots.has("contributors");
+const hasSidebar = showSidebar && Astro.slots.has("sidebar");
+const hasRelated = showRelated && Astro.slots.has("related");
+const hasTopActions = Astro.slots.has("top-actions");
+const hasBreadcrumbs = Astro.slots.has("breadcrumbs");
+const hasMetaSection = Astro.slots.has("meta-section");
 
 // Determine if we should show the header section
 const shouldShowHeader = !hasHero && hasHeader;
@@ -36,184 +36,120 @@ const shouldShowHeader = !hasHero && hasHeader;
 
 <article class={`detail-layout ${className}`}>
   <!-- Breadcrumbs (optional, above everything) -->
-  {hasBreadcrumbs && (
-    <nav class="mb-6" aria-label="Breadcrumb">
-      <slot name="breadcrumbs" />
-    </nav>
-  )}
+  {
+    hasBreadcrumbs && (
+      <nav class="mb-6" aria-label="Breadcrumb">
+        <slot name="breadcrumbs" />
+      </nav>
+    )
+  }
 
   <!-- Hero Section with Image Overlay -->
-  {hasHero && (
-    <slot name="hero" />
-  )}
+  {hasHero && <slot name="hero" />}
 
   <!-- Header Section (when no hero) -->
-  {shouldShowHeader && (
-    <slot name="header" />
-  )}
+  {shouldShowHeader && <slot name="header" />}
 
   <!-- Top Actions (optional, for special actions that should be prominent) -->
-  {hasTopActions && (
-    <div class="mb-6">
-      <slot name="top-actions" />
-    </div>
-  )}
+  {
+    hasTopActions && (
+      <div class="mb-6">
+        <slot name="top-actions" />
+      </div>
+    )
+  }
 
   <!-- Contributors Section -->
-  {hasContributors && (
-    <slot name="contributors" />
-  )}
+  {hasContributors && <slot name="contributors" />}
 
   <!-- Action Buttons Section -->
-  {hasActions && (
-    <slot name="actions" />
-  )}
+  {hasActions && <slot name="actions" />}
 
   <!-- Meta Section (optional, for additional metadata that doesn't fit in sidebar) -->
-  {hasMetaSection && (
-    <div class="mb-8 p-6 bg-surface-lighter rounded-xl border border-accent-one/10">
-      <slot name="meta-section" />
-    </div>
-  )}
+  {
+    hasMetaSection && (
+      <div class="mb-8 p-6 bg-surface-lighter rounded-xl border border-accent-one/10">
+        <slot name="meta-section" />
+      </div>
+    )
+  }
 
   <!-- Main Content Grid -->
-  <div class={`grid grid-cols-1 ${hasSidebar ? 'lg:grid-cols-3' : ''} gap-8`}>
+  <div class={`grid grid-cols-1 ${hasSidebar ? "lg:grid-cols-3" : ""} gap-8`}>
     <!-- Main Content Area -->
-    <div class={hasSidebar ? 'lg:col-span-2' : 'w-full'}>
+    <div class={hasSidebar ? "lg:col-span-2" : "w-full"}>
       <!-- Before Content Slot (optional) -->
-      {Astro.slots.has('before-content') && (
-        <div class="mb-6">
-          <slot name="before-content" />
-        </div>
-      )}
+      {
+        Astro.slots.has("before-content") && (
+          <div class="mb-6">
+            <slot name="before-content" />
+          </div>
+        )
+      }
 
       <!-- Main Content (MDX/Markdown content) -->
       <div class="prose prose-lg dark:prose-invert max-w-none">
-        <slot /> <!-- Default slot for main content -->
+        <slot />
+        <!-- Default slot for main content -->
       </div>
 
       <!-- After Content Slot (optional) -->
-      {Astro.slots.has('after-content') && (
-        <div class="mt-6">
-          <slot name="after-content" />
-        </div>
-      )}
+      {
+        Astro.slots.has("after-content") && (
+          <div class="mt-6">
+            <slot name="after-content" />
+          </div>
+        )
+      }
 
       <!-- Mobile Sidebar (shows below content on mobile when sidebar exists) -->
-      {hasSidebar && (
-        <aside class="lg:hidden mt-8">
-          <slot name="sidebar" />
-        </aside>
-      )}
+      {
+        hasSidebar && (
+          <aside class="lg:hidden mt-8">
+            <slot name="sidebar" />
+          </aside>
+        )
+      }
     </div>
 
     <!-- Desktop Sidebar -->
-    {hasSidebar && (
-      <aside class="hidden lg:block lg:col-span-1">
-        <div class="sticky top-24">
-          <slot name="sidebar" />
-        </div>
-      </aside>
-    )}
+    {
+      hasSidebar && (
+        <aside class="hidden lg:block lg:col-span-1">
+          <div class="sticky top-24">
+            <slot name="sidebar" />
+          </div>
+        </aside>
+      )
+    }
   </div>
 
   <!-- Additional Content Sections (optional) -->
-  {Astro.slots.has('additional-sections') && (
-    <div class="mt-12">
-      <slot name="additional-sections" />
-    </div>
-  )}
+  {
+    Astro.slots.has("additional-sections") && (
+      <div class="mt-12">
+        <slot name="additional-sections" />
+      </div>
+    )
+  }
 
   <!-- Related Items Section -->
-  {hasRelated && (
-    <slot name="related" />
-  )}
+  {hasRelated && <slot name="related" />}
 
   <!-- Footer Section (optional, for citations, references, etc.) -->
-  {Astro.slots.has('footer') && (
-    <footer class="mt-12 pt-8 border-t border-accent-one/10">
-      <slot name="footer" />
-    </footer>
-  )}
+  {
+    Astro.slots.has("footer") && (
+      <footer class="mt-12 pt-8 border-t border-accent-one/10">
+        <slot name="footer" />
+      </footer>
+    )
+  }
 </article>
 
 <style>
   /* Ensure consistent spacing and styling */
   .detail-layout {
-    @apply w-full;
-  }
-
-  /* Prose customizations for better content display */
-  .prose :where(h1):not(:where([class~="not-prose"] *)) {
-    @apply text-3xl md:text-4xl font-bold mb-6 text-accent-base;
-  }
-
-  .prose :where(h2):not(:where([class~="not-prose"] *)) {
-    @apply text-2xl md:text-3xl font-semibold mb-4 mt-8 text-accent-base;
-  }
-
-  .prose :where(h3):not(:where([class~="not-prose"] *)) {
-    @apply text-xl md:text-2xl font-semibold mb-3 mt-6 text-accent-base;
-  }
-
-  .prose :where(h4):not(:where([class~="not-prose"] *)) {
-    @apply text-lg md:text-xl font-medium mb-2 mt-4 text-accent-base;
-  }
-
-  .prose :where(a):not(:where([class~="not-prose"] *)) {
-    @apply text-accent-two hover:text-accent-one transition-colors no-underline border-b border-accent-two/30 hover:border-accent-one;
-  }
-
-  .prose :where(strong):not(:where([class~="not-prose"] *)) {
-    @apply font-semibold text-accent-base;
-  }
-
-  .prose :where(code):not(:where([class~="not-prose"] *)):not(:where(pre *)) {
-    @apply px-1.5 py-0.5 rounded bg-special-lighter text-accent-two text-sm font-mono before:content-[''] after:content-[''];
-  }
-
-  .prose :where(pre):not(:where([class~="not-prose"] *)) {
-    @apply bg-surface-dark border border-accent-one/20 rounded-lg;
-  }
-
-  .prose :where(blockquote):not(:where([class~="not-prose"] *)) {
-    @apply border-l-4 border-accent-one bg-special-lighter/50 italic;
-  }
-
-  .prose :where(ul):not(:where([class~="not-prose"] *)) {
-    @apply space-y-2;
-  }
-
-  .prose :where(ol):not(:where([class~="not-prose"] *)) {
-    @apply space-y-2;
-  }
-
-  .prose :where(li):not(:where([class~="not-prose"] *)) {
-    @apply text-color-700 dark:text-color-300;
-  }
-
-  .prose :where(img):not(:where([class~="not-prose"] *)) {
-    @apply rounded-lg shadow-lg;
-  }
-
-  .prose :where(table):not(:where([class~="not-prose"] *)) {
-    @apply w-full border-collapse;
-  }
-
-  .prose :where(thead):not(:where([class~="not-prose"] *)) {
-    @apply bg-special-lighter border-b-2 border-accent-one/20;
-  }
-
-  .prose :where(th):not(:where([class~="not-prose"] *)) {
-    @apply p-3 text-left font-semibold text-accent-base;
-  }
-
-  .prose :where(td):not(:where([class~="not-prose"] *)) {
-    @apply p-3 border-b border-accent-one/10;
-  }
-
-  .prose :where(hr):not(:where([class~="not-prose"] *)) {
-    @apply border-accent-one/20 my-8;
+    width: 100%;
   }
 
   /* Sticky sidebar adjustments */
@@ -245,7 +181,8 @@ const shouldShowHeader = !hasHero && hasHeader;
   /* Mobile adjustments */
   @media (max-width: 1023px) {
     .detail-layout {
-      @apply px-4;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
 </style>
