@@ -579,7 +579,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                   {relatedContent.events.map((event) => (
                     <ItemCard
                       client:load
-                      title={event.data.name}
+                      title={event.data.displayName ?? event.data.name}
                       description={event.data.description}
                       href={`/events/${event.id}`}
                       type="events"

@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Avatar from "@radix-ui/react-avatar";
 import "./PersonPopover.css";
+import {
+  Letter,
+  Route,
+  User,
+  UserBlockRounded,
+} from "@solar-icons/react-perf/LineDuotone";
 
 interface PersonPopoverProps {
   person: {
@@ -55,20 +61,7 @@ export function PersonPopover({
   if (!person) {
     return (
       <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface rounded-full">
-        <svg
-          className="w-5 h-5 text-neutral-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="12" cy="8" r="3" stroke="currentColor" strokeWidth="2" />
-          <path
-            d="M5 20C5 16.134 8.134 13 12 13C15.866 13 19 16.134 19 20"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
+        <UserBlockRounded className="w-5 h-5 text-neutral-400" />
         <span className="text-sm text-neutral-500">Unknown Person</span>
       </span>
     );
@@ -185,16 +178,7 @@ export function PersonPopover({
               href={`/people/${person.id}`}
               className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1 font-medium"
             >
-              <svg
-                className="w-3 h-3"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
+              <User className="w-3 h-3" />
               View Profile
             </a>
             {person.links?.github && (
@@ -238,15 +222,7 @@ export function PersonPopover({
                 rel="noopener noreferrer"
                 className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1"
               >
-                <svg
-                  className="w-3 h-3"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
+                <Route className="w-3 h-3" />
                 Website
               </a>
             )}
@@ -255,16 +231,7 @@ export function PersonPopover({
                 href={`mailto:${person.email}`}
                 className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1"
               >
-                <svg
-                  className="w-3 h-3"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <rect x="2" y="4" width="20" height="16" rx="2" />
-                  <path d="M22 7l-10 5L2 7" />
-                </svg>
+                <Letter className="w-3 h-3" />
                 Email
               </a>
             )}

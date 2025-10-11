@@ -1,6 +1,6 @@
 import React from "react";
 import { PersonPopover } from "../PersonPopover";
-import BasicChip from "../BasicChip.astro";
+import { HandShake, QuestionCircle } from "@solar-icons/react-perf/LineDuotone";
 
 export interface Contributor {
   id: string;
@@ -167,13 +167,7 @@ const OrganizationChip: React.FC<{ organization: Contributor }> = ({
   if (!data && !partnerId) {
     return (
       <span className="inline-flex items-center gap-2 px-2 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full">
-        <svg
-          className="w-5 h-5 text-neutral-400"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-        </svg>
+        <QuestionCircle className="w-5 h-5 text-neutral-400" />
         <span className="text-sm text-neutral-500">Unknown Organization</span>
       </span>
     );
@@ -191,13 +185,7 @@ const OrganizationChip: React.FC<{ organization: Contributor }> = ({
           className="w-6 h-6 rounded object-contain"
         />
       ) : (
-        <svg
-          className="w-6 h-6 text-accent-one group-hover:text-accent-two transition-colors"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
-        </svg>
+        <HandShake className="w-6 h-6 text-accent-one group-hover:text-accent-two transition-colors" />
       )}
       <span className="text-sm font-medium transition-colors">
         {data?.shortName || data?.name || partnerId}

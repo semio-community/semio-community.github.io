@@ -49,6 +49,7 @@ const people = defineCollection({
           twitter: z.string().optional(),
           bluesky: z.string().optional(),
           mastodon: z.string().optional(),
+          scheduling: z.string().optional(),
         })
         .optional(),
 
@@ -370,6 +371,7 @@ const events = defineCollection({
   schema: ({ image }) =>
     z.object({
       name: z.string(),
+      displayName: z.string().optional(),
       description: z.string(),
       type: z.enum([
         "conference",

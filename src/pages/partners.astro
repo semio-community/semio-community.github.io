@@ -108,8 +108,14 @@ const transformPartner = (partner: any) => {
       partner.data.category.slice(1)
     : "";
 
+  const displayName =
+    partner.data.shortName ||
+    partner.data.displayName ||
+    partner.data.name ||
+    "Unnamed Partner";
+
   return {
-    title: partner.data.name,
+    title: displayName,
     type: "partners" as const,
     description: partner.data.description,
     category: [typeLabel, categoryLabel].filter(Boolean).join(" • "),

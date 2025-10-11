@@ -1,5 +1,18 @@
 import React, { type ReactNode } from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
+import {
+  AltArrowRight,
+  CalendarMark,
+  CodeSquare,
+  CpuBolt,
+  Document2,
+  Gallery,
+  HandShake,
+  Route,
+  Star,
+  TestTube,
+  User,
+} from "@solar-icons/react-perf/LineDuotone";
 
 export interface ItemCardProps {
   title: string;
@@ -40,78 +53,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   // Type icons as fallback when no image
   const typeIcons: Record<string, ReactNode> = {
     hardware: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-        <line x1="12" y1="18" x2="12" y2="18"></line>
-      </svg>
+      <CpuBolt className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
     software: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <polyline points="16 18 22 12 16 6"></polyline>
-        <polyline points="8 6 2 12 8 18"></polyline>
-      </svg>
+      <CodeSquare className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
     people: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
+      <User className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
     partners: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>
+      <HandShake className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
     studies: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14 2 14 8 20 8"></polyline>
-      </svg>
+      <TestTube className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
     events: (
-      <svg
-        className="w-20 h-20 text-accent-one/30 group-hover:scale-110 transition-transform duration-300"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-      >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
+      <CalendarMark className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
     ),
   };
 
@@ -149,28 +106,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       {/* Content section */}
       <div className="flex flex-col flex-1 p-6 pt-0">
         {/* Title */}
-        <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center gap-2">
+        <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center flex-1 justify-between">
           {title}
           {featured && (
-            <svg
-              className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.5"
-                d="M9.153 5.408C10.42 3.136 11.053 2 12 2s1.58 1.136 2.847 3.408l.328.588c.36.646.54.969.82 1.182s.63.292 1.33.45l.636.144c2.46.557 3.689.835 3.982 1.776c.292.94-.546 1.921-2.223 3.882l-.434.507c-.476.557-.715.836-.822 1.18c-.107.345-.071.717.001 1.46l.066.677c.253 2.617.38 3.925-.386 4.506s-1.918.051-4.22-1.009l-.597-.274c-.654-.302-.981-.452-1.328-.452s-.674.15-1.328.452l-.596.274c-2.303 1.06-3.455 1.59-4.22 1.01c-.767-.582-.64-1.89-.387-4.507l.066-.676c.072-.744.108-1.116 0-1.46c-.106-.345-.345-.624-.821-1.18l-.434-.508c-1.677-1.96-2.515-2.941-2.223-3.882S3.58 8.328 6.04 7.772l.636-.144c.699-.158 1.048-.237 1.329-.45s.46-.536.82-1.182z"
-              />
-              <path
-                fill="currentColor"
-                fillOpacity="0.25"
-                d="M9.153 5.408C10.42 3.136 11.053 2 12 2s1.58 1.136 2.847 3.408l.328.588c.36.646.54.969.82 1.182s.63.292 1.33.45l.636.144c2.46.557 3.689.835 3.982 1.776c.292.94-.546 1.921-2.223 3.882l-.434.507c-.476.557-.715.836-.822 1.18c-.107.345-.071.717.001 1.46l.066.677c.253 2.617.38 3.925-.386 4.506s-1.918.051-4.22-1.009l-.597-.274c-.654-.302-.981-.452-1.328-.452s-.674.15-1.328.452l-.596.274c-2.303 1.06-3.455 1.59-4.22 1.01c-.767-.582-.64-1.89-.387-4.507l.066-.676c.072-.744.108-1.116 0-1.46c-.106-.345-.345-.624-.821-1.18l-.434-.508c-1.677-1.96-2.515-2.941-2.223-3.882S3.58 8.328 6.04 7.772l.636-.144c.699-.158 1.048-.237 1.329-.45s.46-.536.82-1.182z"
-              />
-            </svg>
+            <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
           )}
         </h3>
 
@@ -222,7 +161,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     title="Documentation"
                     onClick={(e) => handleLinkClick(e, links.docs!)}
                   >
-                    <svg
+                    <Document2 className="w-4 h-4" />
+                    {/*<svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
@@ -234,7 +174,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                       <line x1="16" y1="14" x2="8" y2="14"></line>
                       <line x1="16" y1="18" x2="8" y2="18"></line>
                       <line x1="10" y1="10" x2="8" y2="10"></line>
-                    </svg>
+                    </svg>*/}
                   </button>
                 )}
                 {links.demo && (
@@ -244,7 +184,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     title="Demo"
                     onClick={(e) => handleLinkClick(e, links.demo!)}
                   >
-                    <svg
+                    <Gallery className="w-4 h-4" />
+                    {/*<svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
@@ -253,7 +194,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     >
                       <circle cx="12" cy="12" r="10"></circle>
                       <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                    </svg>
+                    </svg>*/}
                   </button>
                 )}
                 {links.website && (
@@ -263,7 +204,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     title="Website"
                     onClick={(e) => handleLinkClick(e, links.website!)}
                   >
-                    <svg
+                    <Route className="w-4 h-4" />
+                    {/*<svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
@@ -273,7 +215,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                       <polyline points="15 3 21 3 21 9"></polyline>
                       <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
+                    </svg>*/}
                   </button>
                 )}
               </div>
@@ -281,7 +223,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           </div>
 
           {/* Arrow icon */}
-          <svg
+          <AltArrowRight className="w-5 h-5 text-accent-one group-hover:text-accent-two transition-colors" />
+          {/*<svg
             className="w-5 h-5 text-accent-one group-hover:text-accent-two transition-colors"
             viewBox="0 0 24 24"
             fill="none"
@@ -289,7 +232,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             strokeWidth="2"
           >
             <polyline points="9 18 15 12 9 6" />
-          </svg>
+          </svg>*/}
         </div>
       </div>
     </a>

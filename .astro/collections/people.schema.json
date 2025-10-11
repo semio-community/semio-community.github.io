@@ -116,6 +116,9 @@
             },
             "mastodon": {
               "type": "string"
+            },
+            "scheduling": {
+              "type": "string"
             }
           },
           "additionalProperties": false

@@ -7,6 +7,9 @@
         "name": {
           "type": "string"
         },
+        "displayName": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },

@@ -126,7 +126,7 @@ const transformEvent = (event: any) => {
   const description = `${dateStr}${endDateStr} | 📍 ${location} | ${event.data.description}`;
 
   return {
-    title: event.data.name,
+    title: event.data.displayName ?? event.data.name,
     type: "events" as const,
     description: description,
     category: event.data.type,
