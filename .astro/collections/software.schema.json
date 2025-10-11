@@ -116,12 +116,12 @@
           ],
           "additionalProperties": false
         },
-        "logo": {
-          "type": "string"
-        },
         "images": {
           "type": "object",
           "properties": {
+            "logo": {
+              "type": "string"
+            },
             "hero": {
               "type": "string"
             },
@@ -132,9 +132,6 @@
               }
             }
           },
-          "required": [
-            "hero"
-          ],
           "additionalProperties": false
         },
         "contributors": {
@@ -267,7 +264,7 @@
               ]
             }
           ],
-          "default": "2025-10-11T18:30:15.224Z"
+          "default": "2025-10-11T21:07:44.423Z"
         },
         "$schema": {
           "type": "string"

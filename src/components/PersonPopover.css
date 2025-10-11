@@ -112,6 +112,7 @@
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -124,14 +125,16 @@
 
 /* Optional: Add subtle shadow animation */
 .popover-content {
-  box-shadow: 0 10px 38px -10px rgba(0, 0, 0, 0.35),
-              0 10px 20px -15px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 10px 38px -10px rgba(0, 0, 0, 0.35),
+    0 10px 20px -15px rgba(0, 0, 0, 0.2);
   transition: box-shadow 200ms;
 }
 
 .popover-content:hover {
-  box-shadow: 0 10px 38px -10px rgba(0, 0, 0, 0.4),
-              0 10px 20px -15px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 10px 38px -10px rgba(0, 0, 0, 0.4),
+    0 10px 20px -15px rgba(0, 0, 0, 0.25);
 }
 
 /* Arrow styling */

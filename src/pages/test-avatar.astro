@@ -1,0 +1,283 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import { Avatar } from "@/components/ui/Avatar";
+import { DetailHero } from "@/components/detail/DetailHero";
+
+const meta = {
+  title: "Avatar Component Test",
+  description: "Testing the Avatar component with various configurations",
+};
+
+// Sample images for testing
+const sampleImage = {
+  src: "https://via.placeholder.com/300",
+  alt: "Sample Image",
+};
+
+const realAvatar = {
+  src: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
+  alt: "Person Avatar",
+};
+
+const realLogo = {
+  src: "https://via.placeholder.com/200x200/4A90E2/FFFFFF?text=LOGO",
+  alt: "Company Logo",
+};
+---
+
+<PageLayout meta={meta}>
+  <div class="max-w-6xl mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-8">Avatar Component Test</h1>
+
+    <!-- Avatar Sizes -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Avatar Sizes</h2>
+      <div class="flex items-end gap-4 flex-wrap">
+        <div class="text-center">
+          <Avatar size="xs" name="John Doe" type="person" />
+          <p class="text-xs mt-2">xs</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="sm" name="John Doe" type="person" />
+          <p class="text-xs mt-2">sm</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="md" name="John Doe" type="person" />
+          <p class="text-xs mt-2">md</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="John Doe" type="person" />
+          <p class="text-xs mt-2">lg</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="xl" name="John Doe" type="person" />
+          <p class="text-xs mt-2">xl</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="2xl" name="John Doe" type="person" />
+          <p class="text-xs mt-2">2xl</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Avatar Types with Icons -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Avatar Types (Icon Fallbacks)</h2>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="text-center">
+          <Avatar size="lg" type="person" />
+          <p class="text-xs mt-2">person</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" type="organization" />
+          <p class="text-xs mt-2">organization</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" type="hardware" />
+          <p class="text-xs mt-2">hardware</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" type="software" />
+          <p class="text-xs mt-2">software</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" type="study" />
+          <p class="text-xs mt-2">study</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" type="event" />
+          <p class="text-xs mt-2">event</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Avatar with Initials -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Avatar with Initials</h2>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="text-center">
+          <Avatar size="lg" name="John Doe" type="person" />
+          <p class="text-xs mt-2">John Doe</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="Semio Community" type="organization" />
+          <p class="text-xs mt-2">Semio Community</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="Hardware Platform" type="hardware" />
+          <p class="text-xs mt-2">Hardware Platform</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="A" type="software" />
+          <p class="text-xs mt-2">Single Letter</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Avatar with Images -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Avatar with Images</h2>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="text-center">
+          <Avatar size="lg" src={realAvatar} name="With Image" type="person" />
+          <p class="text-xs mt-2">With Image</p>
+        </div>
+        <div class="text-center">
+          <Avatar
+            size="lg"
+            src="https://via.placeholder.com/150"
+            name="URL String"
+            type="organization"
+          />
+          <p class="text-xs mt-2">URL String</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Large Avatars for Hero Usage -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Large Avatars for Hero Usage</h2>
+      <div class="flex items-center gap-8">
+        <div
+          class="p-1 bg-white/10 dark:bg-black/10 backdrop-blur-sm rounded-full"
+        >
+          <Avatar
+            name="Semio Community"
+            type="organization"
+            size="2xl"
+            className="ring-2 ring-white/20 dark:ring-black/20"
+          />
+        </div>
+        <div
+          class="p-1 bg-white/10 dark:bg-black/10 backdrop-blur-sm rounded-full"
+        >
+          <Avatar
+            src={realAvatar}
+            name="Dr. Ross Mead"
+            type="person"
+            size="2xl"
+            className="ring-2 ring-white/20 dark:ring-black/20"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Real-world Examples -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Real-world Examples</h2>
+      <div class="space-y-4 mb-8">
+        <h3 class="text-lg font-semibold">PersonPopover Style (xs avatar)</h3>
+        <div class="flex items-center gap-4">
+          <button
+            class="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 bg-surface-lighter rounded-full border-2 border-accent-one/40 hover:border-accent-one transition-all"
+          >
+            <Avatar
+              src={realAvatar}
+              name="Dr. Ross Mead"
+              type="person"
+              size="xs"
+            />
+            <span class="text-sm font-medium">Dr. Ross Mead</span>
+            <span class="text-xs text-color-600 dark:text-color-400"
+              >• CEO & Founder</span
+            >
+          </button>
+        </div>
+
+        <h3 class="text-lg font-semibold mt-6">
+          OrganizationChip Style (xs avatar)
+        </h3>
+        <div class="flex items-center gap-4">
+          <a
+            class="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 bg-surface-lighter rounded-full border-2 border-special/40 hover:border-special transition-all no-underline"
+          >
+            <Avatar
+              src={realLogo}
+              name="Semio AI"
+              type="organization"
+              size="xs"
+            />
+            <span class="text-sm font-medium">Semio AI</span>
+            <span class="text-xs text-color-600 dark:text-color-400"
+              >• Industry Partner</span
+            >
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- DetailHero with Avatar -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">
+        DetailHero with Avatar (No Banner Image)
+      </h2>
+      <DetailHero
+        client:load
+        title="Semio Community Platform"
+        subtitle="An open-source robotics framework for human-robot interaction"
+        badges={[
+          { text: "Active", color: "green" },
+          { text: "v2.0", color: "blue" },
+        ]}
+        logo={realLogo}
+        entityType="software"
+        featured={true}
+      />
+    </section>
+
+    <!-- DetailHero with Banner and Avatar -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">
+        DetailHero with Banner and Avatar
+      </h2>
+      <DetailHero
+        client:load
+        image={{ src: "https://via.placeholder.com/1920x400", alt: "Banner" }}
+        title="Research Project Alpha"
+        subtitle="Advancing human-robot collaboration through innovative interfaces"
+        badges={[
+          { text: "Published", color: "green" },
+          { text: "2024", color: "blue" },
+        ]}
+        thumbnail={realLogo}
+        entityType="study"
+      />
+    </section>
+
+    <!-- DetailHero without any images -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">
+        DetailHero without Images (Fallback)
+      </h2>
+      <DetailHero
+        client:load
+        title="John Doe"
+        subtitle="Senior Robotics Researcher"
+        badges={[
+          { text: "Active", color: "green" },
+          { text: "PhD", color: "blue", variant: "outline" },
+        ]}
+        entityType="person"
+      />
+    </section>
+
+    <!-- Rounded Variants -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4">Rounded Variants</h2>
+      <div class="flex items-center gap-4">
+        <div class="text-center">
+          <Avatar size="lg" name="Full" type="person" rounded="full" />
+          <p class="text-xs mt-2">rounded-full</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="XL" type="organization" rounded="xl" />
+          <p class="text-xs mt-2">rounded-xl</p>
+        </div>
+        <div class="text-center">
+          <Avatar size="lg" name="LG" type="hardware" rounded="lg" />
+          <p class="text-xs mt-2">rounded-lg</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</PageLayout>

@@ -132,8 +132,23 @@
         "website": {
           "type": "string"
         },
-        "logo": {
-          "type": "string"
+        "images": {
+          "type": "object",
+          "properties": {
+            "logo": {
+              "type": "string"
+            },
+            "hero": {
+              "type": "string"
+            },
+            "gallery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
         },
         "socialMedia": {
           "type": "object",

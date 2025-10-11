@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+import { PartnerCard as PartnerCardReact } from "./PartnerCard";
+
+interface Props {
+  partnerId: string;
+  className?: string;
+}
+
+const { partnerId, className } = Astro.props;
+
+const partner = await getEntry("partners", partnerId);
+
+if (!partner) {
+  return null;
+}
+---
+
+<PartnerCardReact
+  client:load
+  partnerId={partnerId}
+  data={partner.data}
+  className={className}
+/>

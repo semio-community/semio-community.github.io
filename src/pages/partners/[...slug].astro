@@ -9,7 +9,11 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import ContentSection from "@/components/detail/ContentSection.astro";
-import { ItemCard } from "@/components/ItemCard";
+import StudyCard from "@/components/cards/StudyCard.astro";
+import HardwareCard from "@/components/cards/HardwareCard.astro";
+import SoftwareCard from "@/components/cards/SoftwareCard.astro";
+import EventCard from "@/components/cards/EventCard.astro";
+import PartnerCard from "@/components/cards/PartnerCard.astro";
 import { getAllPartners } from "@/data/partners";
 import { getPerson } from "@/data/people";
 import { getAllStudies } from "@/data/studies";
@@ -87,9 +91,11 @@ const relatedPartners = await getRelatedPartners(entry, 3);
 async function getPartnerRelatedContent(partnerId: string) {
   // Get studies where this partner is involved
   const allStudies = await getAllStudies();
-  const studies = allStudies.filter((study) =>
-    study.data.institutions?.some((inst) => inst.partnerId === partnerId),
-  );
+  // TODO: Re-enable when studies have institutions field
+  // const studies = allStudies.filter((study) =>
+  //   study.data.institutions?.some((inst: any) => inst.partnerId === partnerId),
+  // );
+  const studies: any[] = []; // Placeholder until studies schema includes institutions
 
   // Get hardware where this partner is lead or supporting
   const allHardware = await getAllHardware();
@@ -295,10 +301,15 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     <Fragment slot="hero">
       <DetailHero
         client:load
-        image={data.logo}
-        title={data.name}
+        image={data.images?.hero}
+        title={data.shortName ? data.shortName : data.name}
+        subtitle={data.shortName && data.shortName !== data.name
+          ? data.name
+          : undefined}
         badges={badges}
         featured={data.featured}
+        logo={data.images?.logo}
+        entityType="organization"
       />
     </Fragment>
 
@@ -475,14 +486,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                 <h3 class="text-lg font-semibold mb-4">Studies</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.studies.map((study) => (
-                    <ItemCard
-                      client:load
-                      title={study.data.title}
-                      description={study.data.abstract}
-                      href={`/studies/${study.id}`}
-                      type="studies"
-                      featured={study.data.featured}
-                    />
+                    <StudyCard studyId={study.id} />
                   ))}
                 </div>
               </div>
@@ -494,25 +498,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                 <h3 class="text-lg font-semibold mb-4">Hardware</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.hardware.map((hw) => (
-                    <ItemCard
-                      client:load
-                      title={hw.data.name}
-                      description={
-                        hw.data.shortDescription || hw.data.description
-                      }
-                      href={`/hardware/${hw.id}`}
-                      type="hardware"
-                      status={hw.data.status}
-                      category={hw.data.category}
-                      featured={hw.data.featured}
-                      imageUrl={hw.data.images?.hero?.src}
-                      imageAlt={hw.data.images?.hero?.alt}
-                      links={{
-                        github: hw.data.links?.github,
-                        docs: hw.data.links?.documentation,
-                        website: hw.data.links?.website,
-                      }}
-                    />
+                    <HardwareCard hardwareId={hw.id} />
                   ))}
                 </div>
               </div>
@@ -524,26 +510,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                 <h3 class="text-lg font-semibold mb-4">Software</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.software.map((sw) => (
-                    <ItemCard
-                      client:load
-                      title={sw.data.name}
-                      description={
-                        sw.data.shortDescription || sw.data.description
-                      }
-                      href={`/software/${sw.id}`}
-                      type="software"
-                      status={sw.data.status}
-                      category={sw.data.category}
-                      featured={sw.data.featured}
-                      imageUrl={sw.data.images?.hero?.src}
-                      imageAlt={sw.data.images?.hero?.alt}
-                      links={{
-                        github: sw.data.links?.github,
-                        docs: sw.data.links?.documentation,
-                        demo: sw.data.links?.demo,
-                        website: sw.data.links?.website,
-                      }}
-                    />
+                    <SoftwareCard softwareId={sw.id} />
                   ))}
                 </div>
               </div>
@@ -555,17 +522,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                 <h3 class="text-lg font-semibold mb-4">Events</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.events.map((event) => (
-                    <ItemCard
-                      client:load
-                      title={event.data.displayName ?? event.data.name}
-                      description={event.data.description}
-                      href={`/events/${event.id}`}
-                      type="events"
-                      category={event.data.type}
-                      featured={event.data.featured}
-                      imageUrl={event.data.banner?.src}
-                      imageAlt={event.data.banner?.alt}
-                    />
+                    <EventCard eventId={event.id} />
                   ))}
                 </div>
               </div>
@@ -584,17 +541,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedPartners.map((partner) => (
-                <ItemCard
-                  client:load
-                  title={partner.data.name}
-                  description={partner.data.description}
-                  href={`/partners/${partner.id}`}
-                  type="partners"
-                  featured={partner.data.featured}
-                  imageUrl={partner.data.logo?.src}
-                  imageAlt={partner.data.logo?.alt}
-                  category={typeLabels[partner.data.type] || partner.data.type}
-                />
+                <PartnerCard partnerId={partner.id} />
               ))}
             </div>
           </div>

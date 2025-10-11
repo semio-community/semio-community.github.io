@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import ItemCard from "@/components/ItemCard.astro";
+import PartnerCard from "@/components/cards/PartnerCard.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
@@ -95,37 +95,6 @@ const categoryInfo: Record<string, { icon: string; color: string }> = {
     icon: "solar:share-line-duotone",
     color: "text-pink-500",
   },
-};
-
-// Transform partner data for ItemCard component
-const transformPartner = (partner: any) => {
-  // Build category label
-  const typeLabel = partner.data.type
-    ? partner.data.type.charAt(0).toUpperCase() + partner.data.type.slice(1)
-    : "";
-  const categoryLabel = partner.data.category
-    ? partner.data.category.charAt(0).toUpperCase() +
-      partner.data.category.slice(1)
-    : "";
-
-  const displayName =
-    partner.data.shortName ||
-    partner.data.displayName ||
-    partner.data.name ||
-    "Unnamed Partner";
-
-  return {
-    title: displayName,
-    type: "partners" as const,
-    description: partner.data.description,
-    category: [typeLabel, categoryLabel].filter(Boolean).join(" • "),
-    featured: partner.data.featured,
-    href: `/partners/${partner.id}`,
-    ...(partner.data.logo && { image: partner.data.logo }),
-    links: {
-      ...(partner.data.website && { website: partner.data.website }),
-    },
-  };
 };
 
 const benefits = [
@@ -241,10 +210,9 @@ const benefits = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPartners.slice(0, 6).map((partner) => {
-              const cardData = transformPartner(partner);
-              return <ItemCard {...cardData} />;
-            })}
+            {featuredPartners.slice(0, 6).map((partner) => (
+              <PartnerCard partnerId={partner.id} />
+            ))}
           </div>
         </div>
       </Section>
@@ -278,10 +246,9 @@ const benefits = [
                   </span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {partners.map((partner) => {
-                    const cardData = transformPartner(partner);
-                    return <ItemCard {...cardData} />;
-                  })}
+                  {partners.map((partner) => (
+                    <PartnerCard partnerId={partner.id} />
+                  ))}
                 </div>
               </div>
             );

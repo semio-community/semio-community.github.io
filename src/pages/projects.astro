@@ -1,13 +1,13 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import ItemCard from "@/components/ItemCard.astro";
-import StudyCard from "@/components/StudyCard.astro";
+import HardwareCard from "@/components/cards/HardwareCard.astro";
+import SoftwareCard from "@/components/cards/SoftwareCard.astro";
+import StudyCard from "@/components/cards/StudyCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 import { getAllHardware, getHardwareCountByStatus } from "@/data/hardware";
 import { getAllSoftware, getSoftwareCountByStatus } from "@/data/software";
-import { getFeaturedStudies, getStudyStatistics } from "@/data/studies";
 import { getFormattedAuthors } from "@/data/people";
 
 const meta = {
@@ -24,49 +24,28 @@ const hardwareCounts = await getHardwareCountByStatus();
 const allSoftware = await getAllSoftware();
 const softwareCounts = await getSoftwareCountByStatus();
 
-// Fetch studies data
-const featuredStudies = await getFeaturedStudies();
-const studyStatistics = await getStudyStatistics();
+// Fetch studies data - handle empty collection gracefully
+let featuredStudies = [];
+let studyStatistics = null;
+let featuredStudiesWithAuthors: any[] = [];
 
-// Transform hardware data for ItemCard component
-const hardwareProducts = allHardware.map((hw) => ({
-  title: hw.data.name,
-  type: "hardware" as const,
-  description: hw.data.shortDescription,
-  status: hw.data.status,
-  featured: hw.data.featured,
-  href: `/hardware/${hw.id}`,
-  ...(hw.data.images?.hero && { image: hw.data.images.hero }),
-  links: {
-    ...(hw.data.links?.github && { github: hw.data.links.github }),
-    ...(hw.data.links?.documentation && { docs: hw.data.links.documentation }),
-  },
-}));
+try {
+  // Dynamically import to avoid build errors when collection is empty
+  const studiesModule = await import("@/data/studies");
+  featuredStudies = await studiesModule.getFeaturedStudies();
+  studyStatistics = await studiesModule.getStudyStatistics();
 
-// Transform software data for ItemCard component
-const softwareProducts = allSoftware.map((sw) => ({
-  title: sw.data.name,
-  type: "software" as const,
-  description: sw.data.shortDescription,
-  status: sw.data.status === "stable" ? "stable" : sw.data.status,
-  featured: sw.data.featured,
-  href: `/software/${sw.id}`,
-  ...(sw.data.images?.hero && { image: sw.data.images.hero }),
-  ...(sw.data.logo && !sw.data.images?.hero && { imageUrl: sw.data.logo }),
-  links: {
-    ...(sw.data.links?.github && { github: sw.data.links.github }),
-    ...(sw.data.links?.documentation && { docs: sw.data.links.documentation }),
-    ...(sw.data.links?.demo && { demo: sw.data.links.demo }),
-  },
-}));
-
-// Pre-fetch author names for featured studies
-const featuredStudiesWithAuthors = await Promise.all(
-  featuredStudies.slice(0, featuredStudies.length).map(async (study) => ({
-    ...study,
-    authorString: await getFormattedAuthors(study.data.authors, 1),
-  })),
-);
+  // Pre-fetch author names for featured studies
+  featuredStudiesWithAuthors = await Promise.all(
+    featuredStudies.slice(0, featuredStudies.length).map(async (study) => ({
+      ...study,
+      authorString: await getFormattedAuthors(study.data.authors, 1),
+    })),
+  );
+} catch (error) {
+  // Studies collection is empty or doesn't exist
+  console.log("Studies collection not available");
+}
 ---
 
 <PageLayout meta={meta}>
@@ -146,30 +125,30 @@ const featuredStudiesWithAuthors = await Promise.all(
   >
     <div class="max-w-6xl mx-auto">
       {
-        hardwareProducts.length > 0 ? (
+        allHardware.length > 0 ? (
           <div data-expandable-section data-initial-count="6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               data-items-container
             >
-              {hardwareProducts.map((product, index) => (
+              {allHardware.map((hw, index) => (
                 <div
                   data-expandable-item
                   data-index={index}
                   class={index >= 6 ? "hidden" : ""}
                 >
-                  <ItemCard {...product} />
+                  <HardwareCard hardwareId={hw.id} />
                 </div>
               ))}
             </div>
-            {hardwareProducts.length > 6 && (
+            {allHardware.length > 6 && (
               <div class="text-center mt-8">
                 <button
                   data-expand-button
                   class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
                 >
                   <span data-expand-text>
-                    View All {hardwareProducts.length} Platforms
+                    View All {allHardware.length} Platforms
                   </span>
                   <span data-collapse-text class="hidden">
                     Show Less
@@ -206,30 +185,30 @@ const featuredStudiesWithAuthors = await Promise.all(
   >
     <div class="max-w-6xl mx-auto">
       {
-        softwareProducts.length > 0 ? (
+        allSoftware.length > 0 ? (
           <div data-expandable-section data-initial-count="6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               data-items-container
             >
-              {softwareProducts.map((product, index) => (
+              {allSoftware.map((sw, index) => (
                 <div
                   data-expandable-item
                   data-index={index}
                   class={index >= 6 ? "hidden" : ""}
                 >
-                  <ItemCard {...product} />
+                  <SoftwareCard softwareId={sw.id} />
                 </div>
               ))}
             </div>
-            {softwareProducts.length > 6 && (
+            {allSoftware.length > 6 && (
               <div class="text-center mt-8">
                 <button
                   data-expand-button
                   class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
                 >
                   <span data-expand-text>
-                    View All {softwareProducts.length} Tools
+                    View All {allSoftware.length} Tools
                   </span>
                   <span data-collapse-text class="hidden">
                     Show Less
@@ -273,45 +252,13 @@ const featuredStudiesWithAuthors = await Promise.all(
               data-items-container
             >
               {featuredStudiesWithAuthors.map((study, index) => (
-                <article
+                <div
                   data-expandable-item
                   data-index={index}
-                  class={`group relative flex flex-col bg-special-lighter rounded-lg border-2 hover:border-accent-two border-accent-one/40 transition-all overflow-hidden ${
-                    index >= 6 ? "hidden" : ""
-                  }`}
+                  class={index >= 6 ? "hidden" : ""}
                 >
-                  <div class="p-6 flex-1">
-                    <div class="flex items-center gap-2 mb-3">
-                      <span class="text-xs px-2 py-1 bg-accent-two/20 rounded">
-                        {study.data.type}
-                      </span>
-                      <span class="text-xs text-color-600 dark:text-color-400">
-                        {study.data.year}
-                      </span>
-                    </div>
-                    <h3 class="font-semibold mb-2 line-clamp-2 group-hover:text-accent-one transition-colors">
-                      {study.data.title}
-                    </h3>
-                    <p class="text-sm text-color-600 dark:text-color-400 line-clamp-3 mb-3">
-                      {study.data.abstract}
-                    </p>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-color-500">{study.authorString}</span>
-                      <div class="flex items-center gap-1">
-                        <Icon
-                          name="solar:document-text-line-duotone"
-                          class="w-3 h-3"
-                        />
-                        <span>{study.data.citations}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <a
-                    href={`/studies/${study.id}`}
-                    class="absolute inset-0"
-                    aria-label={`Read more about ${study.data.title}`}
-                  />
-                </article>
+                  <StudyCard studyId={study.id} />
+                </div>
               ))}
             </div>
             {featuredStudiesWithAuthors.length > 6 && (
@@ -364,11 +311,13 @@ const featuredStudiesWithAuthors = await Promise.all(
       const expandText = section.querySelector("[data-expand-text]");
       const collapseText = section.querySelector("[data-collapse-text]");
       const icon = section.querySelector("[data-expand-icon]");
-      const initialCount = parseInt(section.dataset.initialCount || "6");
+      const initialCount = parseInt(
+        (section as HTMLElement).dataset.initialCount || "6",
+      );
 
       if (!button || items.length <= initialCount) {
         // Hide button if not needed
-        if (button) button.style.display = "none";
+        if (button) (button as HTMLElement).style.display = "none";
         return;
       }
 
@@ -401,9 +350,9 @@ const featuredStudiesWithAuthors = await Promise.all(
         // Rotate icon
         if (icon) {
           if (isExpanded) {
-            icon.style.transform = "rotate(180deg)";
+            (icon as HTMLElement).style.transform = "rotate(180deg)";
           } else {
-            icon.style.transform = "rotate(0deg)";
+            (icon as HTMLElement).style.transform = "rotate(0deg)";
           }
         }
 

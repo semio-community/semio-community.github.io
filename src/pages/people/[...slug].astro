@@ -14,7 +14,10 @@ import { ChipsCard } from "@/components/detail/ChipsCard";
 import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
-import { ItemCard } from "@/components/ItemCard";
+import StudyCard from "@/components/cards/StudyCard.astro";
+import HardwareCard from "@/components/cards/HardwareCard.astro";
+import SoftwareCard from "@/components/cards/SoftwareCard.astro";
+import EventCard from "@/components/cards/EventCard.astro";
 import {
   getPerson,
   getPeopleByExpertise,
@@ -27,7 +30,6 @@ import { getAllEvents } from "@/data/events";
 import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
-import Icon from "@/components/Icon.astro";
 
 export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {
@@ -277,11 +279,12 @@ if (data.links?.mastodon) {
     <Fragment slot="hero">
       <DetailHero
         client:load
-        image={data.avatar}
         title={data.displayName || data.name}
         subtitle={data.title}
         badges={badges}
         featured={data.featured}
+        avatar={data.images?.avatar}
+        entityType="person"
       />
     </Fragment>
 
@@ -422,14 +425,7 @@ if (data.links?.mastodon) {
                 <h3 class="text-lg font-semibold mb-4">Studies</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.studies.map((study) => (
-                    <ItemCard
-                      client:load
-                      title={study.data.title}
-                      description={study.data.abstract}
-                      href={`/studies/${study.id}`}
-                      type="studies"
-                      featured={study.data.featured}
-                    />
+                    <StudyCard studyId={study.id} />
                   ))}
                 </div>
               </div>
@@ -441,25 +437,7 @@ if (data.links?.mastodon) {
                 <h3 class="text-lg font-semibold mb-4">Hardware</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.hardware.map((hw) => (
-                    <ItemCard
-                      client:load
-                      title={hw.data.name}
-                      description={
-                        hw.data.shortDescription || hw.data.description
-                      }
-                      href={`/hardware/${hw.id}`}
-                      type="hardware"
-                      status={hw.data.status}
-                      category={hw.data.category}
-                      featured={hw.data.featured}
-                      imageUrl={hw.data.images?.hero?.src}
-                      imageAlt={hw.data.images?.hero?.alt}
-                      links={{
-                        github: hw.data.links?.github,
-                        docs: hw.data.links?.documentation,
-                        website: hw.data.links?.website,
-                      }}
-                    />
+                    <HardwareCard hardwareId={hw.id} />
                   ))}
                 </div>
               </div>
@@ -471,26 +449,7 @@ if (data.links?.mastodon) {
                 <h3 class="text-lg font-semibold mb-4">Software</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.software.map((sw) => (
-                    <ItemCard
-                      client:load
-                      title={sw.data.name}
-                      description={
-                        sw.data.shortDescription || sw.data.description
-                      }
-                      href={`/software/${sw.id}`}
-                      type="software"
-                      status={sw.data.status}
-                      category={sw.data.category}
-                      featured={sw.data.featured}
-                      imageUrl={sw.data.images?.hero?.src}
-                      imageAlt={sw.data.images?.hero?.alt}
-                      links={{
-                        github: sw.data.links?.github,
-                        docs: sw.data.links?.documentation,
-                        demo: sw.data.links?.demo,
-                        website: sw.data.links?.website,
-                      }}
-                    />
+                    <SoftwareCard softwareId={sw.id} />
                   ))}
                 </div>
               </div>
@@ -502,17 +461,7 @@ if (data.links?.mastodon) {
                 <h3 class="text-lg font-semibold mb-4">Events</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.events.map((event) => (
-                    <ItemCard
-                      client:load
-                      title={event.data.name}
-                      description={event.data.description}
-                      href={`/events/${event.id}`}
-                      type="events"
-                      category={event.data.type}
-                      featured={event.data.featured}
-                      imageUrl={event.data.banner?.src}
-                      imageAlt={event.data.banner?.alt}
-                    />
+                    <EventCard eventId={event.id} />
                   ))}
                 </div>
               </div>
@@ -536,7 +485,7 @@ if (data.links?.mastodon) {
                   name: person.data.displayName || person.data.name,
                   description: person.data.bio || person.data.title || "",
                   shortDescription: person.data.title || "",
-                  image: person.data.avatar,
+                  images: person.data.images,
                   featured: person.data.featured,
                 },
               }))}

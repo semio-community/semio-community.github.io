@@ -9,6 +9,9 @@ export interface Props {
   image?: ImageMetadata;
   imageUrl?: string;
   imageAlt?: string;
+  logo?:
+    | ImageMetadata
+    | { src: string; width?: number; height?: number; format?: string };
   status?: string;
   statusLabel?: string;
   category?: string;
@@ -29,6 +32,7 @@ const {
   image,
   imageUrl,
   imageAlt,
+  logo,
   status,
   statusLabel,
   category,
@@ -39,6 +43,7 @@ const {
 
 // Convert Astro image to URL string if provided
 const finalImageUrl = image?.src || imageUrl;
+const finalLogo = logo;
 ---
 
 <ItemCardReact
@@ -48,6 +53,7 @@ const finalImageUrl = image?.src || imageUrl;
   href={href}
   imageUrl={finalImageUrl}
   imageAlt={imageAlt}
+  logo={finalLogo}
   status={status}
   statusLabel={statusLabel}
   category={category}

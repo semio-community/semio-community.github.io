@@ -54,7 +54,13 @@ const people = defineCollection({
         .optional(),
 
       // Media
-      avatar: image().optional(),
+
+      images: z
+        .object({
+          avatar: image().optional(),
+          hero: image().optional(),
+        })
+        .optional(),
 
       // Metadata
       visibility: z.enum(["public", "members", "private"]).default("public"),
@@ -123,7 +129,14 @@ const partners = defineCollection({
 
       // Additional properties
       website: z.string(),
-      logo: image().optional(),
+
+      images: z
+        .object({
+          logo: image().optional(),
+          hero: image().optional(),
+          gallery: z.array(image()).optional(),
+        })
+        .optional(),
       socialMedia: z
         .object({
           twitter: z.string().optional(),
@@ -192,7 +205,8 @@ const hardware = defineCollection({
       }),
       images: z
         .object({
-          hero: image(),
+          logo: image().optional(),
+          hero: image().optional(),
           gallery: z.array(image()).optional(),
         })
         .optional(),
@@ -264,10 +278,10 @@ const software = defineCollection({
         pypi: z.string().optional(),
         npm: z.string().optional(),
       }),
-      logo: image().optional(),
       images: z
         .object({
-          hero: image(),
+          logo: image().optional(),
+          hero: image().optional(),
           gallery: z.array(image()).optional(),
         })
         .optional(),
@@ -354,7 +368,13 @@ const studies = defineCollection({
         data: z.string().optional(),
         video: z.string().optional(),
       }),
-      thumbnail: image().optional(),
+      images: z
+        .object({
+          logo: image().optional(),
+          hero: image().optional(),
+          gallery: z.array(image()).optional(),
+        })
+        .optional(),
       citations: z.number().default(0),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
@@ -440,6 +460,14 @@ const events = defineCollection({
               .optional(),
           }),
         )
+        .optional(),
+
+      images: z
+        .object({
+          logo: image().optional(),
+          hero: image().optional(),
+          gallery: z.array(image()).optional(),
+        })
         .optional(),
 
       tracks: z.array(z.string()).optional(),

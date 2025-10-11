@@ -1,7 +1,7 @@
 import React from "react";
 import type { ImageMetadata } from "astro";
-import { getStatusColor, type ChipColor } from "@/config/statusConfig";
 import { Star } from "@solar-icons/react-perf/LineDuotone";
+import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
 export interface DetailHeroBadge {
   text: string;
@@ -25,6 +25,17 @@ export interface DetailHeroProps {
   featured?: boolean;
   overlayGradient?: boolean;
   className?: string;
+  // Avatar/logo props
+  logo?: ImageMetadata | { src: string; alt?: string };
+  avatar?: ImageMetadata | { src: string; alt?: string };
+  thumbnail?: ImageMetadata | { src: string; alt?: string };
+  entityType?:
+    | "person"
+    | "organization"
+    | "hardware"
+    | "software"
+    | "study"
+    | "event";
 }
 
 export const DetailHero: React.FC<DetailHeroProps> = ({
@@ -35,20 +46,24 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
   featured = false,
   overlayGradient = true,
   className = "",
+  logo,
+  avatar,
+  thumbnail,
+  entityType = "organization",
 }) => {
   const getBadgeClasses = (badge: DetailHeroBadge) => {
     const baseClasses =
       "px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm";
 
     const colorClasses = {
-      green: "bg-green-500/80 text-white",
-      blue: "bg-blue-500/80 text-white",
-      orange: "bg-orange-500/80 text-white",
-      red: "bg-red-500/80 text-white",
-      yellow: "bg-yellow-500/80 text-white",
-      gray: "bg-neutral-500/80 text-white",
-      accent: "bg-accent-two/80 text-white",
-      special: "bg-special/80 text-white",
+      green: "bg-green-500/80 text-white dark:text-white",
+      blue: "bg-blue-500/80 text-white dark:text-white",
+      orange: "bg-orange-500/80 text-white dark:text-white",
+      red: "bg-red-500/80 text-white dark:text-white",
+      yellow: "bg-yellow-500/80 text-white dark:text-white",
+      gray: "bg-neutral-500/80 text-white dark:text-white",
+      accent: "bg-accent-two/80 text-white dark:text-white",
+      special: "bg-special/80 text-white dark:text-white",
     };
 
     if (badge.variant === "outline") {
@@ -77,6 +92,20 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
   const imageAlt =
     typeof image === "object" && "alt" in image ? image.alt : title;
 
+  // Determine which avatar/logo to use
+  const profileImage = avatar || logo || thumbnail;
+
+  // Map entity type to avatar type
+  const avatarTypeMap: Record<string, AvatarType> = {
+    person: "person",
+    organization: "organization",
+    hardware: "hardware",
+    software: "software",
+    study: "study",
+    event: "event",
+  };
+  const avatarType = avatarTypeMap[entityType] || "organization";
+
   return (
     <div
       className={`relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-none md:rounded-xl overflow-hidden ${className}`}
@@ -88,12 +117,12 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
             <img
               src={imageSrc}
               alt={imageAlt}
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
             />
 
             {/* Overlay gradient for images */}
             {overlayGradient && (
-              <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/60 to-transparent" />
             )}
           </>
         ) : (
@@ -101,36 +130,56 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
             {/* Gradient fallback background */}
             <div className="absolute inset-0 bg-gradient-to-br from-special-lighter via-special-light to-special" />
 
-            {/* Subtle overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/50 to-surface/30" />
+            {/* Overlay for text readability on gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/60 to-surface/20" />
           </>
         )}
 
-        {/* Title, subtitle and badges overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-          <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg flex items-center gap-3">
-              {title}
-              {featured && (
-                <Star className="w-8 h-8 md:w-10 md:h-10 text-yellow-500 dark:text-yellow-400 flex-shrink-0 drop-shadow-lg" />
-              )}
-            </h1>
-
-            {subtitle && (
-              <p className="text-lg md:text-xl text-white/90 mb-4 max-w-3xl drop-shadow">
-                {subtitle}
-              </p>
-            )}
-
-            {badges.length > 0 && (
-              <div className="flex gap-2 flex-wrap items-center">
-                {badges.map((badge, index) => (
-                  <span key={index} className={getBadgeClasses(badge)}>
-                    {badge.text}
-                  </span>
-                ))}
+        {/* Content overlay - positioned at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 lg:p-10">
+          <div className="max-w-7xl mx-auto flex items-end gap-4 md:gap-6">
+            {/* Avatar/Logo - always show if available or no banner */}
+            {(profileImage || !image) && (
+              <div className="flex-shrink-0">
+                <Avatar
+                  src={profileImage}
+                  alt={title}
+                  name={title}
+                  type={avatarType}
+                  size="2xl"
+                  rounded="full"
+                  className=""
+                />
               </div>
             )}
+
+            {/* Text content */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-accent-base mb-2">
+                <span className="inline-flex items-center gap-3 flex-wrap">
+                  {title}
+                </span>
+              </h1>
+
+              {subtitle && (
+                <p className="text-base md:text-lg text-accent-base/90 mb-3 max-w-3xl">
+                  {subtitle}
+                </p>
+              )}
+
+              {badges.length > 0 && (
+                <div className="flex gap-2 flex-wrap items-center">
+                  {featured && (
+                    <Star className="w-6 h-6 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
+                  )}
+                  {badges.map((badge, index) => (
+                    <span key={index} className={getBadgeClasses(badge)}>
+                      {badge.text}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

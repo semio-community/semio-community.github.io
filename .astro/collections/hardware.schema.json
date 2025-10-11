@@ -132,6 +132,9 @@
         "images": {
           "type": "object",
           "properties": {
+            "logo": {
+              "type": "string"
+            },
             "hero": {
               "type": "string"
             },
@@ -142,9 +145,6 @@
               }
             }
           },
-          "required": [
-            "hero"
-          ],
           "additionalProperties": false
         },
         "contributors": {
@@ -254,7 +254,7 @@
               ]
             }
           ],
-          "default": "2025-10-11T18:30:15.221Z"
+          "default": "2025-10-11T21:07:44.422Z"
         },
         "$schema": {
           "type": "string"

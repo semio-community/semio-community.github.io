@@ -292,7 +292,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
 );
 
 // Prepare related resources metadata
-const relatedResourcesItems = [];
+const relatedResourcesItems: any[] = [];
 validRelatedHardware.forEach((hw) => {
   if (hw) {
     relatedResourcesItems.push({
@@ -318,11 +318,13 @@ validRelatedSoftware.forEach((sw) => {
     <Fragment slot="hero">
       <DetailHero
         client:load
-        image={data.thumbnail}
+        image={data.images?.hero}
         title={data.title}
         subtitle={authorsString}
         badges={badges}
         featured={data.featured}
+        thumbnail={data.images?.logo}
+        entityType="study"
       />
     </Fragment>
 
@@ -481,18 +483,29 @@ validRelatedSoftware.forEach((sw) => {
             client:load
             title="Related Studies"
             subtitle="Similar research papers and reports"
-            items={relatedStudies.map((study) => ({
-              id: study.id,
-              data: {
-                ...study.data,
-                // Map study data to expected format for card
-                name: study.data.title,
-                description: study.data.abstract,
-                shortDescription: `${typeLabels[study.data.type] || study.data.type} • ${study.data.year}`,
-                image: study.data.thumbnail,
-                featured: study.data.featured,
-              },
-            }))}
+            items={
+              relatedStudies.map((study) => ({
+                id: study.id,
+                data: {
+                  name: study.data.title,
+                  title: study.data.title,
+                  displayName: undefined,
+                  description: study.data.abstract,
+                  abstract: study.data.abstract,
+                  status: undefined,
+                  type: study.data.type,
+                  category: undefined,
+                  featured: study.data.featured,
+                  images: study.data.images,
+                  avatar: undefined,
+                  logo: undefined,
+                  thumbnail: undefined,
+                  banner: undefined,
+                  links: study.data.links,
+                  shortDescription: `${typeLabels[study.data.type] || study.data.type} • ${study.data.year}`,
+                },
+              })) as any
+            }
             itemType="studies"
             columns={3}
           />

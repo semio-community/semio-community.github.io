@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+import { EventCard as EventCardReact } from "./EventCard";
+
+interface Props {
+  eventId: string;
+  className?: string;
+}
+
+const { eventId, className } = Astro.props;
+
+const event = await getEntry("events", eventId);
+
+if (!event) {
+  return null;
+}
+---
+
+<EventCardReact
+  client:load
+  eventId={eventId}
+  data={event.data}
+  className={className}
+/>

@@ -374,42 +374,6 @@ const sponsorsByLevel = {
   bronze: validSponsors.filter((s) => s.level === "bronze"),
   supporter: validSponsors.filter((s) => s.level === "supporter"),
 };
-
-// Prepare pricing data for PricingCard
-const pricingData = data.pricing
-  ? {
-      purchase: {
-        amount: data.pricing.industry,
-        currency: "USD",
-      },
-      rental:
-        data.pricing.student || data.pricing.academic || data.pricing.virtual
-          ? {
-              daily: data.pricing.student
-                ? {
-                    amount: data.pricing.student,
-                    currency: "USD",
-                    label: "Student",
-                  }
-                : undefined,
-              weekly: data.pricing.academic
-                ? {
-                    amount: data.pricing.academic,
-                    currency: "USD",
-                    label: "Academic",
-                  }
-                : undefined,
-              monthly: data.pricing.virtual
-                ? {
-                    amount: data.pricing.virtual,
-                    currency: "USD",
-                    label: "Virtual",
-                  }
-                : undefined,
-            }
-          : undefined,
-    }
-  : null;
 ---
 
 <PageLayout meta={meta}>
@@ -417,11 +381,13 @@ const pricingData = data.pricing
     <Fragment slot="hero">
       <DetailHero
         client:load
-        image={data.banner}
+        image={data.images?.hero || data.banner}
         title={data.name}
         subtitle={`${typeLabels[data.type]} • ${data.location.city}, ${data.location.country}`}
         badges={badges}
         featured={data.featured}
+        logo={data.images?.logo}
+        entityType="event"
       />
     </Fragment>
 
@@ -489,7 +455,7 @@ const pricingData = data.pricing
                           }
                           variant={
                             speaker.sessionType === "keynote"
-                              ? "accent"
+                              ? "primary"
                               : "default"
                           }
                         />
@@ -520,7 +486,7 @@ const pricingData = data.pricing
                 {Object.entries(sponsorsByLevel).map(
                   ([level, sponsors]) =>
                     sponsors.length > 0 && (
-                      <div key={level}>
+                      <div>
                         <h4 class="text-xs font-medium mb-2 text-color-500 capitalize">
                           {level}
                         </h4>
@@ -566,16 +532,6 @@ const pricingData = data.pricing
       }
 
       {
-        pricingData && (
-          <PricingCard
-            client:load
-            purchase={pricingData.purchase}
-            rental={pricingData.rental}
-          />
-        )
-      }
-
-      {
         data.topics && data.topics.length > 0 && (
           <ChipsCard
             client:load
@@ -616,15 +572,29 @@ const pricingData = data.pricing
             client:load
             title="Related Events"
             subtitle="Similar upcoming and past events"
-            items={relatedEvents.map((event) => ({
-              id: event.id,
-              data: {
-                ...event.data,
-                // Map event data to expected format for card
-                image: event.data.banner,
-                shortDescription: `${formatLabels[event.data.format]} • ${event.data.location.city}`,
-              },
-            }))}
+            items={
+              relatedEvents.map((event) => ({
+                id: event.id,
+                data: {
+                  name: event.data.name,
+                  title: undefined,
+                  displayName: event.data.displayName,
+                  description: event.data.description,
+                  abstract: undefined,
+                  status: undefined,
+                  type: event.data.type,
+                  category: undefined,
+                  featured: event.data.featured,
+                  images: event.data.images,
+                  avatar: undefined,
+                  logo: undefined,
+                  thumbnail: undefined,
+                  banner: event.data.banner,
+                  links: event.data.links,
+                  shortDescription: `${formatLabels[event.data.format]} • ${event.data.location.city}`,
+                },
+              })) as any
+            }
             itemType="events"
             columns={3}
           />

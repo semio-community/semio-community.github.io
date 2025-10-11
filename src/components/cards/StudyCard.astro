@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+import { StudyCard as StudyCardReact } from "./StudyCard";
+
+interface Props {
+  studyId: string;
+  className?: string;
+}
+
+const { studyId, className } = Astro.props;
+
+const study = await getEntry("studies", studyId);
+
+if (!study) {
+  return null;
+}
+---
+
+<StudyCardReact
+  client:load
+  studyId={studyId}
+  data={study.data}
+  className={className}
+/>

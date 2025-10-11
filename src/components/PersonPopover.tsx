@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import * as Popover from "@radix-ui/react-popover";
-import * as Avatar from "@radix-ui/react-avatar";
+import { Avatar } from "@/components/ui/Avatar";
 import "./PersonPopover.css";
 import {
   Letter,
@@ -37,11 +37,13 @@ interface PersonPopoverProps {
       bluesky?: string;
       mastodon?: string;
     };
-    avatar?: {
-      src: string;
-      width: number;
-      height: number;
-      format: string;
+    images?: {
+      avatar?: {
+        src: string;
+        width: number;
+        height: number;
+        format: string;
+      };
     };
   } | null;
   personId: string;
@@ -67,29 +69,17 @@ export function PersonPopover({
     );
   }
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
         <button className="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 bg-surface-lighter rounded-full border-2 border-accent-one/40 hover:border-accent-one data-[state=open]:border-accent-two hover:data-[state=closed]:border-accent-one transition-all cursor-pointer focus:outline-none focus:border-accent-two">
-          <Avatar.Root className="w-6 h-6">
-            <Avatar.Image
-              src={person.avatar?.src || ""}
-              alt={person.name}
-              className="w-full h-full rounded-full object-cover"
-            />
-            <Avatar.Fallback className="w-full h-full rounded-full bg-accent-one/20 flex items-center justify-center text-xs font-medium">
-              {getInitials(person.displayName || person.name)}
-            </Avatar.Fallback>
-          </Avatar.Root>
+          <Avatar
+            src={person.images?.avatar}
+            alt={person.name}
+            name={person.displayName || person.name}
+            type="person"
+            size="xs"
+          />
           <span className="text-sm font-medium">
             {person.displayName || person.name}
           </span>
@@ -111,16 +101,15 @@ export function PersonPopover({
             href={`/people/${person.id}`}
             className="flex items-start gap-4 no-underline hover:opacity-90 transition-opacity"
           >
-            <Avatar.Root className="w-16 h-16 flex-shrink-0">
-              <Avatar.Image
-                src={person.avatar?.src || ""}
+            <div className="flex-shrink-0">
+              <Avatar
+                src={person.images?.avatar}
                 alt={person.name}
-                className="w-full h-full rounded-full object-cover"
+                name={person.displayName || person.name}
+                type="person"
+                size="lg"
               />
-              <Avatar.Fallback className="w-full h-full rounded-full bg-accent-one/20 flex items-center justify-center text-lg font-medium">
-                {getInitials(person.displayName || person.name)}
-              </Avatar.Fallback>
-            </Avatar.Root>
+            </div>
 
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-base text-color">

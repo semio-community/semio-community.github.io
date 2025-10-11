@@ -1,18 +1,13 @@
-import React, { type ReactNode } from "react";
+import React from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
 import {
   AltArrowRight,
-  CalendarMark,
-  CodeSquare,
-  CpuBolt,
   Document2,
   Gallery,
-  HandShake,
   Route,
   Star,
-  TestTube,
-  User,
 } from "@solar-icons/react-perf/LineDuotone";
+import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
 export interface ItemCardProps {
   title: string;
@@ -20,6 +15,18 @@ export interface ItemCardProps {
   href: string;
   imageUrl?: string;
   imageAlt?: string;
+  image?: {
+    src: string;
+    width?: number;
+    height?: number;
+    format?: string;
+  };
+  logo?: {
+    src: string;
+    width?: number;
+    height?: number;
+    format?: string;
+  };
   status?: string;
   statusLabel?: string;
   category?: string;
@@ -30,6 +37,9 @@ export interface ItemCardProps {
     docs?: string;
     demo?: string;
     website?: string;
+    pypi?: string;
+    npm?: string;
+    registration?: string;
   };
 }
 
@@ -39,6 +49,8 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   href,
   imageUrl,
   imageAlt,
+  image,
+  logo,
   status,
   statusLabel,
   category,
@@ -50,26 +62,23 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const displayStatus = statusLabel || getStatusLabel(status);
   const statusColor = getStatusColor(status, "text");
 
-  // Type icons as fallback when no image
-  const typeIcons: Record<string, ReactNode> = {
-    hardware: (
-      <CpuBolt className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
-    software: (
-      <CodeSquare className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
-    people: (
-      <User className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
-    partners: (
-      <HandShake className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
-    studies: (
-      <TestTube className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
-    events: (
-      <CalendarMark className="w-20 h-20 text-accent-one group-hover:scale-110 transition-transform duration-300" />
-    ),
+  // Get the image source from various formats (never use logo as main image)
+  const getImageSource = () => {
+    if (imageUrl) return imageUrl;
+    if (image?.src) return image.src;
+    return null;
+  };
+
+  const imageSrc = getImageSource();
+
+  // Map item type to avatar type
+  const typeToAvatarType: Record<string, AvatarType> = {
+    hardware: "hardware",
+    software: "software",
+    people: "person",
+    partners: "organization",
+    studies: "study",
+    events: "event",
   };
 
   const handleLinkClick = (e: React.MouseEvent, url: string) => {
@@ -84,21 +93,27 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden"
     >
       {/* Image section */}
-      {imageUrl ? (
+      {imageSrc ? (
         <div className="mb-4">
           <div className="aspect-video overflow-hidden bg-gradient-to-br from-special-lighter to-special relative">
             <img
-              src={imageUrl}
+              src={imageSrc}
               alt={imageAlt || title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
           </div>
         </div>
       ) : (
-        /* Icon fallback when no image */
+        /* Avatar fallback when no image */
         <div className="mb-4">
           <div className="aspect-video overflow-hidden bg-gradient-to-br from-special-lighter to-special flex items-center justify-center relative">
-            {typeIcons[type]}
+            <Avatar
+              src={logo}
+              name={type === "people" ? title : undefined}
+              type={typeToAvatarType[type] || "organization"}
+              size="xl"
+              className="group-hover:scale-110 transition-transform duration-300"
+            />
           </div>
         </div>
       )}

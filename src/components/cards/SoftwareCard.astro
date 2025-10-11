@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+import { SoftwareCard as SoftwareCardReact } from "./SoftwareCard";
+
+interface Props {
+  softwareId: string;
+  className?: string;
+}
+
+const { softwareId, className } = Astro.props;
+
+const software = await getEntry("software", softwareId);
+
+if (!software) {
+  return null;
+}
+---
+
+<SoftwareCardReact
+  client:load
+  softwareId={softwareId}
+  data={software.data}
+  className={className}
+/>

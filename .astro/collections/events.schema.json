@@ -221,6 +221,24 @@
             "additionalProperties": false
           }
         },
+        "images": {
+          "type": "object",
+          "properties": {
+            "logo": {
+              "type": "string"
+            },
+            "hero": {
+              "type": "string"
+            },
+            "gallery": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
         "tracks": {
           "type": "array",
           "items": {

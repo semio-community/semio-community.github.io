@@ -1,5 +1,10 @@
 import React from "react";
-import { ItemCard } from "../ItemCard";
+import { PartnerCard } from "../cards/PartnerCard";
+import { EventCard } from "../cards/EventCard";
+import { HardwareCard } from "../cards/HardwareCard";
+import { SoftwareCard } from "../cards/SoftwareCard";
+import { StudyCard } from "../cards/StudyCard";
+import { PersonCard } from "../cards/PersonCard";
 
 export interface RelatedItem {
   id: string;
@@ -108,24 +113,60 @@ export const RelatedItemsGrid: React.FC<RelatedItemsGridProps> = ({
           const description = getItemDescription(item);
           const url = getItemUrl(item);
 
-          return (
-            <ItemCard
-              key={item.id}
-              title={itemTitle}
-              description={description || ""}
-              href={url}
-              imageUrl={imageUrl || undefined}
-              status={item.data.status}
-              category={item.data.category}
-              featured={item.data.featured}
-              type={itemType}
-              links={{
-                github: item.data.links?.github,
-                docs: item.data.links?.documentation,
-                demo: item.data.links?.demo,
-              }}
-            />
-          );
+          // Use the appropriate card component based on itemType
+          switch (itemType) {
+            case "partners":
+              return (
+                <PartnerCard
+                  key={item.id}
+                  partnerId={item.id}
+                  data={item.data as any}
+                />
+              );
+            case "events":
+              return (
+                <EventCard
+                  key={item.id}
+                  eventId={item.id}
+                  data={item.data as any}
+                />
+              );
+            case "hardware":
+              return (
+                <HardwareCard
+                  key={item.id}
+                  hardwareId={item.id}
+                  data={item.data as any}
+                />
+              );
+            case "software":
+              return (
+                <SoftwareCard
+                  key={item.id}
+                  softwareId={item.id}
+                  data={item.data as any}
+                />
+              );
+            case "studies":
+              return (
+                <StudyCard
+                  key={item.id}
+                  studyId={item.id}
+                  data={item.data as any}
+                />
+              );
+            case "people":
+              return (
+                <PersonCard
+                  key={item.id}
+                  personId={item.id}
+                  data={item.data as any}
+                />
+              );
+            default:
+              // Fallback - shouldn't happen if itemType is properly typed
+              return null;
+          }
         })}
       </div>
     </section>

@@ -123,8 +123,17 @@
           },
           "additionalProperties": false
         },
-        "avatar": {
-          "type": "string"
+        "images": {
+          "type": "object",
+          "properties": {
+            "avatar": {
+              "type": "string"
+            },
+            "hero": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
         },
         "visibility": {
           "type": "string",

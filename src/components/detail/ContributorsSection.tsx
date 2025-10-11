@@ -1,5 +1,6 @@
 import React from "react";
 import { PersonPopover } from "../PersonPopover";
+import { OrganizationChip } from "../OrganizationChip";
 import { HandShake, QuestionCircle } from "@solar-icons/react-perf/LineDuotone";
 
 export interface Contributor {
@@ -66,7 +67,12 @@ export const ContributorsSection: React.FC<ContributorsSectionProps> = ({
               {validOrgs.map((contributor, index) => (
                 <OrganizationChip
                   key={contributor.id || index}
-                  organization={contributor}
+                  partnerId={contributor.id}
+                  partnerName={
+                    contributor.data?.shortName || contributor.data?.name
+                  }
+                  logo={contributor.data?.images?.logo}
+                  role={contributor.role}
                 />
               ))}
             </div>
@@ -153,49 +159,6 @@ export const ContributorsSection: React.FC<ContributorsSectionProps> = ({
           )}
       </div>
     </section>
-  );
-};
-
-// Internal component for organization chips
-const OrganizationChip: React.FC<{ organization: Contributor }> = ({
-  organization,
-}) => {
-  const data = organization.data;
-  const partnerId = organization.id;
-  const role = organization.role;
-
-  if (!data && !partnerId) {
-    return (
-      <span className="inline-flex items-center gap-2 px-2 py-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full">
-        <QuestionCircle className="w-5 h-5 text-neutral-400" />
-        <span className="text-sm text-neutral-500">Unknown Organization</span>
-      </span>
-    );
-  }
-
-  return (
-    <a
-      href={`/partners/${partnerId}`}
-      className="org-chip inline-flex items-center gap-2 px-3 py-1.5 bg-surface-lighter rounded-full border-2 border-accent-one/40 hover:border-accent-two transition-all no-underline group"
-    >
-      {data?.logo ? (
-        <img
-          src={data.logo.src}
-          alt={data.name}
-          className="w-6 h-6 rounded object-contain"
-        />
-      ) : (
-        <HandShake className="w-6 h-6 text-accent-one group-hover:text-accent-two transition-colors" />
-      )}
-      <span className="text-sm font-medium transition-colors">
-        {data?.shortName || data?.name || partnerId}
-      </span>
-      {role && (
-        <span className="text-xs text-color-600 dark:text-color-400">
-          • {role}
-        </span>
-      )}
-    </a>
   );
 };
 
