@@ -53,26 +53,25 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 
     if (badge.variant === "outline") {
       const outlineColors = {
-        green: "border-2 border-green-500 text-green-600 dark:text-green-400",
-        blue: "border-2 border-blue-500 text-blue-600 dark:text-blue-400",
+        green:
+          "border-2 border-green-500 text-green-600 dark:text-green-400 bg-white/10 dark:bg-black/10",
+        blue: "border-2 border-blue-500 text-blue-600 dark:text-blue-400 bg-white/10 dark:bg-black/10",
         orange:
-          "border-2 border-orange-500 text-orange-600 dark:text-orange-400",
-        red: "border-2 border-red-500 text-red-600 dark:text-red-400",
+          "border-2 border-orange-500 text-orange-600 dark:text-orange-400 bg-white/10 dark:bg-black/10",
+        red: "border-2 border-red-500 text-red-600 dark:text-red-400 bg-white/10 dark:bg-black/10",
         yellow:
-          "border-2 border-yellow-500 text-yellow-600 dark:text-yellow-400",
-        gray: "border-2 border-neutral-500 text-neutral-600 dark:text-neutral-400",
-        accent: "border-2 border-accent-two text-accent-two",
-        special: "border-2 border-special text-special",
+          "border-2 border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-white/10 dark:bg-black/10",
+        gray: "border-2 border-neutral-500 text-neutral-600 dark:text-neutral-400 bg-white/10 dark:bg-black/10",
+        accent:
+          "border-2 border-accent-two text-accent-two bg-white/10 dark:bg-black/10",
+        special:
+          "border-2 border-special text-special bg-white/10 dark:bg-black/10",
       };
       return `${baseClasses} ${outlineColors[badge.color || "accent"]}`;
     }
 
     return `${baseClasses} ${colorClasses[badge.color || "accent"]}`;
   };
-
-  if (!image) {
-    return null;
-  }
 
   const imageSrc = typeof image === "object" && "src" in image ? image.src : "";
   const imageAlt =
@@ -82,23 +81,39 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
     <div
       className={`relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-none md:rounded-xl overflow-hidden ${className}`}
     >
-      <div className="aspect-[21/9] overflow-hidden bg-gradient-to-b from-special-lighter to-special">
-        <img
-          src={imageSrc}
-          alt={imageAlt}
-          className="w-full h-full object-cover"
-        />
+      <div className="aspect-[21/9] overflow-hidden relative">
+        {image ? (
+          <>
+            {/* Image background */}
+            <img
+              src={imageSrc}
+              alt={imageAlt}
+              className="w-full h-full object-cover"
+            />
 
-        {/* Overlay gradient */}
-        {overlayGradient && (
-          <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent" />
+            {/* Overlay gradient for images */}
+            {overlayGradient && (
+              <div className="absolute inset-0 bg-gradient-to-t from-surface/90 via-surface/20 to-transparent" />
+            )}
+          </>
+        ) : (
+          <>
+            {/* Gradient fallback background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-special-lighter via-special-light to-special" />
+
+            {/* Subtle overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/50 to-surface/30" />
+          </>
         )}
 
-        {/* Title, description and status overlay */}
+        {/* Title, subtitle and badges overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg flex items-center gap-3">
               {title}
+              {featured && (
+                <Star className="w-8 h-8 md:w-10 md:h-10 text-yellow-500 dark:text-yellow-400 flex-shrink-0 drop-shadow-lg" />
+              )}
             </h1>
 
             {subtitle && (
@@ -109,9 +124,6 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 
             {badges.length > 0 && (
               <div className="flex gap-2 flex-wrap items-center">
-                {featured && (
-                  <Star className="w-6 h-6 text-yellow-500 dark:text-yellow-400 flex-shrink-0 drop-shadow-lg" />
-                )}
                 {badges.map((badge, index) => (
                   <span key={index} className={getBadgeClasses(badge)}>
                     {badge.text}

@@ -451,14 +451,6 @@ const events = defineCollection({
         proceedings: z.string().optional(),
         recordings: z.string().optional(),
       }),
-      pricing: z
-        .object({
-          student: z.number().optional(),
-          academic: z.number().optional(),
-          industry: z.number().optional(),
-          virtual: z.number().optional(),
-        })
-        .optional(),
       capacity: z.number().optional(),
       banner: image().optional(),
       featured: z.boolean().default(false),

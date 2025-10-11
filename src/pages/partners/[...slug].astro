@@ -8,7 +8,6 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { DetailHeader } from "@/components/detail/DetailHeader";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import { ItemCard } from "@/components/ItemCard";
 import { getAllPartners } from "@/data/partners";
@@ -294,34 +293,13 @@ const categoryLabel = categoryLabels[data.category] || data.category;
 <PageLayout meta={meta}>
   <BaseDetailLayout showSidebar={false}>
     <Fragment slot="hero">
-      {
-        data.logo ? (
-          <DetailHero
-            client:load
-            image={data.logo}
-            title={data.name}
-            subtitle={
-              data.shortName
-                ? `${data.shortName} • ${data.description}`
-                : data.description
-            }
-            badges={badges}
-            featured={data.featured}
-          />
-        ) : (
-          <DetailHeader
-            client:load
-            title={data.name}
-            subtitle={
-              data.shortName
-                ? `${data.shortName} • ${data.description}`
-                : data.description
-            }
-            badges={badges}
-            featured={data.featured}
-          />
-        )
-      }
+      <DetailHero
+        client:load
+        image={data.logo}
+        title={data.name}
+        badges={badges}
+        featured={data.featured}
+      />
     </Fragment>
 
     <Fragment slot="contributors">

@@ -257,24 +257,6 @@
           ],
           "additionalProperties": false
         },
-        "pricing": {
-          "type": "object",
-          "properties": {
-            "student": {
-              "type": "number"
-            },
-            "academic": {
-              "type": "number"
-            },
-            "industry": {
-              "type": "number"
-            },
-            "virtual": {
-              "type": "number"
-            }
-          },
-          "additionalProperties": false
-        },
         "capacity": {
           "type": "number"
         },

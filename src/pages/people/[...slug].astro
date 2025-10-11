@@ -8,7 +8,6 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { DetailHeader } from "@/components/detail/DetailHeader";
 import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
 import { MetadataCard } from "@/components/detail/MetadataCard";
 import { ChipsCard } from "@/components/detail/ChipsCard";
@@ -276,26 +275,14 @@ if (data.links?.mastodon) {
 <PageLayout meta={meta}>
   <BaseDetailLayout showSidebar={false}>
     <Fragment slot="hero">
-      {
-        data.avatar ? (
-          <DetailHero
-            client:load
-            image={data.avatar}
-            title={data.displayName || data.name}
-            subtitle={data.title}
-            badges={badges}
-            featured={data.featured}
-          />
-        ) : (
-          <DetailHeader
-            client:load
-            title={data.displayName || data.name}
-            subtitle={data.title}
-            badges={badges}
-            featured={data.featured}
-          />
-        )
-      }
+      <DetailHero
+        client:load
+        image={data.avatar}
+        title={data.displayName || data.name}
+        subtitle={data.title}
+        badges={badges}
+        featured={data.featured}
+      />
     </Fragment>
 
     <Fragment slot="contributors">
