@@ -15,6 +15,7 @@ export interface DetailHeroBadge {
     | "accent"
     | "special";
   variant?: "solid" | "outline";
+  priority?: number; // Higher priority badges show first on mobile
 }
 
 export interface DetailHeroProps {
@@ -25,6 +26,8 @@ export interface DetailHeroProps {
   featured?: boolean;
   overlayGradient?: boolean;
   className?: string;
+  showBadgesOnMobile?: boolean;
+  mobileBadgeLimit?: number; // Max number of badges to show on mobile
   // Avatar/logo props
   logo?: ImageMetadata | { src: string; alt?: string };
   avatar?: ImageMetadata | { src: string; alt?: string };
@@ -46,6 +49,8 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
   featured = false,
   overlayGradient = true,
   className = "",
+  showBadgesOnMobile = false,
+  mobileBadgeLimit = 2,
   logo,
   avatar,
   thumbnail,
@@ -53,7 +58,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 }) => {
   const getBadgeClasses = (badge: DetailHeroBadge) => {
     const baseClasses =
-      "px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm";
+      "px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium backdrop-blur-sm";
 
     const colorClasses = {
       green: "bg-green-500/80 text-white dark:text-white",
@@ -108,9 +113,9 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 
   return (
     <div
-      className={`relative mb-8 -mx-4 md:-mx-8 lg:-mx-12 rounded-none md:rounded-xl overflow-hidden ${className}`}
+      className={`relative mb-8 -mx-4 md:-mx-8 rounded-none md:rounded-xl overflow-hidden ${className}`}
     >
-      <div className="aspect-[21/9] overflow-hidden relative">
+      <div className="aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden relative">
         {image ? (
           <>
             {/* Image background */}
@@ -136,9 +141,9 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
         )}
 
         {/* Content overlay - positioned at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 lg:p-10">
-          <div className="max-w-7xl mx-auto flex items-end gap-4 md:gap-6">
-            {/* Avatar/Logo - always show if available or no banner */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 md:p-8 lg:p-10">
+          <div className="max-w-7xl mx-auto flex items-end gap-2 sm:gap-4 md:gap-6">
+            {/* Avatar/Logo - responsive sizing */}
             {(profileImage || !image) && (
               <div className="flex-shrink-0">
                 <Avatar
@@ -148,36 +153,61 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                   type={avatarType}
                   size="2xl"
                   rounded="full"
-                  className=""
+                  className="!w-14 !h-14 sm:!w-20 sm:!h-20 md:!w-24 md:!h-24 lg:!w-32 lg:!h-32"
                 />
               </div>
             )}
 
             {/* Text content */}
             <div className="flex-1 min-w-0">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-accent-base mb-2">
-                <span className="inline-flex items-center gap-3 flex-wrap">
+              <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-accent-base mb-1 sm:mb-2 leading-tight">
+                <span className="inline-flex items-center gap-2 sm:gap-3 flex-wrap">
                   {title}
                 </span>
               </h1>
 
               {subtitle && (
-                <p className="text-base md:text-lg text-accent-base/90 mb-3 max-w-3xl">
+                <p className="text-xs sm:text-base md:text-lg text-accent-base/90 mb-2 sm:mb-3 max-w-3xl line-clamp-2 sm:line-clamp-none">
                   {subtitle}
                 </p>
               )}
 
               {badges.length > 0 && (
-                <div className="flex gap-2 flex-wrap items-center">
-                  {featured && (
-                    <Star className="w-6 h-6 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
-                  )}
-                  {badges.map((badge, index) => (
-                    <span key={index} className={getBadgeClasses(badge)}>
-                      {badge.text}
-                    </span>
-                  ))}
-                </div>
+                <>
+                  {/* Mobile badges - limited display */}
+                  <div
+                    className={`${showBadgesOnMobile ? "flex" : "hidden"} sm:hidden gap-1 flex-wrap items-center`}
+                  >
+                    {featured && (
+                      <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
+                    )}
+                    {badges
+                      .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+                      .slice(0, mobileBadgeLimit)
+                      .map((badge, index) => (
+                        <span key={index} className={getBadgeClasses(badge)}>
+                          {badge.text}
+                        </span>
+                      ))}
+                    {badges.length > mobileBadgeLimit && (
+                      <span className="text-xs text-accent-base/60">
+                        +{badges.length - mobileBadgeLimit}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Desktop badges - all displayed */}
+                  <div className="hidden sm:flex gap-2 flex-wrap items-center">
+                    {featured && (
+                      <Star className="w-6 h-6 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
+                    )}
+                    {badges.map((badge, index) => (
+                      <span key={index} className={getBadgeClasses(badge)}>
+                        {badge.text}
+                      </span>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>

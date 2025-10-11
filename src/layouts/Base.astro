@@ -11,10 +11,12 @@ import "../assets/fonts/Gilroy.css";
 
 interface Props {
   meta: SiteMeta;
+  noPaddingTop?: boolean;
 }
 
 const {
   meta: { articleDate, description = siteConfig.description, ogImage, title },
+  noPaddingTop = false,
 } = Astro.props;
 ---
 
@@ -30,7 +32,7 @@ const {
       title={title}
     />
   </head>
-  <body class="relative m-auto min-h-screen w-full max-w-6xl grow bg-surface">
+  <body class="relative min-h-screen w-full bg-surface">
     <ThemeProvider />
     <SkipLink />
 
@@ -75,17 +77,17 @@ const {
       </div>
     </div>
 
-    <div class="relative flex min-h-screen w-full flex-col">
-      <!-- Full-width header -->
-      <Header />
+    <!-- Full-width header -->
+    <Header />
 
-      <div class="relative flex min-h-screen w-full flex-1">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
         <!-- Sidebar for Docs Series -->
         <slot name="sidebar" />
         <!-- Main container for the page content -->
         <div id="container" class="relative m-auto max-w-4xl grow">
           <div
-            class="m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 pt-20 md:pt-4"
+            class={`m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 ${noPaddingTop ? "" : "pt-20 lg:pt-4"}`}
           >
             <main id="main" class="relative flex-grow" data-pagefind-body>
               <slot />

@@ -128,7 +128,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
             <Dialog.Content asChild>
               <motion.div
-                className="fixed top-0 right-0 h-full w-[80vw] max-w-sm bg-surface z-50 focus:outline-none overflow-hidden flex flex-col shadow-2xl"
+                className="fixed top-0 right-0 h-full w-[80vw] max-w-sm bg-surface/80 backdrop-blur-xl lg:bg-surface/85 lg:backdrop-blur-lg z-50 focus:outline-none overflow-hidden flex flex-col shadow-2xl"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
@@ -140,10 +140,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                   <div className="absolute bottom-[-40%] left-[-20%] w-[60%] h-[60%] bg-gradient-to-t from-teal-400 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
                 </div>
 
-                <div className="relative flex h-full flex-col bg-surface/95 backdrop-blur-sm">
+                <div className="relative flex h-full flex-col">
                   {/* Header */}
                   <motion.div
-                    className="flex items-center justify-between p-4 border-b border-color-200 dark:border-color-700"
+                    className="flex items-center justify-between p-4 border-b border-accent-base/10"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}

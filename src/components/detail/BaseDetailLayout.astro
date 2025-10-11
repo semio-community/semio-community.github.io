@@ -34,11 +34,13 @@ const hasMetaSection = Astro.slots.has("meta-section");
 const shouldShowHeader = !hasHero && hasHeader;
 ---
 
-<article class={`detail-layout ${className}`}>
+<article
+  class={`detail-layout ${className} ${hasHero ? "pt-16 md:pt-20 lg:pt-4" : "pt-20 lg:pt-4"}`}
+>
   <!-- Breadcrumbs (optional, above everything) -->
   {
     hasBreadcrumbs && (
-      <nav class="mb-6" aria-label="Breadcrumb">
+      <nav class="mb-6 px-4 md:px-8 lg:px-12" aria-label="Breadcrumb">
         <slot name="breadcrumbs" />
       </nav>
     )
@@ -48,34 +50,54 @@ const shouldShowHeader = !hasHero && hasHeader;
   {hasHero && <slot name="hero" />}
 
   <!-- Header Section (when no hero) -->
-  {shouldShowHeader && <slot name="header" />}
+  {
+    shouldShowHeader && (
+      <div class="px-4 md:px-8 lg:px-12">
+        <slot name="header" />
+      </div>
+    )
+  }
 
   <!-- Top Actions (optional, for special actions that should be prominent) -->
   {
     hasTopActions && (
-      <div class="mb-6">
+      <div class="mb-6 px-4 md:px-8 lg:px-12">
         <slot name="top-actions" />
       </div>
     )
   }
 
   <!-- Contributors Section -->
-  {hasContributors && <slot name="contributors" />}
+  {
+    hasContributors && (
+      <div class="px-4 md:px-8 lg:px-12">
+        <slot name="contributors" />
+      </div>
+    )
+  }
 
   <!-- Action Buttons Section -->
-  {hasActions && <slot name="actions" />}
+  {
+    hasActions && (
+      <div class="px-4 md:px-8 lg:px-12">
+        <slot name="actions" />
+      </div>
+    )
+  }
 
   <!-- Meta Section (optional, for additional metadata that doesn't fit in sidebar) -->
   {
     hasMetaSection && (
-      <div class="mb-8 p-6 bg-surface-lighter rounded-xl border border-accent-one/10">
+      <div class="mb-8 p-6 bg-surface-lighter rounded-xl border border-accent-one/10 mx-4 md:mx-8 lg:mx-12">
         <slot name="meta-section" />
       </div>
     )
   }
 
   <!-- Main Content Grid -->
-  <div class={`grid grid-cols-1 ${hasSidebar ? "lg:grid-cols-3" : ""} gap-8`}>
+  <div
+    class={`grid grid-cols-1 ${hasSidebar ? "lg:grid-cols-3" : ""} gap-8 px-4 md:px-8 lg:px-12`}
+  >
     <!-- Main Content Area -->
     <div class={hasSidebar ? "lg:col-span-2" : "w-full"}>
       <!-- Before Content Slot (optional) -->
@@ -127,19 +149,25 @@ const shouldShowHeader = !hasHero && hasHeader;
   <!-- Additional Content Sections (optional) -->
   {
     Astro.slots.has("additional-sections") && (
-      <div class="mt-12">
+      <div class="mt-12 px-4 md:px-8 lg:px-12">
         <slot name="additional-sections" />
       </div>
     )
   }
 
   <!-- Related Items Section -->
-  {hasRelated && <slot name="related" />}
+  {
+    hasRelated && (
+      <div class="px-4 md:px-8 lg:px-12">
+        <slot name="related" />
+      </div>
+    )
+  }
 
   <!-- Footer Section (optional, for citations, references, etc.) -->
   {
     Astro.slots.has("footer") && (
-      <footer class="mt-12 pt-8 border-t border-accent-one/10">
+      <footer class="mt-12 pt-8 border-t border-accent-one/10 px-4 md:px-8 lg:px-12">
         <slot name="footer" />
       </footer>
     )
@@ -176,13 +204,5 @@ const shouldShowHeader = !hasHero && hasHeader;
 
   .sticky::-webkit-scrollbar-thumb:hover {
     opacity: 1;
-  }
-
-  /* Mobile adjustments */
-  @media (max-width: 1023px) {
-    .detail-layout {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
   }
 </style>
