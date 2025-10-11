@@ -31,11 +31,13 @@ interface PersonPopoverProps {
     email?: string;
     website?: string;
     links?: {
+      website?: string;
       github?: string;
       linkedin?: string;
       twitter?: string;
       bluesky?: string;
       mastodon?: string;
+      scheduling?: string;
     };
     images?: {
       avatar?: {
@@ -204,9 +206,9 @@ export function PersonPopover({
                 ORCID
               </a>
             )}
-            {person.website && (
+            {person.links?.website && (
               <a
-                href={person.website}
+                href={person.links?.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1"

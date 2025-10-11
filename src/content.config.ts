@@ -41,9 +41,10 @@ const people = defineCollection({
 
       // Contact and social
       email: z.string().email().optional(),
-      website: z.string().optional(),
+
       links: z
         .object({
+          website: z.string().optional(),
           github: z.string().optional(),
           linkedin: z.string().optional(),
           twitter: z.string().optional(),

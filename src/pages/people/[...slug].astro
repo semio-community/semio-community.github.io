@@ -8,10 +8,6 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-import { MetadataCard } from "@/components/detail/MetadataCard";
-import { ChipsCard } from "@/components/detail/ChipsCard";
-import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import StudyCard from "@/components/cards/StudyCard.astro";
@@ -28,8 +24,8 @@ import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getAllEvents } from "@/data/events";
 import OrganizationChip from "@/components/OrganizationChip.astro";
-import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {
@@ -158,13 +154,14 @@ if (data.pronouns) {
 
 // Prepare action buttons
 const actionButtons = [];
-if (data.website) {
+if (data.links?.website) {
   actionButtons.push({
-    href: data.website,
+    href: data.links?.website,
     text: "Personal Website",
     variant: "default" as const,
     target: "_blank",
     rel: "noopener noreferrer",
+    icon: "solar:global-line-duotone",
   });
 }
 if (data.links?.github) {
@@ -174,6 +171,7 @@ if (data.links?.github) {
     variant: "secondary" as const,
     target: "_blank",
     rel: "noopener noreferrer",
+    icon: "mdi:github",
   });
 }
 if (data.email) {
@@ -181,6 +179,7 @@ if (data.email) {
     href: `mailto:${data.email}`,
     text: "Email",
     variant: "tertiary" as const,
+    icon: "solar:letter-line-duotone",
   });
 }
 if (data.links?.linkedin) {
@@ -190,6 +189,7 @@ if (data.links?.linkedin) {
     variant: "tertiary" as const,
     target: "_blank",
     rel: "noopener noreferrer",
+    icon: "mdi:linkedin",
   });
 }
 if (data.links?.twitter) {
@@ -199,6 +199,27 @@ if (data.links?.twitter) {
     variant: "tertiary" as const,
     target: "_blank",
     rel: "noopener noreferrer",
+    icon: "mdi:twitter",
+  });
+}
+if (data.links?.mastodon) {
+  actionButtons.push({
+    href: `https://mastodon.com/${data.links.mastodon}`,
+    text: "Mastodon",
+    variant: "tertiary" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    icon: "mdi:mastodon",
+  });
+}
+if (data.links?.scheduling) {
+  actionButtons.push({
+    href: data.links?.scheduling,
+    text: "Schedule",
+    variant: "default" as const,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    icon: "solar:calendar-mark-line-duotone",
   });
 }
 
@@ -279,6 +300,7 @@ if (data.links?.mastodon) {
     <Fragment slot="hero">
       <DetailHero
         client:load
+        image={data.images?.hero}
         title={data.displayName || data.name}
         subtitle={data.title}
         badges={badges}
@@ -360,6 +382,7 @@ if (data.links?.mastodon) {
                     rel={button.rel}
                     class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
                   >
+                    <Icon name={button.icon} class="w-4 h-4" />
                     {button.text}
                   </a>
                 ))}
@@ -370,6 +393,21 @@ if (data.links?.mastodon) {
                     rel="noopener noreferrer"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
                   >
+                    {item.label === "ORCID" && (
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z" />
+                      </svg>
+                    )}
+                    {item.label === "Google Scholar" && (
+                      <Icon
+                        name="solar:graduation-cap-line-duotone"
+                        class="w-4 h-4"
+                      />
+                    )}
                     {item.label}
                   </a>
                 ))}

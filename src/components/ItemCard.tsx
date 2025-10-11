@@ -101,6 +101,18 @@ export const ItemCard: React.FC<ItemCardProps> = ({
               alt={imageAlt || title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
+            {/* Show logo/avatar overlay when both hero and logo are present */}
+            {logo && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Avatar
+                  src={logo}
+                  name={type === "people" ? title : undefined}
+                  type={typeToAvatarType[type] || "organization"}
+                  size="xl"
+                  className="group-hover:scale-110 transition-transform duration-300 drop-shadow-lg"
+                />
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -119,10 +131,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       )}
 
       {/* Content section */}
-      <div className="flex flex-col flex-1 p-6 pt-0">
+      <div className="flex flex-col flex-1 p-6 pt-0 min-h-0">
         {/* Title */}
-        <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center flex-1 justify-between">
-          {title}
+        <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center justify-between gap-2">
+          <span className="truncate">{title}</span>
           {featured && (
             <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
           )}
@@ -130,13 +142,13 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
         {/* Description */}
         {description && (
-          <p className="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2 flex-1">
+          <p className="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2 min-h-[2.5rem]">
             {description}
           </p>
         )}
 
         {/* Footer section */}
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between mt-auto pt-2">
           <div className="flex items-center gap-3">
             {/* Status */}
             {displayStatus && (
@@ -145,7 +157,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
             {/* Category */}
             {category && !displayStatus && (
-              <span className="text-sm text-color-600 dark:text-color-400">
+              <span className="text-sm text-color-600 dark:text-color-400 truncate max-w-[200px]">
                 {category}
               </span>
             )}

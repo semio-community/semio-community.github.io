@@ -31,7 +31,6 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
   const categoryLabel = data.category
     ? data.category.charAt(0).toUpperCase() + data.category.slice(1)
     : "";
-  const category = [typeLabel, categoryLabel].filter(Boolean).join(" • ");
 
   return (
     <ItemCard
@@ -42,7 +41,7 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
       logo={data.images?.logo}
       image={data.images?.hero}
       imageAlt={data.images?.hero?.alt || data.name}
-      category={category}
+      category={typeLabel}
       featured={data.featured}
       links={{
         website: data.website,

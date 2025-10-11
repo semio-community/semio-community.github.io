@@ -96,12 +96,12 @@
           "type": "string",
           "format": "email"
         },
-        "website": {
-          "type": "string"
-        },
         "links": {
           "type": "object",
           "properties": {
+            "website": {
+              "type": "string"
+            },
             "github": {
               "type": "string"
             },

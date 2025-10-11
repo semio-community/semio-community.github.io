@@ -68,7 +68,8 @@ export const PersonCard: React.FC<PersonCardProps> = ({
       href={`/people/${personId}`}
       type="people"
       logo={data.images?.avatar}
-      category={category}
+      image={data.images?.hero}
+      category={currentAffiliation?.role}
       featured={data.featured}
       links={{
         website: data.socialMedia?.website,
