@@ -297,7 +297,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
 ---
 
 <PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout showSidebar={false}>
+  <BaseDetailLayout>
     <Fragment slot="hero">
       <DetailHero
         client:load
@@ -313,8 +313,8 @@ const categoryLabel = categoryLabels[data.category] || data.category;
       />
     </Fragment>
 
-    <Fragment slot="contributors">
-      {/* Partnership Details */}
+    {/* Partnership Details */}
+    <Fragment slot="metadata">
       <div class="partnership-details mb-8">
         <div
           class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
@@ -371,8 +371,10 @@ const categoryLabel = categoryLabels[data.category] || data.category;
           </div>
         </div>
       </div>
+    </Fragment>
 
-      {/* Links & Contact */}
+    {/* Links & Contact */}
+    <Fragment slot="links">
       {
         (actionButtons.length > 0 || contactItems.length > 0) && (
           <div class="links-section mb-8">
@@ -417,8 +419,10 @@ const categoryLabel = categoryLabels[data.category] || data.category;
           </div>
         )
       }
+    </Fragment>
 
-      {/* Key Contacts Section */}
+    {/* Key Contacts */}
+    <Fragment slot="contributors">
       {
         validKeyContacts.length > 0 && (
           <div class="key-contacts-section mb-8">
@@ -438,8 +442,10 @@ const categoryLabel = categoryLabels[data.category] || data.category;
           </div>
         )
       }
+    </Fragment>
 
-      {/* Collaboration Areas */}
+    {/* Collaboration Areas */}
+    <Fragment slot="tags">
       {
         data.collaboration.areas && data.collaboration.areas.length > 0 && (
           <div class="collaboration-areas mb-8">
@@ -458,16 +464,18 @@ const categoryLabel = categoryLabels[data.category] || data.category;
           </div>
         )
       }
+    </Fragment>
 
-      {/* About */}
+    {/* About/Description */}
+    <Fragment slot="description">
       <ContentSection title="ABOUT" content={data.description} />
     </Fragment>
 
-    <!-- Main content from MDX file -->
-    <!-- <Content /> -->
+    {/* Main content from MDX file */}
+    <Content />
 
+    {/* Related Content */}
     <Fragment slot="related">
-      {/* Partner Contributions & Projects */}
       {
         (relatedContent.studies.length > 0 ||
           relatedContent.hardware.length > 0 ||

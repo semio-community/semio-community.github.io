@@ -9,14 +9,13 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-import { ContributorsSection } from "@/components/detail/ContributorsSection";
-import { SpecificationsCard } from "@/components/detail/SpecificationsCard";
-import { FeaturesCard } from "@/components/detail/FeaturesCard";
-import { PricingCard } from "@/components/detail/PricingCard";
-import { ChipsCard } from "@/components/detail/ChipsCard";
-import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
+import SpecificationsList from "@/components/detail/SpecificationsList.astro";
+import FeaturesList from "@/components/detail/FeaturesList.astro";
+import ChipsList from "@/components/detail/ChipsList.astro";
+import TagsList from "@/components/detail/TagsList.astro";
+import PricingInfo from "@/components/detail/PricingInfo.astro";
 import { getRelatedHardware } from "@/data/hardware";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
@@ -185,9 +184,13 @@ const specificationItems = data.specifications || {};
       }
     </Fragment>
 
-    <Fragment slot="contributors">
+    {/* Description */}
+    <Fragment slot="description">
       <ContentSection title="DESCRIPTION" content={data.description} />
+    </Fragment>
 
+    {/* Contributors and Organizations */}
+    <Fragment slot="contributors">
       {
         (orgContributors.length > 0 || validPeopleContributors.length > 0) && (
           <div class="contributors-section mb-8">
@@ -272,60 +275,43 @@ const specificationItems = data.specifications || {};
       }
     </Fragment>
 
-    <Fragment slot="sidebar">
-      {
-        data.specifications && Object.keys(data.specifications).length > 0 && (
-          <SpecificationsCard
-            client:load
-            title="Specifications"
-            icon="solar:settings-minimalistic-line-duotone"
-            items={data.specifications}
-          />
-        )
-      }
-
-      {
-        data.features && data.features.length > 0 && (
-          <FeaturesCard
-            client:load
-            title="Key Features"
-            icon="solar:star-bold-duotone"
-            features={data.features}
-          />
-        )
-      }
-
-      {
-        data.pricing && (
-          <PricingCard
-            client:load
-            purchase={data.pricing.purchase}
-            rental={data.pricing.rental}
-          />
-        )
-      }
-
-      {
-        data.applications && data.applications.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Applications"
-            icon="solar:layers-minimalistic-bold-duotone"
-            items={data.applications}
-            variant="default"
-          />
-        )
-      }
-
-      {
-        data.tags && data.tags.length > 0 && (
-          <TagsSection client:load tags={data.tags} baseUrl="/hardware/tags" />
-        )
-      }
+    {/* Specifications */}
+    <Fragment slot="specifications">
+      <SpecificationsList
+        title="SPECIFICATIONS"
+        items={specificationItems}
+        icon="solar:settings-minimalistic-line-duotone"
+      />
     </Fragment>
 
+    {/* Features */}
+    <Fragment slot="features">
+      <FeaturesList title="KEY FEATURES" features={data.features} />
+    </Fragment>
+
+    {/* Metadata (Pricing) */}
+    <Fragment slot="metadata">
+      {data.pricing && <PricingInfo pricing={data.pricing} />}
+    </Fragment>
+
+    {/* Tags and Applications */}
+    <Fragment slot="tags">
+      {
+        data.applications && data.applications.length > 0 && (
+          <ChipsList
+            title="APPLICATIONS"
+            items={data.applications}
+            variant="secondary"
+          />
+        )
+      }
+      <TagsList tags={data.tags} baseUrl="/hardware/tags" variant="secondary" />
+    </Fragment>
+
+    {/* Main content from MDX file */}
     <Content />
 
+    {/* Related Hardware */}
     <Fragment slot="related">
       {
         relatedHardware && relatedHardware.length > 0 && (

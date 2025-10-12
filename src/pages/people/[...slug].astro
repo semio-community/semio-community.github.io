@@ -24,6 +24,8 @@ import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getAllEvents } from "@/data/events";
 import OrganizationChip from "@/components/OrganizationChip.astro";
+import LinkButton from "@/components/detail/LinkButton.astro";
+import InfoCard from "@/components/detail/InfoCard.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
 
@@ -296,7 +298,7 @@ if (data.links?.mastodon) {
 ---
 
 <PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout showSidebar={false}>
+  <BaseDetailLayout>
     <Fragment slot="hero">
       <DetailHero
         client:load
@@ -310,16 +312,12 @@ if (data.links?.mastodon) {
       />
     </Fragment>
 
+    {/* Affiliations as Contributors */}
     <Fragment slot="contributors">
-      {/* Affiliations Section */}
       {
         (currentAffiliations.length > 0 || pastAffiliations.length > 0) && (
           <div class="affiliations-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                AFFILIATIONS
-              </h3>
-
+            <InfoCard title="AFFILIATIONS">
               {/* Current Affiliations */}
               {currentAffiliations.length > 0 && (
                 <div class="mb-4">
@@ -361,70 +359,56 @@ if (data.links?.mastodon) {
                   </div>
                 </div>
               )}
-            </div>
+            </InfoCard>
           </div>
         )
       }
+    </Fragment>
 
-      {/* Links/Email and Academic Profiles */}
+    {/* External Links and Profiles */}
+    <Fragment slot="links">
       {
         (actionButtons.length > 0 || academicProfileItems.length > 0) && (
-          <div class="links-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                LINKS & PROFILES
-              </h3>
+          <div class="links-section">
+            <InfoCard title="LINKS & PROFILES">
               <div class="flex flex-wrap gap-3">
                 {actionButtons.map((button) => (
-                  <a
+                  <LinkButton
                     href={button.href}
-                    target={button.target}
-                    rel={button.rel}
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
-                  >
-                    <Icon name={button.icon} class="w-4 h-4" />
-                    {button.text}
-                  </a>
+                    text={button.text}
+                    icon={button.icon}
+                    external={button.target === "_blank"}
+                    variant="default"
+                  />
                 ))}
                 {academicProfileItems.map((item) => (
-                  <a
+                  <LinkButton
                     href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
-                  >
-                    {item.label === "ORCID" && (
-                      <svg
-                        class="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 0 1-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.025-5.325 5.025h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 4.022-2.484 4.022-3.722 0-2.016-1.284-3.722-4.097-3.722h-2.222z" />
-                      </svg>
-                    )}
-                    {item.label === "Google Scholar" && (
-                      <Icon
-                        name="solar:graduation-cap-line-duotone"
-                        class="w-4 h-4"
-                      />
-                    )}
-                    {item.label}
-                  </a>
+                    text={item.label}
+                    icon={
+                      item.label === "ORCID"
+                        ? "simple-icons:orcid"
+                        : item.label === "Google Scholar"
+                          ? "solar:graduation-cap-line-duotone"
+                          : undefined
+                    }
+                    external={true}
+                    variant="default"
+                  />
                 ))}
               </div>
-            </div>
+            </InfoCard>
           </div>
         )
       }
+    </Fragment>
 
-      {/* Expertise Areas */}
+    {/* Expertise Areas as Tags */}
+    <Fragment slot="tags">
       {
         data.expertise && data.expertise.length > 0 && (
-          <div class="expertise-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                EXPERTISE AREAS
-              </h3>
+          <div class="expertise-section">
+            <InfoCard title="EXPERTISE AREAS">
               <div class="flex flex-wrap gap-2">
                 {data.expertise.map((skill) => (
                   <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
@@ -432,20 +416,22 @@ if (data.links?.mastodon) {
                   </span>
                 ))}
               </div>
-            </div>
+            </InfoCard>
           </div>
         )
       }
+    </Fragment>
 
-      {/* Biography */}
+    {/* Biography/Description */}
+    <Fragment slot="description">
       <ContentSection title="BIOGRAPHY" content={data.bio} />
     </Fragment>
 
-    <!-- Main content from MDX file -->
-    <!-- <Content /> -->
+    {/* Main content from MDX file */}
+    <Content />
 
+    {/* Related Content */}
     <Fragment slot="related">
-      {/* Contributions & Involvement Section */}
       {
         (relatedContent.studies.length > 0 ||
           relatedContent.hardware.length > 0 ||

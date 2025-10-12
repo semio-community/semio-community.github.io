@@ -1,0 +1,151 @@
+---
+import { Icon } from "astro-icon/components";
+import InfoCard from "./InfoCard.astro";
+
+export interface PricingData {
+  purchase?: string | number;
+  rental?:
+    | string
+    | {
+        daily?: string | number;
+        weekly?: string | number;
+        monthly?: string | number;
+        [key: string]: any;
+      };
+  currency?: string;
+  notes?: string;
+}
+
+export interface Props {
+  title?: string;
+  pricing?: PricingData;
+  icon?: string;
+  className?: string;
+}
+
+const { title = "PRICING", pricing, icon, className = "" } = Astro.props;
+
+// Format price with currency
+function formatPrice(
+  price: string | number | undefined,
+  currency?: string,
+): string {
+  if (!price) return "Contact for pricing";
+  const priceStr = typeof price === "number" ? price.toLocaleString() : price;
+  return currency ? `${currency}${priceStr}` : priceStr;
+}
+
+// Format rental period label
+function formatRentalPeriod(period: string): string {
+  return period.charAt(0).toUpperCase() + period.slice(1);
+}
+---
+
+{
+  pricing && (pricing.purchase || pricing.rental) && (
+    <div class={`pricing-section mb-8 ${className}`}>
+      <InfoCard title={title}>
+        <div class="space-y-3">
+          {/* Purchase Price */}
+          {pricing.purchase && (
+            <div class="flex items-start gap-3">
+              <Icon
+                name="solar:cart-3-line-duotone"
+                class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+              />
+              <div class="flex-1">
+                <div class="text-xs font-medium text-accent-two mb-0.5">
+                  Purchase Price
+                </div>
+                <div class="text-sm text-accent-base/80 font-semibold">
+                  {formatPrice(pricing.purchase, pricing.currency)}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Rental Options */}
+          {pricing.rental && (
+            <>
+              {typeof pricing.rental === "string" ? (
+                <div class="flex items-start gap-3">
+                  <Icon
+                    name="solar:calendar-mark-line-duotone"
+                    class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+                  />
+                  <div class="flex-1">
+                    <div class="text-xs font-medium text-accent-two mb-0.5">
+                      Rental Options
+                    </div>
+                    <div class="text-sm text-accent-base/80">
+                      {pricing.rental}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div class="rental-options">
+                  <div class="flex items-center gap-2 mb-2">
+                    <Icon
+                      name="solar:calendar-mark-line-duotone"
+                      class="text-accent-two w-4 h-4"
+                    />
+                    <div class="text-xs font-medium text-accent-two">
+                      Rental Options
+                    </div>
+                  </div>
+                  <div class="ml-6 space-y-1">
+                    {Object.entries(pricing.rental).map(([period, price]) => (
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-accent-two/70">
+                          {formatRentalPeriod(period)}
+                        </span>
+                        <span class="text-sm text-accent-base/80 font-medium">
+                          {formatPrice(price, pricing.currency)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Additional Notes */}
+          {pricing.notes && (
+            <div class="flex items-start gap-3 pt-2 border-t border-accent-one/10">
+              <Icon
+                name="solar:info-circle-line-duotone"
+                class="text-accent-two/60 mt-0.5 w-4 h-4 flex-shrink-0"
+              />
+              <div class="flex-1">
+                <div class="text-xs text-accent-two/70 italic">
+                  {pricing.notes}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </InfoCard>
+    </div>
+  )
+}
+
+<style>
+  /* Ensure consistent spacing for pricing items */
+  /*.pricing-section :global(.info-card) {
+    transition: all 200ms;
+  }*/
+
+  /*.pricing-section :global(.info-card:hover) {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }*/
+
+  /* Special styling for rental options table */
+  /*.rental-options {
+    background-color: rgb(var(--color-accent-one) / 0.05);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+  }*/
+</style>

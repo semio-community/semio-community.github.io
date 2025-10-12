@@ -9,14 +9,12 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-import { ContributorsSection } from "@/components/detail/ContributorsSection";
-import { TechnologiesCard } from "@/components/detail/TechnologiesCard";
-import { FeaturesCard } from "@/components/detail/FeaturesCard";
-import { ChipsCard } from "@/components/detail/ChipsCard";
-import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { MetadataCard } from "@/components/detail/MetadataCard";
 import ContentSection from "@/components/detail/ContentSection.astro";
+import SpecificationsList from "@/components/detail/SpecificationsList.astro";
+import FeaturesList from "@/components/detail/FeaturesList.astro";
+import ChipsList from "@/components/detail/ChipsList.astro";
+import TagsList from "@/components/detail/TagsList.astro";
 import { getRelatedSoftware } from "@/data/software";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
@@ -229,9 +227,13 @@ if (data.requirements) {
       }
     </Fragment>
 
-    <Fragment slot="contributors">
+    {/* Description */}
+    <Fragment slot="description">
       <ContentSection title="DESCRIPTION" content={data.description} />
+    </Fragment>
 
+    {/* Contributors and Organizations */}
+    <Fragment slot="contributors">
       {
         (orgContributors.length > 0 || validPeopleContributors.length > 0) && (
           <div class="contributors-section mb-8">
@@ -325,60 +327,70 @@ if (data.requirements) {
       }
     </Fragment>
 
-    <Fragment slot="sidebar">
-      {
-        requirementItems.length > 0 && (
-          <MetadataCard
-            client:load
-            title="System Requirements"
-            icon="solar:settings-minimalistic-line-duotone"
-            items={requirementItems}
-          />
-        )
-      }
+    {/* System Requirements */}
+    <Fragment slot="specifications">
+      <SpecificationsList
+        title="SYSTEM REQUIREMENTS"
+        items={requirementItems}
+      />
+    </Fragment>
 
+    {/* Metadata (Technologies) */}
+    <Fragment slot="metadata">
       {
         (data.language?.length > 0 || data.platform?.length > 0) && (
-          <TechnologiesCard
-            client:load
-            languages={data.language}
-            platforms={data.platform}
+          <ChipsList
+            title="TECHNOLOGIES"
+            groups={(() => {
+              const groups = [];
+              if (data.language && data.language.length > 0) {
+                groups.push({
+                  title: "LANGUAGES",
+                  items: data.language,
+                  variant: "primary" as const,
+                });
+              }
+              if (data.platform && data.platform.length > 0) {
+                groups.push({
+                  title: "PLATFORMS",
+                  items: data.platform,
+                  variant: "secondary" as const,
+                });
+              }
+              return groups;
+            })()}
           />
         )
       }
+    </Fragment>
 
-      {
-        data.features && data.features.length > 0 && (
-          <FeaturesCard
-            client:load
-            title="Key Features"
-            icon="solar:star-bold-duotone"
-            features={data.features}
-          />
-        )
-      }
+    {/* Features */}
+    <Fragment slot="features">
+      <FeaturesList
+        title="KEY FEATURES"
+        features={data.features}
+        featureIcon="solar:star-bold-duotone"
+      />
+    </Fragment>
 
+    {/* Tags and Use Cases */}
+    <Fragment slot="tags">
       {
         data.useCases && data.useCases.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Use Cases"
-            icon="solar:layers-minimalistic-bold-duotone"
+          <ChipsList
+            title="USE CASES"
             items={data.useCases}
             variant="primary"
           />
         )
       }
-
-      {
-        data.tags && data.tags.length > 0 && (
-          <TagsSection client:load tags={data.tags} baseUrl="/software/tags" />
-        )
-      }
+      <TagsList tags={data.tags} baseUrl="/software/tags" variant="tertiary" />
     </Fragment>
 
+    {/* Main content from MDX file */}
     <Content />
 
+    {/* Related Software */}
     <Fragment slot="related">
       {
         relatedSoftware && relatedSoftware.length > 0 && (

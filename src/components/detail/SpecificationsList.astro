@@ -1,0 +1,67 @@
+---
+import { Icon } from "astro-icon/components";
+import InfoCard from "./InfoCard.astro";
+
+export interface SpecificationItem {
+  label: string;
+  value: string | number | string[];
+  icon?: string;
+}
+
+export interface Props {
+  title: string;
+  items: SpecificationItem[] | Record<string, any>;
+  icon?: string;
+  defaultItemIcon?: string;
+  className?: string;
+}
+
+const {
+  title,
+  items,
+  icon,
+  defaultItemIcon = "solar:settings-minimalistic-line-duotone",
+  className = "",
+} = Astro.props;
+
+// Convert items to array format if it's an object
+const itemsArray: SpecificationItem[] = Array.isArray(items)
+  ? items
+  : Object.entries(items).map(([key, value]) => ({
+      label: key,
+      value: Array.isArray(value) ? value.join(", ") : String(value),
+    }));
+
+// Format label to be more readable (e.g., "maxSpeed" -> "Max Speed")
+function formatLabel(label: string): string {
+  return label
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+}
+---
+
+{
+  itemsArray.length > 0 && (
+    <div class={`specifications-section mb-8 ${className}`}>
+      <InfoCard title={title}>
+        <div class="space-y-3">
+          {itemsArray.map((item) => (
+            <div class="flex items-start gap-3">
+              <Icon
+                name={item.icon || defaultItemIcon}
+                class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+              />
+              <div class="flex-1">
+                <div class="text-xs font-medium text-accent-two mb-0.5">
+                  {formatLabel(item.label)}
+                </div>
+                <div class="text-sm text-accent-base/80">{item.value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </InfoCard>
+    </div>
+  )
+}

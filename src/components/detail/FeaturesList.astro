@@ -1,0 +1,38 @@
+---
+import { Icon } from "astro-icon/components";
+import InfoCard from "./InfoCard.astro";
+
+export interface Props {
+  title?: string;
+  features: string[];
+  featureIcon?: string;
+  className?: string;
+}
+
+const {
+  title = "KEY FEATURES",
+  features,
+  featureIcon = "solar:settings-minimalistic-line-duotone",
+  className = "",
+} = Astro.props;
+---
+
+{
+  features && features.length > 0 && (
+    <div class={`mb-8 ${className}`}>
+      <InfoCard title={title}>
+        <div class="space-y-2">
+          {features.map((feature) => (
+            <div class="flex items-start gap-2">
+              <Icon
+                name={featureIcon}
+                class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+              />
+              <span class="text-sm text-accent-base">{feature}</span>
+            </div>
+          ))}
+        </div>
+      </InfoCard>
+    </div>
+  )
+}

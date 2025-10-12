@@ -9,9 +9,7 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-import { MetadataCard } from "@/components/detail/MetadataCard";
-import { ChipsCard } from "@/components/detail/ChipsCard";
-import { TagsSection } from "@/components/detail/TagsSection";
+
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllStudies } from "@/data/studies";
@@ -315,7 +313,7 @@ validRelatedSoftware.forEach((sw) => {
 ---
 
 <PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout showSidebar={false}>
+  <BaseDetailLayout>
     <Fragment slot="hero">
       <DetailHero
         client:load
@@ -329,9 +327,18 @@ validRelatedSoftware.forEach((sw) => {
       />
     </Fragment>
 
+    {/* Action Buttons */}
     <Fragment slot="actions">
-      {/* Abstract Section */}
-      <div class="abstract-section mb-8">
+      {
+        actionButtons.length > 0 && (
+          <ActionButtonGroup client:load buttons={actionButtons} />
+        )
+      }
+    </Fragment>
+
+    {/* Description/Abstract */}
+    <Fragment slot="description">
+      <div class="abstract-section">
         <div
           class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
         >
@@ -343,15 +350,10 @@ validRelatedSoftware.forEach((sw) => {
           <p class="text-accent-base">{data.abstract}</p>
         </div>
       </div>
+    </Fragment>
 
-      <div class="abstract-section mb-8">
-        {
-          actionButtons.length > 0 && (
-            <ActionButtonGroup client:load buttons={actionButtons} />
-          )
-        }
-      </div>
-
+    {/* Contributors Section */}
+    <Fragment slot="contributors">
       {/* Authors Section */}
       {
         validAuthors.length > 0 && (
@@ -541,9 +543,15 @@ validRelatedSoftware.forEach((sw) => {
       }
     </Fragment>
 
-    <!-- Main content from MDX file -->
-    <!-- <Content /> -->
+    {/* Tags Section */}
+    <Fragment slot="tags">
+      {/* Move tags here if they exist */}
+    </Fragment>
 
+    {/* Main content from MDX file */}
+    <Content />
+
+    {/* Related Studies */}
     <Fragment slot="related">
       {
         relatedStudies && relatedStudies.length > 0 && (

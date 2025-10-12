@@ -1,43 +1,34 @@
 ---
 export interface Props {
   className?: string;
-  showHero?: boolean;
-  showHeader?: boolean;
-  showActions?: boolean;
-  showContributors?: boolean;
-  showSidebar?: boolean;
-  showRelated?: boolean;
 }
 
-const {
-  className = "",
-  showHero = true,
-  showHeader = true,
-  showActions = true,
-  showContributors = true,
-  showSidebar = true,
-  showRelated = true,
-} = Astro.props;
+const { className = "" } = Astro.props;
 
 // Check which slots have content
-const hasHero = showHero && Astro.slots.has("hero");
-const hasHeader = showHeader && Astro.slots.has("header");
-const hasActions = showActions && Astro.slots.has("actions");
-const hasContributors = showContributors && Astro.slots.has("contributors");
-const hasSidebar = showSidebar && Astro.slots.has("sidebar");
-const hasRelated = showRelated && Astro.slots.has("related");
-const hasTopActions = Astro.slots.has("top-actions");
 const hasBreadcrumbs = Astro.slots.has("breadcrumbs");
-const hasMetaSection = Astro.slots.has("meta-section");
+const hasHero = Astro.slots.has("hero");
+const hasActions = Astro.slots.has("actions");
+const hasDescription = Astro.slots.has("description");
+const hasContributors = Astro.slots.has("contributors");
+const hasMetadata = Astro.slots.has("metadata");
+const hasFeatures = Astro.slots.has("features");
+const hasSpecs = Astro.slots.has("specifications");
+const hasLinks = Astro.slots.has("links");
+const hasTags = Astro.slots.has("tags");
+const hasStats = Astro.slots.has("stats");
+const hasContent = Astro.slots.has("default");
+const hasRelated = Astro.slots.has("related");
+const hasFooter = Astro.slots.has("footer");
 
-// Determine if we should show the header section
-const shouldShowHeader = !hasHero && hasHeader;
+// Legacy slot support for backward compatibility
+const hasLegacyContributors = Astro.slots.has("contributors");
 ---
 
 <article
   class={`detail-layout ${className} ${hasHero ? "pt-16 md:pt-20 lg:pt-4" : "pt-20 lg:pt-4"}`}
 >
-  <!-- Breadcrumbs (optional, above everything) -->
+  <!-- Breadcrumbs Navigation -->
   {
     hasBreadcrumbs && (
       <nav class="mb-6 px-4 md:px-8 lg:px-12" aria-label="Breadcrumb">
@@ -46,163 +37,200 @@ const shouldShowHeader = !hasHero && hasHeader;
     )
   }
 
-  <!-- Hero Section with Image Overlay -->
+  <!-- Hero Section -->
   {hasHero && <slot name="hero" />}
 
-  <!-- Header Section (when no hero) -->
-  {
-    shouldShowHeader && (
-      <div class="px-4 md:px-8 lg:px-12">
-        <slot name="header" />
-      </div>
-    )
-  }
-
-  <!-- Top Actions (optional, for special actions that should be prominent) -->
-  {
-    hasTopActions && (
-      <div class="mb-6 px-4 md:px-8 lg:px-12">
-        <slot name="top-actions" />
-      </div>
-    )
-  }
-
-  <!-- Contributors Section -->
-  {
-    hasContributors && (
-      <div class="px-4 md:px-8 lg:px-12">
-        <slot name="contributors" />
-      </div>
-    )
-  }
-
-  <!-- Action Buttons Section -->
+  <!-- Primary Actions (Website, GitHub, Purchase, etc.) -->
   {
     hasActions && (
-      <div class="px-4 md:px-8 lg:px-12">
+      <div class="mb-8 px-4 md:px-8 lg:px-12">
         <slot name="actions" />
       </div>
     )
   }
 
-  <!-- Meta Section (optional, for additional metadata that doesn't fit in sidebar) -->
-  {
-    hasMetaSection && (
-      <div class="mb-8 p-6 bg-surface-lighter rounded-xl border border-accent-one/10 mx-4 md:mx-8 lg:mx-12">
-        <slot name="meta-section" />
-      </div>
-    )
-  }
-
-  <!-- Main Content Grid -->
-  <div
-    class={`grid grid-cols-1 ${hasSidebar ? "lg:grid-cols-3" : ""} gap-8 px-4 md:px-8 lg:px-12`}
-  >
-    <!-- Main Content Area -->
-    <div class={hasSidebar ? "lg:col-span-2" : "w-full"}>
-      <!-- Before Content Slot (optional) -->
-      {
-        Astro.slots.has("before-content") && (
-          <div class="mb-6">
-            <slot name="before-content" />
-          </div>
-        )
-      }
-
-      <!-- Main Content (MDX/Markdown content) -->
-      <div class="prose prose-lg dark:prose-invert max-w-none">
-        <slot />
-        <!-- Default slot for main content -->
-      </div>
-
-      <!-- After Content Slot (optional) -->
-      {
-        Astro.slots.has("after-content") && (
-          <div class="mt-6">
-            <slot name="after-content" />
-          </div>
-        )
-      }
-
-      <!-- Mobile Sidebar (shows below content on mobile when sidebar exists) -->
-      {
-        hasSidebar && (
-          <aside class="lg:hidden mt-8">
-            <slot name="sidebar" />
-          </aside>
-        )
-      }
-    </div>
-
-    <!-- Desktop Sidebar -->
+  <!-- Main Content Container -->
+  <div class="detail-content px-4 md:px-8 lg:px-12">
+    <!-- Description Section (bio, abstract, description) -->
     {
-      hasSidebar && (
-        <aside class="hidden lg:block lg:col-span-1">
-          <div class="sticky top-24">
-            <slot name="sidebar" />
+      hasDescription && (
+        <section class="description-section mb-8">
+          <slot name="description" />
+        </section>
+      )
+    }
+
+    <!-- Contributors/Organizations Section -->
+    {
+      (hasContributors || hasLegacyContributors) && (
+        <section class="contributors-section mb-8">
+          <slot name="contributors" />
+        </section>
+      )
+    }
+
+    <!-- Metadata Cards Section (Event details, Location, etc.) -->
+    {
+      hasMetadata && (
+        <section class="metadata-section mb-8">
+          <slot name="metadata" />
+        </section>
+      )
+    }
+
+    <!-- Specifications Section (Hardware specs, Software requirements) -->
+    {
+      hasSpecs && (
+        <section class="specifications-section mb-8">
+          <slot name="specifications" />
+        </section>
+      )
+    }
+
+    <!-- Features Section -->
+    {
+      hasFeatures && (
+        <section class="features-section mb-8">
+          <slot name="features" />
+        </section>
+      )
+    }
+
+    <!-- External Links Section -->
+    {
+      hasLinks && (
+        <section class="links-section mb-8">
+          <slot name="links" />
+        </section>
+      )
+    }
+
+    <!-- Tags and Categories Section -->
+    {
+      hasTags && (
+        <section class="tags-section mb-8">
+          <slot name="tags" />
+        </section>
+      )
+    }
+
+    <!-- Statistics Section -->
+    {
+      hasStats && (
+        <section class="stats-section mb-8">
+          <slot name="stats" />
+        </section>
+      )
+    }
+
+    <!-- Main MDX/Markdown Content -->
+    {
+      hasContent && (
+        <section class="prose-content mb-12">
+          <div class="prose prose-lg dark:prose-invert max-w-none">
+            <slot />
           </div>
-        </aside>
+        </section>
+      )
+    }
+
+    <!-- Related Items Grid -->
+    {
+      hasRelated && (
+        <section class="related-section mt-12">
+          <slot name="related" />
+        </section>
+      )
+    }
+
+    <!-- Footer Section (Citations, References, Additional Info) -->
+    {
+      hasFooter && (
+        <footer class="footer-section mt-12 pt-8 border-t border-accent-one/10">
+          <slot name="footer" />
+        </footer>
       )
     }
   </div>
-
-  <!-- Additional Content Sections (optional) -->
-  {
-    Astro.slots.has("additional-sections") && (
-      <div class="mt-12 px-4 md:px-8 lg:px-12">
-        <slot name="additional-sections" />
-      </div>
-    )
-  }
-
-  <!-- Related Items Section -->
-  {
-    hasRelated && (
-      <div class="px-4 md:px-8 lg:px-12">
-        <slot name="related" />
-      </div>
-    )
-  }
-
-  <!-- Footer Section (optional, for citations, references, etc.) -->
-  {
-    Astro.slots.has("footer") && (
-      <footer class="mt-12 pt-8 border-t border-accent-one/10 px-4 md:px-8 lg:px-12">
-        <slot name="footer" />
-      </footer>
-    )
-  }
 </article>
 
 <style>
-  /* Ensure consistent spacing and styling */
   .detail-layout {
     width: 100%;
+    min-height: 100vh;
   }
 
-  /* Sticky sidebar adjustments */
-  .sticky {
-    max-height: calc(100vh - 6rem);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-accent-one) transparent;
+  .detail-content {
+    max-width: 1400px;
+    margin: 0 auto;
   }
 
-  .sticky::-webkit-scrollbar {
-    width: 6px;
+  /* Section spacing utilities */
+  section {
+    animation: fadeIn 0.3s ease-in-out;
   }
 
-  .sticky::-webkit-scrollbar-track {
-    background: transparent;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .sticky::-webkit-scrollbar-thumb {
-    background-color: var(--color-accent-one);
-    border-radius: 3px;
-    opacity: 0.5;
+  /* Responsive padding adjustments */
+  @media (min-width: 1536px) {
+    .detail-content {
+      padding-left: 6rem;
+      padding-right: 6rem;
+    }
   }
 
-  .sticky::-webkit-scrollbar-thumb:hover {
-    opacity: 1;
+  /* Print styles */
+  @media print {
+    .detail-layout {
+      padding-top: 0 !important;
+    }
+
+    section {
+      break-inside: avoid;
+    }
+
+    .hero-section,
+    .actions-section,
+    .related-section {
+      display: none;
+    }
+  }
+
+  /* Accessibility improvements */
+  section:focus-within {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  section:focus-visible {
+    outline-color: rgb(var(--color-accent-base));
+  }
+
+  /* Smooth scrolling for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better typography spacing */
+  .prose-content {
+    line-height: 1.7;
+  }
+
+  .prose-content > :first-child {
+    margin-top: 0;
+  }
+
+  .prose-content > :last-child {
+    margin-bottom: 0;
   }
 </style>

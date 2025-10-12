@@ -9,10 +9,6 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-import { MetadataCard } from "@/components/detail/MetadataCard";
-import { PricingCard } from "@/components/detail/PricingCard";
-import { ChipsCard } from "@/components/detail/ChipsCard";
-import { TagsSection } from "@/components/detail/TagsSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllEvents } from "@/data/events";
@@ -21,6 +17,7 @@ import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const events = await getCollection("events", ({ data }) => {
@@ -271,21 +268,25 @@ const eventDetailsItems = [];
 eventDetailsItems.push({
   label: "Start Date",
   value: formatDate(startDate),
+  icon: "solar:calendar-date-line-duotone",
 });
 eventDetailsItems.push({
   label: "End Date",
   value: formatDate(endDate),
+  icon: "solar:calendar-mark-line-duotone",
 });
 if (registrationDeadline) {
   eventDetailsItems.push({
     label: "Registration Deadline",
     value: formatDate(registrationDeadline),
+    icon: "solar:calendar-add-line-duotone",
   });
 }
 if (data.capacity) {
   eventDetailsItems.push({
     label: "Capacity",
     value: `${data.capacity} attendees`,
+    icon: "solar:users-group-two-rounded-line-duotone",
   });
 }
 
@@ -295,16 +296,19 @@ if (data.location.venue) {
   locationItems.push({
     label: "Venue",
     value: data.location.venue,
+    icon: "solar:buildings-line-duotone",
   });
 }
 locationItems.push({
   label: "Location",
   value: `${data.location.city}, ${data.location.country}`,
+  icon: "solar:map-point-line-duotone",
 });
 if (data.location.online) {
   locationItems.push({
     label: "Online Access",
     value: "Available",
+    icon: "solar:laptop-minimalistic-line-duotone",
   });
 }
 if (data.location.coordinates) {
@@ -313,6 +317,7 @@ if (data.location.coordinates) {
     value: "View on Google Maps",
     link: `https://maps.google.com/?q=${data.location.coordinates.lat},${data.location.coordinates.lng}`,
     external: true,
+    icon: "solar:map-line-duotone",
   });
 }
 
@@ -399,9 +404,78 @@ const sponsorsByLevel = {
       }
     </Fragment>
 
-    <Fragment slot="contributors">
+    {/* Description */}
+    <Fragment slot="description">
       <ContentSection title="ABOUT THE EVENT" content={data.description} />
+    </Fragment>
 
+    {/* Event Metadata (Details & Location) */}
+    <Fragment slot="metadata">
+      {/* Event Details Card */}
+      {
+        eventDetailsItems.length > 0 && (
+          <div class="event-details-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                EVENT DETAILS
+              </h3>
+              <div class="space-y-3">
+                {eventDetailsItems.map((item) => (
+                  <div class="flex items-start gap-3">
+                    <Icon
+                      name={item.icon}
+                      class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+                    />
+                    <div class="flex-1">
+                      <div class="text-xs font-medium text-color-600 dark:text-color-400 mb-0.5">
+                        {item.label}
+                      </div>
+                      <div class="text-sm text-color-800 dark:text-color-200">
+                        {item.value}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Location Card */}
+      {
+        locationItems.length > 0 && (
+          <div class="location-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                LOCATION
+              </h3>
+              <div class="space-y-3">
+                {locationItems.map((item) => (
+                  <div class="flex items-start gap-3">
+                    <Icon
+                      name={item.icon || "solar:map-point-line-duotone"}
+                      class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+                    />
+                    <div class="flex-1">
+                      <div class="text-xs font-medium text-color-600 dark:text-color-400 mb-0.5">
+                        {item.label}
+                      </div>
+                      <div class="text-sm text-color-800 dark:text-color-200">
+                        {item.value}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </Fragment>
+
+    {/* Contributors (Organizers, Speakers, Sponsors) */}
+    <Fragment slot="contributors">
       {/* Organizers Section */}
       {
         validOrganizers.length > 0 && (
@@ -508,63 +582,77 @@ const sponsorsByLevel = {
       }
     </Fragment>
 
-    <Fragment slot="sidebar">
-      {
-        eventDetailsItems.length > 0 && (
-          <MetadataCard
-            client:load
-            title="Event Details"
-            icon="solar:calendar-bold-duotone"
-            items={eventDetailsItems}
-          />
-        )
-      }
-
-      {
-        locationItems.length > 0 && (
-          <MetadataCard
-            client:load
-            title="Location"
-            icon="solar:map-point-bold-duotone"
-            items={locationItems}
-          />
-        )
-      }
-
-      {
-        data.topics && data.topics.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Topics"
-            icon="solar:hashtag-bold-duotone"
-            items={data.topics}
-            variant="primary"
-          />
-        )
-      }
-
-      {
-        data.tracks && data.tracks.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Tracks"
-            icon="solar:layers-minimalistic-bold-duotone"
-            items={data.tracks}
-            variant="secondary"
-          />
-        )
-      }
-
+    {/* Tags and Topics */}
+    <Fragment slot="tags">
+      {/* Tags Section */}
       {
         data.tags && data.tags.length > 0 && (
-          <TagsSection client:load tags={data.tags} baseUrl="/events/tags" />
+          <div class="tags-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                TAGS
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {data.tags.map((tag: string) => (
+                  <a
+                    href={`/events/tags/${tag}`}
+                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-accent-one/10 hover:bg-accent-one/20 rounded-lg text-sm text-accent-base transition-colors"
+                  >
+                    <Icon name="solar:hashtag-line-duotone" class="w-3 h-3" />
+                    {tag}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Topics & Tracks */}
+      {
+        ((data.topics && data.topics.length > 0) ||
+          (data.tracks && data.tracks.length > 0)) && (
+          <div class="topics-tracks-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              {data.topics && data.topics.length > 0 && (
+                <>
+                  <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                    TOPICS
+                  </h3>
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    {data.topics.map((topic: string) => (
+                      <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {data.tracks && data.tracks.length > 0 && (
+                <>
+                  <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                    TRACKS
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    {data.tracks.map((track: string) => (
+                      <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                        {track}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )
       }
     </Fragment>
 
-    <!-- Main content from MDX file -->
+    {/* Main content from MDX file */}
     <Content />
 
+    {/* Related Events */}
     <Fragment slot="related">
       {
         relatedEvents && relatedEvents.length > 0 && (
