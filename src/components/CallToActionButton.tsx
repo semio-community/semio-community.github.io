@@ -43,7 +43,7 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
   const sizeClasses = {
     small: "px-3 py-1.5 text-xs",
     medium: "px-4 py-2 text-sm",
-    large: "px-6 py-3 text-base sm:px-8",
+    large: "px-4 py-3 text-base sm:px-4",
   };
 
   // Variant-specific styles
@@ -86,7 +86,7 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
   // Base classes that apply to all CTA buttons
   const baseClasses = clsx(
     // Layout & spacing
-    "inline-flex items-center justify-center pointer-events-auto",
+    "inline-flex items-center justify-center pointer-events-auto group/button",
     "rounded-md font-semibold transition-all duration-200 -outline-offset-1",
     // Variant-specific styles
     variantClasses[variant],

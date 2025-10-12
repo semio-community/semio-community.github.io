@@ -9,6 +9,7 @@ import { Icon } from "astro-icon/components";
 import { getAllHardware, getHardwareCountByStatus } from "@/data/hardware";
 import { getAllSoftware, getSoftwareCountByStatus } from "@/data/software";
 import { getFormattedAuthors } from "@/data/people";
+import { getAllStudies } from "@/data/studies";
 
 const meta = {
   title: "Projects",
@@ -18,34 +19,34 @@ const meta = {
 
 // Fetch hardware from content collections
 const allHardware = await getAllHardware();
-const hardwareCounts = await getHardwareCountByStatus();
 
 // Fetch software from content collections
 const allSoftware = await getAllSoftware();
-const softwareCounts = await getSoftwareCountByStatus();
 
 // Fetch studies data - handle empty collection gracefully
-let featuredStudies = [];
-let studyStatistics = null;
-let featuredStudiesWithAuthors: any[] = [];
+const allStudies = await getAllStudies();
 
-try {
-  // Dynamically import to avoid build errors when collection is empty
-  const studiesModule = await import("@/data/studies");
-  featuredStudies = await studiesModule.getFeaturedStudies();
-  studyStatistics = await studiesModule.getStudyStatistics();
+// let featuredStudies = [];
+// let studyStatistics = null;
+// let featuredStudiesWithAuthors: any[] = [];
 
-  // Pre-fetch author names for featured studies
-  featuredStudiesWithAuthors = await Promise.all(
-    featuredStudies.slice(0, featuredStudies.length).map(async (study) => ({
-      ...study,
-      authorString: await getFormattedAuthors(study.data.authors, 1),
-    })),
-  );
-} catch (error) {
-  // Studies collection is empty or doesn't exist
-  console.log("Studies collection not available");
-}
+// try {
+//   // Dynamically import to avoid build errors when collection is empty
+//   const studiesModule = await import("@/data/studies");
+//   featuredStudies = await studiesModule.getFeaturedStudies();
+//   studyStatistics = await studiesModule.getStudyStatistics();
+
+//   // Pre-fetch author names for featured studies
+//   featuredStudiesWithAuthors = await Promise.all(
+//     featuredStudies.slice(0, featuredStudies.length).map(async (study) => ({
+//       ...study,
+//       authorString: await getFormattedAuthors(study.data.authors, 1),
+//     })),
+//   );
+// } catch (error) {
+//   // Studies collection is empty or doesn't exist
+//   console.log("Studies collection not available");
+// }
 ---
 
 <PageLayout meta={meta}>
@@ -63,56 +64,22 @@ try {
           href="#hardware"
           text="Hardware Projects"
           size="large"
+          indicatorText={allHardware.length?.toString()}
         />
         <CallToActionButton
           href="#software"
           text="Software Projects"
           size="large"
           variant="secondary"
+          indicatorText={allSoftware.length?.toString()}
         />
         <CallToActionButton
           href="#studies"
           text="Research Projects"
           size="large"
           variant="tertiary"
+          indicatorText={allStudies.length?.toString()}
         />
-      </div>
-
-      <!-- Project Statistics -->
-      <div class="flex flex-wrap justify-center gap-8 text-sm">
-        {
-          Object.keys(hardwareCounts).length > 0 && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:cpu-bolt-line-duotone"
-                class="w-5 h-5 text-accent-one"
-              />
-              <span>{allHardware.length} Hardware Projects</span>
-            </div>
-          )
-        }
-        {
-          allSoftware.length > 0 && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:code-2-line-duotone"
-                class="w-5 h-5 text-accent-two"
-              />
-              <span>{allSoftware.length} Software Projects</span>
-            </div>
-          )
-        }
-        {
-          studyStatistics && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:document-text-line-duotone"
-                class="w-5 h-5 text-special"
-              />
-              <span>{studyStatistics.total} Research Projects</span>
-            </div>
-          )
-        }
       </div>
     </div>
   </Section>
@@ -245,30 +212,30 @@ try {
   >
     <div class="max-w-6xl mx-auto">
       {
-        featuredStudiesWithAuthors.length > 0 ? (
+        allStudies.length > 0 ? (
           <div data-expandable-section data-initial-count="6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               data-items-container
             >
-              {featuredStudiesWithAuthors.map((study, index) => (
+              {allStudies.map((st, index) => (
                 <div
                   data-expandable-item
                   data-index={index}
                   class={index >= 6 ? "hidden" : ""}
                 >
-                  <StudyCard studyId={study.id} />
+                  <StudyCard studyId={st.id} />
                 </div>
               ))}
             </div>
-            {featuredStudiesWithAuthors.length > 6 && (
+            {allStudies.length > 6 && (
               <div class="text-center mt-8">
                 <button
                   data-expand-button
                   class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
                 >
                   <span data-expand-text>
-                    View All {featuredStudiesWithAuthors.length} Studies
+                    View All {allStudies.length} Tools
                   </span>
                   <span data-collapse-text class="hidden">
                     Show Less
@@ -285,7 +252,7 @@ try {
         ) : (
           <div class="text-center py-12">
             <Icon
-              name="solar:document-line-duotone"
+              name="solar:code-2-line-duotone"
               class="w-24 h-24 mx-auto mb-4 text-color-300"
             />
             <p class="text-lg text-color-600 dark:text-color-400">
