@@ -22,6 +22,7 @@ import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
+import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const studies = await getCollection("studies", ({ data }) => {
@@ -314,7 +315,7 @@ validRelatedSoftware.forEach((sw) => {
 ---
 
 <PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout>
+  <BaseDetailLayout showSidebar={false}>
     <Fragment slot="hero">
       <DetailHero
         client:load
@@ -329,22 +330,34 @@ validRelatedSoftware.forEach((sw) => {
     </Fragment>
 
     <Fragment slot="actions">
-      {
-        actionButtons.length > 0 && (
-          <ActionButtonGroup client:load buttons={actionButtons} />
-        )
-      }
-    </Fragment>
+      {/* Abstract Section */}
+      <div class="abstract-section mb-8">
+        <div
+          class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
+        >
+          <h3
+            class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider"
+          >
+            ABSTRACT
+          </h3>
+          <p class="text-accent-base">{data.abstract}</p>
+        </div>
+      </div>
 
-    <Fragment slot="contributors">
-      <ContentSection title="ABSTRACT" content={data.abstract} />
+      <div class="abstract-section mb-8">
+        {
+          actionButtons.length > 0 && (
+            <ActionButtonGroup client:load buttons={actionButtons} />
+          )
+        }
+      </div>
 
       {/* Authors Section */}
       {
         validAuthors.length > 0 && (
           <div class="authors-section mb-8">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 AUTHORS
               </h3>
               <div class="flex flex-wrap gap-2">
@@ -383,11 +396,14 @@ validRelatedSoftware.forEach((sw) => {
         (validAffiliatedOrgs.length > 0 || validFundingOrgs.length > 0) && (
           <div class="organizations-section mb-8">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                ORGANIZATIONS
+              </h3>
               {validAffiliatedOrgs.length > 0 && (
                 <div class="mb-4">
-                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
-                    AFFILIATED INSTITUTIONS
-                  </h3>
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Affiliated Institutions
+                  </h4>
                   <div class="flex flex-wrap gap-2">
                     {validAffiliatedOrgs.map(
                       (org) =>
@@ -403,9 +419,9 @@ validRelatedSoftware.forEach((sw) => {
               )}
               {validFundingOrgs.length > 0 && (
                 <div>
-                  <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
-                    FUNDING ORGANIZATIONS
-                  </h3>
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Funding Organizations
+                  </h4>
                   <div class="flex flex-wrap gap-2">
                     {validFundingOrgs.map(
                       (org) =>
@@ -423,58 +439,110 @@ validRelatedSoftware.forEach((sw) => {
           </div>
         )
       }
-    </Fragment>
 
-    <Fragment slot="sidebar">
+      {/* Publication Details */}
       {
         publicationItems.length > 0 && (
-          <MetadataCard
-            client:load
-            title="Publication Details"
-            icon="solar:document-text-bold-duotone"
-            items={publicationItems}
-          />
+          <div class="publication-details mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                PUBLICATION DETAILS
+              </h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                {publicationItems.map((item) => (
+                  <div>
+                    <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+                      {item.label}
+                    </span>
+                    <span class="text-accent-base">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )
       }
 
+      {/* Keywords and Research Areas */}
       {
-        data.keywords && data.keywords.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Keywords"
-            icon="solar:tag-bold-duotone"
-            items={data.keywords}
-            variant="default"
-          />
+        (data.keywords?.length > 0 || data.researchArea?.length > 0) && (
+          <div class="topics-section mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                RESEARCH TOPICS
+              </h3>
+
+              {data.keywords && data.keywords.length > 0 && (
+                <div class="mb-4">
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Keywords
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
+                    {data.keywords.map((keyword) => (
+                      <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {data.researchArea && data.researchArea.length > 0 && (
+                <div>
+                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                    Research Areas
+                  </h4>
+                  <div class="flex flex-wrap gap-2">
+                    {data.researchArea.map((area) => (
+                      <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
+                        {area}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         )
       }
 
-      {
-        data.researchArea && data.researchArea.length > 0 && (
-          <ChipsCard
-            client:load
-            title="Research Areas"
-            icon="solar:book-bold-duotone"
-            items={data.researchArea}
-            variant="primary"
-          />
-        )
-      }
-
+      {/* Related Resources */}
       {
         relatedResourcesItems.length > 0 && (
-          <MetadataCard
-            client:load
-            title="Related Resources"
-            icon="solar:link-bold-duotone"
-            items={relatedResourcesItems}
-          />
+          <div class="related-resources mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                RELATED RESOURCES
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {relatedResourcesItems.map((item) => (
+                  <a
+                    href={item.link}
+                    class="flex items-center justify-between p-3 bg-accent-one/5 rounded-lg hover:bg-accent-one/10 transition-colors group"
+                  >
+                    <div class="flex items-center gap-3">
+                      <span class="text-xs text-color-600 dark:text-color-400 font-semibold">
+                        {item.label}
+                      </span>
+                      <span class="text-sm text-accent-base group-hover:text-accent-two transition-colors">
+                        {item.value}
+                      </span>
+                    </div>
+                    <Icon
+                      name="solar:arrow-right-line-duotone"
+                      class="w-4 h-4 text-accent-one opacity-50 group-hover:opacity-100 transition-opacity"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
         )
       }
     </Fragment>
 
     <!-- Main content from MDX file -->
-    <Content />
+    <!-- <Content /> -->
 
     <Fragment slot="related">
       {

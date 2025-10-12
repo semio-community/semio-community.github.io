@@ -37,5 +37,8 @@ export default new Map([
 ["src/content/people/naomi-fitter.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpeople%2Fnaomi-fitter.mdx&astroContentModuleFlag=true")],
 ["src/content/people/xuesu-xiao.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpeople%2Fxuesu-xiao.mdx&astroContentModuleFlag=true")],
 ["src/content/partners/university-of-southern-california.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpartners%2Funiversity-of-southern-california.mdx&astroContentModuleFlag=true")],
-["src/content/partners/yale-university.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpartners%2Fyale-university.mdx&astroContentModuleFlag=true")]]);
+["src/content/partners/yale-university.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpartners%2Fyale-university.mdx&astroContentModuleFlag=true")],
+["src/content/studies/peerbots-fellowship-1.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fstudies%2Fpeerbots-fellowship-1.mdx&astroContentModuleFlag=true")],
+["src/content/people/dylan-thomas-doyle.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fpeople%2Fdylan-thomas-doyle.mdx&astroContentModuleFlag=true")],
+["src/content/software/vizij.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fsoftware%2Fvizij.mdx&astroContentModuleFlag=true")]]);
 		
