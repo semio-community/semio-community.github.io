@@ -4,6 +4,7 @@ import Section from "@/components/Section.astro";
 import FeatureCard from "@/components/FeatureCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
+import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Services",
@@ -131,18 +132,31 @@ const researchServices = [
 ];
 ---
 
-<PageLayout meta={meta}>
-  <h1 class="title mb-6">Services</h1>
-
+<PageLayout meta={meta} noPaddingTop>
   <!-- Hero Section -->
-  <Section id="services-hero">
-    <div class="max-w-4xl mx-auto text-center mb-12">
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+  <div
+    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+  >
+    <Hero>
+      <!-- Title -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+      >
+        Services
+      </h1>
+
+      <!-- Subtitle -->
+      <p
+        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+      >
         Comprehensive support services to accelerate your robotics development,
         from hardware manufacturing to software deployment and research
         facilitation.
       </p>
-      <div class="flex flex-wrap justify-center gap-4">
+
+      <!-- CTA Button -->
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href="#hardware-services"
           text="Hardware Services"
@@ -161,8 +175,8 @@ const researchServices = [
           variant="tertiary"
         />
       </div>
-    </div>
-  </Section>
+    </Hero>
+  </div>
 
   <!-- Hardware Services Section -->
   <Section

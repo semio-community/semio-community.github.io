@@ -13,6 +13,7 @@ import {
   getUniquePartnerTypes,
   getUniquePartnerCategories,
 } from "@/data/partners";
+import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Partners",
@@ -132,18 +133,29 @@ const benefits = [
 ];
 ---
 
-<PageLayout meta={meta}>
-  <h1 class="title mb-6">Partners</h1>
-
+<PageLayout meta={meta} noPaddingTop>
   <!-- Hero Section with CTAs -->
-  <Section id="partners-cta">
-    <div class="max-w-4xl mx-auto text-center mb-12">
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+  <div
+    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+  >
+    <Hero>
+      <!-- Title -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+      >
+        Partners
+      </h1>
+
+      <!-- Subtitle -->
+      <p
+        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+      >
         Join a collaborative ecosystem of organizations advancing human-robot
         interaction through shared resources, expertise, and vision.
       </p>
 
-      <!-- CTA Buttons -->
+      <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href="#become-partner"
@@ -155,50 +167,11 @@ const benefits = [
           text="View Partners"
           size="large"
           variant="secondary"
+          indicatorText={allPartners.length.toString()}
         />
       </div>
-
-      <!-- Partner Statistics -->
-      <div class="flex flex-wrap justify-center gap-6 text-sm">
-        <div class="flex items-center gap-2">
-          <Icon
-            name="solar:buildings-2-line-duotone"
-            class="w-4 h-4 text-accent-one"
-          />
-          <span>{allPartners.length} Partners</span>
-        </div>
-        {
-          partnerTypes.length > 0 && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:layers-line-duotone"
-                class="w-4 h-4 text-accent-two"
-              />
-              <span>{partnerTypes.length} Sectors</span>
-            </div>
-          )
-        }
-        {
-          partnerCategories.length > 0 && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:widget-2-line-duotone"
-                class="w-4 h-4 text-special"
-              />
-              <span>{partnerCategories.length} Areas</span>
-            </div>
-          )
-        }
-        <div class="flex items-center gap-2">
-          <Icon
-            name="solar:global-line-duotone"
-            class="w-4 h-4 text-green-500"
-          />
-          <span>Global Reach</span>
-        </div>
-      </div>
-    </div>
-  </Section>
+    </Hero>
+  </div>
 
   <!-- Featured Partners -->
   {
@@ -210,7 +183,7 @@ const benefits = [
       >
         <div class="max-w-6xl mx-auto">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredPartners.slice(0, 6).map((partner) => (
+            {featuredPartners.slice(0, 3).map((partner) => (
               <PartnerCard partnerId={partner.id} />
             ))}
           </div>

@@ -10,6 +10,7 @@ import { getAllHardware, getHardwareCountByStatus } from "@/data/hardware";
 import { getAllSoftware, getSoftwareCountByStatus } from "@/data/software";
 import { getFormattedAuthors } from "@/data/people";
 import { getAllStudies } from "@/data/studies";
+import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Projects",
@@ -49,16 +50,28 @@ const allStudies = await getAllStudies();
 // }
 ---
 
-<PageLayout meta={meta}>
-  <!-- <h1 class="title mb-6">Projects</h1> -->
+<PageLayout meta={meta} noPaddingTop>
+  <div
+    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+  >
+    <Hero>
+      <!-- Title -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+      >
+        Projects
+      </h1>
 
-  <!-- Hero Section -->
-  <Section id="projects-hero">
-    <div class="max-w-4xl mx-auto text-center mb-12">
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+      <!-- Subtitle -->
+      <p
+        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+      >
         Discover and contribute to our growing ecosystem of community-driven
         robotics hardware, software, and research studies.
       </p>
+
+      <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href="#hardware"
@@ -81,8 +94,8 @@ const allStudies = await getAllStudies();
           indicatorText={allStudies.length?.toString()}
         />
       </div>
-    </div>
-  </Section>
+    </Hero>
+  </div>
 
   <!-- Hardware Section -->
   <Section

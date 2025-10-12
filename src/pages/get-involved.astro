@@ -3,6 +3,7 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
+import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Get Involved",
@@ -18,19 +19,30 @@ const meta = {
 ---
 
 <PageLayout meta={meta}>
-  <h1 class="title mb-6">Get Involved</h1>
-
   <!-- Hero Section -->
-  <Section id="get-involved-hero">
-    <div class="max-w-4xl mx-auto text-center mb-12">
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+  <div
+    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+  >
+    <Hero>
+      <!-- Title -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+      >
+        Get Involved
+      </h1>
+
+      <!-- Subtitle -->
+      <p
+        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+      >
         Be part of a global community advancing human-centered robotics and
         artificial intelligence. Your support helps us foster reproducible
         science and develop reusable systems for HRI.
       </p>
 
-      <!-- Main CTAs -->
-      <div class="flex flex-wrap justify-center gap-4">
+      <!-- CTA Button -->
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href="#donate"
           text="Make a Donation"
@@ -43,8 +55,8 @@ const meta = {
           variant="secondary"
         />
       </div>
-    </div>
-  </Section>
+    </Hero>
+  </div>
 
   <!-- Donate Section -->
   <Section
@@ -53,7 +65,6 @@ const meta = {
     subtitle="Your donations enable us to advance open science in robotics"
   >
     <div class="max-w-5xl mx-auto">
-      <!-- Why Donate -->
       <div
         class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20 mb-8"
       >
