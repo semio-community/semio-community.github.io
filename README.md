@@ -1,30 +1,61 @@
-# UR-RAD Symposium Website
+# Semio Community Website
 
-This repository contains the website for the UR-RAD (Unifying Representations for Robot Application Development) symposium series, built with [Astro](https://astro.build/) and deployed on GitHub Pages.
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## About UR-RAD
+This repository contains the website for [Semio Community](https://semio.community), a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and studies to foster repeatable, reproducible, and replicable science within human-robot interaction (HRI).
 
-UR-RAD is an annual symposium held as part of the AAAI Fall Symposium Series, focused on unifying representations for robot application development. The symposium brings together researchers from robotics, AI, and related fields to discuss representational techniques and their applications in robotics.
+## 🤖 About Semio Community
 
-## Current Site
+Semio Community is dedicated to advancing **reproducible robot science** by:
+- Supporting open-source robotics hardware and software development
+- Facilitating community-driven research and collaboration
+- Promoting reusable systems in human-robot interaction
+- Fostering scientific reproducibility in robotics and AI
 
-The current live site hosts **UR-RAD 2025**, the 3rd iteration of the symposium:
-- **Date**: November 6-8, 2025
-- **Location**: Westin Arlington Gateway, Arlington, VA, USA
-- **Website**: [ur-rad.github.io](https://ur-rad.github.io)
+## 🚀 Tech Stack
 
-## Quick Start
+- **Framework**: [Astro v5](https://astro.build/) with React integration
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with custom design system
+- **Content**: MDX for rich content authoring
+- **Search**: [Pagefind](https://pagefind.app/) for static search
+- **Code Quality**: [Biome](https://biomejs.dev/) for linting and formatting
+- **Icons**: Solar Icons and Astro Icon
+- **Deployment**: GitHub Pages with automated CI/CD
+
+## 📦 Project Structure
+
+```
+/
+├── public/           # Static assets (favicon, robots.txt, etc.)
+├── src/
+│   ├── assets/       # Images and media files
+│   ├── components/   # Reusable React and Astro components
+│   ├── config/       # Configuration files
+│   ├── content/      # Content collections (blog posts, projects, etc.)
+│   ├── data/         # Static data files
+│   ├── layouts/      # Page layouts
+│   ├── pages/        # File-based routing
+│   ├── plugins/      # Remark/Rehype plugins
+│   ├── styles/       # Global styles and CSS
+│   └── utils/        # Utility functions
+├── test/             # Test files
+└── docs/             # Documentation
+```
+
+## 🛠️ Development
 
 ### Prerequisites
-- Node.js 18+ 
-- npm, pnpm, or yarn
 
-### Installation & Development
+- Node.js 18+
+- npm (or pnpm/yarn)
+
+### Getting Started
 
 ```bash
 # Clone the repository
-git clone https://github.com/ur-rad/ur-rad.github.io.git
-cd ur-rad.github.io
+git clone https://github.com/semio-community/semio-community.github.io.git
+cd semio-community.github.io
 
 # Install dependencies
 npm install
@@ -33,98 +64,120 @@ npm install
 npm run dev
 ```
 
-The site will be available at `http://localhost:4321`
+Visit `http://localhost:4321` to view the site.
 
-## Commands
+### Available Commands
 
-| Command          | Action                                                         |
-| :--------------- | :------------------------------------------------------------- |
-| `npm install`    | Installs dependencies                                          |
-| `npm run dev`    | Starts local dev server at `localhost:4321`                   |
-| `npm run build`  | Build your production site to `./dist/`                       |
-| `npm run preview`| Preview your build locally, before deploying                  |
-| `npm run sync`   | Generate types based on your config in `src/content/config.ts`|
+| Command                | Action                                           |
+|:--------------------- |:------------------------------------------------ |
+| `npm run dev`         | Start development server at `localhost:4321`    |
+| `npm run build`       | Build production site to `./dist/`              |
+| `npm run preview`     | Preview production build locally                |
+| `npm run format`      | Format code with Biome and Prettier            |
+| `npm run format:code` | Format code files                              |
+| `npm run format:imports` | Organize imports with Biome                 |
+| `npm run lint`        | Run Biome linter                               |
+| `npm run check`       | Run Astro type checking                        |
+| `npm run verify:drafts` | Verify draft content status                  |
 
-## Site Configuration
+### Post-Build
 
-- **Main config**: `src/site.config.ts` - Site metadata, navigation, and basic settings
-- **Astro config**: `astro.config.ts` - Build settings, integrations, and deployment config
-- **Styling**: `src/styles/global.css` - Global styles and CSS variables
-- **Content**: Page content is in `src/pages/` with components in `src/components/`
+After building, Pagefind automatically indexes the site for search functionality.
 
-## Key Features
+## ⚙️ Configuration
 
-- 🚀 **Astro v5** - Fast, modern static site generation
-- 🎨 **Tailwind CSS** - Utility-first styling with custom design system
-- 📱 **Responsive Design** - Mobile-first approach with accessibility in mind
-- 🌓 **Dark/Light Mode** - Automatic theme switching
-- 📄 **SEO Optimized** - Meta tags, sitemap, and social sharing
-- 📊 **Performance Focused** - Optimized builds and fast loading
+### Site Configuration
 
-## Current Architecture
+Edit `src/site.config.ts` to update:
+- Site metadata (title, description, author)
+- Navigation menu items
+- Locale and date formatting
 
-The site is currently built as a single conference website for UR-RAD 2025, with:
-- Static pages for main content (Home, Call for Papers, Speakers, etc.)
-- Component-based architecture for reusable UI elements
-- Asset management for images and media
-- GitHub Pages deployment
+### Content Management
 
-## Future Multi-Conference Architecture
-
-This repository is being designed to support multiple conference years and venues. See `CONFERENCE_ARCHITECTURE.md` for detailed plans on scaling to support:
-- Multiple conference years (e.g., `/fss_2025`, `/icra_2026`)
-- Shared components and layouts
-- Conference-specific content and theming
-- Central hub for all UR-RAD events
-
-## Deployment
-
-The site is automatically deployed to GitHub Pages when changes are pushed to the main branch. The deployment process:
-
-1. GitHub Actions builds the site using `npm run build`
-2. Generated files in `./dist/` are deployed to the `gh-pages` branch
-3. GitHub Pages serves the site from `gh-pages` branch
-
-## Content Management
-
-### Adding New Pages
-Create new `.astro` files in `src/pages/` directory. Pages automatically become routes based on file structure.
-
-### Updating Site Information
-- **Conference details**: Update `src/site.config.ts`
-- **Navigation**: Modify `menuLinks` in `src/site.config.ts`
-- **Speakers**: Add images to `src/assets/images/speakers/` and update component
-- **Organizers**: Add images to `src/assets/images/organizers/` and update component
+- **Pages**: Add `.astro` or `.mdx` files to `src/pages/`
+- **Content Collections**: Manage content in `src/content/`
+  - `events/` - Community events and symposiums
+  - `hardware/` - Robotics hardware projects
+  - `partners/` - Partner organizations
+  - `people/` - Team and community members
+  - `software/` - Software projects and tools
+  - `studies/` - Research studies and papers
+- **Components**: Create reusable components in `src/components/`
 
 ### Styling
-- **Global styles**: `src/styles/global.css`
-- **Component styles**: Use Tailwind classes in `.astro` files
-- **Theme colors**: Defined in CSS variables in global styles
 
-## Contributing
+- **Global Styles**: `src/styles/global.css`
+- **Tailwind Config**: Uses Tailwind CSS v4 with `@tailwindcss/vite`
+- **Theme**: Automatic dark/light mode support
+- **Components**: Use Tailwind utility classes
+
+## 🌟 Key Features
+
+- **🎨 Modern Design**: Clean, accessible interface with dark/light mode
+- **📱 Responsive**: Mobile-first design approach
+- **⚡ Performance**: Optimized builds with Astro's partial hydration
+- **🔍 Search**: Built-in search with Pagefind
+- **♿ Accessibility**: WCAG compliant with semantic HTML
+- **🔧 Developer Experience**: TypeScript, hot reload, and modern tooling
+- **📝 MDX Support**: Rich content authoring with components
+- **🎯 SEO Optimized**: Meta tags, sitemap, RSS feed, and Open Graph support
+
+## 📄 Content Sections
+
+The website includes the following main sections:
+
+- **Home**: Introduction to Semio Community and mission
+- **Projects**: Community-driven robotics projects
+- **Services**: Resources and support offered
+- **Events**: Workshops, symposiums, and community gatherings
+- **Partners**: Collaborating organizations and institutions
+- **About**: Organization details and team
+- **Get Involved**: Ways to contribute and participate
+
+## 🚢 Deployment
+
+The site is automatically deployed to GitHub Pages when changes are pushed to the `main` branch:
+
+1. Push commits to `main` branch
+2. GitHub Actions workflow builds the site
+3. Built files are deployed to GitHub Pages
+4. Site is available at [https://semio.community](https://semio.community)
+
+## 🤝 Contributing
+
+We welcome contributions from the community! Please:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Previous Conferences
+### Development Guidelines
 
-- **UR-RAD 2024**: [View archived site](https://sites.google.com/view/aaai-ur-rad-24-symposium)
-- **UR-RAD 2023**: [View archived site](https://sites.google.com/view/aaai-ur-rad-23-symposium)
+- Follow the existing code style (enforced by Biome)
+- Write descriptive commit messages
+- Update documentation as needed
+- Test your changes locally before submitting
+- Ensure the build passes (`npm run build`)
 
-## Contact
+## 📬 Contact
 
-For questions about the website or technical issues:
-- **Email**: [urrad.symposium@gmail.com](mailto:urrad.symposium@gmail.com)
-- **Issues**: [GitHub Issues](https://github.com/ur-rad/ur-rad.github.io/issues)
+- **Website**: [semio-community.github.io](https://semio.community)
+- **GitHub**: [@semio-community](https://github.com/semio-community)
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🙏 Acknowledgments
+
+- Built with [Astro](https://astro.build/)
+- Icons from [Solar Icons](https://www.figma.com/community/file/1166831539721848736)
+- Search powered by [Pagefind](https://pagefind.app/)
+- Inspired by best practices in open-source robotics communities
+
 ---
 
-**Note**: This site is based on the [Astro Citrus](https://github.com/artemkutsan/astro-citrus) template by [Artem Kutsan](https://github.com/artemkutsan). Thank you for the excellent foundation!
+*Semio Community - Advancing Reproducible Robot Science*

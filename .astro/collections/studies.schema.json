@@ -184,8 +184,7 @@
         "year",
         "keywords",
         "researchArea",
-        "links",
-        "publishDate"
+        "links"
       ],
       "additionalProperties": false
     }

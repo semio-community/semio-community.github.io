@@ -184,13 +184,30 @@ if (data.citations && data.citations > 0) {
 }
 if (data.publishDate) {
   const pubDate = new Date(data.publishDate);
+  const now = new Date();
+
+  if (pubDate > now) {
+    // Study is not yet published
+    publicationItems.push({
+      label: "Status",
+      value: "Ongoing",
+    });
+  } else {
+    // Study is published
+    publicationItems.push({
+      label: "Published",
+      value: pubDate.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    });
+  }
+} else {
+  // No publish date means ongoing
   publicationItems.push({
-    label: "Published",
-    value: pubDate.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
+    label: "Status",
+    value: "Ongoing",
   });
 }
 
@@ -251,7 +268,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
           <h3
             class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider"
           >
-            ABSTRACT
+            SUMMARY
           </h3>
           <p class="text-accent-base">{data.abstract}</p>
         </div>
@@ -377,7 +394,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
           <div class="publication-details">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                PUBLICATION DETAILS
+                DETAILS
               </h3>
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                 {publicationItems.map((item) => (

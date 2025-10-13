@@ -5,6 +5,21 @@ function removeDupsAndLowerCase(array: string[]) {
   return [...new Set(array.map((str) => str.toLowerCase()))];
 }
 
+// Helper function to parse dates consistently without timezone shifts
+function parseDate(val: string | Date): Date {
+  if (typeof val === "string") {
+    // Parse YYYY-MM-DD format as local date to avoid timezone shifts
+    const parts = val.split("-").map(Number);
+    if (parts.length === 3 && parts.every((p) => !isNaN(p))) {
+      // We've verified length is 3, so these are definitely defined
+      return new Date(parts[0]!, parts[1]! - 1, parts[2]!);
+    }
+    // Fallback to standard parsing for other formats
+    return new Date(val);
+  }
+  return new Date(val);
+}
+
 // Enhanced People Collection
 const people = defineCollection({
   loader: glob({ base: "./src/content/people", pattern: "**/*.{md,mdx}" }),
@@ -236,7 +251,7 @@ const hardware = defineCollection({
       publishDate: z
         .string()
         .or(z.date())
-        .transform((val) => new Date(val))
+        .transform(parseDate)
         .default(() => new Date()),
     }),
 });
@@ -308,14 +323,11 @@ const software = defineCollection({
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
-      lastUpdate: z
-        .string()
-        .or(z.date())
-        .transform((val) => new Date(val)),
+      lastUpdate: z.string().or(z.date()).transform(parseDate),
       publishDate: z
         .string()
         .or(z.date())
-        .transform((val) => new Date(val))
+        .transform(parseDate)
         .default(() => new Date()),
     }),
 });
@@ -379,10 +391,7 @@ const studies = defineCollection({
       citations: z.number().default(0),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
-      publishDate: z
-        .string()
-        .or(z.date())
-        .transform((val) => new Date(val)),
+      publishDate: z.string().or(z.date()).transform(parseDate).optional(),
     }),
 });
 
@@ -403,18 +412,12 @@ const events = defineCollection({
         "competition",
       ]),
       format: z.enum(["in-person", "virtual", "hybrid"]),
-      startDate: z
-        .string()
-        .or(z.date())
-        .transform((val) => new Date(val)),
-      endDate: z
-        .string()
-        .or(z.date())
-        .transform((val) => new Date(val)),
+      startDate: z.string().or(z.date()).transform(parseDate),
+      endDate: z.string().or(z.date()).transform(parseDate),
       registrationDeadline: z
         .string()
         .or(z.date())
-        .transform((val) => new Date(val))
+        .transform(parseDate)
         .optional(),
       location: z.object({
         venue: z.string().optional(),
