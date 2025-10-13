@@ -22,16 +22,8 @@ import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
-import {
-  getStatusLabel,
-  getStatusColor,
-  getCategoryLabel,
-} from "@/config/statusConfig";
-import {
-  transformLinksToButtons,
-  createContactButtons,
-  combineButtons,
-} from "@/config/linkConfig";
+import { getStatusLabel, getStatusColor } from "@/config/statusConfig";
+import { transformLinksToButtons } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const software = await getCollection("software", ({ data }) => {

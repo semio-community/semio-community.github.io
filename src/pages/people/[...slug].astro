@@ -14,11 +14,7 @@ import StudyCard from "@/components/cards/StudyCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 import EventCard from "@/components/cards/EventCard.astro";
-import {
-  getPerson,
-  getPeopleByExpertise,
-  getPeopleByOrganization,
-} from "@/data/people";
+import { getPeopleByExpertise, getPeopleByOrganization } from "@/data/people";
 import { getAllStudies } from "@/data/studies";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
@@ -27,7 +23,6 @@ import OrganizationChip from "@/components/OrganizationChip.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
 import InfoCard from "@/components/detail/InfoCard.astro";
 import { Fragment } from "react";
-import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {

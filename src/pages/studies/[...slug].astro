@@ -11,17 +11,15 @@ import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import InfoCard from "@/components/detail/InfoCard.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
-import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllStudies } from "@/data/studies";
 import { getPerson, getFormattedAuthors } from "@/data/people";
-import { getRelatedHardware } from "@/data/hardware";
-import { getRelatedSoftware } from "@/data/software";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
-import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
 import { transformLinksToButtons } from "@/config/linkConfig";
+import HardwareCard from "@/components/cards/HardwareCard.astro";
+import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 
 export async function getStaticPaths() {
   const studies = await getCollection("studies", ({ data }) => {
@@ -227,27 +225,6 @@ const relatedSoftwareItems = data.relatedSoftware
 const validRelatedSoftware = relatedSoftwareItems.filter(
   (item) => item !== undefined,
 );
-
-// Prepare related resources metadata
-const relatedResourcesItems: any[] = [];
-validRelatedHardware.forEach((hw) => {
-  if (hw) {
-    relatedResourcesItems.push({
-      label: "Hardware",
-      value: hw.data.name,
-      link: `/hardware/${hw.id}`,
-    });
-  }
-});
-validRelatedSoftware.forEach((sw) => {
-  if (sw) {
-    relatedResourcesItems.push({
-      label: "Software",
-      value: sw.data.name,
-      link: `/software/${sw.id}`,
-    });
-  }
-});
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -265,28 +242,6 @@ validRelatedSoftware.forEach((sw) => {
       />
     </Fragment>
 
-    {/* Action Buttons */}
-    {/* External Links */}
-    <Fragment slot="links">
-      {
-        linkButtons.length > 0 && (
-          <InfoCard title="LINKS & RESOURCES">
-            <div class="flex flex-wrap gap-3">
-              {linkButtons.map((button) => (
-                <LinkButton
-                  href={button.href}
-                  text={button.text}
-                  icon={button.icon}
-                  external={button.external}
-                  variant={button.variant || "default"}
-                />
-              ))}
-            </div>
-          </InfoCard>
-        )
-      }
-    </Fragment>
-
     {/* Description/Abstract */}
     <Fragment slot="description">
       <div class="abstract-section">
@@ -301,6 +256,27 @@ validRelatedSoftware.forEach((sw) => {
           <p class="text-accent-base">{data.abstract}</p>
         </div>
       </div>
+
+      {/* External Links */}
+      {
+        linkButtons.length > 0 && (
+          <div class="mt-6">
+            <InfoCard title="LINKS & RESOURCES">
+              <div class="flex flex-wrap gap-3">
+                {linkButtons.map((button) => (
+                  <LinkButton
+                    href={button.href}
+                    text={button.text}
+                    icon={button.icon}
+                    external={button.external}
+                    variant={button.variant || "default"}
+                  />
+                ))}
+              </div>
+            </InfoCard>
+          </div>
+        )
+      }
     </Fragment>
 
     {/* Contributors Section */}
@@ -392,11 +368,13 @@ validRelatedSoftware.forEach((sw) => {
           </div>
         )
       }
+    </Fragment>
 
-      {/* Publication Details */}
+    {/* Publication Details */}
+    <Fragment slot="metadata">
       {
         publicationItems.length > 0 && (
-          <div class="publication-details mb-8">
+          <div class="publication-details">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 PUBLICATION DETAILS
@@ -415,11 +393,13 @@ validRelatedSoftware.forEach((sw) => {
           </div>
         )
       }
+    </Fragment>
 
-      {/* Keywords and Research Areas */}
+    {/* Keywords and Research Areas */}
+    <Fragment slot="tags">
       {
         (data.keywords?.length > 0 || data.researchArea?.length > 0) && (
-          <div class="topics-section mb-8">
+          <div class="topics-section">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 RESEARCH TOPICS
@@ -458,52 +438,42 @@ validRelatedSoftware.forEach((sw) => {
           </div>
         )
       }
-
-      {/* Related Resources */}
-      {
-        relatedResourcesItems.length > 0 && (
-          <div class="related-resources mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                RELATED RESOURCES
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {relatedResourcesItems.map((item) => (
-                  <a
-                    href={item.link}
-                    class="flex items-center justify-between p-3 bg-accent-one/5 rounded-lg hover:bg-accent-one/10 transition-colors group"
-                  >
-                    <div class="flex items-center gap-3">
-                      <span class="text-xs text-color-600 dark:text-color-400 font-semibold">
-                        {item.label}
-                      </span>
-                      <span class="text-sm text-accent-base group-hover:text-accent-two transition-colors">
-                        {item.value}
-                      </span>
-                    </div>
-                    <Icon
-                      name="solar:arrow-right-line-duotone"
-                      class="w-4 h-4 text-accent-one opacity-50 group-hover:opacity-100 transition-opacity"
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
-    </Fragment>
-
-    {/* Tags Section */}
-    <Fragment slot="tags">
-      {/* Move tags here if they exist */}
     </Fragment>
 
     {/* Main content from MDX file */}
     <!-- <Content /> -->
 
-    {/* Related Studies */}
+    {/* Related Items */}
     <Fragment slot="related">
+      {/* Related Hardware */}
+      {
+        validRelatedHardware.length > 0 && (
+          <div class="mb-12">
+            <h3 class="text-lg font-semibold mb-4">Related Hardware</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {validRelatedHardware.map((hw) => (
+                <HardwareCard hardwareId={hw.id} />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {/* Related Software */}
+      {
+        validRelatedSoftware.length > 0 && (
+          <div class="mb-12">
+            <h3 class="text-lg font-semibold mb-4">Related Software</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {validRelatedSoftware.map((sw) => (
+                <SoftwareCard softwareId={sw.id} />
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {/* Related Studies */}
       {
         relatedStudies && relatedStudies.length > 0 && (
           <RelatedItemsGrid

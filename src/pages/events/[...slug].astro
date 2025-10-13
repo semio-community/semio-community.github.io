@@ -20,7 +20,7 @@ import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
-import { createLinkButton, transformLinksToButtons } from "@/config/linkConfig";
+import { createLinkButton } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const events = await getCollection("events", ({ data }) => {

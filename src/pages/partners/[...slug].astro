@@ -25,12 +25,7 @@ import { getAllEvents } from "@/data/events";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
-import {
-  createLinkButton,
-  transformLinksToButtons,
-  createContactButtons,
-  combineButtons,
-} from "@/config/linkConfig";
+import { createLinkButton } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const partners = await getCollection("partners", ({ data }) => {

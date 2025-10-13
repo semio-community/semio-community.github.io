@@ -29,11 +29,7 @@ import {
   getCategoryLabel,
   CATEGORY_LABELS,
 } from "@/config/statusConfig";
-import {
-  transformLinksToButtons,
-  createContactButtons,
-  combineButtons,
-} from "@/config/linkConfig";
+import { transformLinksToButtons } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const hardware = await getCollection("hardware", ({ data }) => {
