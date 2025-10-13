@@ -8,8 +8,9 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import InfoCard from "@/components/detail/InfoCard.astro";
+import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import FeaturesList from "@/components/detail/FeaturesList.astro";
@@ -26,6 +27,11 @@ import {
   getStatusColor,
   getCategoryLabel,
 } from "@/config/statusConfig";
+import {
+  transformLinksToButtons,
+  createContactButtons,
+  combineButtons,
+} from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const software = await getCollection("software", ({ data }) => {
@@ -72,57 +78,8 @@ const badges = [
   variant: "solid" | "outline";
 }>;
 
-// Prepare action buttons
-const actionButtons = [
-  data.links?.website && {
-    href: data.links.website,
-    text: "Visit Website",
-    variant: "default" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-  data.links?.github && {
-    href: data.links.github,
-    text: "GitHub",
-    variant: "primary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-  data.links?.demo && {
-    href: data.links.demo,
-    text: "View Demo",
-    variant: "secondary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-  data.links?.pypi && {
-    href: data.links.pypi,
-    text: "PyPI",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-  data.links?.npm && {
-    href: data.links.npm,
-    text: "npm",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-  data.links?.documentation && {
-    href: data.links.documentation,
-    text: "Documentation",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  },
-].filter(Boolean) as Array<{
-  href: string;
-  text: string;
-  variant: "default" | "primary" | "secondary" | "tertiary";
-  target?: string;
-  rel?: string;
-}>;
+// Prepare link buttons using centralized configuration
+const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
 // Get organization details
 const leadOrg = data.leadOrganization
@@ -219,10 +176,23 @@ if (data.requirements) {
       />
     </Fragment>
 
-    <Fragment slot="actions">
+    {/* External Links */}
+    <Fragment slot="links">
       {
-        actionButtons.length > 0 && (
-          <ActionButtonGroup client:load buttons={actionButtons} />
+        linkButtons.length > 0 && (
+          <InfoCard title="LINKS & RESOURCES">
+            <div class="flex flex-wrap gap-3">
+              {linkButtons.map((button) => (
+                <LinkButton
+                  href={button.href}
+                  text={button.text}
+                  icon={button.icon}
+                  external={button.external}
+                  variant={button.variant || "default"}
+                />
+              ))}
+            </div>
+          </InfoCard>
         )
       }
     </Fragment>
@@ -388,7 +358,7 @@ if (data.requirements) {
     </Fragment>
 
     {/* Main content from MDX file */}
-    <Content />
+    <!-- <Content /> -->
 
     {/* Related Software */}
     <Fragment slot="related">

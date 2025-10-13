@@ -8,9 +8,11 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import InfoCard from "@/components/detail/InfoCard.astro";
+import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
+import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import { getAllEvents } from "@/data/events";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
@@ -18,6 +20,7 @@ import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
+import { createLinkButton, transformLinksToButtons } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const events = await getCollection("events", ({ data }) => {
@@ -193,56 +196,46 @@ if (data.featured) {
   });
 }
 
-// Prepare action buttons
-const actionButtons = [];
+// Prepare link buttons using centralized configuration
+const linkButtons = [];
 if (
   data.links?.registration &&
   eventStatus !== "past" &&
   (!registrationDeadline || currentDate < registrationDeadline)
 ) {
-  actionButtons.push({
-    href: data.links.registration,
-    text: "Register Now",
-    variant: "primary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("registration", data.links.registration, "Register Now", {
+      variant: "primary",
+    }),
+  );
 }
 if (data.links?.website) {
-  actionButtons.push({
-    href: data.links.website,
-    text: "Event Website",
-    variant: "default" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("website", data.links.website, "Event Website"),
+  );
 }
 if (data.links?.program) {
-  actionButtons.push({
-    href: data.links.program,
-    text: "Program",
-    variant: "secondary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("documentation", data.links.program, "Program", {
+      variant: "secondary",
+      icon: "solar:document-text-line-duotone",
+    }),
+  );
 }
 if (data.links?.proceedings && eventStatus === "past") {
-  actionButtons.push({
-    href: data.links.proceedings,
-    text: "Proceedings",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("documentation", data.links.proceedings, "Proceedings", {
+      variant: "tertiary",
+      icon: "solar:book-line-duotone",
+    }),
+  );
 }
 if (data.links?.recordings && eventStatus === "past") {
-  actionButtons.push({
-    href: data.links.recordings,
-    text: "Recordings",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("video", data.links.recordings, "Recordings", {
+      variant: "tertiary",
+    }),
+  );
 }
 
 // Format dates for display
@@ -396,10 +389,23 @@ const sponsorsByLevel = {
       />
     </Fragment>
 
-    <Fragment slot="actions">
+    {/* External Links */}
+    <Fragment slot="links">
       {
-        actionButtons.length > 0 && (
-          <ActionButtonGroup client:load buttons={actionButtons} />
+        linkButtons.length > 0 && (
+          <InfoCard title="LINKS & RESOURCES">
+            <div class="flex flex-wrap gap-3">
+              {linkButtons.map((button) => (
+                <LinkButton
+                  href={button.href}
+                  text={button.text}
+                  icon={button.icon}
+                  external={button.external}
+                  variant={button.variant || "default"}
+                />
+              ))}
+            </div>
+          </InfoCard>
         )
       }
     </Fragment>
@@ -411,67 +417,19 @@ const sponsorsByLevel = {
 
     {/* Event Metadata (Details & Location) */}
     <Fragment slot="metadata">
-      {/* Event Details Card */}
-      {
-        eventDetailsItems.length > 0 && (
-          <div class="event-details-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                EVENT DETAILS
-              </h3>
-              <div class="space-y-3">
-                {eventDetailsItems.map((item) => (
-                  <div class="flex items-start gap-3">
-                    <Icon
-                      name={item.icon}
-                      class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
-                    />
-                    <div class="flex-1">
-                      <div class="text-xs font-medium text-color-600 dark:text-color-400 mb-0.5">
-                        {item.label}
-                      </div>
-                      <div class="text-sm text-color-800 dark:text-color-200">
-                        {item.value}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
+      {/* Event Details */}
+      <SpecificationsList
+        title="EVENT DETAILS"
+        items={eventDetailsItems}
+        defaultItemIcon="solar:calendar-line-duotone"
+      />
 
-      {/* Location Card */}
-      {
-        locationItems.length > 0 && (
-          <div class="location-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                LOCATION
-              </h3>
-              <div class="space-y-3">
-                {locationItems.map((item) => (
-                  <div class="flex items-start gap-3">
-                    <Icon
-                      name={item.icon || "solar:map-point-line-duotone"}
-                      class="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
-                    />
-                    <div class="flex-1">
-                      <div class="text-xs font-medium text-color-600 dark:text-color-400 mb-0.5">
-                        {item.label}
-                      </div>
-                      <div class="text-sm text-color-800 dark:text-color-200">
-                        {item.value}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
+      {/* Location */}
+      <SpecificationsList
+        title="LOCATION"
+        items={locationItems}
+        defaultItemIcon="solar:map-point-line-duotone"
+      />
     </Fragment>
 
     {/* Contributors (Organizers, Speakers, Sponsors) */}
@@ -650,7 +608,7 @@ const sponsorsByLevel = {
     </Fragment>
 
     {/* Main content from MDX file */}
-    <Content />
+    <!-- <Content /> -->
 
     {/* Related Events */}
     <Fragment slot="related">

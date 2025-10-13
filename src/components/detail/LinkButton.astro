@@ -138,11 +138,14 @@ function getLinkIcon(linkText: string, linkHref: string): string {
 }
 
 const variantClasses = {
-  default: "bg-accent-two/10 hover:bg-accent-two/20 text-accent-base",
-  primary: "bg-accent-base text-white hover:bg-accent-base/90",
-  secondary: "bg-accent-one/10 hover:bg-accent-one/20 text-accent-base",
+  default:
+    "bg-accent-base/10 outline outline-accent-base text-accent-base hover:bg-accent-base/90 hover:text-surface",
+  primary:
+    "bg-accent-two/10 outline outline-accent-two text-accent-base hover:bg-accent-two hover:text-surface",
+  secondary:
+    "bg-accent-one/10 outline outline-accent-one text-accent-base hover:bg-accent-one hover:text-surface",
   tertiary:
-    "bg-surface-lighter hover:bg-surface text-color-700 dark:text-color-300",
+    "bg-accent-three/10 outline outline-accent-three text-accent-base hover:bg-accent-three hover:text-surface",
 };
 
 const buttonClass = `

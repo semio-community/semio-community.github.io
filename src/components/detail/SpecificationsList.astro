@@ -6,12 +6,60 @@ export interface SpecificationItem {
   label: string;
   value: string | number | string[];
   icon?: string;
+  link?: string; // Optional URL to make the value clickable
+  external?: boolean; // If true, opens link in new tab with rel="noopener noreferrer"
 }
 
+/**
+ * SpecificationsList Component Props
+ *
+ * @example Basic specifications (hardware/software)
+ * ```
+ * <SpecificationsList
+ *   title="SPECIFICATIONS"
+ *   items={[
+ *     { label: "Weight", value: "2.5 kg" },
+ *     { label: "Battery", value: "8 hours" }
+ *   ]}
+ * />
+ * ```
+ *
+ * @example With links (event locations)
+ * ```
+ * <SpecificationsList
+ *   title="LOCATION"
+ *   items={[
+ *     { label: "Venue", value: "Convention Center" },
+ *     {
+ *       label: "Map",
+ *       value: "View on Google Maps",
+ *       link: "https://maps.google.com/?q=...",
+ *       external: true,
+ *       icon: "solar:map-line-duotone"
+ *     }
+ *   ]}
+ * />
+ * ```
+ *
+ * @example System requirements with documentation links
+ * ```
+ * <SpecificationsList
+ *   title="SYSTEM REQUIREMENTS"
+ *   items={[
+ *     { label: "Runtime", value: "Python 3.8+" },
+ *     {
+ *       label: "GPU",
+ *       value: "CUDA 11.0+ (see requirements)",
+ *       link: "/docs/gpu-requirements",
+ *       icon: "solar:cpu-bolt-line-duotone"
+ *     }
+ *   ]}
+ * />
+ * ```
+ */
 export interface Props {
   title: string;
   items: SpecificationItem[] | Record<string, any>;
-  icon?: string;
   defaultItemIcon?: string;
   className?: string;
 }
@@ -19,7 +67,6 @@ export interface Props {
 const {
   title,
   items,
-  icon,
   defaultItemIcon = "solar:settings-minimalistic-line-duotone",
   className = "",
 } = Astro.props;
@@ -56,7 +103,26 @@ function formatLabel(label: string): string {
                 <div class="text-xs font-medium text-accent-two mb-0.5">
                   {formatLabel(item.label)}
                 </div>
-                <div class="text-sm text-accent-base/80">{item.value}</div>
+                <div class="text-sm text-accent-base/80">
+                  {item.link ? (
+                    <a
+                      href={item.link}
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      class="text-accent-one hover:text-accent-two transition-colors inline-flex items-center gap-1"
+                    >
+                      {item.value}
+                      {item.external && (
+                        <Icon
+                          name="solar:arrow-right-up-line-duotone"
+                          class="w-3 h-3"
+                        />
+                      )}
+                    </a>
+                  ) : (
+                    item.value
+                  )}
+                </div>
               </div>
             </div>
           ))}

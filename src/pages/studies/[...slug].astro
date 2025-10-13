@@ -8,9 +8,9 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
-import { ActionButtonGroup } from "@/components/detail/ActionButtonGroup";
-
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
+import InfoCard from "@/components/detail/InfoCard.astro";
+import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllStudies } from "@/data/studies";
 import { getPerson, getFormattedAuthors } from "@/data/people";
@@ -21,6 +21,7 @@ import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
+import { transformLinksToButtons } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const studies = await getCollection("studies", ({ data }) => {
@@ -145,71 +146,8 @@ if (data.featured) {
   });
 }
 
-// Prepare action buttons
-const actionButtons = [];
-if (data.links?.pdf) {
-  actionButtons.push({
-    href: data.links.pdf,
-    text: "View PDF",
-    variant: "primary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.doi) {
-  actionButtons.push({
-    href: `https://doi.org/${data.links.doi}`,
-    text: "DOI",
-    variant: "default" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.arxiv) {
-  actionButtons.push({
-    href: data.links.arxiv,
-    text: "arXiv",
-    variant: "secondary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.code) {
-  actionButtons.push({
-    href: data.links.code,
-    text: "Code",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.data) {
-  actionButtons.push({
-    href: data.links.data,
-    text: "Dataset",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.video) {
-  actionButtons.push({
-    href: data.links.video,
-    text: "Video",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
-if (data.links?.website) {
-  actionButtons.push({
-    href: data.links.website,
-    text: "Project Website",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
-}
+// Prepare link buttons using centralized configuration
+const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
 // Get author details with PersonPopover
 const authorsWithData = await Promise.all(
@@ -328,10 +266,23 @@ validRelatedSoftware.forEach((sw) => {
     </Fragment>
 
     {/* Action Buttons */}
-    <Fragment slot="actions">
+    {/* External Links */}
+    <Fragment slot="links">
       {
-        actionButtons.length > 0 && (
-          <ActionButtonGroup client:load buttons={actionButtons} />
+        linkButtons.length > 0 && (
+          <InfoCard title="LINKS & RESOURCES">
+            <div class="flex flex-wrap gap-3">
+              {linkButtons.map((button) => (
+                <LinkButton
+                  href={button.href}
+                  text={button.text}
+                  icon={button.icon}
+                  external={button.external}
+                  variant={button.variant || "default"}
+                />
+              ))}
+            </div>
+          </InfoCard>
         )
       }
     </Fragment>
@@ -549,7 +500,7 @@ validRelatedSoftware.forEach((sw) => {
     </Fragment>
 
     {/* Main content from MDX file */}
-    <Content />
+    <!-- <Content /> -->
 
     {/* Related Studies */}
     <Fragment slot="related">

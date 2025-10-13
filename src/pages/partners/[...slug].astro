@@ -8,6 +8,8 @@ import {
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
+import InfoCard from "@/components/detail/InfoCard.astro";
+import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import StudyCard from "@/components/cards/StudyCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
@@ -23,6 +25,12 @@ import { getAllEvents } from "@/data/events";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
+import {
+  createLinkButton,
+  transformLinksToButtons,
+  createContactButtons,
+  combineButtons,
+} from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const partners = await getCollection("partners", ({ data }) => {
@@ -173,50 +181,38 @@ badges.push({
   variant: "outline" as const,
 });
 
-// Prepare action buttons
-const actionButtons = [];
+// Prepare link buttons using centralized configuration
+const linkButtons = [];
 if (data.website) {
-  actionButtons.push({
-    href: data.website,
-    text: "Visit Website",
-    variant: "default" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(createLinkButton("website", data.website, "Visit Website"));
 }
 if (data.contact?.email) {
-  actionButtons.push({
-    href: `mailto:${data.contact.email}`,
-    text: "Contact",
-    variant: "primary" as const,
-  });
+  linkButtons.push(
+    createLinkButton("email", `mailto:${data.contact.email}`, "Contact", {
+      variant: "primary",
+    }),
+  );
 }
 if (data.socialMedia?.github) {
-  actionButtons.push({
-    href: `https://github.com/${data.socialMedia.github}`,
-    text: "GitHub",
-    variant: "secondary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton("github", `https://github.com/${data.socialMedia.github}`),
+  );
 }
 if (data.socialMedia?.linkedin) {
-  actionButtons.push({
-    href: `https://linkedin.com/company/${data.socialMedia.linkedin}`,
-    text: "LinkedIn",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton(
+      "linkedin",
+      `https://linkedin.com/company/${data.socialMedia.linkedin}`,
+    ),
+  );
 }
 if (data.socialMedia?.twitter) {
-  actionButtons.push({
-    href: `https://twitter.com/${data.socialMedia.twitter}`,
-    text: "Twitter",
-    variant: "tertiary" as const,
-    target: "_blank",
-    rel: "noopener noreferrer",
-  });
+  linkButtons.push(
+    createLinkButton(
+      "twitter",
+      `https://twitter.com/${data.socialMedia.twitter}`,
+    ),
+  );
 }
 
 // Prepare location metadata
@@ -376,47 +372,41 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     {/* Links & Contact */}
     <Fragment slot="links">
       {
-        (actionButtons.length > 0 || contactItems.length > 0) && (
-          <div class="links-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                LINKS & CONTACT
-              </h3>
-              <div class="flex flex-wrap gap-3">
-                {actionButtons.map((button) => (
-                  <a
-                    href={button.href}
-                    target={button.target}
-                    rel={button.rel}
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-accent-two/10 rounded-lg text-sm text-accent-base hover:bg-accent-two/20 transition-colors"
-                  >
-                    {button.text}
-                  </a>
+        linkButtons.length > 0 && (
+          <InfoCard title="LINKS & CONTACT">
+            <div class="flex flex-wrap gap-3">
+              {linkButtons.map((button) => (
+                <LinkButton
+                  href={button.href}
+                  text={button.text}
+                  icon={button.icon}
+                  external={button.external}
+                  variant={button.variant || "default"}
+                />
+              ))}
+            </div>
+            {contactItems.length > 0 && (
+              <div class="mt-4 pt-4 border-t border-accent-one/10 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                {contactItems.map((item) => (
+                  <div class="flex items-center gap-2">
+                    <span class="text-color-600 dark:text-color-400">
+                      {item.label}:
+                    </span>
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        class="text-accent-one hover:text-accent-two transition-colors"
+                      >
+                        {item.value}
+                      </a>
+                    ) : (
+                      <span class="text-accent-base">{item.value}</span>
+                    )}
+                  </div>
                 ))}
               </div>
-              {contactItems.length > 0 && (
-                <div class="mt-4 pt-4 border-t border-accent-one/10 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  {contactItems.map((item) => (
-                    <div class="flex items-center gap-2">
-                      <span class="text-color-600 dark:text-color-400">
-                        {item.label}:
-                      </span>
-                      {item.link ? (
-                        <a
-                          href={item.link}
-                          class="text-accent-one hover:text-accent-two transition-colors"
-                        >
-                          {item.value}
-                        </a>
-                      ) : (
-                        <span class="text-accent-base">{item.value}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+            )}
+          </InfoCard>
         )
       }
     </Fragment>
@@ -425,21 +415,16 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     <Fragment slot="contributors">
       {
         validKeyContacts.length > 0 && (
-          <div class="key-contacts-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
-                KEY CONTACTS
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {validKeyContacts.map((contact) => (
-                  <PersonPopoverWrapper
-                    personId={contact.personId}
-                    role={contact.role}
-                  />
-                ))}
-              </div>
+          <InfoCard title="KEY CONTACTS">
+            <div class="flex flex-wrap gap-2">
+              {validKeyContacts.map((contact) => (
+                <PersonPopoverWrapper
+                  personId={contact.personId}
+                  role={contact.role}
+                />
+              ))}
             </div>
-          </div>
+          </InfoCard>
         )
       }
     </Fragment>
@@ -472,7 +457,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     </Fragment>
 
     {/* Main content from MDX file */}
-    <Content />
+    <!-- <Content /> -->
 
     {/* Related Content */}
     <Fragment slot="related">
