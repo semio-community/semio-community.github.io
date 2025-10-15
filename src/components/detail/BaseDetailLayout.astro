@@ -49,8 +49,17 @@ const hasLegacyContributors = Astro.slots.has("contributors");
     )
   }
 
+  <!-- External Links Section -->
+    {
+      hasLinks && (
+        <section class="links-section mb-8">
+          <slot name="links" />
+        </section>
+      )
+    }
+
   <!-- Main Content Container -->
-  <div class="detail-content px-4 md:px-8 lg:px-12">
+  
     <!-- Description Section (bio, abstract, description) -->
     {
       hasDescription && (
@@ -92,15 +101,6 @@ const hasLegacyContributors = Astro.slots.has("contributors");
       hasFeatures && (
         <section class="features-section mb-8">
           <slot name="features" />
-        </section>
-      )
-    }
-
-    <!-- External Links Section -->
-    {
-      hasLinks && (
-        <section class="links-section mb-8">
-          <slot name="links" />
         </section>
       )
     }
@@ -151,7 +151,6 @@ const hasLegacyContributors = Astro.slots.has("contributors");
         </footer>
       )
     }
-  </div>
 </article>
 
 <style>

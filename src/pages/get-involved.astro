@@ -37,9 +37,13 @@ const meta = {
         class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
       >
         Be part of a global community advancing human-centered robotics and
-        artificial intelligence. Your support helps us foster reproducible
-        science and develop reusable systems for HRI.
+        AI. Your support helps us foster reproducible
+        science and develop reusable systems for human-robot interaction.
       </p>
+
+      
+
+      
 
       <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
@@ -53,6 +57,12 @@ const meta = {
           text="Volunteer"
           size="large"
           variant="secondary"
+        />
+        <CallToActionButton
+          href="#mailing-list"
+          text="Join the Mailing List"
+          size="large"
+          variant="tertiary"
         />
       </div>
     </Hero>
@@ -112,7 +122,7 @@ const meta = {
 
         <div class="text-center">
           <CallToActionButton
-            href="https://donate.stripe.com/semio-community"
+            href="https://donate.stripe.com/cNiaEX4ZE07R8Wj8Yva7C00"
             text="Donate Now"
             size="large"
           />
@@ -164,7 +174,7 @@ const meta = {
   <Section
     id="volunteer"
     title="Join the Community"
-    subtitle="Share your skills and passion to advance human-centered robotics"
+    subtitle="Share your skills and passion to advance human-centered robotics and AI"
   >
     <div class="max-w-5xl mx-auto">
       <!-- Volunteer Opportunities section removed per specification. -->
@@ -180,31 +190,32 @@ const meta = {
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
-            />
-            <div>
-              <h4 class="font-semibold mb-1">Skill Development</h4>
-              <p class="text-sm text-color-600 dark:text-color-400">
-                Gain hands-on experience with cutting-edge robotics technology
-              </p>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <Icon
-              name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Professional Network</h4>
               <p class="text-sm text-color-600 dark:text-color-400">
-                Connect with researchers and professionals in HRI
+                Connect with researchers and professionals in robotics and AI
               </p>
             </div>
           </div>
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
+            />
+            <div>
+              <h4 class="font-semibold mb-1">Skill Development</h4>
+              <p class="text-sm text-color-600 dark:text-color-400">
+                Gain hands-on experience with cutting-edge robotics and AI technologies
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-3">
+            <Icon
+              name="solar:check-circle-bold"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Recognition</h4>
@@ -216,7 +227,7 @@ const meta = {
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-0.5"
+              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Flexible Commitment</h4>
@@ -256,7 +267,7 @@ const meta = {
                   class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
                 />
                 <span class="text-sm"
-                  >Monthly newsletter with community updates</span
+                  >Regular newsletter with community updates</span
                 >
               </li>
               <li class="flex items-start gap-2">
@@ -344,7 +355,7 @@ const meta = {
   </Section>
 
   <!-- Membership Section -->
-  <Section
+  <!-- <Section
     id="membership"
     title="Become a Member"
     subtitle="Join as an official member for additional benefits and voting rights"
@@ -354,11 +365,7 @@ const meta = {
         <h3 class="text-xl font-semibold mb-6 text-center gradient-brand-text">
           Membership Benefits
         </h3>
-
-        <!-- Membership Benefits section removed per specification. -->
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <!-- Student Membership -->
           <div class="text-center p-6 bg-special-lighter rounded-lg">
             <h4 class="font-semibold mb-2">Student</h4>
             <div class="text-2xl font-bold gradient-brand-text mb-2">
@@ -375,7 +382,6 @@ const meta = {
             </a>
           </div>
 
-          <!-- Individual Membership -->
           <div
             class="text-center p-6 bg-gradient-to-br from-accent-one/10 to-accent-two/10 rounded-lg border border-accent-one/20"
           >
@@ -389,7 +395,6 @@ const meta = {
             <CallToActionButton href="#" text="Join Board" size="medium" />
           </div>
 
-          <!-- Institutional Membership -->
           <div class="text-center p-6 bg-special-lighter rounded-lg">
             <h4 class="font-semibold mb-2">Institution</h4>
             <div class="text-2xl font-bold gradient-brand-text mb-2">
@@ -412,7 +417,7 @@ const meta = {
         </p>
       </div>
     </div>
-  </Section>
+  </Section> -->
 
   <!-- Contact Section -->
   <Section
@@ -427,15 +432,9 @@ const meta = {
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <CallToActionButton
-          href="mailto:ross@community.semio.ai"
+          href="mailto:ross@semio.ai"
           text="Contact Us"
           size="large"
-        />
-        <CallToActionButton
-          href="/about/"
-          text="Learn About Us"
-          size="large"
-          variant="tertiary"
         />
       </div>
     </div>

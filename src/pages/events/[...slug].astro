@@ -21,6 +21,7 @@ import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
 import { createLinkButton } from "@/config/linkConfig";
+import { getEventPreviewDescriptionText } from "@/utils/events";
 
 export async function getStaticPaths() {
   const events = await getCollection("events", ({ data }) => {
@@ -33,12 +34,7 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"events">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
 
 // Get related events (by type, format, or topics)
@@ -47,7 +43,6 @@ async function getRelatedEvents(
   limit: number = 3,
 ) {
   const allEvents = await getAllEvents();
-  const relatedEvents: CollectionEntry<"events">[] = [];
 
   // Filter out the current event and past events (unless current is also past)
   const currentDate = new Date();
@@ -167,11 +162,6 @@ const formatLabels = {
   virtual: "Virtual",
   hybrid: "Hybrid",
 };
-badges.push({
-  text: formatLabels[data.format] || data.format,
-  color: "yellow" as const,
-  variant: "outline" as const,
-});
 
 // Type badge
 const typeLabels = {
@@ -187,14 +177,6 @@ badges.push({
   color: "blue" as const,
   variant: "outline" as const,
 });
-
-if (data.featured) {
-  badges.push({
-    text: "Featured",
-    color: "accent" as const,
-    variant: "solid" as const,
-  });
-}
 
 // Prepare link buttons using centralized configuration
 const linkButtons = [];
@@ -245,14 +227,6 @@ const formatDate = (date: Date) => {
     month: "long",
     day: "numeric",
     year: "numeric",
-  });
-};
-
-const formatTime = (date: Date) => {
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
   });
 };
 
@@ -370,8 +344,10 @@ const sponsorsByLevel = {
   gold: validSponsors.filter((s) => s.level === "gold"),
   silver: validSponsors.filter((s) => s.level === "silver"),
   bronze: validSponsors.filter((s) => s.level === "bronze"),
-  supporter: validSponsors.filter((s) => s.level === "supporter"),
+  supporter: validSponsors.filter((s) => !s.level || s.level === "supporter"),
 };
+
+const descriptionText = getEventPreviewDescriptionText(data)
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -379,9 +355,9 @@ const sponsorsByLevel = {
     <Fragment slot="hero">
       <DetailHero
         client:load
-        image={data.images?.hero || data.banner}
+        image={data.images?.hero}
         title={data.name}
-        subtitle={`${typeLabels[data.type]} • ${data.location.city}, ${data.location.country}`}
+        subtitle={descriptionText}
         badges={badges}
         featured={data.featured}
         logo={data.images?.logo}
@@ -526,7 +502,7 @@ const sponsorsByLevel = {
                           {sponsors.map((sponsor) => (
                             <OrganizationChip
                               partnerId={sponsor.partnerId}
-                              role={`${level.charAt(0).toUpperCase() + level.slice(1)} Sponsor`}
+                              role={level !== "supporter" ? `${level.charAt(0).toUpperCase() + level.slice(1)} Sponsor` : "Sponsor"}
                             />
                           ))}
                         </div>
@@ -635,8 +611,10 @@ const sponsorsByLevel = {
                   avatar: undefined,
                   logo: undefined,
                   thumbnail: undefined,
-                  banner: event.data.banner,
+                  banner: event.data.images?.hero,
                   links: event.data.links,
+                  startDate: event.data.startDate,
+                  endDate: event.data.endDate,
                   shortDescription: `${formatLabels[event.data.format]} • ${event.data.location.city}`,
                 },
               })) as any

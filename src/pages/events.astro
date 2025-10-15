@@ -16,6 +16,7 @@ import {
   getUniqueEventTopics,
   groupEventsByMonth,
 } from "@/data/events";
+import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Events",
@@ -23,19 +24,20 @@ const meta = {
     "Conferences, workshops, and training events for the human-robot interaction community",
 };
 
+const currentDate = new Date();
+
 // Fetch events from content collections
-const allEvents = await getAllEvents();
 const upcomingEvents = await getUpcomingEvents();
 const pastEvents = await getPastEvents();
 const currentEvents = await getCurrentEvents();
-const featuredEvents = await getFeaturedEvents();
-const eventTypeCounts = await getEventCountByType();
-// Get event types from actual events
-const eventTypes = [...new Set(allEvents.map((e) => e.data.type))];
-
-// Get current year for grouping
-const currentYear = new Date().getFullYear();
-const nextYear = currentYear + 1;
+const featuredOnlyEvents = await getFeaturedEvents();
+const featuredEvents = [
+  ...currentEvents.filter(
+    (currentEvent) =>
+      !featuredOnlyEvents.some((featured) => featured.id === currentEvent.id),
+  ),
+  ...featuredOnlyEvents.filter((featuredEvent)=>featuredEvent.data.startDate > currentDate),
+];
 
 // Group upcoming events by year
 const upcomingEventsByYear: Record<number, typeof upcomingEvents> = {};
@@ -47,197 +49,101 @@ upcomingEvents.forEach((event) => {
   upcomingEventsByYear[year].push(event);
 });
 
-// Get recent past events (last 6 months)
-const sixMonthsAgo = new Date();
-sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-const recentPastEvents = pastEvents.filter(
-  (event) => event.data.endDate >= sixMonthsAgo,
-);
-
-// Event type info for display
-const eventTypeInfo: Record<
-  string,
-  { icon: string; color: string; description: string }
-> = {
-  conference: {
-    icon: "solar:users-group-two-rounded-line-duotone",
-    color: "text-blue-500",
-    description: "Major academic and industry conferences",
-  },
-  workshop: {
-    icon: "solar:presentation-graph-line-duotone",
-    color: "text-green-500",
-    description: "Hands-on workshops and tutorials",
-  },
-  symposium: {
-    icon: "solar:chat-round-dots-line-duotone",
-    color: "text-purple-500",
-    description: "Focused symposia on specific topics",
-  },
-  summit: {
-    icon: "solar:ranking-line-duotone",
-    color: "text-orange-500",
-    description: "High-level summits and leadership meetings",
-  },
-  training: {
-    icon: "solar:graduation-cap-line-duotone",
-    color: "text-red-500",
-    description: "Professional training and certification",
-  },
-  meetup: {
-    icon: "solar:map-point-wave-line-duotone",
-    color: "text-indigo-500",
-    description: "Local community meetups",
-  },
-  webinar: {
-    icon: "solar:monitor-smartphone-line-duotone",
-    color: "text-teal-500",
-    description: "Online webinars and virtual events",
-  },
-  competition: {
-    icon: "solar:cup-star-line-duotone",
-    color: "text-yellow-500",
-    description: "Robotics competitions and challenges",
-  },
-};
-
-const services = [
-  {
-    icon: "solar:calendar-mark-line-duotone",
-    title: "Event Organization",
-    description: "Full-service conference and workshop planning",
-  },
-  {
-    icon: "solar:ticket-line-duotone",
-    title: "Registration Management",
-    description: "Streamlined registration and ticketing services",
-  },
-  {
-    icon: "solar:video-frame-play-horizontal-line-duotone",
-    title: "Hybrid Events",
-    description: "Combined in-person and virtual event hosting",
-  },
-  {
-    icon: "solar:speaker-line-duotone",
-    title: "Speaker Coordination",
-    description: "Expert speaker recruitment and management",
-  },
-  {
-    icon: "solar:users-group-rounded-line-duotone",
-    title: "Community Building",
-    description: "Networking and community engagement activities",
-  },
-  {
-    icon: "solar:medal-ribbons-star-line-duotone",
-    title: "Sponsorships",
-    description: "Sponsorship packages and partnership opportunities",
-  },
-];
 ---
 
-<PageLayout meta={meta}>
+<PageLayout meta={meta} noPaddingTop>
 
-  <!-- Hero Section with CTAs -->
-  <Section id="events-cta">
-    <div class="max-w-4xl mx-auto text-center mb-12">
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Connect, learn, and advance HRI through conferences, workshops, and
-        community gatherings worldwide.
+  <div
+    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+  >
+    <Hero>
+      <!-- Title -->
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+      >
+        Events
+      </h1>
+
+      <!-- Subtitle -->
+      <p
+        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+      >
+        Discover and contribute to our growing ecosystem of community-driven
+        robotics hardware, software, and research studies.
       </p>
 
-      <!-- CTA Buttons -->
+      <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
+        {featuredEvents.length > 0 && (<CallToActionButton
+          href="#featured"
+          text="Featured Events"
+          size="large"
+          indicatorText={featuredEvents.length?.toString()}
+        />)}
         <CallToActionButton
           href="#upcoming"
-          text="View Upcoming Events"
-          size="large"
-        />
-        <CallToActionButton
-          href="/get-involved"
-          text="Host Event"
+          text="Upcoming Events"
           size="large"
           variant="secondary"
+          indicatorText={upcomingEvents.length?.toString()}
+        />
+        <CallToActionButton
+          href="#past"
+          text="Past Events"
+          size="large"
+          variant="tertiary"
+          indicatorText={pastEvents.length?.toString()}
         />
       </div>
+    </Hero>
+  </div>
 
-      <!-- Event Statistics -->
-      <div class="flex flex-wrap justify-center gap-6 text-sm">
-        {
-          upcomingEvents.length > 0 && (
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <span>{upcomingEvents.length} Upcoming</span>
-            </div>
-          )
-        }
-        {
-          currentEvents.length > 0 && (
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
-              <span>{currentEvents.length} Ongoing</span>
-            </div>
-          )
-        }
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-neutral-400 rounded-full"></span>
-          <span>{allEvents.length} Total Events</span>
-        </div>
-        {
-          Object.keys(eventTypeCounts).length > 0 && (
-            <div class="flex items-center gap-2">
-              <Icon
-                name="solar:layers-line-duotone"
-                class="w-4 h-4 text-accent-two"
-              />
-              <span>{eventTypes.length} Event Types</span>
-            </div>
-          )
-        }
-      </div>
-    </div>
-  </Section>
 
-  <!-- Current/Ongoing Events (if any) -->
-  {
-    currentEvents.length > 0 && (
-      <Section
-        id="current"
-        title="Happening Now"
-        subtitle="Events currently in progress"
-      >
-        <div class="max-w-6xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Live Events (if any) -->
-            {currentEvents.map((event: any) => (
-              <div class="relative">
-                <div class="absolute top-4 right-4 z-10">
-                  <span class="flex items-center gap-1 text-xs px-2 py-1 bg-green-500/20 text-green-700 dark:text-green-300 rounded-full">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    Live Now
-                  </span>
-                </div>
-                <EventCard eventId={event.id} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-    )
-  }
-
-  <!-- Featured Events -->
+  <!-- Featured & Current Events -->
   {
     featuredEvents.length > 0 && (
       <Section
         id="featured"
-        title="Featured Events"
-        subtitle="Don't miss these highlighted opportunities"
+        title="Featured & Current Events"
+        subtitle="Highlighted opportunities, including events happening right now"
       >
         <div class="max-w-6xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredEvents.slice(0, 6).map((event) => (
-              <EventCard eventId={event.id} />
-            ))}
+          <div data-expandable-section data-initial-count="6">
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              data-items-container
+            >
+              {featuredEvents.map((event, index) => (
+                <div
+                  data-expandable-item
+                  data-index={index}
+                  class={index >= 6 ? "hidden" : ""}
+                >
+                  <EventCard eventId={event.id} />
+                </div>
+              ))}
+            </div>
+            {featuredEvents.length > 6 && (
+              <div class="text-center mt-6">
+                <button
+                  data-expand-button
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
+                >
+                  <span data-expand-text>
+                    View All {featuredEvents.length} Featured & Current Events
+                  </span>
+                  <span data-collapse-text class="hidden">
+                    Show Less
+                  </span>
+                  <Icon
+                    name="solar:alt-arrow-down-line-duotone"
+                    class="w-4 h-4 transition-transform"
+                    data-expand-icon
+                  />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </Section>
@@ -272,91 +178,51 @@ const services = [
     )
   }
 
-  <!-- Event Types -->
+  <!-- Past Events -->
   {
-    eventTypes.length > 0 && (
+    pastEvents.length > 0 && (
       <Section
-        id="event-types"
-        title="Event Types"
-        subtitle="Diverse formats for learning and collaboration"
+        id="past"
+        title="Past Events"
+        subtitle="Explore our full archive of previous events"
       >
         <div class="max-w-6xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {eventTypes.map((type: string) => {
-              const info = eventTypeInfo[type] || {
-                icon: "solar:calendar-line-duotone",
-                color: "text-neutral-500",
-                description: "Events in this category",
-              };
-              const count = eventTypeCounts[type] || 0;
-
-              return (
-                <FeatureCard
-                  icon={info?.icon || "solar:calendar-line-duotone"}
-                  title={type}
-                  class="capitalize"
+          <div data-expandable-section data-initial-count="6">
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              data-items-container
+            >
+              {pastEvents.map((event, index) => (
+                <div
+                  data-expandable-item
+                  data-index={index}
+                  class={index >= 6 ? "hidden" : ""}
                 >
-                  <p class="text-xs text-accent-one mb-1">
-                    {count} {count === 1 ? "Event" : "Events"}
-                  </p>
-                  <p class="text-xs text-color-600 dark:text-color-400">
-                    {info.description}
-                  </p>
-                </FeatureCard>
-              );
-            })}
-          </div>
-        </div>
-      </Section>
-    )
-  }
-
-  <!-- Services Section -->
-  <Section
-    id="services"
-    title="Event Services"
-    subtitle="Professional support for organizing successful HRI events"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          services.map((service) => (
-            <FeatureCard
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
-            />
-          ))
-        }
-      </div>
-    </div>
-  </Section>
-
-  <!-- Recent Past Events -->
-  {
-    recentPastEvents.length > 0 && (
-      <Section
-        id="recent-past"
-        title="Recent Events"
-        subtitle="Events from the past 6 months"
-      >
-        <div class="max-w-6xl mx-auto">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentPastEvents.slice(0, 6).map((event) => (
-              <EventCard eventId={event.id} />
-            ))}
-          </div>
-          {recentPastEvents.length > 6 && (
-            <div class="mt-6 text-center">
-              <a
-                href="/events/archive"
-                class="inline-flex items-center gap-2 text-sm text-link hover:underline"
-              >
-                View all past events
-                <Icon name="solar:arrow-right-line-duotone" class="w-4 h-4" />
-              </a>
+                  <EventCard eventId={event.id} />
+                </div>
+              ))}
             </div>
-          )}
+            {pastEvents.length > 6 && (
+              <div class="mt-6 text-center">
+                <button
+                  data-expand-button
+                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
+                >
+                  <span data-expand-text>
+                    View All {pastEvents.length} Past Events
+                  </span>
+                  <span data-collapse-text class="hidden">
+                    Show Less
+                  </span>
+                  <Icon
+                    name="solar:alt-arrow-down-line-duotone"
+                    class="w-4 h-4 transition-transform"
+                    data-expand-icon
+                  />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </Section>
     )
@@ -386,3 +252,70 @@ const services = [
     </div>
   </Section>
 </PageLayout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const expandableSections = document.querySelectorAll(
+      "[data-expandable-section]",
+    );
+
+    expandableSections.forEach((section) => {
+      const button = section.querySelector("[data-expand-button]");
+      const items = section.querySelectorAll("[data-expandable-item]");
+      const expandText = section.querySelector("[data-expand-text]");
+      const collapseText = section.querySelector("[data-collapse-text]");
+      const icon = section.querySelector("[data-expand-icon]");
+      const initialCount = parseInt(
+        (section as HTMLElement).dataset.initialCount || "6",
+      );
+
+      if (!button || items.length <= initialCount) {
+        if (button) (button as HTMLElement).style.display = "none";
+        return;
+      }
+
+      let isExpanded = false;
+
+      button.addEventListener("click", () => {
+        isExpanded = !isExpanded;
+
+        items.forEach((item, index) => {
+          if (index >= initialCount) {
+            if (isExpanded) {
+              item.classList.remove("hidden");
+            } else {
+              item.classList.add("hidden");
+            }
+          }
+        });
+
+        if (expandText && collapseText) {
+          if (isExpanded) {
+            expandText.classList.add("hidden");
+            collapseText.classList.remove("hidden");
+          } else {
+            expandText.classList.remove("hidden");
+            collapseText.classList.add("hidden");
+          }
+        }
+
+        if (icon) {
+          if (isExpanded) {
+            (icon as HTMLElement).style.transform = "rotate(180deg)";
+          } else {
+            (icon as HTMLElement).style.transform = "rotate(0deg)";
+          }
+        }
+
+        if (!isExpanded) {
+          const sectionTop =
+            section.getBoundingClientRect().top + window.scrollY - 100;
+          window.scrollTo({
+            top: sectionTop,
+            behavior: "smooth",
+          });
+        }
+      });
+    });
+  });
+</script>

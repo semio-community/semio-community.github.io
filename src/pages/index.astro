@@ -2,10 +2,42 @@
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import Hero from "@/components/Hero.astro";
-import FeatureCard from "@/components/FeatureCard.astro";
 import LinkCard from "@/components/LinkCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { url } from "@/utils/url";
+import { Icon } from "astro-icon/components";
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+import { getAllStudies } from "@/data/studies";
+import { getCurrentEvents, getFeaturedEvents, getUpcomingEvents } from "@/data/events";
+
+const allHardware = await getAllHardware();
+
+// Fetch software from content collections
+const allSoftware = await getAllSoftware();
+
+// Fetch studies data - handle empty collection gracefully
+const allStudies = await getAllStudies();
+
+const projectCount = allHardware.length + allSoftware.length + allStudies.length;
+
+const currentDate = new Date();
+
+const currentEvents = await getCurrentEvents();
+const upcomingEvents = await getUpcomingEvents();
+const featuredOnlyEvents = await getFeaturedEvents();
+const featuredEvents = [
+  ...currentEvents.filter(
+    (currentEvent) =>
+      !featuredOnlyEvents.some((featured) => featured.id === currentEvent.id),
+  ),
+  ...upcomingEvents.filter(
+    (upcomingEvent) =>
+      !featuredOnlyEvents.some((featured) => featured.id === upcomingEvent.id),
+  ),
+  ...featuredOnlyEvents.filter((featuredEvent)=>featuredEvent.data.startDate > currentDate),
+];
+
 ---
 
 <PageLayout meta={{ title: "Home" }} noPaddingTop>
@@ -49,11 +81,33 @@ import { url } from "@/utils/url";
       </p>
 
       <!-- CTA Button -->
-      <CallToActionButton
+      <!-- <CallToActionButton
         href="#connect"
         text="Join the Mailing List"
         size="large"
-      />
+      /> -->
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <CallToActionButton
+          href={url("projects")}
+          text="Projects"
+          size="large"
+          indicatorText={projectCount.toString()}
+        />
+        <CallToActionButton
+          href={url("services")}
+          text="Services"
+          size="large"
+          variant="secondary"
+          indicatorText="15"
+        />
+        <CallToActionButton
+          href={url("events")}
+          text="Events"
+          size="large"
+          variant="tertiary"
+          indicatorText={featuredEvents?.length?.toString()}
+        />
+      </div>
     </Hero>
   </div>
 
@@ -61,59 +115,72 @@ import { url } from "@/utils/url";
   <Section
     id="mission"
     title="Our Mission"
-    subtitle="Advancing human-centered robotics through community collaboration"
-    aria-label="Mission"
+    subtitle="Advancing human-centered robotics and AI through community collaboration"
   >
-    <div class="max-w-4xl mx-auto overflow-x-hidden">
-      <div class="prose prose-citrus max-w-none text-center sm:text-justify">
-        <p class="text-lg leading-relaxed">
-          Semio Community is a 501(c)(3) nonprofit organization facilitating
-          community-driven robotics hardware, software, and studies to foster
-          repeatable, reproducible, and replicable science and reusable systems
-          within human-robot interaction (HRI).
-        </p>
-      </div>
-    </div>
-  </Section>
+    <div class="max-w-4xl mx-auto">
 
-  <!-- Values Section -->
-  <Section
-    id="values"
-    title="Our Values"
-    subtitle="Building bridges between research and real-world impact"
-    aria-label="Values"
-  >
-    <div class="max-w-4xl mx-auto overflow-x-hidden">
-      <div class="prose prose-citrus max-w-none text-center sm:text-justify">
-        <p class="text-lg leading-relaxed">
-          Semio Community actively encourages multidisciplinary collaboration
-          among academia, industry, and the public sector to drive innovation,
-          ethical practices, and the widespread adoption of human-centered
-          robotics technologies.
+      <div class="bg-special-lighter rounded-lg p-8 border border-special mb-8">
+        <p class="text-lg leading-relaxed text-center mb-6">
+          Semio Community is a <span class="font-semibold"
+            >501(c)(3) nonprofit organization</span
+          > facilitating community-driven robotics hardware, software, and research
+          to foster repeatable, reproducible, and replicable science and reusable
+          systems within human-robot interaction (HRI).
         </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <Icon
+              name="hugeicons:user-multiple"
+              class="w-12 h-12 mx-auto mb-3 text-accent-three"
+            />
+            <h3 class="font-semibold mb-2">Community-Driven</h3>
+            <p class="text-sm text-accent-base/50">
+              Fostering collaboration and knowledge sharing across disciplines
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="solar:cpu-bolt-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h3 class="font-semibold mb-2">Human-Centered</h3>
+            <p class="text-sm text-accent-base/50">
+              Prioritizing ethical and accessible robotics and AI technologies
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="hugeicons:book-open-01"
+              class="w-12 h-12 mx-auto mb-3 text-accent-one"
+            />
+            <h3 class="font-semibold mb-2">Replicable Science</h3>
+            <p class="text-sm text-accent-base/50">
+              Promoting reproducible research and reusable systems
+            </p>
+          </div>
+        </div>
       </div>
 
-      <!-- Value pillars -->
-      <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mt-8 sm:mt-12 px-2 sm:px-0"
+      <!-- <div
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20 mb-8"
       >
-        <FeatureCard
-          icon="hugeicons:user-multiple"
-          title="Community-Driven"
-          description="Fostering collaboration and knowledge sharing across disciplines"
-        />
+        <p class="text-lg leading-relaxed text-center">
+          Semio Community is a <span class="font-semibold"
+            >501(c)(3) nonprofit organization</span
+          > facilitating community-driven robotics hardware, software, and studies
+          to foster repeatable, reproducible, and replicable science and reusable
+          systems within human-robot interaction (HRI).
+        </p>
+      </div> -->
 
-        <FeatureCard
-          icon="solar:cpu-bolt-line-duotone"
-          title="Human-Centered AI"
-          description="Prioritizing ethical and accessible robotics technologies"
-        />
-
-        <FeatureCard
-          icon="hugeicons:book-open-01"
-          title="Open Science"
-          description="Promoting reproducible research and reusable systems"
-        />
+      <div class="prose prose-citrus max-w-none">
+        <p class="text-center text-color-600 dark:text-color-400">
+          Founded with the belief that the future of robotics lies in
+          collaborative innovation, we work to break down barriers between
+          research and application, making cutting-edge robotics technology
+          accessible to researchers, educators, and developers worldwide.
+        </p>
       </div>
     </div>
   </Section>
@@ -127,7 +194,7 @@ import { url } from "@/utils/url";
   >
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-0 overflow-x-hidden">
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
       >
         <LinkCard
           href={url("projects#hardware")}
@@ -149,13 +216,57 @@ import { url } from "@/utils/url";
           title="Studies"
           description="Reproducible research initiatives"
         />
+      </div>
+    </div>
+  </Section>
 
-        <LinkCard
-          href={url("events/")}
-          icon="hugeicons:calendar-03"
-          title="Events"
-          description="Workshops and symposiums"
-        />
+  <Section
+    id="partners"
+    title="Our Partners"
+    subtitle="Building the future of human-centered robotics and AI together"
+  >
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-special-lighter rounded-lg p-8 border border-special">
+        <p class="text-lg leading-relaxed text-center mb-6">
+          Semio Community actively encourages multidisciplinary collaboration
+          among academia, industry, and the public sector to drive innovation,
+          ethical practices, and the widespread adoption of human-centered
+          robotics technologies.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <Icon
+              name="solar:square-academic-cap-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h3 class="font-semibold mb-2">Academia</h3>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Supporting research institutions with tools and infrastructure
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="solar:buildings-2-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h3 class="font-semibold mb-2">Industry</h3>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Bridging the gap between research and commercial applications
+            </p>
+          </div>
+          <div class="text-center">
+            <Icon
+              name="solar:flag-2-line-duotone"
+              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+            />
+            <h3 class="font-semibold mb-2">Public Sector</h3>
+            <p class="text-sm text-color-600 dark:text-color-400">
+              Partnering with government to advance robotics policy and
+              standards
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </Section>

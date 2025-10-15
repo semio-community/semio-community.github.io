@@ -484,7 +484,6 @@ const events = defineCollection({
         recordings: z.string().optional(),
       }),
       capacity: z.number().optional(),
-      banner: image().optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),

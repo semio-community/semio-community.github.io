@@ -278,9 +278,6 @@
         "capacity": {
           "type": "number"
         },
-        "banner": {
-          "type": "string"
-        },
         "featured": {
           "type": "boolean",
           "default": false
