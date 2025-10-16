@@ -18,7 +18,6 @@ import { getPeopleByExpertise, getPeopleByOrganization } from "@/data/people";
 import { getAllStudies } from "@/data/studies";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { getAllEvents } from "@/data/events";
 import OrganizationChip from "@/components/OrganizationChip.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
 import InfoCard from "@/components/detail/InfoCard.astro";
@@ -117,17 +116,9 @@ async function getPersonRelatedContent(personId: string) {
     ),
   );
 
-  // Get events where this person is a speaker or organizer
-  const allEvents = await getAllEvents();
-  const events = allEvents.filter((event) => {
-    const isSpeaker = event.data.speakers?.some(
-      (speaker) => speaker.personId === personId,
-    );
-    const isOrganizer = event.data.organizers?.some(
-      (org) => org.type === "person" && org.id === personId,
-    );
-    return isSpeaker || isOrganizer;
-  });
+  // Events are tracked at the Semio-community level; per-person associations
+  // are not available in the simplified roles schema.
+  const events: CollectionEntry<"events">[] = [];
 
   return { studies, hardware, software, events };
 }

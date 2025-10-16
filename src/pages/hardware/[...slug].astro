@@ -27,7 +27,6 @@ import {
   getStatusLabel,
   getStatusColor,
   getCategoryLabel,
-  CATEGORY_LABELS,
 } from "@/config/statusConfig";
 import { transformLinksToButtons } from "@/config/linkConfig";
 
@@ -42,12 +41,7 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"hardware">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
 
 // Get related hardware

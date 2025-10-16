@@ -2,8 +2,6 @@
 import {
   type CollectionEntry,
   getCollection,
-  render,
-  getEntry,
 } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
@@ -14,14 +12,11 @@ import ContentSection from "@/components/detail/ContentSection.astro";
 import StudyCard from "@/components/cards/StudyCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
-import EventCard from "@/components/cards/EventCard.astro";
 import PartnerCard from "@/components/cards/PartnerCard.astro";
 import { getAllPartners } from "@/data/partners";
 import { getPerson } from "@/data/people";
-import { getAllStudies } from "@/data/studies";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { getAllEvents } from "@/data/events";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
@@ -38,12 +33,7 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"partners">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
 
 // Get related partners (by category or collaboration areas)
@@ -92,8 +82,6 @@ const relatedPartners = await getRelatedPartners(entry, 3);
 
 // Get related content for this partner
 async function getPartnerRelatedContent(partnerId: string) {
-  // Get studies where this partner is involved
-  const allStudies = await getAllStudies();
   // TODO: Re-enable when studies have institutions field
   // const studies = allStudies.filter((study) =>
   //   study.data.institutions?.some((inst: any) => inst.partnerId === partnerId),
@@ -124,17 +112,8 @@ async function getPartnerRelatedContent(partnerId: string) {
       ),
   );
 
-  // Get events where this partner is an organizer or sponsor
-  const allEvents = await getAllEvents();
-  const events = allEvents.filter((event) => {
-    const isOrganizer = event.data.organizers?.some(
-      (org) => org.type === "organization" && org.id === partnerId,
-    );
-    const isSponsor = event.data.sponsors?.some(
-      (sponsor) => sponsor.partnerId === partnerId,
-    );
-    return isOrganizer || isSponsor;
-  });
+  // Event participation is now captured at the Semio-community level only.
+  const events: CollectionEntry<"events">[] = [];
 
   return { studies, hardware, software, events };
 }
@@ -209,14 +188,6 @@ if (data.socialMedia?.twitter) {
     ),
   );
 }
-
-// Prepare location metadata
-const locationItems = [
-  {
-    label: "Location",
-    value: `${data.location.city}, ${data.location.country}`,
-  },
-];
 
 // Prepare contact metadata
 const contactItems = [];
@@ -499,18 +470,6 @@ const categoryLabel = categoryLabels[data.category] || data.category;
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {relatedContent.software.map((sw) => (
                     <SoftwareCard softwareId={sw.id} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Events Grid */}
-            {relatedContent.events.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Events</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.events.map((event) => (
-                    <EventCard eventId={event.id} />
                   ))}
                 </div>
               </div>

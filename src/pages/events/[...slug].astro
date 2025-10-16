@@ -1,10 +1,5 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-  render,
-  getEntry,
-} from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
@@ -14,9 +9,6 @@ import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import { getAllEvents } from "@/data/events";
-import { getPerson } from "@/data/people";
-import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
-import OrganizationChip from "@/components/OrganizationChip.astro";
 import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { Icon } from "astro-icon/components";
@@ -288,64 +280,16 @@ if (data.location.coordinates) {
   });
 }
 
-// Get organizers with data
-const organizersWithData = await Promise.all(
-  data.organizers.map(async (org) => {
-    if (org.type === "person") {
-      const person = await getPerson(org.id);
-      return {
-        ...org,
-        data: person?.data,
-      };
-    } else {
-      const organization = await getEntry("partners", org.id);
-      return {
-        ...org,
-        data: organization?.data,
-      };
-    }
-  }),
-);
+const formatRoleLabel = (role: string) =>
+  role
+    .split("-")
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
 
-// Filter out invalid organizers
-const validOrganizers = organizersWithData.filter((o) => o.data);
-
-// Get speakers with data
-const speakersWithData = await Promise.all(
-  (data.speakers || []).map(async (speaker) => {
-    const person = await getPerson(speaker.personId);
-    return {
-      ...speaker,
-      person: person?.data,
-    };
-  }),
-);
-
-// Filter out invalid speakers
-const validSpeakers = speakersWithData.filter((s) => s.person);
-
-// Get sponsors with data
-const sponsorsWithData = await Promise.all(
-  (data.sponsors || []).map(async (sponsor) => {
-    const organization = await getEntry("partners", sponsor.partnerId);
-    return {
-      ...sponsor,
-      organization: organization?.data,
-    };
-  }),
-);
-
-// Filter out invalid sponsors
-const validSponsors = sponsorsWithData.filter((s) => s.organization);
-
-// Group sponsors by level
-const sponsorsByLevel = {
-  platinum: validSponsors.filter((s) => s.level === "platinum"),
-  gold: validSponsors.filter((s) => s.level === "gold"),
-  silver: validSponsors.filter((s) => s.level === "silver"),
-  bronze: validSponsors.filter((s) => s.level === "bronze"),
-  supporter: validSponsors.filter((s) => !s.level || s.level === "supporter"),
-};
+const roleEntries = (data.roles || []).map((role) => ({
+  value: role,
+  label: formatRoleLabel(role),
+}));
 
 const descriptionText = getEventPreviewDescriptionText(data)
 ---
@@ -408,107 +352,22 @@ const descriptionText = getEventPreviewDescriptionText(data)
       />
     </Fragment>
 
-    {/* Contributors (Organizers, Speakers, Sponsors) */}
+    {/* Semio Community Roles */}
     <Fragment slot="contributors">
-      {/* Organizers Section */}
       {
-        validOrganizers.length > 0 && (
-          <div class="organizers-section mb-8">
+        roleEntries.length > 0 && (
+          <div class="roles-section mb-8">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                ORGANIZERS
+                SEMIO COMMUNITY ROLES
               </h3>
               <div class="flex flex-wrap gap-2">
-                {validOrganizers.map((organizer) =>
-                  organizer.type === "person" ? (
-                    <PersonPopoverWrapper
-                      personId={organizer.id}
-                      role={organizer.role || "Organizer"}
-                    />
-                  ) : (
-                    <OrganizationChip
-                      partnerId={organizer.id}
-                      role={organizer.role || "Organizing Institution"}
-                    />
-                  ),
-                )}
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {/* Speakers Section */}
-      {
-        validSpeakers.length > 0 && (
-          <div class="speakers-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                SPEAKERS
-              </h3>
-              <div class="grid gap-3">
-                {validSpeakers.map((speaker) => (
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <PersonPopoverWrapper
-                        personId={speaker.personId}
-                        role={speaker.title}
-                      />
-                      {speaker.sessionType && (
-                        <BasicChip
-                          text={
-                            speaker.sessionType === "keynote"
-                              ? "Keynote"
-                              : speaker.sessionType
-                          }
-                          variant={
-                            speaker.sessionType === "keynote"
-                              ? "primary"
-                              : "default"
-                          }
-                        />
-                      )}
-                    </div>
-                    {speaker.topic && (
-                      <span class="text-sm text-accent-base">
-                        {speaker.topic}
-                      </span>
-                    )}
-                  </div>
+                {roleEntries.map((role) => (
+                  <BasicChip
+                    text={role.label}
+                    variant="primary"
+                  />
                 ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {/* Sponsors Section */}
-      {
-        validSponsors.length > 0 && (
-          <div class="sponsors-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                SPONSORS
-              </h3>
-              <div class="space-y-4">
-                {Object.entries(sponsorsByLevel).map(
-                  ([level, sponsors]) =>
-                    sponsors.length > 0 && (
-                      <div>
-                        <h4 class="text-xs font-medium mb-2 text-color-500 capitalize">
-                          {level}
-                        </h4>
-                        <div class="flex flex-wrap gap-2">
-                          {sponsors.map((sponsor) => (
-                            <OrganizationChip
-                              partnerId={sponsor.partnerId}
-                              role={level !== "supporter" ? `${level.charAt(0).toUpperCase() + level.slice(1)} Sponsor` : "Sponsor"}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    ),
-                )}
               </div>
             </div>
           </div>

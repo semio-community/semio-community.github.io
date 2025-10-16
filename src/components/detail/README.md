@@ -119,7 +119,7 @@ These components are retained for backward compatibility but should not be used 
 - Uses: `description` (about), `metadata` (partnership details), `links` (contact), `contributors` (key contacts), `tags` (collaboration areas)
 
 ### Events Pages
-- Uses: `description` (about), `metadata` (event details, location), `contributors` (organizers, speakers, sponsors), `tags` (topics, tracks)
+- Uses: `description` (about), `metadata` (event details, location), `contributors` (Semio community roles), `tags` (topics, tracks)
 
 ### Hardware Pages
 - Uses: `description`, `contributors`, `specifications`, `features`, `metadata` (pricing), `tags` (applications)

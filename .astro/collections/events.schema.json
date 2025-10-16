@@ -140,86 +140,23 @@
           ],
           "additionalProperties": false
         },
-        "organizers": {
+        "roles": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "person",
-                  "organization"
-                ]
-              },
-              "id": {
-                "type": "string"
-              },
-              "role": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "type",
-              "id"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "speakers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "personId": {
-                "type": "string"
-              },
-              "title": {
-                "type": "string"
-              },
-              "topic": {
-                "type": "string"
-              },
-              "sessionType": {
-                "type": "string",
-                "enum": [
-                  "keynote",
-                  "talk",
-                  "panel",
-                  "workshop"
-                ]
-              }
-            },
-            "required": [
-              "personId"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "sponsors": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "partnerId": {
-                "type": "string"
-              },
-              "level": {
-                "type": "string",
-                "enum": [
-                  "platinum",
-                  "gold",
-                  "silver",
-                  "bronze",
-                  "supporter"
-                ]
-              }
-            },
-            "required": [
-              "partnerId"
-            ],
-            "additionalProperties": false
-          }
+            "type": "string",
+            "enum": [
+              "attendee",
+              "organizer",
+              "sponsor",
+              "exhibitor",
+              "speaker",
+              "panelist",
+              "host",
+              "winner",
+              "competitor"
+            ]
+          },
+          "default": []
         },
         "images": {
           "type": "object",
@@ -304,7 +241,6 @@
         "startDate",
         "endDate",
         "location",
-        "organizers",
         "topics",
         "links"
       ],

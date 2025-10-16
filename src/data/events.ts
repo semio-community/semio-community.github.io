@@ -255,15 +255,7 @@ export async function searchEvents(
       event.data.tags.some((tag) => tag.includes(lowerQuery)) ||
       event.data.location.city.toLowerCase().includes(lowerQuery) ||
       event.data.location.country.toLowerCase().includes(lowerQuery) ||
-      event.data.organizers.some((org) =>
-        org.id.toLowerCase().includes(lowerQuery),
-      ) ||
-      (event.data.speakers?.some(
-        (speaker) =>
-          speaker.personId.toLowerCase().includes(lowerQuery) ||
-          (speaker.topic?.toLowerCase().includes(lowerQuery) ?? false),
-      ) ??
-        false)
+      event.data.roles.some((role) => role.includes(lowerQuery))
     );
   });
 }
@@ -424,15 +416,24 @@ export async function filterEvents(criteria: {
   return events;
 }
 
-/** Get events organized by a specific organizer */
-export async function getEventsByOrganizer(
-  organizerName: string,
+type EventRole =
+  | "attendee"
+  | "organizer"
+  | "sponsor"
+  | "exhibitor"
+  | "speaker"
+  | "panelist"
+  | "host"
+  | "winner"
+  | "competitor";
+
+/** Get events where Semio fills a specific role */
+export async function getEventsByRole(
+  role: EventRole,
 ): Promise<CollectionEntry<"events">[]> {
   const events = await getAllEvents();
   return events.filter((event) =>
-    event.data.organizers.some((org) =>
-      org.id.toLowerCase().includes(organizerName.toLowerCase()),
-    ),
+    event.data.roles.includes(role),
   );
 }
 

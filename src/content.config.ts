@@ -432,39 +432,22 @@ const events = defineCollection({
           .optional(),
       }),
 
-      // Replace embedded with references
-      organizers: z.array(
-        z.object({
-          type: z.enum(["person", "organization"]),
-          id: z.string(),
-          role: z.string().optional(),
-        }),
-      ),
-
-      speakers: z
+      roles: z
         .array(
-          z.object({
-            personId: z.string(), // Reference to people collection
-            title: z.string().optional(),
-            topic: z.string().optional(),
-            sessionType: z
-              .enum(["keynote", "talk", "panel", "workshop"])
-              .optional(),
-          }),
+          z.enum([
+            "attendee",
+            "organizer",
+            "sponsor",
+            "exhibitor",
+            "speaker",
+            "panelist",
+            "host",
+            "winner",
+            "competitor",
+          ]),
         )
-        .optional(),
-
-      // Sponsoring organizations
-      sponsors: z
-        .array(
-          z.object({
-            partnerId: z.string(),
-            level: z
-              .enum(["platinum", "gold", "silver", "bronze", "supporter"])
-              .optional(),
-          }),
-        )
-        .optional(),
+        .default([])
+        .transform((values) => [...new Set(values)]),
 
       images: z
         .object({
