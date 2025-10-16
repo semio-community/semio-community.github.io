@@ -1,9 +1,10 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
 import {
   DocumentText,
   Gallery,
   Global,
+  SettingsMinimalistic,
   Star as StarOutline
 } from "@solar-icons/react-perf/LineDuotone";
 import {
@@ -34,6 +35,7 @@ export interface ItemCardProps {
   category?: string;
   featured?: boolean;
   type?: "hardware" | "software" | "people" | "partners" | "research" | "events";
+  listItems?: {icon?: ReactNode, text: string}[]
   links?: {
     github?: string;
     docs?: string;
@@ -59,6 +61,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   featured,
   type = "hardware",
   links,
+  listItems = []
 }) => {
   // Use centralized status configuration
   const displayStatus = statusLabel || getStatusLabel(status);
@@ -88,6 +91,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     e.stopPropagation();
     window.open(url, "_blank", "noopener,noreferrer");
   };
+
+  const showDescription = listItems.length === 0 && description;
+  const showListItems = listItems.length > 0
 
   return (
     <a
@@ -143,10 +149,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         </h3>
 
         {/* Description */}
-        {description && (
+        {showDescription && (
           <p className="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2 min-h-[2.5rem]">
             {description}
           </p>
+        )}
+
+        {/* ListItems */}
+        {showListItems && (
+          <div className="text-sm text-color-600 dark:text-color-400 mb-3 min-h-[2.5rem]">
+            {listItems.slice(0,2).map(listItem=>(
+              <div className="flex items-start gap-2">
+              {listItem.icon ?? <SettingsMinimalistic className='text-accent-two mt-0.5 w-4 h-4 flex-shrink-0'/>}
+              <span className="text-sm text-accent-base">{listItem.text}</span>
+            </div>
+            ))}
+        </div>
         )}
 
         {/* Footer section */}
@@ -175,16 +193,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     onClick={(e) => handleLinkClick(e, links.demo!)}
                   >
                     <Gallery className="w-4 h-4" />
-                    {/*<svg
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polygon points="10 8 16 12 10 16 10 8"></polygon>
-                    </svg>*/}
                   </button>
                 )}
                 {links.docs && (
@@ -195,19 +203,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     onClick={(e) => handleLinkClick(e, links.docs!)}
                   >
                     <DocumentText className="w-4 h-4" />
-                    {/*<svg
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="14" x2="8" y2="14"></line>
-                      <line x1="16" y1="18" x2="8" y2="18"></line>
-                      <line x1="10" y1="10" x2="8" y2="10"></line>
-                    </svg>*/}
                   </button>
                 )}
                 {links.github && (
@@ -234,33 +229,11 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     onClick={(e) => handleLinkClick(e, links.website!)}
                   >
                     <Global className="w-4 h-4" />
-                    {/*<svg
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                      <polyline points="15 3 21 3 21 9"></polyline>
-                      <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>*/}
                   </button>
                 )}
               </div>
             )}
           </div>
-
-          {/* Arrow icon */}
-          {/*<svg
-            className="w-5 h-5 text-accent-one group-hover:text-accent-two transition-colors"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>*/}
         </div>
       </div>
     </a>

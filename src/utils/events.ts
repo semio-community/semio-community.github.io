@@ -22,7 +22,7 @@ export function getEventPreviewDescriptionText(event: PartialEvent): string {
     return description
 }
 
-function getLocationString(location?: {city?: string, country?: string, online?: boolean}): string | undefined {
+export function getLocationString(location?: {city?: string, country?: string, online?: boolean}): string | undefined {
   if (!location) return undefined;
   if (location.city && location.country) return `${location.city}, ${location.country}`;
   if (location.country) return location.country;

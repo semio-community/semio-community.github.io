@@ -1,6 +1,8 @@
 import React from "react";
 import { ItemCard } from "@/components/ItemCard";
-import { getEventPreviewDescriptionText } from "@/utils/events";
+import { getEventPreviewDescriptionText, getLocationString } from "@/utils/events";
+import { getFormattedDateRanges } from "@/utils/date";
+import { Calendar, MapPoint } from "@solar-icons/react-perf/LineDuotone";
 
 
 export interface EventCardProps {
@@ -53,12 +55,20 @@ export const EventCard: React.FC<EventCardProps> = ({
   // Build category from event type
   const category = `${data.type.charAt(0).toUpperCase() + data.type.slice(1)}`;
 
+  const locationString = getLocationString(data.location);
+
+  const dateString = getFormattedDateRanges(data.startDate, data.endDate)
+
   const description = getEventPreviewDescriptionText(data)
 
   return (
     <ItemCard
       title={data.displayName || data.name || eventId}
-      description={description}
+      // description={description}
+      listItems={[
+        {text: dateString, icon: <Calendar className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"/> },
+        {text: locationString ?? "Unknown Location", icon: <MapPoint className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"/>}
+      ]}
       href={`/events/${eventId}`}
       type="events"
       image={data.images?.hero}

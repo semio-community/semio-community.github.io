@@ -6,9 +6,6 @@ export type { DetailHeroProps, DetailHeroBadge } from "./DetailHero";
 export { StatusBadge } from "./StatusBadge";
 export type { StatusBadgeProps } from "./StatusBadge";
 
-export { ActionButtonGroup } from "./ActionButtonGroup";
-export type { ActionButtonGroupProps, ActionButton } from "./ActionButtonGroup";
-
 export { ContributorsSection } from "./ContributorsSection";
 export type {
   ContributorsSectionProps,
