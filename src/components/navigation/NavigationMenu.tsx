@@ -19,7 +19,7 @@ type SoftwareItem = {
   status: "stable" | "beta" | "alpha" | "in-progress" | "deprecated";
 };
 
-type StudyItem = {
+type ResearchItem = {
   id: string;
   title: string;
   type: string;
@@ -37,7 +37,7 @@ interface NavigationMenuProps {
   }>;
   hardwareItems: HardwareItem[];
   softwareItems: SoftwareItem[];
-  studyItems?: StudyItem[];
+  researchItems?: ResearchItem[];
   menuSections: Record<
     string,
     Array<{
@@ -65,7 +65,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   menuLinks,
   hardwareItems,
   softwareItems,
-  studyItems = [],
+  researchItems = [],
   menuSections,
   urlPrefix,
 }) => {
@@ -73,7 +73,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   const maxItemsInDropdown = 4;
   const hardwareForDropdown = hardwareItems.slice(0, maxItemsInDropdown);
   const softwareForDropdown = softwareItems.slice(0, maxItemsInDropdown);
-  const studiesForDropdown = studyItems.slice(0, 3);
+  const researchForDropdown = researchItems.slice(0, 3);
 
   // Fallback if no menu links
   if (!menuLinks || menuLinks.length === 0) {
@@ -209,7 +209,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                       </div>
                     )}
 
-                    {/* Projects Page - Combined Hardware, Software, Studies */}
+                    {/* Projects Page - Combined Hardware, Software, Research */}
                     {link.path === "/projects/" && (
                       <>
                         {/* Hardware Items */}
@@ -280,18 +280,18 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                           </>
                         )}
 
-                        {/* Studies Items */}
-                        {studiesForDropdown.length > 0 && (
+                        {/* Research Items */}
+                        {researchForDropdown.length > 0 && (
                           <>
                             <div className="h-px bg-color-200 dark:bg-color-700 my-3"></div>
                             <div className="space-y-2">
                               <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
-                                Featured Studies
+                                Featured Research
                               </div>
-                              {studiesForDropdown.map((item) => (
+                              {researchForDropdown.map((item) => (
                                 <a
                                   key={item.id}
-                                  href={url(`/studies/${item.id}`)}
+                                  href={url(`/research/${item.id}`)}
                                   className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
                                 >
                                   <div className="min-w-0 flex-1">

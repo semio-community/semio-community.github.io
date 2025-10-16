@@ -42,7 +42,6 @@ export const HardwareCard: React.FC<HardwareCardProps> = ({
       type="hardware"
       image={data.images?.hero}
       imageAlt={data.images?.hero?.alt || data.name}
-      logo={data.images?.logo}
       status={data.status}
       category={categoryLabel}
       featured={data.featured}

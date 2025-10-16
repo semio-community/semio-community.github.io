@@ -1,8 +1,8 @@
 import React from "react";
 import { ItemCard } from "@/components/ItemCard";
 
-export interface StudyCardProps {
-  studyId: string;
+export interface ResearchCardProps {
+  researchId: string;
   data: {
     title?: string;
     abstract?: string;
@@ -26,8 +26,8 @@ export interface StudyCardProps {
   className?: string;
 }
 
-export const StudyCard: React.FC<StudyCardProps> = ({
-  studyId,
+export const ResearchCard: React.FC<ResearchCardProps> = ({
+  researchId,
   data,
   className,
 }) => {
@@ -52,10 +52,10 @@ export const StudyCard: React.FC<StudyCardProps> = ({
 
   return (
     <ItemCard
-      title={data.title || studyId}
+      title={data.title || researchId}
       description={data.abstract}
-      href={`/studies/${studyId}`}
-      type="studies"
+      href={`/research/${researchId}`}
+      type="research"
       image={data.images?.hero}
       imageAlt={data.images?.hero?.alt || data.title}
       logo={data.images?.logo}

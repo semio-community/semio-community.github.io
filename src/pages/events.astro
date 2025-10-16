@@ -70,7 +70,7 @@ upcomingEvents.forEach((event) => {
         class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
       >
         Discover and contribute to our growing ecosystem of community-driven
-        robotics hardware, software, and research studies.
+        robotics hardware, software, and research initiatives.
       </p>
 
       <!-- CTA Button -->
@@ -100,13 +100,13 @@ upcomingEvents.forEach((event) => {
   </div>
 
 
-  <!-- Featured & Current Events -->
+  <!-- Featured Events -->
   {
     featuredEvents.length > 0 && (
       <Section
         id="featured"
-        title="Featured & Current Events"
-        subtitle="Highlighted opportunities, including events happening right now"
+        title="Featured Events"
+        subtitle="Highlighted events, including events happening right now"
       >
         <div class="max-w-6xl mx-auto">
           <div data-expandable-section data-initial-count="6">
@@ -156,7 +156,7 @@ upcomingEvents.forEach((event) => {
       <Section
         id="upcoming"
         title="Upcoming Events"
-        subtitle="Plan ahead for these future gatherings"
+        subtitle="Meet with the community at these future gatherings"
       >
         <div class="max-w-6xl mx-auto">
           {Object.keys(upcomingEventsByYear)
@@ -184,7 +184,7 @@ upcomingEvents.forEach((event) => {
       <Section
         id="past"
         title="Past Events"
-        subtitle="Explore our full archive of previous events"
+        subtitle="Explore our full archive of previous community events"
       >
         <div class="max-w-6xl mx-auto">
           <div data-expandable-section data-initial-count="6">
@@ -229,24 +229,16 @@ upcomingEvents.forEach((event) => {
   }
 
   <!-- Call to Action -->
-  <Section id="events-contribute">
+  <Section id="events-contribute" title="Partner for an Event">
     <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4">Host Your Event</h2>
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Planning an HRI conference, workshop, or community gathering? Partner
-        with us to reach the global HRI community.
-      </p>
+
+      <p class="mb-8 -mt-6 md:-mt-8">Planning a conference, workshop, or other community gathering?<br/><br class="md:hidden"/> Partner with Semio Community to reach a broader robotics/AI audience.</p>
+      
       <div class="flex flex-wrap justify-center gap-4">
         <CallToActionButton
           href="/get-involved"
-          text="Propose an Event"
+          text="Request Event Services"
           size="large"
-        />
-        <CallToActionButton
-          href="/partners"
-          text="Partner With Us"
-          size="large"
-          variant="tertiary"
         />
       </div>
     </div>

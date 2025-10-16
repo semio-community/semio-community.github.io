@@ -336,9 +336,9 @@ const software = defineCollection({
     }),
 });
 
-// Updated Studies/Research Collection
-const studies = defineCollection({
-  loader: glob({ base: "./src/content/studies", pattern: "**/*.{md,mdx}" }),
+// Research Collection
+const research = defineCollection({
+  loader: glob({ base: "./src/content/research", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -363,6 +363,7 @@ const studies = defineCollection({
         "preprint",
         "dataset",
         "benchmark",
+        "study"
       ]),
       venue: z.string().optional(), // Conference/Journal
       year: z.number(),
@@ -482,7 +483,7 @@ export const collections = {
   people,
   hardware,
   software,
-  studies,
+  research,
   events,
   organizations,
 };

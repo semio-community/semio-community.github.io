@@ -3,7 +3,7 @@ import { PartnerCard } from "../cards/PartnerCard";
 import { EventCard } from "../cards/EventCard";
 import { HardwareCard } from "../cards/HardwareCard";
 import { SoftwareCard } from "../cards/SoftwareCard";
-import { StudyCard } from "../cards/StudyCard";
+import { ResearchCard } from "../cards/ResearchCard";
 import { PersonCard } from "../cards/PersonCard";
 
 export interface RelatedItem {
@@ -43,7 +43,7 @@ export interface RelatedItemsGridProps {
     | "software"
     | "people"
     | "partners"
-    | "studies"
+    | "research"
     | "events";
   columns?: 1 | 2 | 3 | 4;
   className?: string;
@@ -147,11 +147,11 @@ export const RelatedItemsGrid: React.FC<RelatedItemsGridProps> = ({
                   data={item.data as any}
                 />
               );
-            case "studies":
+            case "research":
               return (
-                <StudyCard
+                <ResearchCard
                   key={item.id}
-                  studyId={item.id}
+                  researchId={item.id}
                   data={item.data as any}
                 />
               );

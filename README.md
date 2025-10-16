@@ -3,7 +3,7 @@
 [![Built with Astro](https://astro.badg.es/v2/built-with-astro/small.svg)](https://astro.build)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository contains the website for [Semio Community](https://semio.community), a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and studies to foster repeatable, reproducible, and replicable science within human-robot interaction (HRI).
+This repository contains the website for [Semio Community](https://semio.community), a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and research to foster repeatable, reproducible, and replicable science within human-robot interaction (HRI).
 
 ## 🤖 About Semio Community
 
@@ -102,7 +102,7 @@ Edit `src/site.config.ts` to update:
   - `partners/` - Partner organizations
   - `people/` - Team and community members
   - `software/` - Software projects and tools
-  - `studies/` - Research studies and papers
+  - `research/` - Research publications and papers
 - **Components**: Create reusable components in `src/components/`
 
 ### Styling

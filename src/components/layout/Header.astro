@@ -7,11 +7,11 @@ import { siteConfig, menuLinks } from "@/site.config";
 import { homeUrl, url } from "@/utils/url";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { getFeaturedStudies } from "@/data/studies";
+import { getFeaturedResearch } from "@/data/research";
 
 // Fetch data for navigation and simplify for React component
 const allHardware = await getAllHardware();
-const featuredStudies = await getFeaturedStudies();
+const featuredResearch = await getFeaturedResearch();
 const allSoftware = await getAllSoftware();
 
 // Simplify data for serialization to React component
@@ -30,21 +30,21 @@ const softwareItems = allSoftware.map((sw) => ({
   status: sw.data.status,
 }));
 
-// Simplify studies data for React component
-const studyItems = featuredStudies.map((study) => ({
-  id: study.id,
-  title: study.data.title,
-  type: study.data.type,
-  year: study.data.year,
-  citations: study.data.citations,
+// Simplify research data for React component
+const researchItems = featuredResearch.map((entry) => ({
+  id: entry.id,
+  title: entry.data.title,
+  type: entry.data.type,
+  year: entry.data.year,
+  citations: entry.data.citations,
 }));
 
 // Define menu sections
 const menuSections = {
   "/projects/": [
-    { title: "Hardware", href: "/projects/#hardware" },
-    { title: "Software", href: "/projects/#software" },
-    { title: "Studies", href: "/projects/#studies" },
+    { title: "Hardware Projects", href: "/projects/#hardware" },
+    { title: "Software Projects", href: "/projects/#software" },
+    { title: "Research Projects", href: "/projects/#research" },
     { title: "Contribute", href: "/projects/#contribute" },
   ],
   "/services/": [
@@ -164,7 +164,7 @@ const menuSections = {
         menuLinks={menuLinks}
         hardwareItems={hardwareItems}
         softwareItems={softwareItems}
-        studyItems={studyItems}
+        researchItems={researchItems}
         menuSections={menuSections}
         urlPrefix=""
       />

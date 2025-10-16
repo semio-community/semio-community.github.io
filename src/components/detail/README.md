@@ -4,7 +4,7 @@ This directory contains components used for displaying detailed content pages (s
 
 ## Overview
 
-All detail pages use a consistent single-column layout with semantic content slots for better organization and maintainability. The components in this directory work together to create a unified experience across studies, people, partners, events, hardware, and software pages.
+All detail pages use a consistent single-column layout with semantic content slots for better organization and maintainability. The components in this directory work together to create a unified experience across research, people, partners, events, hardware, and software pages.
 
 ## Architecture
 
@@ -50,7 +50,7 @@ Hero section component with image overlay, title, badges, and featured indicator
 Group of action buttons for primary CTAs (visit website, view publication, etc.).
 
 #### `RelatedItemsGrid.tsx`
-Grid display for related content items (studies, hardware, software, events, people).
+Grid display for related content items (research, hardware, software, events, people).
 
 ### Content Organization Components
 
@@ -109,7 +109,7 @@ These components are retained for backward compatibility but should not be used 
 
 ## Component Usage by Page Type
 
-### Studies Pages
+### Research Pages
 - Uses: `description` (abstract), `contributors` (authors), `metadata` (publication details), `tags` (research areas)
 
 ### People Pages

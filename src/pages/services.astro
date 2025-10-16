@@ -9,22 +9,22 @@ import Hero from "@/components/Hero.astro";
 const meta = {
   title: "Services",
   description:
-    "Comprehensive support services for robotics hardware development, software engineering, and research studies in human-robot interaction",
+    "Comprehensive support services for robotics hardware development, software engineering, and research programs in human-robot interaction",
 };
 
 const hardwareServices = [
   {
     icon: "solar:settings-minimalistic-line-duotone",
-    title: "DFM",
+    title: "Design",
     subtitle: "Design for Manufacturing",
     description:
-      "Expert guidance on making your robotic designs production-ready",
+      "Expert guidance on making your robotic designs ready for scale manufacturing",
   },
   {
     icon: "solar:box-minimalistic-line-duotone",
-    title: "CM",
+    title: "Manufacturing",
     subtitle: "Contract Manufacturing",
-    description: "End-to-end manufacturing services for robotics hardware",
+    description: "End-to-end scale manufacturing services for robotics hardware",
   },
   {
     icon: "solar:database-line-duotone",
@@ -36,29 +36,29 @@ const hardwareServices = [
     icon: "solar:cart-large-2-line-duotone",
     title: "Sales",
     subtitle: "Sales & Distribution",
-    description: "Connect with the robotics research community",
+    description: "Make your hardware available to the broader robotics community",
   },
   {
     icon: "solar:delivery-line-duotone",
     title: "Shipping",
     subtitle: "Global Shipping",
-    description: "Worldwide delivery of robotics platforms",
+    description: "Worldwide distribution of your robotics hardware platforms",
   },
   {
     icon: "solar:headphones-round-line-duotone",
     title: "Support",
     subtitle: "Technical Support",
-    description: "Ongoing support for hardware platforms",
+    description: "Ongoing technical support for your robotics hardware platforms",
   },
 ];
 
 const softwareServices = [
   {
     icon: "solar:code-2-line-duotone",
-    title: "Research-to-Production",
+    title: "Code Refactoring",
     subtitle: "Code Translation",
     description:
-      "Transform research prototypes into production-ready systems with industry best practices",
+      "Transform research code into production-ready software with industry best practices",
   },
   {
     icon: "hugeicons:user-group",
@@ -72,7 +72,7 @@ const softwareServices = [
     title: "Quality Assurance",
     subtitle: "Testing & Validation",
     description:
-      "Comprehensive testing frameworks designed for robotics applications",
+      "Comprehensive testing and validation for robotics applications",
   },
   {
     icon: "solar:document-line-duotone",
@@ -87,11 +87,11 @@ const softwareServices = [
     description: "Learn best practices for developing HRI software systems",
   },
   {
-    icon: "solar:rocket-line-duotone",
-    title: "Deployment",
+    icon: "solar:headphones-round-line-duotone",
+    title: "Support",
     subtitle: "Cloud & Edge Support",
     description:
-      "Deploy your robotics software anywhere, from cloud to edge devices",
+      "Ongoing technical support for your robotics software tools and frameworks",
   },
 ];
 
@@ -101,18 +101,18 @@ const researchServices = [
     title: "Populations",
     description: "Access diverse participant pools for HRI research",
     features: [
+      "In-person studies",
       "Diverse demographics",
       "Special populations",
       "Remote participants",
-      "In-person studies",
     ],
   },
   {
     icon: "solar:test-tube-line-duotone",
-    title: "Studies",
+    title: "Research Studies",
     description: "Standardized study protocols and experimental designs",
     features: [
-      "Pre-registration",
+      "Study pre-registration",
       "Replication studies",
       "Multi-site studies",
       "Longitudinal studies",
@@ -158,20 +158,20 @@ const researchServices = [
       <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
-          href="#hardware-services"
+          href="#hardware"
           text="Hardware Services"
           size="large"
           indicatorText="6"
         />
         <CallToActionButton
-          href="#software-services"
+          href="#software"
           text="Software Services"
           size="large"
           variant="secondary"
           indicatorText="6"
         />
         <CallToActionButton
-          href="#research-services"
+          href="#research"
           text="Research Services"
           size="large"
           variant="tertiary"
@@ -183,9 +183,9 @@ const researchServices = [
 
   <!-- Hardware Services Section -->
   <Section
-    id="hardware-services"
+    id="hardware"
     title="Hardware Services"
-    subtitle="Comprehensive support for robotics hardware development and deployment"
+    subtitle="Comprehensive support for scaling robotics hardware development and deployment"
   >
     <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -194,7 +194,7 @@ const researchServices = [
             <FeatureCard
               icon={service.icon}
               title={service.title}
-              description={`${service.subtitle} • ${service.description}`}
+              description={service.description}
             />
           ))
         }
@@ -215,9 +215,9 @@ const researchServices = [
 
   <!-- Software Services Section -->
   <Section
-    id="software-services"
+    id="software"
     title="Software Services"
-    subtitle="Supporting the transition from research to real-world deployment"
+    subtitle="Supporting the transition from research code to production-ready systems"
   >
     <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -226,7 +226,7 @@ const researchServices = [
             <FeatureCard
               icon={service.icon}
               title={service.title}
-              description={`${service.subtitle} • ${service.description}`}
+              description={service.description}
             />
           ))
         }
@@ -247,9 +247,9 @@ const researchServices = [
 
   <!-- Research Services Section -->
   <Section
-    id="research-services"
+    id="research"
     title="Research Services"
-    subtitle="Comprehensive support for conducting HRI studies"
+    subtitle="Comprehensive support for conducting replicable HRI research and studies"
   >
     <div class="max-w-5xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -260,12 +260,12 @@ const researchServices = [
               title={service.title}
               description={service.description}
             >
-              <ul class="space-y-1">
+              <ul class="space-y-1 mt-3">
                 {service.features.map((feature) => (
                   <li class="flex items-center gap-2 text-xs">
                     <Icon
                       name="solar:check-circle-bold"
-                      class="w-3 h-3 text-accent-one flex-shrink-0"
+                      class="w-3 h-3 text-accent-two flex-shrink-0"
                     />
                     <span>{feature}</span>
                   </li>
@@ -435,12 +435,6 @@ const researchServices = [
           href="/get-involved"
           text="Request Services"
           size="large"
-        />
-        <CallToActionButton
-          href="/about"
-          text="Learn About Us"
-          size="large"
-          variant="tertiary"
         />
       </div>
     </div>

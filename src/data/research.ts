@@ -1,12 +1,12 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 
-/** Get all studies, sorted by featured status, citations, and year */
-export async function getAllStudies(): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getCollection("studies", ({ data }) => {
+/** Get all research entries, sorted by featured status, citations, and year */
+export async function getAllResearch(): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getCollection("research", ({ data }) => {
     // In production, exclude drafts. In development, show all.
     return import.meta.env.PROD ? data.draft !== true : true;
   });
-  return studies.sort((a, b) => {
+  return researchEntries.sort((a, b) => {
     // Sort by featured first
     if (a.data.featured !== b.data.featured) {
       return a.data.featured ? -1 : 1;
@@ -27,71 +27,71 @@ export async function getAllStudies(): Promise<CollectionEntry<"studies">[]> {
   });
 }
 
-/** Get studies filtered by type */
-export async function getStudiesByType(
+/** Get research entries filtered by type */
+export async function getResearchByType(
   type: "paper" | "thesis" | "report" | "preprint" | "dataset" | "benchmark",
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) => study.data.type === type);
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) => study.data.type === type);
 }
 
-/** Get only featured studies */
-export async function getFeaturedStudies(): Promise<
-  CollectionEntry<"studies">[]
+/** Get featured research entries */
+export async function getFeaturedResearch(): Promise<
+  CollectionEntry<"research">[]
 > {
-  const studies = await getAllStudies();
-  return studies.filter((study) => study.data.featured);
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) => study.data.featured);
 }
 
-/** Get studies by year */
-export async function getStudiesByYear(
+/** Get research entries by year */
+export async function getResearchByYear(
   year: number,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) => study.data.year === year);
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) => study.data.year === year);
 }
 
-/** Get studies within a year range */
-export async function getStudiesByYearRange(
+/** Get research entries within a year range */
+export async function getResearchByYearRange(
   startYear: number,
   endYear: number,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter(
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter(
     (study) => study.data.year >= startYear && study.data.year <= endYear,
   );
 }
 
-/** Get studies by research area */
-export async function getStudiesByResearchArea(
+/** Get research entries by research area */
+export async function getResearchByResearchArea(
   area: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) =>
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) =>
     study.data.researchArea.some(
       (researchArea) => researchArea.toLowerCase() === area.toLowerCase(),
     ),
   );
 }
 
-/** Get studies by author */
-export async function getStudiesByAuthor(
+/** Get research entries by author */
+export async function getResearchByAuthor(
   authorName: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) =>
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) =>
     study.data.authors.some((author) =>
       author.personId.toLowerCase().includes(authorName.toLowerCase()),
     ),
   );
 }
 
-/** Get studies by affiliation */
-export async function getStudiesByAffiliation(
+/** Get research entries by affiliation */
+export async function getResearchByAffiliation(
   affiliation: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) =>
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) =>
     study.data.authors.some(
       (author) =>
         author.affiliationSnapshot
@@ -101,35 +101,35 @@ export async function getStudiesByAffiliation(
   );
 }
 
-/** Get studies by venue (conference or journal) */
-export async function getStudiesByVenue(
+/** Get research entries by venue (conference or journal) */
+export async function getResearchByVenue(
   venue: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter(
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter(
     (study) =>
       study.data.venue?.toLowerCase().includes(venue.toLowerCase()) ?? false,
   );
 }
 
-/** Get studies by keyword */
-export async function getStudiesByKeyword(
+/** Get research entries by keyword */
+export async function getResearchByKeyword(
   keyword: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter((study) =>
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter((study) =>
     study.data.keywords.some((kw) =>
       kw.toLowerCase().includes(keyword.toLowerCase()),
     ),
   );
 }
 
-/** Get studies related to specific hardware */
-export async function getStudiesByHardware(
+/** Get research entries related to specific hardware */
+export async function getResearchByHardware(
   hardwareId: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter(
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter(
     (study) =>
       study.data.relatedHardware?.some(
         (hw) => hw.toLowerCase() === hardwareId.toLowerCase(),
@@ -137,12 +137,12 @@ export async function getStudiesByHardware(
   );
 }
 
-/** Get studies related to specific software */
-export async function getStudiesBySoftware(
+/** Get research entries related to specific software */
+export async function getResearchBySoftware(
   softwareId: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies.filter(
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.filter(
     (study) =>
       study.data.relatedSoftware?.some(
         (sw) => sw.toLowerCase() === softwareId.toLowerCase(),
@@ -150,61 +150,61 @@ export async function getStudiesBySoftware(
   );
 }
 
-/** Get most cited studies */
-export async function getMostCitedStudies(
+/** Get most cited researchEntries */
+export async function getMostCitedResearch(
   limit: number = 10,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries
     .sort((a, b) => b.data.citations - a.data.citations)
     .slice(0, limit);
 }
 
-/** Get recent studies */
-export async function getRecentStudies(
+/** Get recent researchEntries */
+export async function getRecentResearch(
   limit: number = 10,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
-  return studies
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
+  return researchEntries
     .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
     .slice(0, limit);
 }
 
 /** Get all unique research areas */
 export async function getUniqueResearchAreas(): Promise<string[]> {
-  const studies = await getAllStudies();
-  const areas = studies.flatMap((study) => study.data.researchArea);
+  const researchEntries = await getAllResearch();
+  const areas = researchEntries.flatMap((study) => study.data.researchArea);
   return [...new Set(areas)].sort();
 }
 
 /** Get all unique keywords */
-export async function getUniqueKeywords(): Promise<string[]> {
-  const studies = await getAllStudies();
-  const keywords = studies.flatMap((study) => study.data.keywords);
+export async function getUniqueResearchKeywords(): Promise<string[]> {
+  const researchEntries = await getAllResearch();
+  const keywords = researchEntries.flatMap((study) => study.data.keywords);
   return [...new Set(keywords)].sort();
 }
 
 /** Get all unique venues */
-export async function getUniqueVenues(): Promise<string[]> {
-  const studies = await getAllStudies();
-  const venues = studies
+export async function getUniqueResearchVenues(): Promise<string[]> {
+  const researchEntries = await getAllResearch();
+  const venues = researchEntries
     .map((study) => study.data.venue)
     .filter((venue): venue is string => venue !== undefined);
   return [...new Set(venues)].sort();
 }
 
 /** Get all unique authors */
-export async function getUniqueAuthors(): Promise<
+export async function getUniqueResearchAuthors(): Promise<
   Array<{
     name: string;
     affiliation?: string;
     count: number;
   }>
 > {
-  const studies = await getAllStudies();
+  const researchEntries = await getAllResearch();
   const authorMap = new Map<string, { affiliation?: string; count: number }>();
 
-  studies.forEach((study) => {
+  researchEntries.forEach((study) => {
     study.data.authors.forEach((author) => {
       const existing = authorMap.get(author.personId);
       if (existing) {
@@ -229,9 +229,9 @@ export async function getUniqueAuthors(): Promise<
 }
 
 /** Get study count by type */
-export async function getStudyCountByType(): Promise<Record<string, number>> {
-  const studies = await getAllStudies();
-  return studies.reduce(
+export async function getResearchCountByType(): Promise<Record<string, number>> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.reduce(
     (acc, study) => {
       const type = study.data.type;
       acc[type] = (acc[type] || 0) + 1;
@@ -242,9 +242,9 @@ export async function getStudyCountByType(): Promise<Record<string, number>> {
 }
 
 /** Get study count by year */
-export async function getStudyCountByYear(): Promise<Record<number, number>> {
-  const studies = await getAllStudies();
-  return studies.reduce(
+export async function getResearchCountByYear(): Promise<Record<number, number>> {
+  const researchEntries = await getAllResearch();
+  return researchEntries.reduce(
     (acc, study) => {
       const year = study.data.year;
       acc[year] = (acc[year] || 0) + 1;
@@ -255,13 +255,13 @@ export async function getStudyCountByYear(): Promise<Record<number, number>> {
 }
 
 /** Get study count by research area */
-export async function getStudyCountByResearchArea(): Promise<
+export async function getResearchCountByResearchArea(): Promise<
   Record<string, number>
 > {
-  const studies = await getAllStudies();
+  const researchEntries = await getAllResearch();
   const counts: Record<string, number> = {};
 
-  studies.forEach((study) => {
+  researchEntries.forEach((study) => {
     study.data.researchArea.forEach((area) => {
       counts[area] = (counts[area] || 0) + 1;
     });
@@ -270,14 +270,14 @@ export async function getStudyCountByResearchArea(): Promise<
   return counts;
 }
 
-/** Search studies by query string */
-export async function searchStudies(
+/** Search researchEntries by query string */
+export async function searchResearch(
   query: string,
-): Promise<CollectionEntry<"studies">[]> {
-  const studies = await getAllStudies();
+): Promise<CollectionEntry<"research">[]> {
+  const researchEntries = await getAllResearch();
   const lowerQuery = query.toLowerCase();
 
-  return studies.filter((study) => {
+  return researchEntries.filter((study) => {
     return (
       study.data.title.toLowerCase().includes(lowerQuery) ||
       study.data.abstract.toLowerCase().includes(lowerQuery) ||
@@ -298,20 +298,20 @@ export async function searchStudies(
   });
 }
 
-/** Get related studies (by shared keywords, research areas, or authors) */
-export async function getRelatedStudies(
-  currentStudy: CollectionEntry<"studies">,
+/** Get related researchEntries (by shared keywords, research areas, or authors) */
+export async function getRelatedResearch(
+  currentStudy: CollectionEntry<"research">,
   limit: number = 5,
-): Promise<CollectionEntry<"studies">[]> {
-  const allStudies = await getAllStudies();
+): Promise<CollectionEntry<"research">[]> {
+  const allEntries = await getAllResearch();
 
   // Filter out the current study
-  const otherStudies = allStudies.filter(
+  const otherEntries = allEntries.filter(
     (study) => study.id !== currentStudy.id,
   );
 
   // Score each study based on shared attributes
-  const scored = otherStudies.map((study) => {
+  const scored = otherEntries.map((study) => {
     let score = 0;
 
     // Score for shared keywords
@@ -364,7 +364,7 @@ export async function getRelatedStudies(
       score += sharedSoftware.length * 2;
     }
 
-    // Slight preference for studies from the same year or nearby years
+    // Slight preference for researchEntries from the same year or nearby years
     const yearDiff = Math.abs(study.data.year - currentStudy.data.year);
     if (yearDiff <= 1) {
       score += 1;
@@ -373,7 +373,7 @@ export async function getRelatedStudies(
     return { study, score };
   });
 
-  // Sort by score and return top studies
+  // Sort by score and return top researchEntries
   return scored
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
@@ -381,13 +381,13 @@ export async function getRelatedStudies(
     .map(({ study }) => study);
 }
 
-/** Group studies by year for timeline view */
-export function groupStudiesByYear(
-  studies: CollectionEntry<"studies">[],
-): Record<number, CollectionEntry<"studies">[]> {
-  const grouped: Record<number, CollectionEntry<"studies">[]> = {};
+/** Group researchEntries by year for timeline view */
+export function groupResearchByYear(
+  researchEntries: CollectionEntry<"research">[],
+): Record<number, CollectionEntry<"research">[]> {
+  const grouped: Record<number, CollectionEntry<"research">[]> = {};
 
-  studies.forEach((study) => {
+  researchEntries.forEach((study) => {
     const year = study.data.year;
     if (!grouped[year]) {
       grouped[year] = [];
@@ -395,7 +395,7 @@ export function groupStudiesByYear(
     grouped[year].push(study);
   });
 
-  // Sort studies within each year by citations
+  // Sort researchEntries within each year by citations
   Object.keys(grouped).forEach((key) => {
     const yearGroup = grouped[Number(key)];
     if (yearGroup) {
@@ -406,13 +406,13 @@ export function groupStudiesByYear(
   return grouped;
 }
 
-/** Group studies by type */
-export function groupStudiesByType(
-  studies: CollectionEntry<"studies">[],
-): Record<string, CollectionEntry<"studies">[]> {
-  const grouped: Record<string, CollectionEntry<"studies">[]> = {};
+/** Group researchEntries by type */
+export function groupResearchByType(
+  researchEntries: CollectionEntry<"research">[],
+): Record<string, CollectionEntry<"research">[]> {
+  const grouped: Record<string, CollectionEntry<"research">[]> = {};
 
-  studies.forEach((study) => {
+  researchEntries.forEach((study) => {
     const type = study.data.type;
     if (!grouped[type]) {
       grouped[type] = [];
@@ -423,8 +423,8 @@ export function groupStudiesByType(
   return grouped;
 }
 
-/** Filter studies by multiple criteria */
-export async function filterStudies(criteria: {
+/** Filter researchEntries by multiple criteria */
+export async function filterResearch(criteria: {
   type?: string;
   yearFrom?: number;
   yearTo?: number;
@@ -435,23 +435,23 @@ export async function filterStudies(criteria: {
   minCitations?: number;
   relatedHardware?: string[];
   relatedSoftware?: string[];
-}): Promise<CollectionEntry<"studies">[]> {
-  let studies = await getAllStudies();
+}): Promise<CollectionEntry<"research">[]> {
+  let researchEntries = await getAllResearch();
 
   if (criteria.type) {
-    studies = studies.filter((study) => study.data.type === criteria.type);
+    researchEntries = researchEntries.filter((study) => study.data.type === criteria.type);
   }
 
   if (criteria.yearFrom) {
-    studies = studies.filter((study) => study.data.year >= criteria.yearFrom!);
+    researchEntries = researchEntries.filter((study) => study.data.year >= criteria.yearFrom!);
   }
 
   if (criteria.yearTo) {
-    studies = studies.filter((study) => study.data.year <= criteria.yearTo!);
+    researchEntries = researchEntries.filter((study) => study.data.year <= criteria.yearTo!);
   }
 
   if (criteria.researchAreas && criteria.researchAreas.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.researchAreas!.some((area) =>
         study.data.researchArea.some((studyArea) =>
           studyArea.toLowerCase().includes(area.toLowerCase()),
@@ -461,7 +461,7 @@ export async function filterStudies(criteria: {
   }
 
   if (criteria.keywords && criteria.keywords.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.keywords!.some((keyword) =>
         study.data.keywords.some((studyKeyword) =>
           studyKeyword.toLowerCase().includes(keyword.toLowerCase()),
@@ -471,7 +471,7 @@ export async function filterStudies(criteria: {
   }
 
   if (criteria.authors && criteria.authors.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.authors!.some((author) =>
         study.data.authors.some((studyAuthor) =>
           studyAuthor.personId.toLowerCase().includes(author.toLowerCase()),
@@ -481,7 +481,7 @@ export async function filterStudies(criteria: {
   }
 
   if (criteria.venues && criteria.venues.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.venues!.some(
         (venue) =>
           study.data.venue?.toLowerCase().includes(venue.toLowerCase()) ??
@@ -491,13 +491,13 @@ export async function filterStudies(criteria: {
   }
 
   if (criteria.minCitations !== undefined) {
-    studies = studies.filter(
+    researchEntries = researchEntries.filter(
       (study) => study.data.citations >= criteria.minCitations!,
     );
   }
 
   if (criteria.relatedHardware && criteria.relatedHardware.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.relatedHardware!.some(
         (hw) => study.data.relatedHardware?.includes(hw) ?? false,
       ),
@@ -505,50 +505,50 @@ export async function filterStudies(criteria: {
   }
 
   if (criteria.relatedSoftware && criteria.relatedSoftware.length > 0) {
-    studies = studies.filter((study) =>
+    researchEntries = researchEntries.filter((study) =>
       criteria.relatedSoftware!.some(
         (sw) => study.data.relatedSoftware?.includes(sw) ?? false,
       ),
     );
   }
 
-  return studies;
+  return researchEntries;
 }
 
 /** Get study statistics */
-export async function getStudyStatistics(): Promise<{
+export async function getResearchStatistics(): Promise<{
   total: number;
   byType: Record<string, number>;
   byYear: Record<number, number>;
   averageCitations: number;
   totalCitations: number;
-  mostCitedStudy?: CollectionEntry<"studies">;
-  mostRecentStudy?: CollectionEntry<"studies">;
+  mostCitedStudy?: CollectionEntry<"research">;
+  mostRecentStudy?: CollectionEntry<"research">;
   uniqueAuthorsCount: number;
   uniqueVenuesCount: number;
 }> {
-  const studies = await getAllStudies();
-  const totalCitations = studies.reduce(
+  const researchEntries = await getAllResearch();
+  const totalCitations = researchEntries.reduce(
     (sum, study) => sum + study.data.citations,
     0,
   );
   const averageCitations =
-    studies.length > 0 ? totalCitations / studies.length : 0;
+    researchEntries.length > 0 ? totalCitations / researchEntries.length : 0;
 
-  const sortedByCitations = [...studies].sort(
+  const sortedByCitations = [...researchEntries].sort(
     (a, b) => b.data.citations - a.data.citations,
   );
-  const sortedByDate = [...studies].sort(
+  const sortedByDate = [...researchEntries].sort(
     (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime(),
   );
 
-  const authors = await getUniqueAuthors();
-  const venues = await getUniqueVenues();
+  const authors = await getUniqueResearchAuthors();
+  const venues = await getUniqueResearchVenues();
 
   return {
-    total: studies.length,
-    byType: await getStudyCountByType(),
-    byYear: await getStudyCountByYear(),
+    total: researchEntries.length,
+    byType: await getResearchCountByType(),
+    byYear: await getResearchCountByYear(),
     averageCitations: Math.round(averageCitations),
     totalCitations,
     ...(sortedByCitations[0] && { mostCitedStudy: sortedByCitations[0] }),
@@ -559,7 +559,7 @@ export async function getStudyStatistics(): Promise<{
 }
 
 /** Get co-authorship network data */
-export async function getCoAuthorshipNetwork(): Promise<{
+export async function getResearchCoAuthorshipNetwork(): Promise<{
   nodes: Array<{
     id: string;
     name: string;
@@ -568,12 +568,12 @@ export async function getCoAuthorshipNetwork(): Promise<{
   }>;
   edges: Array<{ source: string; target: string; weight: number }>;
 }> {
-  const studies = await getAllStudies();
-  const nodes = await getUniqueAuthors();
+  const researchEntries = await getAllResearch();
+  const nodes = await getUniqueResearchAuthors();
   const edges: Map<string, number> = new Map();
 
   // Build co-authorship edges
-  studies.forEach((study) => {
+  researchEntries.forEach((study) => {
     const authors = study.data.authors;
     for (let i = 0; i < authors.length; i++) {
       for (let j = i + 1; j < authors.length; j++) {

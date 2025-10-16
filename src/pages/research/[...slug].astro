@@ -11,7 +11,7 @@ import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import InfoCard from "@/components/detail/InfoCard.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
-import { getAllStudies } from "@/data/studies";
+import { getAllResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
 import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/OrganizationChip.astro";
@@ -22,86 +22,88 @@ import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 
 export async function getStaticPaths() {
-  const studies = await getCollection("studies", ({ data }) => {
+  const researchEntries = await getCollection("research", ({ data }) => {
     // In production, exclude drafts. In development, show all.
     return import.meta.env.PROD ? data.draft !== true : true;
   });
-  return studies.map((entry) => ({
+  return researchEntries.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
   }));
 }
 
 type Props = {
-  entry: CollectionEntry<"studies">;
+  entry: CollectionEntry<"research">;
 };
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { data } = entry;
 
-// Get related studies (by keywords or research areas)
-async function getRelatedStudies(
-  study: CollectionEntry<"studies">,
+// Get related research entries (by keywords or research areas)
+async function getRelatedResearch(
+  researchEntry: CollectionEntry<"research">,
   limit: number = 3,
 ) {
-  const allStudies = await getAllStudies();
-  const relatedStudies: CollectionEntry<"studies">[] = [];
+  const allResearch = await getAllResearch();
+  const relatedResearch: CollectionEntry<"research">[] = [];
 
-  // Filter out the current study
-  const otherStudies = allStudies.filter((s) => s.id !== study.id);
+  // Filter out the current entry
+  const otherEntries = allResearch.filter((item) => item.id !== researchEntry.id);
 
-  // Score each study based on similarity
-  const scoredStudies = otherStudies.map((s) => {
+  // Score each entry based on similarity
+  const scoredEntries = otherEntries.map((item) => {
     let score = 0;
 
     // Same type gets points
-    if (s.data.type === study.data.type) score += 2;
+    if (item.data.type === researchEntry.data.type) score += 2;
 
     // Same venue gets points
-    if (s.data.venue && s.data.venue === study.data.venue) score += 3;
+    if (item.data.venue && item.data.venue === researchEntry.data.venue) score += 3;
 
     // Close year gets points (within 2 years)
-    const yearDiff = Math.abs(s.data.year - study.data.year);
+    const yearDiff = Math.abs(item.data.year - researchEntry.data.year);
     if (yearDiff <= 2) score += 3 - yearDiff;
 
     // Overlapping keywords get points
-    const studyKeywords = new Set(study.data.keywords || []);
-    const otherKeywords = s.data.keywords || [];
+    const entryKeywords = new Set(researchEntry.data.keywords || []);
+    const otherKeywords = item.data.keywords || [];
     const keywordOverlap = otherKeywords.filter((kw) =>
-      studyKeywords.has(kw),
+      entryKeywords.has(kw),
     ).length;
     score += keywordOverlap * 2;
 
     // Overlapping research areas get points
-    const studyAreas = new Set(study.data.researchArea || []);
-    const otherAreas = s.data.researchArea || [];
+    const entryAreas = new Set(researchEntry.data.researchArea || []);
+    const otherAreas = item.data.researchArea || [];
     const areaOverlap = otherAreas.filter((area) =>
-      studyAreas.has(area),
+      entryAreas.has(area),
     ).length;
     score += areaOverlap * 2;
 
     // Shared authors get high points
-    const studyAuthors = new Set(study.data.authors.map((a) => a.personId));
-    const otherAuthors = s.data.authors.map((a) => a.personId);
+    const entryAuthors = new Set(
+      researchEntry.data.authors.map((author) => author.personId),
+    );
+    const otherAuthors = item.data.authors.map((author) => author.personId);
     const authorOverlap = otherAuthors.filter((id) =>
-      studyAuthors.has(id),
+      entryAuthors.has(id),
     ).length;
     score += authorOverlap * 5;
 
-    return { study: s, score };
+    return { entry: item, score };
   });
 
   // Sort by score and take the top ones
-  scoredStudies.sort((a, b) => b.score - a.score);
+  scoredEntries.sort((a, b) => b.score - a.score);
 
-  return scoredStudies
+  return scoredEntries
     .filter((ss) => ss.score > 0)
     .slice(0, limit)
-    .map((ss) => ss.study);
+    .map((ss) => ss.entry);
 }
 
-const relatedStudies = await getRelatedStudies(entry, 3);
+const relatedResearch = await getRelatedResearch(entry, 3);
 
 // Get formatted authors string
 const authorsString = await getFormattedAuthors(data.authors);
@@ -255,7 +257,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
         badges={badges}
         featured={data.featured}
         thumbnail={data.images?.logo}
-        entityType="study"
+        entityType="entry"
       />
     </Fragment>
 
@@ -490,37 +492,37 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
         )
       }
 
-      {/* Related Studies */}
+      {/* Related Research */}
       {
-        relatedStudies && relatedStudies.length > 0 && (
+        relatedResearch && relatedResearch.length > 0 && (
           <RelatedItemsGrid
             client:load
-            title="Related Studies"
-            subtitle="Similar research papers and reports"
+            title="Related Research"
+            subtitle="Related papers, datasets, and benchmarks"
             items={
-              relatedStudies.map((study) => ({
-                id: study.id,
+              relatedResearch.map((entry) => ({
+                id: entry.id,
                 data: {
-                  name: study.data.title,
-                  title: study.data.title,
+                  name: entry.data.title,
+                  title: entry.data.title,
                   displayName: undefined,
-                  description: study.data.abstract,
-                  abstract: study.data.abstract,
+                  description: entry.data.abstract,
+                  abstract: entry.data.abstract,
                   status: undefined,
-                  type: study.data.type,
+                  type: entry.data.type,
                   category: undefined,
-                  featured: study.data.featured,
-                  images: study.data.images,
+                  featured: entry.data.featured,
+                  images: entry.data.images,
                   avatar: undefined,
                   logo: undefined,
                   thumbnail: undefined,
                   banner: undefined,
-                  links: study.data.links,
-                  shortDescription: `${typeLabels[study.data.type] || study.data.type} • ${study.data.year}`,
+                  links: entry.data.links,
+                  shortDescription: `${typeLabels[entry.data.type] || entry.data.type} • ${entry.data.year}`,
                 },
               })) as any
             }
-            itemType="studies"
+            itemType="research"
             columns={3}
           />
         )

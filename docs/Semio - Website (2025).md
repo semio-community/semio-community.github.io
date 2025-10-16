@@ -20,7 +20,7 @@
 
 [**2.3 Software (/software)	5**](#2.3-software-\(/software\))
 
-[**2.4 Studies (/studies)	5**](#2.4-studies-\(/studies\))
+[**2.4 Research (/research)	5**](#2.4-research-\(/research\))
 
 [**2.5 Events (/events)	5**](#2.5-events-\(/events\))
 
@@ -133,7 +133,7 @@
 
 * **Tagline:** science as a service / reproducible science and systems for human-centered robotics and artificial intelligence  
 * **Banner:** Join the mailing list\!  
-* **Mission:** Semio Community is a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and studies to foster repeatable, reproducible, and replicable science and reusable systems within human-robot interaction (HRI).  
+* **Mission:** Semio Community is a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and research to foster repeatable, reproducible, and replicable science and reusable systems within human-robot interaction (HRI).  
 * **Values:** Semio Community actively encourages multidisciplinary collaboration among academia, industry, and the public sector to drive innovation, ethical practices, and the widespread adoption of human-centered robotics and AI technologies.  
 * **Connect:**  
   * Form  
@@ -180,15 +180,15 @@
   * Studio (?)  
   * Vizij
 
-## **2.4	Studies (/studies)** {#2.4-studies-(/studies)}
+## **2.4	Research (/research)** {#2.4-research-(/research)}
 
 * **Buttons:** Browse / Contribute  
 * **Services:**  
   * Populations  
-  * Studies  
+  * Research  
   * Analysis  
 * **Products:**  
-  * Studies Portal
+  * Research Portal
 
 ## **2.5	Events (/events)** {#2.5-events-(/events)}
 
@@ -525,7 +525,7 @@
 
 ## **2.8 	About (/about)** {#2.8-about-(/about)}
 
-* **Mission:** Semio Community is a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and studies to foster repeatable, reproducible, and replicable science and reusable systems within human-robot interaction (HRI).  
+* **Mission:** Semio Community is a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and research to foster repeatable, reproducible, and replicable science and reusable systems within human-robot interaction (HRI).  
 * **Values:** Semio Community actively encourages multidisciplinary collaboration among academia, industry, and the public sector to drive innovation, ethical practices, and the widespread adoption of human-centered robotics technologies.  
 * **Contact:**  
   * Ross Mead (ross@community.semio.ai)

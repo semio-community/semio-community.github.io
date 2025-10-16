@@ -10,12 +10,12 @@ import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import ContentSection from "@/components/detail/ContentSection.astro";
-import StudyCard from "@/components/cards/StudyCard.astro";
+import ResearchCard from "@/components/cards/ResearchCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 import EventCard from "@/components/cards/EventCard.astro";
 import { getPeopleByExpertise, getPeopleByOrganization } from "@/data/people";
-import { getAllStudies } from "@/data/studies";
+import { getAllResearch } from "@/data/research";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import OrganizationChip from "@/components/OrganizationChip.astro";
@@ -92,9 +92,9 @@ const relatedPeople = await getRelatedPeople(entry, 3);
 
 // Get related content by this person
 async function getPersonRelatedContent(personId: string) {
-  // Get studies where this person is an author
-  const allStudies = await getAllStudies();
-  const studies = allStudies.filter((study) =>
+  // Get research where this person is an author
+  const allResearch = await getAllResearch();
+  const research = allResearch.filter((study) =>
     study.data.authors?.some((author) => author.personId === personId),
   );
 
@@ -120,7 +120,7 @@ async function getPersonRelatedContent(personId: string) {
   // are not available in the simplified roles schema.
   const events: CollectionEntry<"events">[] = [];
 
-  return { studies, hardware, software, events };
+  return { research, hardware, software, events };
 }
 
 const relatedContent = await getPersonRelatedContent(entry.id);
@@ -419,7 +419,7 @@ if (data.links?.mastodon) {
     {/* Related Content */}
     <Fragment slot="related">
       {
-        (relatedContent.studies.length > 0 ||
+        (relatedContent.research.length > 0 ||
           relatedContent.hardware.length > 0 ||
           relatedContent.software.length > 0 ||
           relatedContent.events.length > 0) && (
@@ -429,13 +429,13 @@ if (data.links?.mastodon) {
               Research, projects, and events
             </p>
 
-            {/* Studies Grid */}
-            {relatedContent.studies.length > 0 && (
+            {/* Research Grid */}
+            {relatedContent.research.length > 0 && (
               <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Studies</h3>
+                <h3 class="text-lg font-semibold mb-4">Research</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.studies.map((study) => (
-                    <StudyCard studyId={study.id} />
+                  {relatedContent.research.map((item) => (
+                    <ResearchCard researchId={item.id} />
                   ))}
                 </div>
               </div>

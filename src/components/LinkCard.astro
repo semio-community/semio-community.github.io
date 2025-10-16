@@ -2,19 +2,18 @@
 import { Icon } from "astro-icon/components";
 
 export interface Props {
-  href: string;
   icon: string;
   title: string;
   description?: string;
   class?: string;
+  extraLinks?: {label:string,href:string}[]
 }
 
-const { href, icon, title, description, class: className = "" } = Astro.props;
+const { icon, title, description, class: className = "", extraLinks=[] } = Astro.props;
 ---
 
-<a
-  href={href}
-  class={`group p-4 sm:p-6 bg-special-lighter rounded-lg hover:bg-special-lightest transition-all text-center ${className}`}
+<div
+  class={`group p-4 sm:p-6 bg-special-lighter rounded-lg transition-all text-center ${className}`}
 >
   <Icon
     name={icon}
@@ -23,7 +22,15 @@ const { href, icon, title, description, class: className = "" } = Astro.props;
   <h3 class="text-lg font-semibold mb-2">{title}</h3>
   {
     description && (
-      <p class="text-sm text-color-600 dark:text-color-400">{description}</p>
+      <p class="text-sm text-accent-base/70">{description}</p>
     )
   }
-</a>
+
+  {extraLinks.length > 0 && (
+    <div class="flex w-full gap-3 mt-3 pt-3 border-t-1 border-accent-two/10">
+      {extraLinks.map(extraLink=>(
+        <a class='rounded-md p-1 outline outline-accent-two bg-accent-two/10 hover:bg-accent-two/30 text-accent-base transition-colors flex-1' href={extraLink.href}>{extraLink.label}</a>
+      ))}
+    </div>
+  )}
+</div>

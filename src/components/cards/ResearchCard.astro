@@ -1,0 +1,24 @@
+---
+import { getEntry } from "astro:content";
+import { ResearchCard as ResearchCardReact } from "./ResearchCard";
+
+interface Props {
+  researchId: string;
+  className?: string;
+}
+
+const { researchId, className } = Astro.props;
+
+const research = await getEntry("research", researchId);
+
+if (!research) {
+  return null;
+}
+---
+
+<ResearchCardReact
+  client:load
+  researchId={researchId}
+  data={research.data}
+  className={className}
+/>

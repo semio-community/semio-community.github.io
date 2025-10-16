@@ -6,7 +6,7 @@ import { DetailHero } from "@/components/detail/DetailHero";
 import InfoCard from "@/components/detail/InfoCard.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
-import StudyCard from "@/components/cards/StudyCard.astro";
+import ResearchCard from "@/components/cards/ResearchCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 import PartnerCard from "@/components/cards/PartnerCard.astro";
@@ -86,11 +86,12 @@ const relatedPartners = await getRelatedPartners(entry, 3);
 
 // Get related content for this partner
 async function getPartnerRelatedContent(partnerId: string) {
-  // TODO: Re-enable when studies have institutions field
-  // const studies = allStudies.filter((study) =>
-  //   study.data.institutions?.some((inst: any) => inst.partnerId === partnerId),
+  // TODO: Re-enable when research entries include institution references
+  // const allResearch = await getAllResearch();
+  // const research = allResearch.filter((entry) =>
+  //   entry.data.institutions?.some((inst: any) => inst.partnerId === partnerId),
   // );
-  const studies: any[] = []; // Placeholder until studies schema includes institutions
+  const research: any[] = []; // Placeholder until research schema includes institutions
 
   // Get hardware where this partner is lead or supporting
   const allHardware = await getAllHardware();
@@ -119,7 +120,7 @@ async function getPartnerRelatedContent(partnerId: string) {
   // Event participation is now captured at the Semio-community level only.
   const events: CollectionEntry<"events">[] = [];
 
-  return { studies, hardware, software, events };
+  return { research, hardware, software, events };
 }
 
 const relatedContent = await getPartnerRelatedContent(entry.id);
@@ -432,7 +433,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     {/* Related Content */}
     <Fragment slot="related">
       {
-        (relatedContent.studies.length > 0 ||
+        (relatedContent.research.length > 0 ||
           relatedContent.hardware.length > 0 ||
           relatedContent.software.length > 0 ||
           relatedContent.events.length > 0) && (
@@ -443,13 +444,13 @@ const categoryLabel = categoryLabels[data.category] || data.category;
               {data.shortName || data.name}
             </p>
 
-            {/* Studies Grid */}
-            {relatedContent.studies.length > 0 && (
+            {/* Research Grid */}
+            {relatedContent.research.length > 0 && (
               <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Studies</h3>
+                <h3 class="text-lg font-semibold mb-4">Research</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.studies.map((study) => (
-                    <StudyCard studyId={study.id} />
+                  {relatedContent.research.map((item) => (
+                    <ResearchCard researchId={item.id} />
                   ))}
                 </div>
               </div>

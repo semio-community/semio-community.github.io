@@ -8,7 +8,7 @@ import { url } from "@/utils/url";
 import { Icon } from "astro-icon/components";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { getAllStudies } from "@/data/studies";
+import { getAllResearch } from "@/data/research";
 import { getCurrentEvents, getFeaturedEvents, getUpcomingEvents } from "@/data/events";
 
 const allHardware = await getAllHardware();
@@ -16,10 +16,10 @@ const allHardware = await getAllHardware();
 // Fetch software from content collections
 const allSoftware = await getAllSoftware();
 
-// Fetch studies data - handle empty collection gracefully
-const allStudies = await getAllStudies();
+// Fetch research data - handle empty collection gracefully
+const allResearch = await getAllResearch();
 
-const projectCount = allHardware.length + allSoftware.length + allStudies.length;
+const projectCount = allHardware.length + allSoftware.length + allResearch.length;
 
 const currentDate = new Date();
 
@@ -89,20 +89,20 @@ const featuredEvents = [
       <div class="flex flex-wrap justify-center gap-4 mb-8">
         <CallToActionButton
           href={url("projects")}
-          text="Projects"
+          text="Active Projects"
           size="large"
           indicatorText={projectCount.toString()}
         />
         <CallToActionButton
           href={url("services")}
-          text="Services"
+          text="Available Services"
           size="large"
           variant="secondary"
           indicatorText="15"
         />
         <CallToActionButton
           href={url("events")}
-          text="Events"
+          text="Upcoming Events"
           size="large"
           variant="tertiary"
           indicatorText={featuredEvents?.length?.toString()}
@@ -124,7 +124,7 @@ const featuredEvents = [
           Semio Community is a <span class="font-semibold"
             >501(c)(3) nonprofit organization</span
           > facilitating community-driven robotics hardware, software, and research
-          to foster repeatable, reproducible, and replicable science and reusable
+          to foster reproducible, replicable, and generalizable science and reusable
           systems within human-robot interaction (HRI).
         </p>
 
@@ -136,7 +136,7 @@ const featuredEvents = [
             />
             <h3 class="font-semibold mb-2">Community-Driven</h3>
             <p class="text-sm text-accent-base/50">
-              Fostering collaboration and knowledge sharing across disciplines
+              Fostering collaboration and knowledge-sharing across disciplines
             </p>
           </div>
           <div class="text-center">
@@ -154,9 +154,9 @@ const featuredEvents = [
               name="hugeicons:book-open-01"
               class="w-12 h-12 mx-auto mb-3 text-accent-one"
             />
-            <h3 class="font-semibold mb-2">Replicable Science</h3>
+            <h3 class="font-semibold mb-2">Replicable</h3>
             <p class="text-sm text-accent-base/50">
-              Promoting reproducible research and reusable systems
+              Promoting reproducible scientific research and reusable systems
             </p>
           </div>
         </div>
@@ -168,7 +168,7 @@ const featuredEvents = [
         <p class="text-lg leading-relaxed text-center">
           Semio Community is a <span class="font-semibold"
             >501(c)(3) nonprofit organization</span
-          > facilitating community-driven robotics hardware, software, and studies
+          > facilitating community-driven robotics hardware, software, and research
           to foster repeatable, reproducible, and replicable science and reusable
           systems within human-robot interaction (HRI).
         </p>
@@ -179,7 +179,7 @@ const featuredEvents = [
           Founded with the belief that the future of robotics lies in
           collaborative innovation, we work to break down barriers between
           research and application, making cutting-edge robotics technology
-          accessible to researchers, educators, and developers worldwide.
+          accessible to researchers, developers, and educators worldwide.
         </p>
       </div>
     </div>
@@ -189,35 +189,56 @@ const featuredEvents = [
   <Section
     id="programs"
     title="Our Programs"
-    subtitle="Discover our initiatives in hardware, software, and research"
+    subtitle="Discover our projects and services for robotics hardware, software, and research"
     aria-label="Explore"
   >
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-0 overflow-x-hidden">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-0 overflow-x-hidden mb-8">
       <div
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
       >
         <LinkCard
-          href={url("projects#hardware")}
           icon="solar:cpu-bolt-line-duotone"
           title="Hardware"
-          description="Community-driven robotics platforms"
+          description="Community-driven robotics hardware platforms"
+          extraLinks={[
+            {label: "Projects", href: url("projects#hardware")},
+            {label: "Services", href: url("services#hardware")}
+          ]}
         />
 
         <LinkCard
-          href={url("projects#software")}
           icon="solar:code-square-line-duotone"
           title="Software"
-          description="Open-source tools and frameworks"
+          description="Open-source AI software tools and frameworks"
+          extraLinks={[
+            {label: "Projects", href: url("projects#software")},
+            {label: "Services", href: url("services#software")}
+          ]}
         />
 
         <LinkCard
-          href={url("projects#studies")}
           icon="solar:test-tube-line-duotone"
-          title="Studies"
-          description="Reproducible research initiatives"
+          title="Research"
+          description="Reproducible scientific research and studies"
+          extraLinks={[
+            {label: "Projects", href: url("projects#research")},
+            {label: "Services", href: url("services#research")}
+          ]}
         />
       </div>
     </div>
+
+    <div class="prose prose-citrus max-w-none text-center">
+        <p class="text-center text-color-600 dark:text-color-400 mb-4">
+          Gather with the community at our events, which explore on a broad range of topics, including, but not limited to, human-centered robot hardware, software, and research that, with reasonable effort, can be incorporated into the design, development, or deployment of an HRI system.
+        </p>
+        <CallToActionButton
+          href={url("events")}
+          text="Upcoming Events"
+          size="large"
+          variant="default"
+        />
+      </div>
   </Section>
 
   <Section
@@ -231,7 +252,7 @@ const featuredEvents = [
           Semio Community actively encourages multidisciplinary collaboration
           among academia, industry, and the public sector to drive innovation,
           ethical practices, and the widespread adoption of human-centered
-          robotics technologies.
+          robotics and AI technologies.
         </p>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

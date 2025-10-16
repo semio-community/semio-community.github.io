@@ -1,12 +1,14 @@
 import React from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
 import {
-  AltArrowRight,
-  Document2,
+  DocumentText,
   Gallery,
-  Route,
-  Star,
+  Global,
+  Star as StarOutline
 } from "@solar-icons/react-perf/LineDuotone";
+import {
+  Star
+} from "@solar-icons/react-perf/Bold";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
 export interface ItemCardProps {
@@ -31,7 +33,7 @@ export interface ItemCardProps {
   statusLabel?: string;
   category?: string;
   featured?: boolean;
-  type?: "hardware" | "software" | "people" | "partners" | "studies" | "events";
+  type?: "hardware" | "software" | "people" | "partners" | "research" | "events";
   links?: {
     github?: string;
     docs?: string;
@@ -77,7 +79,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     software: "software",
     people: "person",
     partners: "organization",
-    studies: "study",
+    research: "study",
     events: "event",
   };
 
@@ -135,9 +137,9 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Title */}
         <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center justify-between gap-2">
           <span className="truncate">{title}</span>
-          {featured && (
+          {featured ? (
             <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
-          )}
+          ) : <StarOutline className="w-5 h-5 text-neutral-500/50 flex-shrink-0" /> }
         </h3>
 
         {/* Description */}
@@ -149,7 +151,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
         {/* Footer section */}
         <div className="flex items-center justify-between mt-auto pt-2">
-          <div className="flex items-center gap-3">
+          <div className="flex items-centerb justify-between gap-3 w-full">
             {/* Status */}
             {displayStatus && (
               <span className={`text-sm ${statusColor}`}>{displayStatus}</span>
@@ -165,45 +167,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
             {/* External links */}
             {links && (
               <div className="flex gap-2">
-                {links.github && (
-                  <button
-                    type="button"
-                    className="text-color-600 hover:text-accent-one transition-colors p-0 bg-transparent border-0"
-                    title="GitHub"
-                    onClick={(e) => handleLinkClick(e, links.github!)}
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
-                    </svg>
-                  </button>
-                )}
-                {links.docs && (
-                  <button
-                    type="button"
-                    className="text-color-600 hover:text-accent-one transition-colors p-0 bg-transparent border-0"
-                    title="Documentation"
-                    onClick={(e) => handleLinkClick(e, links.docs!)}
-                  >
-                    <Document2 className="w-4 h-4" />
-                    {/*<svg
-                      className="w-4 h-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="14" x2="8" y2="14"></line>
-                      <line x1="16" y1="18" x2="8" y2="18"></line>
-                      <line x1="10" y1="10" x2="8" y2="10"></line>
-                    </svg>*/}
-                  </button>
-                )}
                 {links.demo && (
                   <button
                     type="button"
@@ -224,6 +187,45 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     </svg>*/}
                   </button>
                 )}
+                {links.docs && (
+                  <button
+                    type="button"
+                    className="text-color-600 hover:text-accent-one transition-colors p-0 bg-transparent border-0"
+                    title="Documentation"
+                    onClick={(e) => handleLinkClick(e, links.docs!)}
+                  >
+                    <DocumentText className="w-4 h-4" />
+                    {/*<svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="14" x2="8" y2="14"></line>
+                      <line x1="16" y1="18" x2="8" y2="18"></line>
+                      <line x1="10" y1="10" x2="8" y2="10"></line>
+                    </svg>*/}
+                  </button>
+                )}
+                {links.github && (
+                  <button
+                    type="button"
+                    className="text-color-600 hover:text-accent-one transition-colors p-0 bg-transparent border-0"
+                    title="GitHub"
+                    onClick={(e) => handleLinkClick(e, links.github!)}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
+                    </svg>
+                  </button>
+                )}
                 {links.website && (
                   <button
                     type="button"
@@ -231,7 +233,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
                     title="Website"
                     onClick={(e) => handleLinkClick(e, links.website!)}
                   >
-                    <Route className="w-4 h-4" />
+                    <Global className="w-4 h-4" />
                     {/*<svg
                       className="w-4 h-4"
                       viewBox="0 0 24 24"
@@ -250,7 +252,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
           </div>
 
           {/* Arrow icon */}
-          <AltArrowRight className="w-5 h-5 text-accent-one group-hover:text-accent-two transition-colors" />
           {/*<svg
             className="w-5 h-5 text-accent-one group-hover:text-accent-two transition-colors"
             viewBox="0 0 24 24"

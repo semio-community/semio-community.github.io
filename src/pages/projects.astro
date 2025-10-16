@@ -3,18 +3,18 @@ import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
-import StudyCard from "@/components/cards/StudyCard.astro";
+import ResearchCard from "@/components/cards/ResearchCard.astro";
 import CallToActionButton from "@/components/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { getAllStudies } from "@/data/studies";
+import { getAllResearch } from "@/data/research";
 import Hero from "@/components/Hero.astro";
 
 const meta = {
   title: "Projects",
   description:
-    "Explore community-driven robotics hardware platforms, open-source software tools, and reproducible research studies advancing human-robot interaction",
+    "Explore community-driven robotics hardware platforms, open-source software tools, and reproducible research contributions advancing human-robot interaction",
 };
 
 // Fetch hardware from content collections
@@ -23,29 +23,29 @@ const allHardware = await getAllHardware();
 // Fetch software from content collections
 const allSoftware = await getAllSoftware();
 
-// Fetch studies data - handle empty collection gracefully
-const allStudies = await getAllStudies();
+// Fetch research data - handle empty collection gracefully
+const allResearch = await getAllResearch();
 
-// let featuredStudies = [];
-// let studyStatistics = null;
-// let featuredStudiesWithAuthors: any[] = [];
+// let featuredResearch = [];
+// let researchStatistics = null;
+// let featuredResearchWithAuthors: any[] = [];
 
 // try {
 //   // Dynamically import to avoid build errors when collection is empty
-//   const studiesModule = await import("@/data/studies");
-//   featuredStudies = await studiesModule.getFeaturedStudies();
-//   studyStatistics = await studiesModule.getStudyStatistics();
+//   const researchModule = await import("@/data/research");
+//   featuredResearch = await researchModule.getFeaturedResearch();
+//   researchStatistics = await researchModule.getResearchStatistics();
 
-//   // Pre-fetch author names for featured studies
-//   featuredStudiesWithAuthors = await Promise.all(
-//     featuredStudies.slice(0, featuredStudies.length).map(async (study) => ({
-//       ...study,
-//       authorString: await getFormattedAuthors(study.data.authors, 1),
+//   // Pre-fetch author names for featured research
+//   featuredResearchWithAuthors = await Promise.all(
+//     featuredResearch.slice(0, featuredResearch.length).map(async (entry) => ({
+//       ...entry,
+//       authorString: await getFormattedAuthors(entry.data.authors, 1),
 //     })),
 //   );
 // } catch (error) {
-//   // Studies collection is empty or doesn't exist
-//   console.log("Studies collection not available");
+//   // Research collection is empty or doesn't exist
+//   console.log("Research collection not available");
 // }
 ---
 
@@ -67,7 +67,7 @@ const allStudies = await getAllStudies();
         class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
       >
         Discover and contribute to our growing ecosystem of community-driven
-        robotics hardware, software, and research studies.
+        robotics hardware, software, and research projects.
       </p>
 
       <!-- CTA Button -->
@@ -86,11 +86,11 @@ const allStudies = await getAllStudies();
           indicatorText={allSoftware.length?.toString()}
         />
         <CallToActionButton
-          href="#studies"
+          href="#research"
           text="Research Projects"
           size="large"
           variant="tertiary"
-          indicatorText={allStudies.length?.toString()}
+          indicatorText={allResearch.length?.toString()}
         />
       </div>
     </Hero>
@@ -100,7 +100,7 @@ const allStudies = await getAllStudies();
   <Section
     id="hardware"
     title="Hardware Projects"
-    subtitle="Open-source robotics hardware for research and education"
+    subtitle="Community-driven robotics hardware for research and education"
   >
     <div class="max-w-6xl mx-auto">
       {
@@ -160,7 +160,7 @@ const allStudies = await getAllStudies();
   <Section
     id="software"
     title="Software Projects"
-    subtitle="Comprehensive tools for every aspect of HRI development"
+    subtitle="Comprehensive software tools for every aspect of HRI development"
   >
     <div class="max-w-6xl mx-auto">
       {
@@ -216,38 +216,38 @@ const allStudies = await getAllStudies();
     </div>
   </Section>
 
-  <!-- Studies Section -->
+  <!-- Research Section -->
   <Section
-    id="studies"
+    id="research"
     title="Research Projects"
-    subtitle="Reproducible human-robot interaction research advancing the field"
+    subtitle="Reproducible science and studies advancing the field of human-robot interaction"
   >
     <div class="max-w-6xl mx-auto">
       {
-        allStudies.length > 0 ? (
+        allResearch.length > 0 ? (
           <div data-expandable-section data-initial-count="6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               data-items-container
             >
-              {allStudies.map((st, index) => (
+              {allResearch.map((st, index) => (
                 <div
                   data-expandable-item
                   data-index={index}
                   class={index >= 6 ? "hidden" : ""}
                 >
-                  <StudyCard studyId={st.id} />
+                  <ResearchCard researchId={st.id} />
                 </div>
               ))}
             </div>
-            {allStudies.length > 6 && (
+            {allResearch.length > 6 && (
               <div class="text-center mt-8">
                 <button
                   data-expand-button
                   class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
                 >
                   <span data-expand-text>
-                    View All {allStudies.length} Tools
+                    View All {allResearch.length} Publications
                   </span>
                   <span data-collapse-text class="hidden">
                     Show Less
@@ -264,11 +264,11 @@ const allStudies = await getAllStudies();
         ) : (
           <div class="text-center py-12">
             <Icon
-              name="solar:code-2-line-duotone"
+              name="solar:document-add-line-duotone"
               class="w-24 h-24 mx-auto mb-4 text-color-300"
             />
             <p class="text-lg text-color-600 dark:text-color-400">
-              Research studies coming soon! Check back later for updates.
+              Research publications coming soon! Check back later for updates.
             </p>
           </div>
         )
