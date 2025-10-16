@@ -46,7 +46,7 @@ export async function getPersonWithAffiliations(personId: string) {
   const affiliations = await Promise.all(
     (person.data.affiliations || []).map(async (aff) => ({
       ...aff,
-      organization: await getEntry("partners", aff.partnerId),
+      organization: await getEntry("organizations", aff.partnerId),
     })),
   );
 

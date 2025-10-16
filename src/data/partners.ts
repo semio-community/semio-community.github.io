@@ -1,11 +1,13 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all partners, sorted by featured status, order, and name */
-export async function getAllPartners(): Promise<CollectionEntry<"partners">[]> {
-  const partners = await getCollection("partners", ({ data }) => {
+export async function getAllPartners(): Promise<CollectionEntry<"organizations">[]> {
+  const organizations = await getCollection("organizations", ({ data }) => {
     // In production, exclude drafts. In development, show all.
     return import.meta.env.PROD ? data.draft !== true : true;
   });
+  const partners = organizations.filter((org) => org.data.isPartner);
+
   return partners.sort((a, b) => {
     // Sort by featured first
     if (a.data.featured !== b.data.featured) {
@@ -30,7 +32,7 @@ export async function getAllPartners(): Promise<CollectionEntry<"partners">[]> {
 /** Get partners filtered by type */
 export async function getPartnersByType(
   type: "academic" | "industry" | "nonprofit" | "government" | "community",
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
   return partners.filter((partner) => partner.data.type === type);
 }
@@ -43,14 +45,14 @@ export async function getPartnersByCategory(
     | "funding"
     | "infrastructure"
     | "outreach",
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
   return partners.filter((partner) => partner.data.category === category);
 }
 
 /** Get only featured partners */
 export async function getFeaturedPartners(): Promise<
-  CollectionEntry<"partners">[]
+  CollectionEntry<"organizations">[]
 > {
   const partners = await getAllPartners();
   return partners.filter((partner) => partner.data.featured);
@@ -58,7 +60,7 @@ export async function getFeaturedPartners(): Promise<
 
 /** Get only active partners */
 export async function getActivePartners(): Promise<
-  CollectionEntry<"partners">[]
+  CollectionEntry<"organizations">[]
 > {
   const partners = await getAllPartners();
   return partners.filter((partner) => partner.data.collaboration.active);
@@ -66,7 +68,7 @@ export async function getActivePartners(): Promise<
 
 /** Get inactive partners */
 export async function getInactivePartners(): Promise<
-  CollectionEntry<"partners">[]
+  CollectionEntry<"organizations">[]
 > {
   const partners = await getAllPartners();
   return partners.filter((partner) => !partner.data.collaboration.active);
@@ -75,7 +77,7 @@ export async function getInactivePartners(): Promise<
 /** Get partners by collaboration area */
 export async function getPartnersByCollaborationArea(
   area: string,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
   return partners.filter((partner) =>
     partner.data.collaboration.areas.some(
@@ -88,7 +90,7 @@ export async function getPartnersByCollaborationArea(
 export async function getPartnersByLocation(location: {
   city?: string;
   country?: string;
-}): Promise<CollectionEntry<"partners">[]> {
+}): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
 
   return partners.filter((partner) => {
@@ -116,7 +118,7 @@ export async function getPartnersByLocation(location: {
 /** Get partners involved in a specific project */
 export async function getPartnersByProject(
   projectName: string,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
   return partners.filter(
     (partner) =>
@@ -211,7 +213,7 @@ export async function getPartnerCountByCountry(): Promise<
 /** Search partners by query string */
 export async function searchPartners(
   query: string,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
   const lowerQuery = query.toLowerCase();
 
@@ -234,9 +236,9 @@ export async function searchPartners(
 
 /** Get related partners (by shared collaboration areas or location) */
 export async function getRelatedPartners(
-  currentPartner: CollectionEntry<"partners">,
+  currentPartner: CollectionEntry<"organizations">,
   limit: number = 3,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const allPartners = await getActivePartners();
 
   // Filter out the current partner
@@ -301,9 +303,9 @@ export async function getRelatedPartners(
 
 /** Group partners by type for display */
 export function groupPartnersByType(
-  partners: CollectionEntry<"partners">[],
-): Record<string, CollectionEntry<"partners">[]> {
-  const grouped: Record<string, CollectionEntry<"partners">[]> = {};
+  partners: CollectionEntry<"organizations">[],
+): Record<string, CollectionEntry<"organizations">[]> {
+  const grouped: Record<string, CollectionEntry<"organizations">[]> = {};
 
   partners.forEach((partner) => {
     const type = partner.data.type;
@@ -328,9 +330,9 @@ export function groupPartnersByType(
 
 /** Group partners by country for geographic view */
 export function groupPartnersByCountry(
-  partners: CollectionEntry<"partners">[],
-): Record<string, CollectionEntry<"partners">[]> {
-  const grouped: Record<string, CollectionEntry<"partners">[]> = {};
+  partners: CollectionEntry<"organizations">[],
+): Record<string, CollectionEntry<"organizations">[]> {
+  const grouped: Record<string, CollectionEntry<"organizations">[]> = {};
 
   partners.forEach((partner) => {
     const country = partner.data.location.country;
@@ -352,7 +354,7 @@ export function groupPartnersByCountry(
 export async function getPartnersByCollaborationDate(
   startDate: Date,
   endDate?: Date,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getAllPartners();
 
   return partners.filter((partner) => {
@@ -367,7 +369,7 @@ export async function getPartnersByCollaborationDate(
 /** Get newest partnerships */
 export async function getNewestPartnerships(
   limit: number = 5,
-): Promise<CollectionEntry<"partners">[]> {
+): Promise<CollectionEntry<"organizations">[]> {
   const partners = await getActivePartners();
   return partners
     .sort(
@@ -386,7 +388,7 @@ export async function filterPartners(criteria: {
   areas?: string[];
   activeOnly?: boolean;
   featuredOnly?: boolean;
-}): Promise<CollectionEntry<"partners">[]> {
+}): Promise<CollectionEntry<"organizations">[]> {
   let partners = await getAllPartners();
 
   if (criteria.type) {
@@ -446,8 +448,8 @@ export async function getPartnershipStatistics(): Promise<{
   byType: Record<string, number>;
   byCategory: Record<string, number>;
   byCountry: Record<string, number>;
-  newestPartnership?: CollectionEntry<"partners">;
-  oldestPartnership?: CollectionEntry<"partners">;
+  newestPartnership?: CollectionEntry<"organizations">;
+  oldestPartnership?: CollectionEntry<"organizations">;
 }> {
   const partners = await getAllPartners();
   const activePartners = partners.filter((p) => p.data.collaboration.active);

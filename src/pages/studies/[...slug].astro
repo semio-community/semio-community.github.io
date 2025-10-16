@@ -213,13 +213,13 @@ if (data.publishDate) {
 
 // Get affiliated organizations
 const affiliatedOrgs = await Promise.all(
-  (data.affiliatedOrganizations || []).map((id) => getEntry("partners", id)),
+  (data.affiliatedOrganizations || []).map((id) => getEntry("organizations", id)),
 );
 const validAffiliatedOrgs = affiliatedOrgs.filter((org) => org !== undefined);
 
 // Get funding organizations
 const fundingOrgs = await Promise.all(
-  (data.fundingOrganizations || []).map((id) => getEntry("partners", id)),
+  (data.fundingOrganizations || []).map((id) => getEntry("organizations", id)),
 );
 const validFundingOrgs = fundingOrgs.filter((org) => org !== undefined);
 

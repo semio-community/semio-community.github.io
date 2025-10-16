@@ -1,8 +1,5 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-} from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
@@ -22,27 +19,34 @@ import BasicChip from "@/components/BasicChip.astro";
 import { Fragment } from "react";
 import { createLinkButton } from "@/config/linkConfig";
 
+type PartnerEntry = CollectionEntry<"organizations">;
+
 export async function getStaticPaths() {
-  const partners = await getCollection("partners", ({ data }) => {
+  const organizations = await getCollection("organizations", ({ data }) => {
     // In production, exclude drafts. In development, show all.
     return import.meta.env.PROD ? data.draft !== true : true;
   });
+  const partners = organizations.filter((org) => org.data.isPartner);
   return partners.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
   }));
 }
 
-const { entry } = Astro.props;
+type Props = {
+  entry: PartnerEntry;
+};
+
+const { entry } = Astro.props as Props;
 const { data } = entry;
 
 // Get related partners (by category or collaboration areas)
 async function getRelatedPartners(
-  partner: CollectionEntry<"partners">,
+  partner: PartnerEntry,
   limit: number = 3,
 ) {
   const allPartners = await getAllPartners();
-  const relatedPartners: CollectionEntry<"partners">[] = [];
+  const relatedPartners: PartnerEntry[] = [];
 
   // Filter out the current partner and find related ones
   const otherPartners = allPartners.filter((p) => p.id !== partner.id);

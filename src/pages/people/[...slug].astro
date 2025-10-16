@@ -216,7 +216,7 @@ const currentAffiliations = await Promise.all(
   (data.affiliations || [])
     .filter((aff) => aff.current)
     .map(async (aff) => {
-      const org = await getEntry("partners", aff.partnerId);
+      const org = await getEntry("organizations", aff.partnerId);
       return {
         ...aff,
         organization: org,
@@ -228,7 +228,7 @@ const pastAffiliations = await Promise.all(
   (data.affiliations || [])
     .filter((aff) => !aff.current)
     .map(async (aff) => {
-      const org = await getEntry("partners", aff.partnerId);
+      const org = await getEntry("organizations", aff.partnerId);
       return {
         ...aff,
         organization: org,

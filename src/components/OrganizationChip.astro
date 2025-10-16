@@ -10,18 +10,19 @@ interface Props {
 }
 
 const { partnerId, role, href, className } = Astro.props;
-const partner = await getEntry("partners", partnerId);
+const organization = await getEntry("organizations", partnerId);
 
-// Pass the full partner data to the React component
-// The image will be properly resolved by Astro's content collections
+// Pass the organization data to the React component for display
+const resolvedHref =
+  href !== undefined ? href : organization?.data?.isPartner ? undefined : null;
 ---
 
 <OrganizationChipReact
   client:load
   partnerId={partnerId}
-  partnerName={partner?.data?.shortName || partner?.data?.name}
-  logo={partner?.data?.images?.logo}
+  partnerName={organization?.data?.shortName || organization?.data?.name}
+  logo={organization?.data?.images?.logo}
   role={role}
-  href={href}
+  href={resolvedHref}
   className={className}
 />

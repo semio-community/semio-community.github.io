@@ -19,7 +19,7 @@ export function OrganizationChip({
   className = "",
 }: OrganizationChipProps) {
   const displayName = partnerName || partnerId;
-  const linkHref = href === null ? null : href || `/partners/${partnerId}`;
+  const linkHref = href === null ? null : href ?? `/partners/${partnerId}`;
 
   const content = (
     <>

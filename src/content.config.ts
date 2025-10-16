@@ -88,9 +88,12 @@ const people = defineCollection({
     }),
 });
 
-// Updated Partners Collection (Organizations Only)
-const partners = defineCollection({
-  loader: glob({ base: "./src/content/partners", pattern: "**/*.{md,mdx}" }),
+// Organizations Collection (includes partners)
+const organizations = defineCollection({
+  loader: glob({
+    base: "./src/content/organizations",
+    pattern: "**/*.{md,mdx}",
+  }),
   schema: ({ image }) =>
     z.object({
       // Core identification
@@ -114,6 +117,7 @@ const partners = defineCollection({
         "infrastructure",
         "outreach",
       ]),
+      isPartner: z.boolean().default(false),
 
       // Contact information (no individual names)
       contact: z
@@ -480,5 +484,5 @@ export const collections = {
   software,
   studies,
   events,
-  partners,
+  organizations,
 };

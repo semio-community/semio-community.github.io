@@ -9,19 +9,27 @@ interface Props {
 }
 
 const { personId, role } = Astro.props;
-const person = await getPerson(personId);
+const personEntry = await getPerson(personId);
+
+const person =
+  personEntry && personEntry.data
+    ? {
+        id: personEntry.id,
+        ...personEntry.data,
+      }
+    : null;
 
 // Get current affiliation details if available
 let currentAffiliation:
   | { partnerId: string; partnerName?: string; role: string }
   | undefined;
-if (person?.data.affiliations) {
-  const current = person.data.affiliations.find((a) => a.current);
+if (person?.affiliations) {
+  const current = person.affiliations.find((a) => a.current);
   if (current) {
-    const partner = await getEntry("partners", current.partnerId);
+    const organization = await getEntry("organizations", current.partnerId);
     currentAffiliation = {
       partnerId: current.partnerId,
-      partnerName: partner?.data.name || current.partnerId,
+      partnerName: organization?.data.name || current.partnerId,
       role: current.role,
     };
   }
@@ -30,7 +38,7 @@ if (person?.data.affiliations) {
 
 <PersonPopover
   client:load
-  person={person?.data || null}
+  person={person}
   personId={personId}
   role={role}
   currentAffiliation={currentAffiliation}

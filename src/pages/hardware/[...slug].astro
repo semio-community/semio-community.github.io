@@ -70,11 +70,11 @@ const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
 // Get organization details
 const leadOrg = data.leadOrganization
-  ? await getEntry("partners", data.leadOrganization)
+  ? await getEntry("organizations", data.leadOrganization)
   : null;
 const supportingOrgs = data.supportingOrganizations
   ? await Promise.all(
-      data.supportingOrganizations.map((id) => getEntry("partners", id)),
+      data.supportingOrganizations.map((id) => getEntry("organizations", id)),
     )
   : [];
 
@@ -100,7 +100,7 @@ const orgContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "organization")
     .map(async (contributor) => {
-      const org = await getEntry("partners", contributor.id);
+      const org = await getEntry("organizations", contributor.id);
       return {
         ...contributor,
         data: org?.data,
