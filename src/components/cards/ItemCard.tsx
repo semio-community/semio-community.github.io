@@ -82,7 +82,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     software: "software",
     people: "person",
     partners: "organization",
-    research: "study",
+    research: "research",
     events: "event",
   };
 
@@ -159,7 +159,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {showListItems && (
           <div className="text-sm text-color-600 dark:text-color-400 mb-3 min-h-[2.5rem]">
             {listItems.slice(0,2).map(listItem=>(
-              <div className="flex items-start gap-2">
+              <div key={listItem.text} className="flex items-start gap-2">
               {listItem.icon ?? <SettingsMinimalistic className='text-accent-two mt-0.5 w-4 h-4 flex-shrink-0'/>}
               <span className="text-sm text-accent-base">{listItem.text}</span>
             </div>

@@ -13,10 +13,9 @@ import InfoCard from "@/components/detail/InfoCard.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
 import { getAllResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
-import PersonPopoverWrapper from "@/components/PersonPopoverWrapper.astro";
-import OrganizationChip from "@/components/OrganizationChip.astro";
+import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
+import OrganizationChip from "@/components/ui/OrganizationChip.astro";
 import { Fragment } from "react";
-import { Icon } from "astro-icon/components";
 import { transformLinksToButtons } from "@/config/linkConfig";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
@@ -118,6 +117,7 @@ const badges = [];
 
 // Type badge
 const typeLabels = {
+  study: "Study",
   paper: "Research Paper",
   thesis: "Thesis",
   report: "Technical Report",
@@ -257,7 +257,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
         badges={badges}
         featured={data.featured}
         thumbnail={data.images?.logo}
-        entityType="entry"
+        entityType="research"
       />
     </Fragment>
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { ItemCard } from "@/components/ItemCard";
+import { ItemCard } from "@/components/cards/ItemCard";
 import { getEventPreviewDescriptionText, getLocationString } from "@/utils/events";
 import { getFormattedDateRanges } from "@/utils/date";
 import { Calendar, MapPoint } from "@solar-icons/react-perf/LineDuotone";

@@ -1,7 +1,7 @@
 import React from "react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
-import { CallToActionButton } from "../CallToActionButton";
+import { CallToActionButton } from "../ui/CallToActionButton";
 import { getStatusColor } from "@/config/statusConfig";
 
 // Simplified type for serialized data

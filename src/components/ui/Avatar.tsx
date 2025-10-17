@@ -16,7 +16,7 @@ export type AvatarType =
   | "organization"
   | "hardware"
   | "software"
-  | "study"
+  | "research"
   | "event"
   | "document";
 
@@ -70,7 +70,7 @@ const typeGradients: Record<AvatarType, string> = {
   organization: "bg-gradient-to-br from-special-lighter to-special-light",
   hardware: "bg-gradient-to-br from-blue-500/20 to-blue-600/20",
   software: "bg-gradient-to-br from-green-500/20 to-green-600/20",
-  study: "bg-gradient-to-br from-purple-500/20 to-purple-600/20",
+  research: "bg-gradient-to-br from-purple-500/20 to-purple-600/20",
   event: "bg-gradient-to-br from-orange-500/20 to-orange-600/20",
   document: "bg-gradient-to-br from-gray-500/20 to-gray-600/20",
 };
@@ -85,7 +85,7 @@ const TypeIcon: React.FC<{ type: AvatarType; className?: string }> = ({
     organization: <Buildings className={className} />,
     hardware: <CpuBolt className={className} />,
     software: <CodeSquare className={className} />,
-    study: <TestTube className={className} />,
+    research: <TestTube className={className} />,
     event: <CalendarMark className={className} />,
     document: <Document2 className={className} />,
   };

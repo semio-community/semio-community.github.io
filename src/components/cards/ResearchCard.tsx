@@ -1,5 +1,5 @@
 import React from "react";
-import { ItemCard } from "@/components/ItemCard";
+import { ItemCard } from "@/components/cards/ItemCard";
 
 export interface ResearchCardProps {
   researchId: string;

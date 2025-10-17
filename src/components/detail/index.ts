@@ -1,48 +1,15 @@
-// Layout components
+export { default as BaseDetailLayout } from "./BaseDetailLayout.astro";
 export { DetailHero } from "./DetailHero";
 export type { DetailHeroProps, DetailHeroBadge } from "./DetailHero";
 
-// Content components
-export { StatusBadge } from "./StatusBadge";
-export type { StatusBadgeProps } from "./StatusBadge";
-
-export { ContributorsSection } from "./ContributorsSection";
-export type {
-  ContributorsSectionProps,
-  Contributor,
-  Organization,
-} from "./ContributorsSection";
-
-export { SpecificationsCard } from "./SpecificationsCard";
-export type {
-  SpecificationsCardProps,
-  SpecificationItem,
-} from "./SpecificationsCard";
-
-export { MetadataCard } from "./MetadataCard";
-export type { MetadataCardProps, MetadataItem } from "./MetadataCard";
-
-export { FeaturesCard } from "./FeaturesCard";
-export type { FeaturesCardProps } from "./FeaturesCard";
-
-export { ChipsCard } from "./ChipsCard";
-export type { ChipsCardProps } from "./ChipsCard";
-
-export { PricingCard } from "./PricingCard";
-export type { PricingCardProps, RentalPricing } from "./PricingCard";
-
-export { TechnologiesCard } from "./TechnologiesCard";
-export type { TechnologiesCardProps } from "./TechnologiesCard";
-
-export { TagsSection } from "./TagsSection";
-export type { TagsSectionProps } from "./TagsSection";
+export { default as InfoCard } from "./InfoCard.astro";
+export { default as LinkButton } from "./LinkButton.astro";
+export { default as ContentSection } from "./ContentSection.astro";
+export { default as ChipsList } from "./ChipsList.astro";
+export { default as FeaturesList } from "./FeaturesList.astro";
+export { default as SpecificationsList } from "./SpecificationsList.astro";
+export { default as TagsList } from "./TagsList.astro";
+export { default as PricingInfo } from "./PricingInfo.astro";
 
 export { RelatedItemsGrid } from "./RelatedItemsGrid";
 export type { RelatedItemsGridProps, RelatedItem } from "./RelatedItemsGrid";
-
-// Utility components
-export { SidebarCard } from "./SidebarCard";
-export type { SidebarCardProps } from "./SidebarCard";
-
-export { DetailSection } from "./DetailSection";
-export type { DetailSectionProps } from "./DetailSection";

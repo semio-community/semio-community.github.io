@@ -80,20 +80,20 @@ Component for displaying individual metadata items with icons.
 ### Utility Components
 
 #### `StatusBadge.tsx`
-Badge component for displaying status indicators.
+Badge component for displaying status indicators. (Now located in `detail/legacy/`.)
 
 #### `BasicChip.astro` (referenced, not in this directory)
-Simple chip component for tags and categories.
+Simple chip component for tags and categories. Lives in `components/ui/BasicChip.astro`.
 
 #### `PersonPopoverWrapper.astro` (referenced, not in this directory)
-Wrapper for displaying person information with hover popover.
+Wrapper for displaying person information with hover popover. Lives in `components/people/PersonPopoverWrapper.astro`.
 
 #### `OrganizationChip.astro` (referenced, not in this directory)
-Chip component for displaying organization references.
+Chip component for displaying organization references. Lives in `components/ui/OrganizationChip.astro`.
 
 ## Deprecated Components
 
-The following components are no longer used after migrating to single-column layout:
+The following components are no longer used after migrating to single-column layout (they have been moved to `detail/legacy/`):
 
 - `SidebarCard.tsx` - No longer needed with single-column layout
 - `ChipsCard.tsx` - Replaced by inline chip displays in InfoCard

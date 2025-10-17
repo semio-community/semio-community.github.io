@@ -37,7 +37,7 @@ export interface DetailHeroProps {
     | "organization"
     | "hardware"
     | "software"
-    | "study"
+    | "research"
     | "event";
 }
 
@@ -106,7 +106,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
     organization: "organization",
     hardware: "hardware",
     software: "software",
-    study: "study",
+    research: "research",
     event: "event",
   };
   const avatarType = avatarTypeMap[entityType] || "organization";

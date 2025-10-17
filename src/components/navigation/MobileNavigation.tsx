@@ -2,7 +2,7 @@ import React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
-import { CallToActionButton } from "../CallToActionButton";
+import { CallToActionButton } from "../ui/CallToActionButton";
 
 interface MobileNavigationProps {
   menuLinks: Array<{

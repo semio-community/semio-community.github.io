@@ -14,8 +14,8 @@ const personEntry = await getPerson(personId);
 const person =
   personEntry && personEntry.data
     ? {
-        id: personEntry.id,
         ...personEntry.data,
+        id: personEntry.id,
       }
     : null;
 
