@@ -1,6 +1,6 @@
 import React from "react";
 import type { ImageMetadata } from "astro";
-import { Star } from "@solar-icons/react-perf/Bold";
+import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
 export interface DetailHeroBadge {
@@ -23,7 +23,7 @@ export interface DetailHeroProps {
   title: string;
   subtitle?: string;
   badges?: DetailHeroBadge[];
-  featured?: boolean;
+  featuredState?: FeaturedState;
   overlayGradient?: boolean;
   className?: string;
   showBadgesOnMobile?: boolean;
@@ -47,7 +47,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
   title,
   subtitle,
   badges = [],
-  featured = false,
+  featuredState = "not-featured",
   overlayGradient = true,
   className = "",
   showBadgesOnMobile = false,
@@ -180,8 +180,14 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                   <div
                     className={`${showBadgesOnMobile ? "flex" : "hidden"} sm:hidden gap-1 flex-wrap items-center`}
                   >
-                    {featured && (
-                      <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
+                    {(featuredState === "featured" ||
+                      featuredState === "previously-featured") && (
+                      <FeaturedStar
+                        state={featuredState}
+                        size="md"
+                        glow
+                        className="flex-shrink-0 inline-block"
+                      />
                     )}
                     {badges
                       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
@@ -200,8 +206,14 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 
                   {/* Desktop badges - all displayed */}
                   <div className="hidden sm:flex gap-2 flex-wrap items-center">
-                    {featured && (
-                      <Star className="w-6 h-6 text-yellow-500 dark:text-yellow-400 flex-shrink-0 inline-block [filter:_drop-shadow(0_2px_4px_rgb(0_0_0_/_40%))]" />
+                    {(featuredState === "featured" ||
+                      featuredState === "previously-featured") && (
+                      <FeaturedStar
+                        state={featuredState}
+                        size="lg"
+                        glow
+                        className="flex-shrink-0 inline-block"
+                      />
                     )}
                     {badges.map((badge, index) => (
                       <span key={index} className={getBadgeClasses(badge)}>

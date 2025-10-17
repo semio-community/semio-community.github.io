@@ -107,7 +107,7 @@ const specificationItems = data.specifications || {};
         title={data.name}
         subtitle={data.shortDescription}
         badges={badges}
-        featured={data.featured}
+        featuredState={data.featured ? "featured" : undefined}
         entityType="hardware"
       />
     </Fragment>

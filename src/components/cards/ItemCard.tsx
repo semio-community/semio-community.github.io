@@ -1,7 +1,7 @@
 import React, { useMemo, type ReactNode } from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
-import { SettingsMinimalistic, Star as StarOutline } from "@solar-icons/react-perf/LineDuotone";
-import { Star } from "@solar-icons/react-perf/Bold";
+import { SettingsMinimalistic } from "@solar-icons/react-perf/LineDuotone";
+import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 import { IconButton, type LinkType } from "@/components/ui/IconButton";
 import { linkPriority } from "@/data/links";
@@ -27,10 +27,16 @@ export interface ItemCardProps {
   status?: string;
   statusLabel?: string;
   category?: string;
-  featured?: boolean;
-  type?: "hardware" | "software" | "people" | "partners" | "research" | "events";
-  listItems?: {icon?: ReactNode, text: string}[]
-  links?: Partial<Record<LinkType,string>>;
+  featuredState?: FeaturedState;
+  type?:
+    | "hardware"
+    | "software"
+    | "people"
+    | "partners"
+    | "research"
+    | "events";
+  listItems?: { icon?: ReactNode; text: string }[];
+  links?: Partial<Record<LinkType, string>>;
 }
 
 export const ItemCard: React.FC<ItemCardProps> = ({
@@ -44,10 +50,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   status,
   statusLabel,
   category,
-  featured,
+  featuredState = "not-featured",
   type = "hardware",
   links,
-  listItems = []
+  listItems = [],
 }) => {
   // Use centralized status configuration
   const displayStatus = statusLabel || getStatusLabel(status);
@@ -72,20 +78,19 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     events: "event",
   };
 
-  const linkButtons: Array<{ type: LinkType; href: string }> = useMemo(()=>{
-      const cardLinks: Array<{ type: LinkType; href: string }> = [];
-    
-      linkPriority.forEach(linkType=>{
-        if (cardLinks.length < 5 && links?.[linkType]) {
-          cardLinks.push({type: linkType, href: links?.[linkType]!})
-        }
-      })
-      return cardLinks.reverse()
-  
-    }, [links])
+  const linkButtons: Array<{ type: LinkType; href: string }> = useMemo(() => {
+    const cardLinks: Array<{ type: LinkType; href: string }> = [];
+
+    linkPriority.forEach((linkType) => {
+      if (cardLinks.length < 5 && links?.[linkType]) {
+        cardLinks.push({ type: linkType, href: links?.[linkType]! });
+      }
+    });
+    return cardLinks.reverse();
+  }, [links]);
 
   const showDescription = listItems.length === 0 && description;
-  const showListItems = listItems.length > 0
+  const showListItems = listItems.length > 0;
 
   return (
     <a
@@ -135,9 +140,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* Title */}
         <h3 className="font-semibold mb-2 text-accent-base group-hover:text-accent-two transition-colors flex items-center justify-between gap-2">
           <span className="truncate">{title}</span>
-          {featured ? (
-            <Star className="w-5 h-5 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
-          ) : <StarOutline className="w-5 h-5 text-neutral-500/50 flex-shrink-0" /> }
+          <FeaturedStar state={featuredState} size="md" />
         </h3>
 
         {/* Description */}
@@ -150,13 +153,17 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         {/* ListItems */}
         {showListItems && (
           <div className="text-sm text-color-600 dark:text-color-400 mb-3 min-h-[2.5rem]">
-            {listItems.slice(0,2).map(listItem=>(
+            {listItems.slice(0, 2).map((listItem) => (
               <div key={listItem.text} className="flex items-start gap-2">
-              {listItem.icon ?? <SettingsMinimalistic className='text-accent-two mt-0.5 w-4 h-4 flex-shrink-0'/>}
-              <span className="text-sm text-accent-base">{listItem.text}</span>
-            </div>
+                {listItem.icon ?? (
+                  <SettingsMinimalistic className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+                )}
+                <span className="text-sm text-accent-base">
+                  {listItem.text}
+                </span>
+              </div>
             ))}
-        </div>
+          </div>
         )}
 
         {/* Footer section */}

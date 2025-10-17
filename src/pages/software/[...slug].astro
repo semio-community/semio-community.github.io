@@ -140,7 +140,7 @@ if (data.requirements) {
         title={data.name}
         subtitle={data.shortDescription}
         badges={badges}
-        featured={data.featured}
+        featuredState={data.featured ? "featured" : undefined}
         logo={data.images?.logo}
         entityType="software"
       />

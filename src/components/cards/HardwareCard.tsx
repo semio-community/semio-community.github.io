@@ -27,7 +27,7 @@ export const HardwareCard: React.FC<HardwareCardProps> = ({
       imageAlt={data.name}
       status={data.status}
       category={categoryLabel}
-      featured={data.featured}
+      featuredState={data.featured ? "featured" : "not-featured"}
       links={{
         website: data.links?.website,
         github: data.links?.github || data.links?.code,

@@ -1,5 +1,5 @@
 import React from "react";
-import * as Tooltip from "@radix-ui/react-tooltip";
+import Tooltip from "@/components/ui/Tooltip";
 import { clsx } from "clsx";
 import {
   CalendarMark,
@@ -104,20 +104,44 @@ const MastodonIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 const PythonIcon: React.FC<IconProps> = ({ className }) => (
-  <svg className={className}
+  <svg
+    className={className}
     viewBox="0 0 24 24"
     fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
     stroke="currentColor"
     strokeWidth={1.5}
     strokeLinecap="round"
-    strokeLinejoin="round">
-    <path d="M11 5.49976V5.50976" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" />
-    <path d="M13 18.4898V18.4998" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" />
-    <path d="M17.498 8.5H15.4989V6.5C15.4989 5.09554 15.4989 4.39331 15.1618 3.88886C15.0159 3.67048 14.8284 3.48298 14.61 3.33706C14.1056 3 13.4033 3 11.9989 3C10.5944 3 9.89218 3 9.38773 3.33706C9.16935 3.48298 8.98185 3.67048 8.83593 3.88886C8.49887 4.39331 8.49887 5.09554 8.49887 6.5V8.5H6.49805C5.09358 8.5 4.39135 8.5 3.88691 8.83706C3.66853 8.98298 3.48103 9.17048 3.33511 9.38886C2.99805 9.89331 2.99805 10.5955 2.99805 12C2.99805 13.4045 2.99805 14.1067 3.33511 14.6111C3.48102 14.8295 3.66853 15.017 3.88691 15.1629C4.39135 15.5 5.09358 15.5 6.49805 15.5H8.49887V17.5C8.49887 18.9045 8.49887 19.6067 8.83593 20.1111C8.98185 20.3295 9.16935 20.517 9.38773 20.6629C9.89218 21 10.5944 21 11.9989 21C13.4033 21 14.1056 21 14.61 20.6629C14.8284 20.517 15.0159 20.3295 15.1618 20.1111C15.4989 19.6067 15.4989 18.9045 15.4989 17.5V15.5H17.498C18.9025 15.5 19.6047 15.5 20.1092 15.1629C20.3276 15.017 20.5151 14.8295 20.661 14.6111C20.998 14.1067 20.998 13.4045 20.998 12C20.998 10.5955 20.998 9.89331 20.661 9.38886C20.5151 9.17048 20.3276 8.98298 20.1092 8.83706C19.6047 8.5 18.9025 8.5 17.498 8.5Z" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M15.5 8.5V12H8.5V15.5M12 15.5H15.5M8.5 8.5H12" stroke="#141B34" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-</svg>
-)
+    strokeLinejoin="round"
+  >
+    <path
+      d="M11 5.49976V5.50976"
+      stroke="#141B34"
+      stroke-width="1.5"
+      stroke-linecap="round"
+    />
+    <path
+      d="M13 18.4898V18.4998"
+      stroke="#141B34"
+      stroke-width="1.5"
+      stroke-linecap="round"
+    />
+    <path
+      d="M17.498 8.5H15.4989V6.5C15.4989 5.09554 15.4989 4.39331 15.1618 3.88886C15.0159 3.67048 14.8284 3.48298 14.61 3.33706C14.1056 3 13.4033 3 11.9989 3C10.5944 3 9.89218 3 9.38773 3.33706C9.16935 3.48298 8.98185 3.67048 8.83593 3.88886C8.49887 4.39331 8.49887 5.09554 8.49887 6.5V8.5H6.49805C5.09358 8.5 4.39135 8.5 3.88691 8.83706C3.66853 8.98298 3.48103 9.17048 3.33511 9.38886C2.99805 9.89331 2.99805 10.5955 2.99805 12C2.99805 13.4045 2.99805 14.1067 3.33511 14.6111C3.48102 14.8295 3.66853 15.017 3.88691 15.1629C4.39135 15.5 5.09358 15.5 6.49805 15.5H8.49887V17.5C8.49887 18.9045 8.49887 19.6067 8.83593 20.1111C8.98185 20.3295 9.16935 20.517 9.38773 20.6629C9.89218 21 10.5944 21 11.9989 21C13.4033 21 14.1056 21 14.61 20.6629C14.8284 20.517 15.0159 20.3295 15.1618 20.1111C15.4989 19.6067 15.4989 18.9045 15.4989 17.5V15.5H17.498C18.9025 15.5 19.6047 15.5 20.1092 15.1629C20.3276 15.017 20.5151 14.8295 20.661 14.6111C20.998 14.1067 20.998 13.4045 20.998 12C20.998 10.5955 20.998 9.89331 20.661 9.38886C20.5151 9.17048 20.3276 8.98298 20.1092 8.83706C19.6047 8.5 18.9025 8.5 17.498 8.5Z"
+      stroke="#141B34"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M15.5 8.5V12H8.5V15.5M12 15.5H15.5M8.5 8.5H12"
+      stroke="#141B34"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+);
 
 const NpmIcon: React.FC<IconProps> = ({ className }) => (
   <svg
@@ -163,7 +187,14 @@ type CanonicalLinkType =
   | "phone"
   | "generic";
 
-type LinkAlias = "docs" | "documentation" | "google-scholar" | "paper" | "pdf" | "arxiv" | "doi";
+type LinkAlias =
+  | "docs"
+  | "documentation"
+  | "google-scholar"
+  | "paper"
+  | "pdf"
+  | "arxiv"
+  | "doi";
 
 export type LinkType = CanonicalLinkType | LinkAlias;
 
@@ -217,7 +248,7 @@ const linkMeta: Record<CanonicalLinkType, LinkDisplayMeta> = {
     label: "PyPi",
     description: "Open PyPi",
     icon: PythonIcon,
-    prefers: "huge" 
+    prefers: "huge",
   },
   twitter: {
     label: "X (Twitter)",
@@ -348,7 +379,7 @@ const linkAliases: Record<LinkAlias, CanonicalLinkType> = {
   paper: "documentation",
   pdf: "documentation",
   arxiv: "documentation",
-  doi: "documentation"
+  doi: "documentation",
 };
 
 export interface LinkButtonConfig {
@@ -442,11 +473,9 @@ export const IconButton: React.FC<IconButtonProps> = ({
   const finalLabel = label ?? resolvedMeta?.label ?? "Open link";
   const finalDescription =
     description ?? resolvedMeta?.description ?? finalLabel;
-  const IconComponent =
-    icon ?? resolvedMeta?.icon ?? linkMeta.generic.icon;
+  const IconComponent = icon ?? resolvedMeta?.icon ?? linkMeta.generic.icon;
 
-  const isExternal =
-    external ?? Boolean(href && /^https?:\/\//.test(href));
+  const isExternal = external ?? Boolean(href && /^https?:\/\//.test(href));
 
   const elementType: "button" | "link" =
     as ?? (href && !stopPropagation ? "link" : "button");
@@ -492,57 +521,36 @@ export const IconButton: React.FC<IconButtonProps> = ({
   };
 
   const content = (
-    <IconComponent
-      aria-hidden
-      focusable="false"
-      className={iconClassName}
-    />
+    <IconComponent aria-hidden focusable="false" className={iconClassName} />
   );
 
   return (
-    <Tooltip.Provider delayDuration={150}>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          {elementType === "link" ? (
-            <a
-              href={href}
-              className={buttonClassName}
-              aria-label={finalLabel}
-              target={target ?? (isExternal ? "_blank" : undefined)}
-              rel={
-                rel ??
-                (isExternal ? "noopener noreferrer" : undefined)
-              }
-              onClick={handleClick}
-              data-prefers={resolvedMeta?.prefers ?? "solar"}
-            >
-              {content}
-            </a>
-          ) : (
-            <button
-              type="button"
-              className={buttonClassName}
-              aria-label={finalLabel}
-              onClick={handleClick}
-              disabled={disabled}
-              data-prefers={resolvedMeta?.prefers ?? "solar"}
-            >
-              {content}
-            </button>
-          )}
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content
-            side="top"
-            sideOffset={6}
-            className="rounded-md bg-accent-base px-2 py-1 text-xs font-medium text-surface shadow-lg data-[state=delayed-open]:animate-in data-[state=open]:fade-in z-100"
-          >
-            {finalDescription}
-            <Tooltip.Arrow className="fill-accent-base" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
+    <Tooltip content={finalDescription}>
+      {elementType === "link" ? (
+        <a
+          href={href}
+          className={buttonClassName}
+          aria-label={finalLabel}
+          target={target ?? (isExternal ? "_blank" : undefined)}
+          rel={rel ?? (isExternal ? "noopener noreferrer" : undefined)}
+          onClick={handleClick}
+          data-prefers={resolvedMeta?.prefers ?? "solar"}
+        >
+          {content}
+        </a>
+      ) : (
+        <button
+          type="button"
+          className={buttonClassName}
+          aria-label={finalLabel}
+          onClick={handleClick}
+          disabled={disabled}
+          data-prefers={resolvedMeta?.prefers ?? "solar"}
+        >
+          {content}
+        </button>
+      )}
+    </Tooltip>
   );
 };
 

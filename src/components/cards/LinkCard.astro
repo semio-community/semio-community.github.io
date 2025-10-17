@@ -6,10 +6,39 @@ export interface Props {
   title: string;
   description?: string;
   class?: string;
-  extraLinks?: {label:string,href:string}[]
+  extraLinks?: { label: string; href: string }[];
+  variant?: "primary" | "secondary" | "tertiary" | "default";
 }
 
-const { icon, title, description, class: className = "", extraLinks=[] } = Astro.props;
+const {
+  icon,
+  title,
+  description,
+  class: className = "",
+  extraLinks = [],
+  variant = "primary",
+} = Astro.props;
+
+const textClass = {
+  primary: "text-accent-two",
+  secondary: "text-accent-one",
+  tertiary: "text-accent-three",
+  default: "text-accent-base",
+}[variant];
+
+const borderClass = {
+  primary: "border-accent-two/10",
+  secondary: "border-accent-one/10",
+  tertiary: "border-accent-three/10",
+  default: "border-accent-base/10",
+}[variant];
+
+const extraLinkClass = {
+  primary: "bg-accent-two/10 hover:bg-accent-two/30 outline-accent-two",
+  secondary: "bg-accent-one/10 hover:bg-accent-one/30 outline-accent-one",
+  tertiary: "bg-accent-three/10 hover:bg-accent-three/30 outline-accent-three",
+  default: "bg-accent-base/10 hover:bg-accent-base/30 outline-accent-base",
+}[variant];
 ---
 
 <div
@@ -17,20 +46,23 @@ const { icon, title, description, class: className = "", extraLinks=[] } = Astro
 >
   <Icon
     name={icon}
-    class="w-12 h-12 mx-auto mb-4 text-accent-two group-hover:scale-110 transition-transform"
+    class={`w-12 h-12 mx-auto mb-4 group-hover:scale-110 transition-transform ${textClass}`}
   />
   <h3 class="text-lg font-semibold mb-2">{title}</h3>
+  {description && <p class="text-sm text-accent-base/70">{description}</p>}
+
   {
-    description && (
-      <p class="text-sm text-accent-base/70">{description}</p>
+    extraLinks.length > 0 && (
+      <div class={`flex w-full gap-3 mt-3 pt-3 border-t-1 ${borderClass}`}>
+        {extraLinks.map((extraLink) => (
+          <a
+            class={`rounded-md p-1 outline ${extraLinkClass} text-accent-base transition-colors flex-1`}
+            href={extraLink.href}
+          >
+            {extraLink.label}
+          </a>
+        ))}
+      </div>
     )
   }
-
-  {extraLinks.length > 0 && (
-    <div class="flex w-full gap-3 mt-3 pt-3 border-t-1 border-accent-two/10">
-      {extraLinks.map(extraLink=>(
-        <a class='rounded-md p-1 outline outline-accent-two bg-accent-two/10 hover:bg-accent-two/30 text-accent-base transition-colors flex-1' href={extraLink.href}>{extraLink.label}</a>
-      ))}
-    </div>
-  )}
 </div>

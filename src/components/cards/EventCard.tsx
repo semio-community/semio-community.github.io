@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ItemCard } from "@/components/cards/ItemCard";
-import { getEventPreviewDescriptionText, getLocationString } from "@/utils/events";
+import { getLocationString } from "@/utils/events";
 import { getFormattedDateRanges } from "@/utils/date";
 import { Calendar, MapPoint } from "@solar-icons/react-perf/LineDuotone";
-
+import type { FeaturedState } from "../ui/FeaturedStar";
 
 export interface EventCardProps {
   eventId: string;
@@ -35,11 +35,7 @@ export interface EventCardProps {
   className?: string;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({
-  eventId,
-  data,
-}) => {
-
+export const EventCard: React.FC<EventCardProps> = ({ eventId, data }) => {
   // Determine status based on dates
   const now = new Date();
   const startDate = new Date(data.startDate);
@@ -57,17 +53,31 @@ export const EventCard: React.FC<EventCardProps> = ({
 
   const locationString = getLocationString(data.location);
 
-  const dateString = getFormattedDateRanges(data.startDate, data.endDate)
+  const dateString = getFormattedDateRanges(data.startDate, data.endDate);
 
-  const description = getEventPreviewDescriptionText(data)
+  const featuredState: FeaturedState = useMemo(() => {
+    if (status === "past" && data.featured) return "previously-featured";
+    if (data.featured) return "featured";
+    return "not-featured";
+  }, [status, data.featured]);
 
   return (
     <ItemCard
       title={data.displayName || data.name || eventId}
       // description={description}
       listItems={[
-        {text: dateString, icon: <Calendar className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"/> },
-        {text: locationString ?? "Unknown Location", icon: <MapPoint className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"/>}
+        {
+          text: dateString,
+          icon: (
+            <Calendar className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+          ),
+        },
+        {
+          text: locationString ?? "Unknown Location",
+          icon: (
+            <MapPoint className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+          ),
+        },
       ]}
       href={`/events/${eventId}`}
       type="events"
@@ -76,7 +86,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       logo={data.images?.logo}
       status={status}
       category={category}
-      featured={data.featured}
+      featuredState={featuredState}
       links={{
         website: data.links?.website,
         registration: data.links?.registration,

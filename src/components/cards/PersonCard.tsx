@@ -41,10 +41,8 @@ export const PersonCard: React.FC<PersonCardProps> = ({
       type="people"
       logo={data.images?.avatar}
       image={data.images?.hero}
-      category={
-        data.title
-      }
-      featured={data.featured}
+      category={data.title}
+      featuredState={data.featured ? "featured" : "not-featured"}
       links={{
         website: websiteLink,
         github: githubLink,

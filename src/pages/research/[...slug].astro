@@ -226,7 +226,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
         title={data.title}
         subtitle={authorsString}
         badges={badges}
-        featured={data.featured}
+        featuredState={data.featured ? "featured" : undefined}
         thumbnail={data.images?.logo}
         entityType="research"
       />

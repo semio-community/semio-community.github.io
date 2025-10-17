@@ -30,7 +30,9 @@ export const ResearchCard: React.FC<ResearchCardProps> = ({
     data.links?.pdf ||
     data.links?.proceedings ||
     (data.links?.doi ? `https://doi.org/${data.links.doi}` : undefined) ||
-    (data.links?.arxiv ? `https://arxiv.org/abs/${data.links.arxiv}` : undefined);
+    (data.links?.arxiv
+      ? `https://arxiv.org/abs/${data.links.arxiv}`
+      : undefined);
 
   const githubLink = data.links?.code || data.links?.github;
   const demoLink = data.links?.demo || data.links?.video;
@@ -46,7 +48,7 @@ export const ResearchCard: React.FC<ResearchCardProps> = ({
       imageAlt={data.title}
       logo={data.images?.logo}
       category={category}
-      featured={data.featured}
+      featuredState={data.featured ? "featured" : "not-featured"}
       links={{
         website: websiteLink,
         github: githubLink,

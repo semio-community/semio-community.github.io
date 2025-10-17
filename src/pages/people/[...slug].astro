@@ -283,7 +283,7 @@ if (data.links?.mastodon) {
         title={fullName}
         subtitle={data.title}
         badges={badges}
-        featured={data.featured}
+        featuredState={data.featured ? "featured" : undefined}
         avatar={data.images?.avatar}
         entityType="person"
         logoText={data.name}

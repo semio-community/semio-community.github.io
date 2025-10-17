@@ -9,7 +9,11 @@ import { Icon } from "astro-icon/components";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getAllResearch } from "@/data/research";
-import { getCurrentEvents, getFeaturedEvents, getUpcomingEvents } from "@/data/events";
+import {
+  getCurrentEvents,
+  getFeaturedEvents,
+  getUpcomingEvents,
+} from "@/data/events";
 
 const allHardware = await getAllHardware();
 
@@ -19,7 +23,8 @@ const allSoftware = await getAllSoftware();
 // Fetch research data - handle empty collection gracefully
 const allResearch = await getAllResearch();
 
-const projectCount = allHardware.length + allSoftware.length + allResearch.length;
+const projectCount =
+  allHardware.length + allSoftware.length + allResearch.length;
 
 const currentDate = new Date();
 
@@ -35,9 +40,10 @@ const featuredEvents = [
     (upcomingEvent) =>
       !featuredOnlyEvents.some((featured) => featured.id === upcomingEvent.id),
   ),
-  ...featuredOnlyEvents.filter((featuredEvent)=>featuredEvent.data.startDate > currentDate),
+  ...featuredOnlyEvents.filter(
+    (featuredEvent) => featuredEvent.data.startDate > currentDate,
+  ),
 ];
-
 ---
 
 <PageLayout meta={{ title: "Home" }} noPaddingTop>
@@ -116,9 +122,9 @@ const featuredEvents = [
     id="mission"
     title="Our Mission"
     subtitle="Advancing human-centered robotics and AI through community collaboration"
+    variant="primary"
   >
     <div class="max-w-4xl mx-auto">
-
       <div class="bg-special-lighter rounded-lg p-8 border border-special mb-8">
         <p class="text-lg leading-relaxed text-center mb-6">
           Semio Community is a <span class="font-semibold"
@@ -191,6 +197,7 @@ const featuredEvents = [
     title="Our Programs"
     subtitle="Discover our projects and services for robotics hardware, software, and research"
     aria-label="Explore"
+    variant="secondary"
   >
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-0 overflow-x-hidden mb-8">
       <div
@@ -200,9 +207,10 @@ const featuredEvents = [
           icon="solar:cpu-bolt-line-duotone"
           title="Hardware"
           description="Community-driven robotics hardware platforms"
+          variant="secondary"
           extraLinks={[
-            {label: "Projects", href: url("projects#hardware")},
-            {label: "Services", href: url("services#hardware")}
+            { label: "Projects", href: url("projects#hardware") },
+            { label: "Services", href: url("services#hardware") },
           ]}
         />
 
@@ -210,9 +218,10 @@ const featuredEvents = [
           icon="solar:code-square-line-duotone"
           title="Software"
           description="Open-source AI software tools and frameworks"
+          variant="secondary"
           extraLinks={[
-            {label: "Projects", href: url("projects#software")},
-            {label: "Services", href: url("services#software")}
+            { label: "Projects", href: url("projects#software") },
+            { label: "Services", href: url("services#software") },
           ]}
         />
 
@@ -220,31 +229,36 @@ const featuredEvents = [
           icon="solar:test-tube-line-duotone"
           title="Research"
           description="Reproducible scientific research and studies"
+          variant="secondary"
           extraLinks={[
-            {label: "Projects", href: url("projects#research")},
-            {label: "Services", href: url("services#research")}
+            { label: "Projects", href: url("projects#research") },
+            { label: "Services", href: url("services#research") },
           ]}
         />
       </div>
     </div>
 
     <div class="prose prose-citrus max-w-none text-center">
-        <p class="text-center text-color-600 dark:text-color-400 mb-4">
-          Gather with the community at our events, which explore on a broad range of topics, including, but not limited to, human-centered robot hardware, software, and research that, with reasonable effort, can be incorporated into the design, development, or deployment of an HRI system.
-        </p>
-        <CallToActionButton
-          href={url("events")}
-          text="Upcoming Events"
-          size="large"
-          variant="default"
-        />
-      </div>
+      <p class="text-center text-color-600 dark:text-color-400 mb-4">
+        Gather with the community at our events, which explore on a broad range
+        of topics, including, but not limited to, human-centered robot hardware,
+        software, and research that, with reasonable effort, can be incorporated
+        into the design, development, or deployment of an HRI system.
+      </p>
+      <CallToActionButton
+        href={url("events")}
+        text="Upcoming Events"
+        size="large"
+        variant="default"
+      />
+    </div>
   </Section>
 
   <Section
     id="partners"
     title="Our Partners"
     subtitle="Building the future of human-centered robotics and AI together"
+    variant="tertiary"
   >
     <div class="max-w-4xl mx-auto">
       <div class="bg-special-lighter rounded-lg p-8 border border-special">
@@ -259,7 +273,7 @@ const featuredEvents = [
           <div class="text-center">
             <Icon
               name="solar:square-academic-cap-line-duotone"
-              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+              class="w-12 h-12 mx-auto mb-3 text-accent-three"
             />
             <h3 class="font-semibold mb-2">Academia</h3>
             <p class="text-sm text-color-600 dark:text-color-400">
@@ -269,7 +283,7 @@ const featuredEvents = [
           <div class="text-center">
             <Icon
               name="solar:buildings-2-line-duotone"
-              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+              class="w-12 h-12 mx-auto mb-3 text-accent-three"
             />
             <h3 class="font-semibold mb-2">Industry</h3>
             <p class="text-sm text-color-600 dark:text-color-400">
@@ -279,7 +293,7 @@ const featuredEvents = [
           <div class="text-center">
             <Icon
               name="solar:flag-2-line-duotone"
-              class="w-12 h-12 mx-auto mb-3 text-accent-two"
+              class="w-12 h-12 mx-auto mb-3 text-accent-three"
             />
             <h3 class="font-semibold mb-2">Public Sector</h3>
             <p class="text-sm text-color-600 dark:text-color-400">

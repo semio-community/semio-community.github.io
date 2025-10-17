@@ -28,7 +28,7 @@ export const SoftwareCard: React.FC<SoftwareCardProps> = ({
       logo={data.images?.logo}
       status={data.status}
       category={categoryLabel}
-      featured={data.featured}
+      featuredState={data.featured ? "featured" : "not-featured"}
       links={{
         website: data.links?.website,
         github: data.links?.github || data.links?.code,

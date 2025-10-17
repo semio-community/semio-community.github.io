@@ -230,6 +230,11 @@ const roleEntries = (data.roles || []).map((role) => ({
 }));
 
 const descriptionText = getEventPreviewDescriptionText(data);
+const featuredState = data.featured
+  ? eventStatus === "past"
+    ? "previously-featured"
+    : "featured"
+  : undefined;
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -241,7 +246,7 @@ const descriptionText = getEventPreviewDescriptionText(data);
         title={data.name}
         subtitle={descriptionText}
         badges={badges}
-        featured={data.featured}
+        featuredState={featuredState}
         logo={data.images?.logo}
         entityType="event"
       />

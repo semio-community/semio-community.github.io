@@ -29,7 +29,7 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
       imageAlt={data.name}
       logo={showLogo ? data.images?.logo : undefined}
       category={typeLabel}
-      featured={data.featured}
+      featuredState={data.featured ? "featured" : "not-featured"}
       links={{
         website: data.links?.website,
         docs: data.links?.documentation,
