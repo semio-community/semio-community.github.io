@@ -1,14 +1,17 @@
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 
+function formatPersonName(
+  data: CollectionEntry<"people">["data"],
+): string {
+  return data.honorific ? `${data.honorific} ${data.name}`.trim() : data.name;
+}
+
 /** Get all people entries */
 export async function getAllPeople(): Promise<CollectionEntry<"people">[]> {
   return await getCollection("people", ({ data }) => {
-    // In production, exclude drafts and only show public people. In development, show all.
-    if (import.meta.env.PROD) {
-      return data.draft !== true && data.visibility === "public";
-    }
-    return true;
+    // In production, exclude drafts. In development, show all.
+    return import.meta.env.PROD ? data.draft !== true : true;
   });
 }
 
@@ -19,7 +22,7 @@ export async function getPerson(
   const person = await getEntry("people", id);
   // In production, return undefined if the person is a draft or not public
   if (person && import.meta.env.PROD) {
-    if (person.data.draft === true || person.data.visibility !== "public") {
+    if (person.data.draft === true) {
       return undefined;
     }
   }
@@ -28,12 +31,15 @@ export async function getPerson(
 
 /** Get people by organization */
 export async function getPeopleByOrganization(
-  partnerId: string,
+  organizationId: string,
 ): Promise<CollectionEntry<"people">[]> {
   const allPeople = await getAllPeople();
+  const now = new Date();
   return allPeople.filter((person) =>
     person.data.affiliations?.some(
-      (aff) => aff.partnerId === partnerId && aff.current,
+      (aff) =>
+        aff.organizationId === organizationId &&
+        (!aff.endDate || aff.endDate >= now),
     ),
   );
 }
@@ -46,7 +52,7 @@ export async function getPersonWithAffiliations(personId: string) {
   const affiliations = await Promise.all(
     (person.data.affiliations || []).map(async (aff) => ({
       ...aff,
-      organization: await getEntry("organizations", aff.partnerId),
+      organization: await getEntry("organizations", aff.organizationId),
     })),
   );
 
@@ -91,11 +97,12 @@ export async function getPeopleCountByOrganization(): Promise<
 > {
   const allPeople = await getAllPeople();
   const counts: Record<string, number> = {};
+  const now = new Date();
 
   allPeople.forEach((person) => {
     person.data.affiliations?.forEach((aff) => {
-      if (aff.current) {
-        counts[aff.partnerId] = (counts[aff.partnerId] || 0) + 1;
+      if (!aff.endDate || aff.endDate >= now) {
+        counts[aff.organizationId] = (counts[aff.organizationId] || 0) + 1;
       }
     });
   });
@@ -111,47 +118,56 @@ export async function searchPeople(
   const lowerQuery = query.toLowerCase();
 
   return allPeople.filter((person) => {
+    const displayName = formatPersonName(person.data).toLowerCase();
+    const linkValues =
+      Object.values(person.data.links || {}).map((value) =>
+        value?.toLowerCase(),
+      ) ?? [];
+
     return (
       person.data.name.toLowerCase().includes(lowerQuery) ||
-      (person.data.displayName &&
-        person.data.displayName.toLowerCase().includes(lowerQuery)) ||
+      displayName.includes(lowerQuery) ||
       (person.data.bio && person.data.bio.toLowerCase().includes(lowerQuery)) ||
       (person.data.title &&
         person.data.title.toLowerCase().includes(lowerQuery)) ||
       (person.data.expertise &&
         person.data.expertise.some((exp) =>
           exp.toLowerCase().includes(lowerQuery),
-        ))
+        )) ||
+      linkValues.some((value) => value?.includes(lowerQuery))
     );
   });
 }
 
-/** Get author names for a study */
+/** Get contributor names for a research entry */
 export async function getAuthorNamesForStudy(
-  authors: Array<{ personId: string; order: number }>,
+  contributors: Array<{ personId: string; order: number }>,
 ): Promise<string[]> {
-  // Sort authors by order first
-  const sortedAuthors = [...authors].sort((a, b) => a.order - b.order);
+  // Sort contributors by order metadata
+  const sortedContributors = [...contributors].sort(
+    (a, b) => a.order - b.order,
+  );
 
-  // Fetch person data for each author
-  const authorNames = await Promise.all(
-    sortedAuthors.map(async (author) => {
-      const person = await getPerson(author.personId);
-      return person?.data.displayName || person?.data.name || "Unknown Author";
+  // Fetch person data for each contributor
+  const contributorNames = await Promise.all(
+    sortedContributors.map(async (contributor) => {
+      const person = await getPerson(contributor.personId);
+      return person ? formatPersonName(person.data) : "Unknown Author";
     }),
   );
 
-  return authorNames;
+  return contributorNames;
 }
 
-/** Get formatted author string for display */
+/** Get formatted contributor string for display */
 export async function getFormattedAuthors(
-  authors: Array<{ personId: string; order: number }>,
+  contributors: Array<{ personId: string; order: number }>,
   maxDisplay: number = 3,
 ): Promise<string> {
-  const authorNames = await getAuthorNamesForStudy(authors);
+  if (contributors.length === 0) return "Unknown Authors";
 
-  if (authorNames.length === 0) return "Unknown Authors";
+  const authorNames = await getAuthorNamesForStudy(contributors);
+
   if (authorNames.length === 1) return authorNames[0] || "Unknown Author";
   if (authorNames.length === 2)
     return `${authorNames[0]} and ${authorNames[1]}`;
@@ -174,8 +190,9 @@ export async function getPeopleStatistics() {
   return {
     total: allPeople.length,
     featured: allPeople.filter((p) => p.data.featured).length,
-    withOrcid: allPeople.filter((p) => p.data.orcid).length,
-    withGoogleScholar: allPeople.filter((p) => p.data.googleScholar).length,
+    withOrcid: allPeople.filter((p) => p.data.links?.orcid).length,
+    withGoogleScholar: allPeople.filter((p) => p.data.links?.googleScholar)
+      .length,
     uniqueExpertiseCount: expertiseAreas.length,
     uniqueOrganizationCount: Object.keys(orgCounts).length,
   };
@@ -190,6 +207,7 @@ export async function getRelatedPeople(
 
   // Filter out the current person
   const otherPeople = allPeople.filter((p) => p.id !== currentPerson.id);
+  const now = new Date();
 
   // Score each person based on similarity
   const scoredPeople = otherPeople.map((person) => {
@@ -210,11 +228,13 @@ export async function getRelatedPeople(
     if (currentPerson.data.affiliations && person.data.affiliations) {
       const currentOrgs = new Set(
         currentPerson.data.affiliations
-          .filter((a) => a.current)
-          .map((a) => a.partnerId),
+          .filter((a) => !a.endDate || a.endDate >= now)
+          .map((a) => a.organizationId),
       );
       const sharedOrgs = person.data.affiliations.filter(
-        (a) => a.current && currentOrgs.has(a.partnerId),
+        (a) =>
+          (!a.endDate || a.endDate >= now) &&
+          currentOrgs.has(a.organizationId),
       );
       score += sharedOrgs.length * 2;
     }

@@ -1,10 +1,5 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-  render,
-  getEntry,
-} from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
@@ -15,7 +10,6 @@ import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import FeaturesList from "@/components/detail/FeaturesList.astro";
 import ChipsList from "@/components/detail/ChipsList.astro";
-import TagsList from "@/components/detail/TagsList.astro";
 import { getRelatedSoftware } from "@/data/software";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
@@ -36,12 +30,7 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"software">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
 
 // Get related software
@@ -70,18 +59,7 @@ const badges = [
   variant: "solid" | "outline";
 }>;
 
-// Prepare link buttons using centralized configuration
 const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
-
-// Get organization details
-const leadOrg = data.leadOrganization
-  ? await getEntry("organizations", data.leadOrganization)
-  : null;
-const supportingOrgs = data.supportingOrganizations
-  ? await Promise.all(
-      data.supportingOrganizations.map((id) => getEntry("organizations", id)),
-    )
-  : [];
 
 // Get contributors with their full data
 const contributors = data.contributors || [];
@@ -89,7 +67,7 @@ const peopleContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "person")
     .map(async (contributor) => {
-      const person = await getPerson(contributor.id);
+      const person = await getPerson(contributor.personId);
       return {
         ...contributor,
         data: person?.data,
@@ -105,13 +83,20 @@ const orgContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "organization")
     .map(async (contributor) => {
-      const org = await getEntry("organizations", contributor.id);
+      const org = await getEntry(
+        "organizations",
+        contributor.organizationId,
+      );
       return {
         ...contributor,
         data: org?.data,
       };
     }),
 );
+
+const primaryOrganization = orgContributors.find((c) => c.primary);
+const supportingOrganizations = orgContributors.filter((c) => !c.primary);
+const topics = data.topics ?? [];
 
 // Category labels for software
 const categoryLabels = {
@@ -209,7 +194,7 @@ if (data.requirements) {
                   <div class="flex flex-wrap gap-2">
                     {orgContributors.map((contributor) => (
                       <OrganizationChip
-                        partnerId={contributor.id}
+                        partnerId={contributor.organizationId}
                         role={contributor.role || "Contributing Organization"}
                       />
                     ))}
@@ -226,7 +211,7 @@ if (data.requirements) {
                   <div class="flex flex-wrap gap-2">
                     {validPeopleContributors.map((contributor) => (
                       <PersonPopoverWrapper
-                        personId={contributor.id}
+                        personId={contributor.personId}
                         role={contributor.role}
                       />
                     ))}
@@ -256,18 +241,22 @@ if (data.requirements) {
 
               {/* Stats Row */}
               <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
-                {leadOrg && (
+                {primaryOrganization && (
                   <div class="flex items-center gap-2">
                     <span class="font-semibold">Lead:</span>
-                    <span>{leadOrg.data?.shortName || leadOrg.data?.name}</span>
+                    <span>
+                      {primaryOrganization.data?.shortName ||
+                        primaryOrganization.data?.name ||
+                        primaryOrganization.organizationId}
+                    </span>
                   </div>
                 )}
-                {supportingOrgs.length > 0 && (
+                {supportingOrganizations.length > 0 && (
                   <div class="flex items-center gap-2">
                     <span class="font-semibold">Supporting:</span>
                     <span>
-                      {supportingOrgs.length} org
-                      {supportingOrgs.length !== 1 ? "s" : ""}
+                      {supportingOrganizations.length} org
+                      {supportingOrganizations.length !== 1 ? "s" : ""}
                     </span>
                   </div>
                 )}
@@ -337,16 +326,9 @@ if (data.requirements) {
 
     {/* Tags and Use Cases */}
     <Fragment slot="tags">
-      {
-        data.useCases && data.useCases.length > 0 && (
-          <ChipsList
-            title="USE CASES"
-            items={data.useCases}
-            variant="primary"
-          />
-        )
-      }
-      <TagsList tags={data.tags} baseUrl="/software/tags" variant="tertiary" />
+      {topics.length > 0 && (
+        <ChipsList title="TOPICS" items={topics} variant="primary" />
+      )}
     </Fragment>
 
     {/* Main content from MDX file */}

@@ -1,17 +1,12 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-  render,
-  getEntry,
-} from "astro:content";
+import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import InfoCard from "@/components/detail/InfoCard.astro";
 import LinkButton from "@/components/detail/LinkButton.astro";
-import { getAllResearch } from "@/data/research";
+import { getRelatedResearch as fetchRelatedResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/ui/OrganizationChip.astro";
@@ -31,91 +26,37 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"research">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
 
-// Get related research entries (by keywords or research areas)
-async function getRelatedResearch(
-  researchEntry: CollectionEntry<"research">,
-  limit: number = 3,
-) {
-  const allResearch = await getAllResearch();
-  const relatedResearch: CollectionEntry<"research">[] = [];
-
-  // Filter out the current entry
-  const otherEntries = allResearch.filter((item) => item.id !== researchEntry.id);
-
-  // Score each entry based on similarity
-  const scoredEntries = otherEntries.map((item) => {
-    let score = 0;
-
-    // Same type gets points
-    if (item.data.type === researchEntry.data.type) score += 2;
-
-    // Same venue gets points
-    if (item.data.venue && item.data.venue === researchEntry.data.venue) score += 3;
-
-    // Close year gets points (within 2 years)
-    const yearDiff = Math.abs(item.data.year - researchEntry.data.year);
-    if (yearDiff <= 2) score += 3 - yearDiff;
-
-    // Overlapping keywords get points
-    const entryKeywords = new Set(researchEntry.data.keywords || []);
-    const otherKeywords = item.data.keywords || [];
-    const keywordOverlap = otherKeywords.filter((kw) =>
-      entryKeywords.has(kw),
-    ).length;
-    score += keywordOverlap * 2;
-
-    // Overlapping research areas get points
-    const entryAreas = new Set(researchEntry.data.researchArea || []);
-    const otherAreas = item.data.researchArea || [];
-    const areaOverlap = otherAreas.filter((area) =>
-      entryAreas.has(area),
-    ).length;
-    score += areaOverlap * 2;
-
-    // Shared authors get high points
-    const entryAuthors = new Set(
-      researchEntry.data.authors.map((author) => author.personId),
-    );
-    const otherAuthors = item.data.authors.map((author) => author.personId);
-    const authorOverlap = otherAuthors.filter((id) =>
-      entryAuthors.has(id),
-    ).length;
-    score += authorOverlap * 5;
-
-    return { entry: item, score };
-  });
-
-  // Sort by score and take the top ones
-  scoredEntries.sort((a, b) => b.score - a.score);
-
-  return scoredEntries
-    .filter((ss) => ss.score > 0)
-    .slice(0, limit)
-    .map((ss) => ss.entry);
+function getPublishYear(researchEntry: CollectionEntry<"research">) {
+  const date = researchEntry.data.publishDate
+    ? new Date(researchEntry.data.publishDate)
+    : undefined;
+  if (date && !Number.isNaN(date.getTime())) {
+    return date.getFullYear();
+  }
+  const year = (researchEntry.data as { year?: number }).year;
+  return typeof year === "number" ? year : undefined;
 }
 
-const relatedResearch = await getRelatedResearch(entry, 3);
+const relatedResearch = await fetchRelatedResearch(entry, 3);
 
-// Get formatted authors string
-const authorsString = await getFormattedAuthors(data.authors);
+const publishDate = data.publishDate ? new Date(data.publishDate) : undefined;
+const displayYear = getPublishYear(entry);
+const legacyVenue = (data as { venue?: string }).venue;
+const legacyCitations = (data as { citations?: number }).citations;
+
+const authors = data.contributors ?? [];
+const authorsString = await getFormattedAuthors(authors);
 
 const meta = {
   title: `${data.title} - Research Study`,
-  description: data.abstract,
+  description: data.description,
 };
 
-// Prepare status badges
-const badges = [];
+const badges: Array<{ text: string; color: "blue" | "gray" | "accent"; variant: "solid" | "outline" }> = [];
 
-// Type badge
 const typeLabels = {
   study: "Study",
   paper: "Research Paper",
@@ -131,12 +72,13 @@ badges.push({
   variant: "solid" as const,
 });
 
-// Year badge
-badges.push({
-  text: data.year.toString(),
-  color: "gray" as const,
-  variant: "outline" as const,
-});
+if (displayYear) {
+  badges.push({
+    text: displayYear.toString(),
+    color: "gray" as const,
+    variant: "outline" as const,
+  });
+}
 
 if (data.featured) {
   badges.push({
@@ -146,84 +88,110 @@ if (data.featured) {
   });
 }
 
-// Prepare link buttons using centralized configuration
 const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
-// Get author details with PersonPopover
 const authorsWithData = await Promise.all(
-  data.authors.map(async (author) => {
-    const person = await getPerson(author.personId);
+  authors.map(async (contributor) => {
+    const person = await getPerson(contributor.personId);
     return {
-      ...author,
+      ...contributor,
       person: person?.data,
     };
   }),
 );
 
-// Sort by order
 authorsWithData.sort((a, b) => a.order - b.order);
 
-// Filter out authors where person data couldn't be found
 const validAuthors = authorsWithData.filter((a) => a.person);
 
-// Prepare publication details
-const publicationItems = [];
-if (data.venue) {
+const publicationItems: Array<{ label: string; value: string }> = [];
+
+if (legacyVenue) {
   publicationItems.push({
     label: "Venue",
-    value: data.venue,
+    value: legacyVenue,
   });
 }
-publicationItems.push({
-  label: "Year",
-  value: data.year.toString(),
-});
-if (data.citations && data.citations > 0) {
-  publicationItems.push({
-    label: "Citations",
-    value: data.citations.toString(),
-  });
-}
-if (data.publishDate) {
-  const pubDate = new Date(data.publishDate);
-  const now = new Date();
 
-  if (pubDate > now) {
-    // Study is not yet published
-    publicationItems.push({
-      label: "Status",
-      value: "Ongoing",
-    });
-  } else {
-    // Study is published
-    publicationItems.push({
-      label: "Published",
-      value: pubDate.toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-    });
-  }
+if (displayYear) {
+  publicationItems.push({
+    label: "Year",
+    value: displayYear.toString(),
+  });
+}
+
+if (publishDate) {
+  publicationItems.push({
+    label: "Published",
+    value: publishDate.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
+  });
 } else {
-  // No publish date means ongoing
   publicationItems.push({
     label: "Status",
     value: "Ongoing",
   });
 }
 
-// Get affiliated organizations
-const affiliatedOrgs = await Promise.all(
-  (data.affiliatedOrganizations || []).map((id) => getEntry("organizations", id)),
-);
-const validAffiliatedOrgs = affiliatedOrgs.filter((org) => org !== undefined);
+if (legacyCitations && legacyCitations > 0) {
+  publicationItems.push({
+    label: "Citations",
+    value: legacyCitations.toString(),
+  });
+}
 
-// Get funding organizations
-const fundingOrgs = await Promise.all(
-  (data.fundingOrganizations || []).map((id) => getEntry("organizations", id)),
-);
-const validFundingOrgs = fundingOrgs.filter((org) => org !== undefined);
+type OrganizationRole = "lead" | "affiliated" | "funding" | "collaborator";
+
+const organizationRoleLabels: Record<OrganizationRole, string> = {
+  lead: "Lead Organization",
+  affiliated: "Affiliated Organization",
+  funding: "Funding Organization",
+  collaborator: "Collaborating Organization",
+};
+
+const organizationLinks: Array<{
+  role: OrganizationRole;
+  note?: string;
+  organization: CollectionEntry<"organizations">;
+}> = [];
+
+for (const orgLink of data.organizations ?? []) {
+  const role = orgLink.role as OrganizationRole;
+  if (!organizationRoleLabels[role]) continue;
+  const organization = await getEntry("organizations", orgLink.organizationId);
+  if (!organization) continue;
+  organizationLinks.push({
+    role,
+    note: orgLink.note,
+    organization,
+  });
+}
+
+const organizationsByRole: Record<
+  OrganizationRole,
+  Array<{ organization: CollectionEntry<"organizations">; note?: string }>
+> = {
+  lead: [],
+  affiliated: [],
+  funding: [],
+  collaborator: [],
+};
+
+for (const item of organizationLinks) {
+  organizationsByRole[item.role].push({
+    organization: item.organization,
+    note: item.note,
+  });
+}
+
+const organizationRoleEntries = (Object.entries(
+  organizationsByRole,
+) as Array<
+  [OrganizationRole, Array<{ organization: CollectionEntry<"organizations">; note?: string }>]
+>).filter(([, list]) => list.length > 0);
 
 // Get related hardware
 const relatedHardwareItems = data.relatedHardware
@@ -261,7 +229,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
       />
     </Fragment>
 
-    {/* Description/Abstract */}
+    {/* Summary */}
     <Fragment slot="description">
       <div class="abstract-section">
         <div
@@ -272,7 +240,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
           >
             SUMMARY
           </h3>
-          <p class="text-accent-base">{data.abstract}</p>
+          <p class="text-accent-base">{data.description}</p>
         </div>
       </div>
 
@@ -306,7 +274,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
           <div class="authors-section mb-8">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                AUTHORS
+                CONTRIBUTORS
               </h3>
               <div class="flex flex-wrap gap-2">
                 {validAuthors.map((author) => (
@@ -341,48 +309,34 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
 
       {/* Organizations Section */}
       {
-        (validAffiliatedOrgs.length > 0 || validFundingOrgs.length > 0) && (
+        organizationRoleEntries.length > 0 && (
           <div class="organizations-section mb-8">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 ORGANIZATIONS
               </h3>
-              {validAffiliatedOrgs.length > 0 && (
+              {organizationRoleEntries.map(([role, organizations]) => (
                 <div class="mb-4">
                   <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                    Affiliated Institutions
+                    {organizationRoleLabels[role]}
                   </h4>
                   <div class="flex flex-wrap gap-2">
-                    {validAffiliatedOrgs.map(
-                      (org) =>
-                        org && (
-                          <OrganizationChip
-                            partnerId={org.id}
-                            role="Affiliated Institution"
-                          />
-                        ),
-                    )}
+                    {organizations.map(({ organization, note }) => (
+                      <div class="flex items-center gap-2">
+                        <OrganizationChip
+                          partnerId={organization.id}
+                          role={organizationRoleLabels[role]}
+                        />
+                        {note && (
+                          <span class="text-xs text-color-500 dark:text-color-400 italic">
+                            {note}
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              )}
-              {validFundingOrgs.length > 0 && (
-                <div>
-                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                    Funding Organizations
-                  </h4>
-                  <div class="flex flex-wrap gap-2">
-                    {validFundingOrgs.map(
-                      (org) =>
-                        org && (
-                          <OrganizationChip
-                            partnerId={org.id}
-                            role="Funding Partner"
-                          />
-                        ),
-                    )}
-                  </div>
-                </div>
-              )}
+              ))}
             </div>
           </div>
         )
@@ -414,45 +368,22 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
       }
     </Fragment>
 
-    {/* Keywords and Research Areas */}
+    {/* Topics */}
     <Fragment slot="tags">
       {
-        (data.keywords?.length > 0 || data.researchArea?.length > 0) && (
+        data.topics && data.topics.length > 0 && (
           <div class="topics-section">
             <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 RESEARCH TOPICS
               </h3>
-
-              {data.keywords && data.keywords.length > 0 && (
-                <div class="mb-4">
-                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                    Keywords
-                  </h4>
-                  <div class="flex flex-wrap gap-2">
-                    {data.keywords.map((keyword) => (
-                      <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {data.researchArea && data.researchArea.length > 0 && (
-                <div>
-                  <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                    Research Areas
-                  </h4>
-                  <div class="flex flex-wrap gap-2">
-                    {data.researchArea.map((area) => (
-                      <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
-                        {area}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div class="flex flex-wrap gap-2">
+                {data.topics.map((topic) => (
+                  <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                    {topic}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         )
@@ -500,27 +431,26 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
             title="Related Research"
             subtitle="Related papers, datasets, and benchmarks"
             items={
-              relatedResearch.map((entry) => ({
-                id: entry.id,
-                data: {
-                  name: entry.data.title,
-                  title: entry.data.title,
-                  displayName: undefined,
-                  description: entry.data.abstract,
-                  abstract: entry.data.abstract,
-                  status: undefined,
-                  type: entry.data.type,
-                  category: undefined,
-                  featured: entry.data.featured,
-                  images: entry.data.images,
-                  avatar: undefined,
-                  logo: undefined,
-                  thumbnail: undefined,
-                  banner: undefined,
-                  links: entry.data.links,
-                  shortDescription: `${typeLabels[entry.data.type] || entry.data.type} • ${entry.data.year}`,
-                },
-              })) as any
+              relatedResearch.map((relatedEntry) => {
+                const yearLabel = getPublishYear(relatedEntry);
+                const typeLabel =
+                  typeLabels[relatedEntry.data.type] || relatedEntry.data.type;
+                return {
+                  id: relatedEntry.id,
+                  data: {
+                    name: relatedEntry.data.title,
+                    title: relatedEntry.data.title,
+                    description: relatedEntry.data.description,
+                    type: relatedEntry.data.type,
+                    featured: relatedEntry.data.featured,
+                    images: relatedEntry.data.images,
+                    links: relatedEntry.data.links,
+                    shortDescription: [typeLabel, yearLabel]
+                      .filter(Boolean)
+                      .join(" • "),
+                  },
+                };
+              }) as any
             }
             itemType="research"
             columns={3}

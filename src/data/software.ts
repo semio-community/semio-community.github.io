@@ -102,19 +102,12 @@ export async function getSoftwareByOrganization(
 ): Promise<CollectionEntry<"software">[]> {
   const software = await getAllSoftware();
   return software.filter((item) => {
-    const isLead = item.data.leadOrganization === organizationId;
-    const isSupporting =
-      item.data.supportingOrganizations?.includes(organizationId);
-    return isLead || isSupporting;
+    return (item.data.contributors ?? []).some(
+      (contributor) =>
+        contributor.type === "organization" &&
+        contributor.organizationId === organizationId,
+    );
   });
-}
-
-/** Get all unique tags from software entries */
-export function getUniqueSoftwareTags(
-  software: CollectionEntry<"software">[],
-): string[] {
-  const tags = software.flatMap((item) => item.data.tags);
-  return [...new Set(tags)].sort();
 }
 
 /** Get all unique categories */
@@ -122,6 +115,13 @@ export async function getUniqueCategories(): Promise<string[]> {
   const software = await getAllSoftware();
   const categories = software.map((item) => item.data.category);
   return [...new Set(categories)];
+}
+
+/** Get all unique topics */
+export async function getUniqueSoftwareTopics(): Promise<string[]> {
+  const software = await getAllSoftware();
+  const topics = software.flatMap((item) => item.data.topics ?? []);
+  return [...new Set(topics)].sort((a, b) => a.localeCompare(b));
 }
 
 /** Get all unique programming languages */
@@ -148,18 +148,13 @@ export async function getUniqueLicenses(): Promise<string[]> {
 /** Get all unique organizations */
 export async function getUniqueOrganizations(): Promise<string[]> {
   const software = await getAllSoftware();
-  const organizations: string[] = [];
+  const organizations = software.flatMap((item) =>
+    (item.data.contributors ?? [])
+      .filter((contributor) => contributor.type === "organization")
+      .map((contributor) => contributor.organizationId),
+  );
 
-  software.forEach((item) => {
-    if (item.data.leadOrganization) {
-      organizations.push(item.data.leadOrganization);
-    }
-    if (item.data.supportingOrganizations) {
-      organizations.push(...item.data.supportingOrganizations);
-    }
-  });
-
-  return [...new Set(organizations)].sort();
+  return [...new Set(organizations)].sort((a, b) => a.localeCompare(b));
 }
 
 /** Get software count by category */
@@ -216,23 +211,37 @@ export async function searchSoftware(
   const lowerQuery = query.toLowerCase();
 
   return software.filter((item) => {
+    const contributorMatch = (item.data.contributors ?? []).some(
+      (contributor) => {
+        if (contributor.role?.toLowerCase().includes(lowerQuery)) {
+          return true;
+        }
+        if (contributor.type === "organization") {
+          return contributor.organizationId
+            .toLowerCase()
+            .includes(lowerQuery);
+        }
+        if (contributor.type === "person") {
+          return contributor.personId.toLowerCase().includes(lowerQuery);
+        }
+        return false;
+      },
+    );
+
     return (
       item.data.name.toLowerCase().includes(lowerQuery) ||
       item.data.description.toLowerCase().includes(lowerQuery) ||
       item.data.shortDescription.toLowerCase().includes(lowerQuery) ||
-      item.data.tags.some((tag) => tag.includes(lowerQuery)) ||
       item.data.language.some((lang) =>
         lang.toLowerCase().includes(lowerQuery),
       ) ||
       item.data.platform.some((plat) =>
         plat.toLowerCase().includes(lowerQuery),
       ) ||
-      (item.data.leadOrganization &&
-        item.data.leadOrganization.toLowerCase().includes(lowerQuery)) ||
-      (item.data.supportingOrganizations &&
-        item.data.supportingOrganizations.some((org) =>
-          org.toLowerCase().includes(lowerQuery),
-        ))
+      (item.data.topics ?? []).some((topic) =>
+        topic.toLowerCase().includes(lowerQuery),
+      ) ||
+      contributorMatch
     );
   });
 }
@@ -253,12 +262,6 @@ export async function getRelatedSoftware(
   const scored = otherSoftware.map((item) => {
     let score = 0;
 
-    // Score for shared tags
-    const sharedTags = item.data.tags.filter((tag) =>
-      currentItem.data.tags.includes(tag),
-    );
-    score += sharedTags.length * 2;
-
     // Score for shared languages
     const sharedLanguages = item.data.language.filter((lang) =>
       currentItem.data.language.includes(lang),
@@ -271,11 +274,11 @@ export async function getRelatedSoftware(
     );
     score += sharedPlatforms.length * 2;
 
-    // Score for shared use cases
-    const sharedUseCases = item.data.useCases.filter((useCase) =>
-      currentItem.data.useCases.includes(useCase),
+    // Score for shared topics
+    const sharedTopics = (item.data.topics ?? []).filter((topic) =>
+      (currentItem.data.topics ?? []).includes(topic),
     );
-    score += sharedUseCases.length * 2;
+    score += sharedTopics.length * 3;
 
     // Score for same category
     if (item.data.category === currentItem.data.category) {
@@ -299,7 +302,15 @@ export async function getRecentlyUpdatedSoftware(
 ): Promise<CollectionEntry<"software">[]> {
   const software = await getAllSoftware();
   return software
-    .sort((a, b) => b.data.lastUpdate.getTime() - a.data.lastUpdate.getTime())
+    .sort((a, b) => {
+      const aDate = a.data.publishDate
+        ? new Date(a.data.publishDate)
+        : new Date(0);
+      const bDate = b.data.publishDate
+        ? new Date(b.data.publishDate)
+        : new Date(0);
+      return bDate.getTime() - aDate.getTime();
+    })
     .slice(0, limit);
 }
 
@@ -323,6 +334,7 @@ export async function filterSoftware(criteria: {
   language?: string;
   platform?: string;
   license?: string;
+  topics?: string[];
   tags?: string[];
 }): Promise<CollectionEntry<"software">[]> {
   let software = await getAllSoftware();
@@ -359,9 +371,14 @@ export async function filterSoftware(criteria: {
     );
   }
 
-  if (criteria.tags && criteria.tags.length > 0) {
+  const topicFilters = criteria.topics ?? criteria.tags;
+  if (topicFilters && topicFilters.length > 0) {
     software = software.filter((item) =>
-      criteria.tags!.some((tag) => item.data.tags.includes(tag.toLowerCase())),
+      topicFilters.some((topic) =>
+        (item.data.topics ?? [])
+          .map((value) => value.toLowerCase())
+          .includes(topic.toLowerCase()),
+      ),
     );
   }
 

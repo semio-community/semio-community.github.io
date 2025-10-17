@@ -1,37 +1,18 @@
 import React from "react";
+import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
 export interface SoftwareCardProps {
   softwareId: string;
-  data: {
-    name?: string;
-    description?: string;
-    shortDescription?: string;
-    category?: string;
-    status?: string;
-    images?: {
-      logo?: any;
-      hero?: any;
-    };
-    links?: {
-      github?: string;
-      documentation?: string;
-      website?: string;
-      demo?: string;
-      pypi?: string;
-      npm?: string;
-    };
-    featured?: boolean;
-  };
+  data: CollectionEntry<"software">["data"];
   className?: string;
 }
 
 export const SoftwareCard: React.FC<SoftwareCardProps> = ({
   softwareId,
   data,
-  className,
+  className: _className,
 }) => {
-  // Build category label
   const categoryLabel = data.category
     ? data.category.charAt(0).toUpperCase() + data.category.slice(1)
     : "";
@@ -43,15 +24,15 @@ export const SoftwareCard: React.FC<SoftwareCardProps> = ({
       href={`/software/${softwareId}`}
       type="software"
       image={data.images?.hero}
-      imageAlt={data.images?.hero?.alt || data.name}
+      imageAlt={data.name}
       logo={data.images?.logo}
       status={data.status}
       category={categoryLabel}
       featured={data.featured}
       links={{
-        github: data.links?.github,
-        docs: data.links?.documentation,
         website: data.links?.website,
+        github: data.links?.github || data.links?.code,
+        docs: data.links?.documentation,
         demo: data.links?.demo,
         pypi: data.links?.pypi,
         npm: data.links?.npm,

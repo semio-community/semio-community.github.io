@@ -1,10 +1,5 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-  render,
-  getEntry,
-} from "astro:content";
+import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
@@ -27,7 +22,7 @@ export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {
     // In production, exclude drafts and private people. In development, show all.
     return import.meta.env.PROD
-      ? data.draft !== true && data.visibility === "public"
+      ? data.draft !== true
       : true;
   });
   return people.map((entry) => ({
@@ -36,13 +31,9 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
-  entry: CollectionEntry<"people">;
-};
-
 const { entry } = Astro.props;
-const { Content } = await render(entry);
 const { data } = entry;
+const fullName = data.honorific ? `${data.honorific} ${data.name}` : data.name;
 
 // Get related people (by expertise or organization)
 async function getRelatedPeople(
@@ -72,10 +63,10 @@ async function getRelatedPeople(
     person.data.affiliations.length > 0
   ) {
     const currentAffiliations = person.data.affiliations.filter(
-      (aff) => aff.current,
+      (aff) => !aff.endDate,
     );
     for (const aff of currentAffiliations) {
-      const orgPeople = await getPeopleByOrganization(aff.partnerId);
+      const orgPeople = await getPeopleByOrganization(aff.organizationId);
       for (const p of orgPeople) {
         if (!seenIds.has(p.id) && relatedPeople.length < limit) {
           relatedPeople.push(p);
@@ -95,7 +86,9 @@ async function getPersonRelatedContent(personId: string) {
   // Get research where this person is an author
   const allResearch = await getAllResearch();
   const research = allResearch.filter((study) =>
-    study.data.authors?.some((author) => author.personId === personId),
+    study.data.contributors?.some(
+      (contributor) => contributor.personId === personId,
+    ),
   );
 
   // Get hardware where this person is a contributor
@@ -103,7 +96,8 @@ async function getPersonRelatedContent(personId: string) {
   const hardware = allHardware.filter((hw) =>
     hw.data.contributors?.some(
       (contributor) =>
-        contributor.type === "person" && contributor.id === personId,
+        contributor.type === "person" &&
+        contributor.personId === personId,
     ),
   );
 
@@ -112,7 +106,8 @@ async function getPersonRelatedContent(personId: string) {
   const software = allSoftware.filter((sw) =>
     sw.data.contributors?.some(
       (contributor) =>
-        contributor.type === "person" && contributor.id === personId,
+        contributor.type === "person" &&
+        contributor.personId === personId,
     ),
   );
 
@@ -126,8 +121,8 @@ async function getPersonRelatedContent(personId: string) {
 const relatedContent = await getPersonRelatedContent(entry.id);
 
 const meta = {
-  title: `${data.displayName || data.name} - Researcher Profile`,
-  description: data.bio || `Profile of ${data.displayName || data.name}`,
+  title: `${fullName} - Researcher Profile`,
+  description: data.bio || `Profile of ${fullName}`,
 };
 
 // Prepare status badges
@@ -162,9 +157,9 @@ if (data.links?.github) {
     icon: "mdi:github",
   });
 }
-if (data.email) {
+if (data.links?.email) {
   actionButtons.push({
-    href: `mailto:${data.email}`,
+    href: `mailto:${data.links.email}`,
     text: "Email",
     variant: "tertiary" as const,
     icon: "solar:letter-line-duotone",
@@ -214,9 +209,9 @@ if (data.links?.scheduling) {
 // Prepare affiliations for display in main content
 const currentAffiliations = await Promise.all(
   (data.affiliations || [])
-    .filter((aff) => aff.current)
+    .filter((aff) => !aff.endDate)
     .map(async (aff) => {
-      const org = await getEntry("organizations", aff.partnerId);
+      const org = await getEntry("organizations", aff.organizationId);
       return {
         ...aff,
         organization: org,
@@ -226,9 +221,9 @@ const currentAffiliations = await Promise.all(
 
 const pastAffiliations = await Promise.all(
   (data.affiliations || [])
-    .filter((aff) => !aff.current)
+    .filter((aff) => aff.endDate)
     .map(async (aff) => {
-      const org = await getEntry("organizations", aff.partnerId);
+      const org = await getEntry("organizations", aff.organizationId);
       return {
         ...aff,
         organization: org,
@@ -238,19 +233,19 @@ const pastAffiliations = await Promise.all(
 
 // Prepare academic profile items
 const academicProfileItems = [];
-if (data.orcid) {
+if (data.links?.orcid) {
   academicProfileItems.push({
     label: "ORCID",
-    value: data.orcid,
-    link: `https://orcid.org/${data.orcid}`,
+    value: data.links.orcid,
+    link: `https://orcid.org/${data.links.orcid}`,
     external: true,
   });
 }
-if (data.googleScholar) {
+if (data.links?.googleScholar) {
   academicProfileItems.push({
     label: "Google Scholar",
     value: "View Profile",
-    link: `https://scholar.google.com/citations?user=${data.googleScholar}`,
+    link: `https://scholar.google.com/citations?user=${data.links.googleScholar}`,
     external: true,
   });
 }
@@ -289,12 +284,13 @@ if (data.links?.mastodon) {
       <DetailHero
         client:load
         image={data.images?.hero}
-        title={data.displayName || data.name}
+        title={fullName}
         subtitle={data.title}
         badges={badges}
         featured={data.featured}
         avatar={data.images?.avatar}
         entityType="person"
+        logoText={data.name}
       />
     </Fragment>
 
@@ -313,7 +309,7 @@ if (data.links?.mastodon) {
                   <div class="flex flex-wrap gap-2">
                     {currentAffiliations.map((aff) => (
                       <OrganizationChip
-                        partnerId={aff.partnerId}
+                        partnerId={aff.organizationId}
                         role={
                           aff.department
                             ? `${aff.role}, ${aff.department}`
@@ -334,7 +330,7 @@ if (data.links?.mastodon) {
                   <div class="flex flex-wrap gap-2">
                     {pastAffiliations.map((aff) => (
                       <OrganizationChip
-                        partnerId={aff.partnerId}
+                        partnerId={aff.organizationId}
                         role={
                           aff.department
                             ? `${aff.role}, ${aff.department}`
@@ -492,7 +488,10 @@ if (data.links?.mastodon) {
                 id: person.id,
                 data: {
                   ...person.data,
-                  name: person.data.displayName || person.data.name,
+                  name:
+                    person.data.honorific
+                      ? `${person.data.honorific} ${person.data.name}`
+                      : person.data.name,
                   description: person.data.bio || person.data.title || "",
                   shortDescription: person.data.title || "",
                   images: person.data.images,

@@ -5,12 +5,16 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "errorMessage": {
+            "minLength": "personId must reference a people collection entry"
+          }
         },
         "name": {
           "type": "string"
         },
-        "displayName": {
+        "honorific": {
           "type": "string"
         },
         "pronouns": {
@@ -33,14 +37,22 @@
           "items": {
             "type": "object",
             "properties": {
-              "partnerId": {
-                "type": "string"
+              "organizationId": {
+                "type": "string",
+                "minLength": 1,
+                "errorMessage": {
+                  "minLength": "organizationId must reference an organizations collection entry"
+                }
               },
               "role": {
                 "type": "string"
               },
               "department": {
                 "type": "string"
+              },
+              "isPrimary": {
+                "type": "boolean",
+                "default": false
               },
               "startDate": {
                 "anyOf": [
@@ -73,32 +85,25 @@
                     "format": "unix-time"
                   }
                 ]
-              },
-              "current": {
-                "type": "boolean",
-                "default": true
               }
             },
             "required": [
-              "partnerId",
+              "organizationId",
               "role"
             ],
             "additionalProperties": false
           }
         },
-        "orcid": {
-          "type": "string"
-        },
-        "googleScholar": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        },
         "links": {
           "type": "object",
           "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
             "website": {
               "type": "string"
             },
@@ -119,6 +124,63 @@
             },
             "scheduling": {
               "type": "string"
+            },
+            "googleScholar": {
+              "type": "string"
+            },
+            "orcid": {
+              "type": "string"
+            },
+            "documentation": {
+              "type": "string"
+            },
+            "paper": {
+              "type": "string"
+            },
+            "purchase": {
+              "type": "string"
+            },
+            "rental": {
+              "type": "string"
+            },
+            "demo": {
+              "type": "string"
+            },
+            "pypi": {
+              "type": "string"
+            },
+            "npm": {
+              "type": "string"
+            },
+            "pdf": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "arxiv": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "video": {
+              "type": "string"
+            },
+            "registration": {
+              "type": "string"
+            },
+            "program": {
+              "type": "string"
+            },
+            "proceedings": {
+              "type": "string"
+            },
+            "recordings": {
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -135,15 +197,6 @@
           },
           "additionalProperties": false
         },
-        "visibility": {
-          "type": "string",
-          "enum": [
-            "public",
-            "members",
-            "private"
-          ],
-          "default": "public"
-        },
         "featured": {
           "type": "boolean",
           "default": false
@@ -151,30 +204,13 @@
         "draft": {
           "type": "boolean"
         },
-        "lastUpdated": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
         "$schema": {
           "type": "string"
         }
       },
       "required": [
         "id",
-        "name",
-        "lastUpdated"
+        "name"
       ],
       "additionalProperties": false
     }

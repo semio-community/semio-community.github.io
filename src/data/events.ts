@@ -1,4 +1,3 @@
-import { getFormattedDateRanges } from "@/utils/date";
 import { type CollectionEntry, getCollection } from "astro:content";
 
 /** Get all events, sorted by start date (upcoming first) */
@@ -73,14 +72,6 @@ export async function getEventsByType(
   return events.filter((event) => event.data.type === type);
 }
 
-/** Get events filtered by format */
-export async function getEventsByFormat(
-  format: "in-person" | "virtual" | "hybrid",
-): Promise<CollectionEntry<"events">[]> {
-  const events = await getAllEvents();
-  return events.filter((event) => event.data.format === format);
-}
-
 /** Get only featured events */
 export async function getFeaturedEvents(): Promise<
   CollectionEntry<"events">[]
@@ -121,9 +112,7 @@ export async function getEventsByLocation(location: {
 /** Get virtual/online events */
 export async function getOnlineEvents(): Promise<CollectionEntry<"events">[]> {
   const events = await getAllEvents();
-  return events.filter(
-    (event) => event.data.format === "virtual" || event.data.location.online,
-  );
+  return events.filter((event) => event.data.location.online);
 }
 
 /** Get events within a date range */
@@ -160,35 +149,11 @@ export async function getEventsByMonth(
   });
 }
 
-/** Get events with open registration */
-export async function getEventsWithOpenRegistration(): Promise<
-  CollectionEntry<"events">[]
-> {
-  const events = await getUpcomingEvents();
-  const now = new Date();
-
-  return events.filter((event) => {
-    if (!event.data.registrationDeadline) {
-      // No deadline means registration might still be open
-      return event.data.startDate > now;
-    }
-    return event.data.registrationDeadline > now;
-  });
-}
-
 /** Get all unique event topics */
 export async function getUniqueEventTopics(): Promise<string[]> {
   const events = await getAllEvents();
   const topics = events.flatMap((event) => event.data.topics);
   return [...new Set(topics)].sort();
-}
-
-/** Get all unique event tags */
-export function getUniqueEventTags(
-  events: CollectionEntry<"events">[],
-): string[] {
-  const tags = events.flatMap((event) => event.data.tags);
-  return [...new Set(tags)].sort();
 }
 
 /** Get all unique locations */
@@ -225,19 +190,6 @@ export async function getEventCountByType(): Promise<Record<string, number>> {
   );
 }
 
-/** Get event count by format */
-export async function getEventCountByFormat(): Promise<Record<string, number>> {
-  const events = await getAllEvents();
-  return events.reduce(
-    (acc, event) => {
-      const format = event.data.format;
-      acc[format] = (acc[format] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-}
-
 /** Search events by query string */
 export async function searchEvents(
   query: string,
@@ -252,7 +204,6 @@ export async function searchEvents(
       event.data.topics.some((topic) =>
         topic.toLowerCase().includes(lowerQuery),
       ) ||
-      event.data.tags.some((tag) => tag.includes(lowerQuery)) ||
       event.data.location.city.toLowerCase().includes(lowerQuery) ||
       event.data.location.country.toLowerCase().includes(lowerQuery) ||
       event.data.roles.some((role) => role.includes(lowerQuery))
@@ -280,28 +231,19 @@ export async function getRelatedEvents(
     );
     score += sharedTopics.length * 3;
 
-    // Score for shared tags
-    const sharedTags = event.data.tags.filter((tag) =>
-      currentEvent.data.tags.includes(tag),
-    );
-    score += sharedTags.length * 2;
-
-    // Score for same type
     if (event.data.type === currentEvent.data.type) {
       score += 2;
     }
 
-    // Score for same format
-    if (event.data.format === currentEvent.data.format) {
-      score += 1;
-    }
-
-    // Score for same location
     if (
       event.data.location.city === currentEvent.data.location.city &&
       event.data.location.country === currentEvent.data.location.country
     ) {
       score += 2;
+    } else if (
+      event.data.location.country === currentEvent.data.location.country
+    ) {
+      score += 1;
     }
 
     return { event, score };
@@ -348,10 +290,8 @@ export async function groupEventsByMonth(
 /** Filter events by multiple criteria */
 export async function filterEvents(criteria: {
   type?: string;
-  format?: string;
   location?: { city?: string; country?: string };
   topics?: string[];
-  tags?: string[];
   dateFrom?: Date;
   dateTo?: Date;
   includeOnline?: boolean;
@@ -360,10 +300,6 @@ export async function filterEvents(criteria: {
 
   if (criteria.type) {
     events = events.filter((event) => event.data.type === criteria.type);
-  }
-
-  if (criteria.format) {
-    events = events.filter((event) => event.data.format === criteria.format);
   }
 
   if (criteria.location) {
@@ -384,18 +320,13 @@ export async function filterEvents(criteria: {
   }
 
   if (criteria.topics && criteria.topics.length > 0) {
+    const lowerTopics = criteria.topics.map((topic) => topic.toLowerCase());
     events = events.filter((event) =>
-      criteria.topics!.some((topic) =>
+      lowerTopics.some((topic) =>
         event.data.topics.some((eventTopic) =>
-          eventTopic.toLowerCase().includes(topic.toLowerCase()),
+          eventTopic.toLowerCase().includes(topic),
         ),
       ),
-    );
-  }
-
-  if (criteria.tags && criteria.tags.length > 0) {
-    events = events.filter((event) =>
-      criteria.tags!.some((tag) => event.data.tags.includes(tag.toLowerCase())),
     );
   }
 

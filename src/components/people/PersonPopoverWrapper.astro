@@ -21,15 +21,18 @@ const person =
 
 // Get current affiliation details if available
 let currentAffiliation:
-  | { partnerId: string; partnerName?: string; role: string }
+  | { organizationId: string; partnerName?: string; role: string }
   | undefined;
 if (person?.affiliations) {
-  const current = person.affiliations.find((a) => a.current);
+  const current = person.affiliations.find((aff) => !aff.endDate);
   if (current) {
-    const organization = await getEntry("organizations", current.partnerId);
+    const organization = await getEntry(
+      "organizations",
+      current.organizationId,
+    );
     currentAffiliation = {
-      partnerId: current.partnerId,
-      partnerName: organization?.data.name || current.partnerId,
+      organizationId: current.organizationId,
+      partnerName: organization?.data.name || current.organizationId,
       role: current.role,
     };
   }

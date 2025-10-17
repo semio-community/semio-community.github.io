@@ -13,24 +13,21 @@ interface PersonPopoverProps {
   person: {
     id: string;
     name: string;
-    displayName?: string;
+    honorific?: string;
     pronouns?: string;
     title?: string;
     bio?: string;
     expertise?: string[];
     affiliations?: Array<{
-      partnerId: string;
+      organizationId: string;
       role: string;
       department?: string;
       startDate?: Date;
       endDate?: Date;
-      current: boolean;
+      isPrimary?: boolean;
     }>;
-    orcid?: string;
-    googleScholar?: string;
-    email?: string;
-    website?: string;
     links?: {
+      email?: string;
       website?: string;
       github?: string;
       linkedin?: string;
@@ -38,6 +35,8 @@ interface PersonPopoverProps {
       bluesky?: string;
       mastodon?: string;
       scheduling?: string;
+      orcid?: string;
+      googleScholar?: string;
     };
     images?: {
       avatar?: {
@@ -51,7 +50,7 @@ interface PersonPopoverProps {
   personId: string;
   role?: string;
   currentAffiliation?: {
-    partnerId: string;
+    organizationId: string;
     partnerName?: string;
     role: string;
   };
@@ -71,19 +70,23 @@ export function PersonPopover({
     );
   }
 
+  const displayName = person.honorific
+    ? `${person.honorific} ${person.name}`
+    : person.name;
+
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
         <button className="inline-flex items-center gap-2 pl-2 pr-3 py-1.5 bg-surface-lighter rounded-full border-2 border-accent-one/40 hover:border-accent-one data-[state=open]:border-accent-two hover:data-[state=closed]:border-accent-one transition-all cursor-pointer focus:outline-none focus:border-accent-two">
           <Avatar
             src={person.images?.avatar}
-            alt={person.name}
-            name={person.displayName || person.name}
+            alt={displayName}
+            name={person.name}
             type="person"
             size="xs"
           />
           <span className="text-sm font-medium">
-            {person.displayName || person.name}
+            {displayName}
           </span>
           {role && (
             <span className="text-xs text-color-600 dark:text-color-400">
@@ -106,8 +109,8 @@ export function PersonPopover({
             <div className="flex-shrink-0">
               <Avatar
                 src={person.images?.avatar}
-                alt={person.name}
-                name={person.displayName || person.name}
+                alt={displayName}
+                name={displayName}
                 type="person"
                 size="lg"
               />
@@ -115,7 +118,7 @@ export function PersonPopover({
 
             <div className="flex-1 min-w-0">
               <h4 className="font-semibold text-base text-color">
-                {person.displayName || person.name}
+                {displayName}
                 {person.pronouns && (
                   <span className="ml-2 text-xs font-normal text-accent-base">
                     ({person.pronouns})
@@ -129,7 +132,7 @@ export function PersonPopover({
                 <p className="text-xs text-accent-base mt-1">
                   {currentAffiliation.role} at{" "}
                   {currentAffiliation.partnerName ||
-                    currentAffiliation.partnerId}
+                    currentAffiliation.organizationId}
                 </p>
               )}
             </div>
@@ -189,9 +192,9 @@ export function PersonPopover({
                 GitHub
               </a>
             )}
-            {person.orcid && (
+            {person.links?.orcid && (
               <a
-                href={`https://orcid.org/${person.orcid}`}
+                href={`https://orcid.org/${person.links.orcid}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1"
@@ -217,9 +220,9 @@ export function PersonPopover({
                 Website
               </a>
             )}
-            {person.email && (
+            {person.links?.email && (
               <a
-                href={`mailto:${person.email}`}
+                href={`mailto:${person.links.email}`}
                 className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1"
               >
                 <Letter className="w-3 h-3" />

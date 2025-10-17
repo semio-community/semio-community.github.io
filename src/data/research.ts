@@ -1,102 +1,147 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 
-/** Get all research entries, sorted by featured status, citations, and year */
-export async function getAllResearch(): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getCollection("research", ({ data }) => {
-    // In production, exclude drafts. In development, show all.
-    return import.meta.env.PROD ? data.draft !== true : true;
-  });
-  return researchEntries.sort((a, b) => {
-    // Sort by featured first
+type ResearchEntry = CollectionEntry<"research">;
+
+type LegacyResearchFields = {
+  year?: number;
+  venue?: string;
+  citations?: number;
+};
+
+function getLegacyField<K extends keyof LegacyResearchFields>(
+  entry: ResearchEntry,
+  key: K,
+): LegacyResearchFields[K] {
+  return (entry.data as LegacyResearchFields)[key];
+}
+
+function getPublishDate(entry: ResearchEntry): Date | null {
+  const value = entry.data.publishDate;
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getPublishYear(entry: ResearchEntry): number | null {
+  const publishDate = getPublishDate(entry);
+  if (publishDate) {
+    return publishDate.getFullYear();
+  }
+  const legacyYear = getLegacyField(entry, "year");
+  return typeof legacyYear === "number" ? legacyYear : null;
+}
+
+function sortResearchEntries(entries: ResearchEntry[]): ResearchEntry[] {
+  return [...entries].sort((a, b) => {
     if (a.data.featured !== b.data.featured) {
       return a.data.featured ? -1 : 1;
     }
 
-    // Then by year (most recent first)
-    if (a.data.year !== b.data.year) {
-      return b.data.year - a.data.year;
+    const aTime = getPublishDate(a)?.getTime() ?? Number.NEGATIVE_INFINITY;
+    const bTime = getPublishDate(b)?.getTime() ?? Number.NEGATIVE_INFINITY;
+    if (aTime !== bTime) {
+      return bTime - aTime;
     }
 
-    // Then by citations (highest first)
-    if (a.data.citations !== b.data.citations) {
-      return b.data.citations - a.data.citations;
+    const aYear = getPublishYear(a) ?? Number.NEGATIVE_INFINITY;
+    const bYear = getPublishYear(b) ?? Number.NEGATIVE_INFINITY;
+    if (aYear !== bYear) {
+      return bYear - aYear;
     }
 
-    // Finally by title
     return a.data.title.localeCompare(b.data.title);
   });
 }
 
-/** Get research entries filtered by type */
-export async function getResearchByType(
-  type: "paper" | "thesis" | "report" | "preprint" | "dataset" | "benchmark",
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) => study.data.type === type);
+async function loadResearchEntries(): Promise<ResearchEntry[]> {
+  const entries = await getCollection("research", ({ data }) =>
+    import.meta.env.PROD ? data.draft !== true : true,
+  );
+  return sortResearchEntries(entries);
+}
+
+function normalizeTopics(entry: ResearchEntry): string[] {
+  return entry.data.topics ?? [];
+}
+
+function normalizePublishDate(entry: ResearchEntry): Date | null {
+  return getPublishDate(entry);
+}
+
+function getContributorIds(entry: ResearchEntry): string[] {
+  return (entry.data.contributors ?? []).map((contributor) =>
+    contributor.personId.toLowerCase(),
+  );
+}
+
+/** Get all research entries */
+export async function getAllResearch(): Promise<ResearchEntry[]> {
+  return loadResearchEntries();
 }
 
 /** Get featured research entries */
-export async function getFeaturedResearch(): Promise<
-  CollectionEntry<"research">[]
-> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) => study.data.featured);
+export async function getFeaturedResearch(): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  return entries.filter((entry) => entry.data.featured);
 }
 
-/** Get research entries by year */
+/** Get research entries filtered by type */
+export async function getResearchByType(
+  type: ResearchEntry["data"]["type"],
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  return entries.filter((entry) => entry.data.type === type);
+}
+
+/** Get research entries by publication year */
 export async function getResearchByYear(
   year: number,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) => study.data.year === year);
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  return entries.filter((entry) => getPublishYear(entry) === year);
 }
 
 /** Get research entries within a year range */
 export async function getResearchByYearRange(
   startYear: number,
   endYear: number,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter(
-    (study) => study.data.year >= startYear && study.data.year <= endYear,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  return entries.filter((entry) => {
+    const entryYear = getPublishYear(entry);
+    return entryYear !== null && entryYear >= startYear && entryYear <= endYear;
+  });
+}
+
+/** Get research entries by topic */
+export async function getResearchByTopic(
+  topic: string,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = topic.toLowerCase();
+  return entries.filter((entry) =>
+    normalizeTopics(entry).some((value) => value.toLowerCase() === lower),
   );
 }
 
-/** Get research entries by research area */
-export async function getResearchByResearchArea(
-  area: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) =>
-    study.data.researchArea.some(
-      (researchArea) => researchArea.toLowerCase() === area.toLowerCase(),
-    ),
-  );
+/** Get research entries by contributor (personId) */
+export async function getResearchByContributor(
+  personId: string,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = personId.toLowerCase();
+  return entries.filter((entry) => getContributorIds(entry).includes(lower));
 }
 
-/** Get research entries by author */
-export async function getResearchByAuthor(
-  authorName: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) =>
-    study.data.authors.some((author) =>
-      author.personId.toLowerCase().includes(authorName.toLowerCase()),
-    ),
-  );
-}
-
-/** Get research entries by affiliation */
-export async function getResearchByAffiliation(
-  affiliation: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) =>
-    study.data.authors.some(
-      (author) =>
-        author.affiliationSnapshot
-          ?.toLowerCase()
-          .includes(affiliation.toLowerCase()) ?? false,
+/** Get research entries by organization involvement */
+export async function getResearchByOrganization(
+  organizationId: string,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = organizationId.toLowerCase();
+  return entries.filter((entry) =>
+    (entry.data.organizations ?? []).some((org) =>
+      org.organizationId.toLowerCase() === lower,
     ),
   );
 }
@@ -104,506 +149,472 @@ export async function getResearchByAffiliation(
 /** Get research entries by venue (conference or journal) */
 export async function getResearchByVenue(
   venue: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter(
-    (study) =>
-      study.data.venue?.toLowerCase().includes(venue.toLowerCase()) ?? false,
-  );
-}
-
-/** Get research entries by keyword */
-export async function getResearchByKeyword(
-  keyword: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter((study) =>
-    study.data.keywords.some((kw) =>
-      kw.toLowerCase().includes(keyword.toLowerCase()),
-    ),
-  );
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = venue.toLowerCase();
+  return entries.filter((entry) => {
+    const value = getLegacyField(entry, "venue");
+    return value ? value.toLowerCase().includes(lower) : false;
+  });
 }
 
 /** Get research entries related to specific hardware */
 export async function getResearchByHardware(
   hardwareId: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter(
-    (study) =>
-      study.data.relatedHardware?.some(
-        (hw) => hw.toLowerCase() === hardwareId.toLowerCase(),
-      ) ?? false,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = hardwareId.toLowerCase();
+  return entries.filter((entry) =>
+    entry.data.relatedHardware?.some(
+      (hw) => hw.toLowerCase() === lower,
+    ) ?? false,
   );
 }
 
 /** Get research entries related to specific software */
 export async function getResearchBySoftware(
   softwareId: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.filter(
-    (study) =>
-      study.data.relatedSoftware?.some(
-        (sw) => sw.toLowerCase() === softwareId.toLowerCase(),
-      ) ?? false,
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const lower = softwareId.toLowerCase();
+  return entries.filter((entry) =>
+    entry.data.relatedSoftware?.some(
+      (sw) => sw.toLowerCase() === lower,
+    ) ?? false,
   );
 }
 
-/** Get most cited researchEntries */
-export async function getMostCitedResearch(
-  limit: number = 10,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries
-    .sort((a, b) => b.data.citations - a.data.citations)
-    .slice(0, limit);
-}
-
-/** Get recent researchEntries */
+/** Get recent research entries sorted by publish date */
 export async function getRecentResearch(
   limit: number = 10,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
-  return researchEntries
-    .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-    .slice(0, limit);
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const withTime = entries
+    .map((entry) => {
+      const publishDate = getPublishDate(entry);
+      if (publishDate) {
+        return { entry, time: publishDate.getTime() };
+      }
+      const year = getPublishYear(entry);
+      if (year !== null) {
+        return { entry, time: new Date(year, 0, 1).getTime() };
+      }
+      return null;
+    })
+    .filter(
+      (value): value is { entry: ResearchEntry; time: number } => value !== null,
+    )
+    .sort((a, b) => b.time - a.time)
+    .slice(0, limit)
+    .map(({ entry }) => entry);
+
+  return withTime;
 }
 
-/** Get all unique research areas */
-export async function getUniqueResearchAreas(): Promise<string[]> {
-  const researchEntries = await getAllResearch();
-  const areas = researchEntries.flatMap((study) => study.data.researchArea);
-  return [...new Set(areas)].sort();
-}
-
-/** Get all unique keywords */
-export async function getUniqueResearchKeywords(): Promise<string[]> {
-  const researchEntries = await getAllResearch();
-  const keywords = researchEntries.flatMap((study) => study.data.keywords);
-  return [...new Set(keywords)].sort();
+/** Get all unique research topics */
+export async function getUniqueResearchTopics(): Promise<string[]> {
+  const entries = await loadResearchEntries();
+  const topics = entries.flatMap((entry) => normalizeTopics(entry));
+  return [...new Set(topics)].sort((a, b) => a.localeCompare(b));
 }
 
 /** Get all unique venues */
 export async function getUniqueResearchVenues(): Promise<string[]> {
-  const researchEntries = await getAllResearch();
-  const venues = researchEntries
-    .map((study) => study.data.venue)
-    .filter((venue): venue is string => venue !== undefined);
-  return [...new Set(venues)].sort();
+  const entries = await loadResearchEntries();
+  const venues = entries
+    .map((entry) => getLegacyField(entry, "venue"))
+    .filter((venue): venue is string => Boolean(venue));
+  return [...new Set(venues)].sort((a, b) => a.localeCompare(b));
 }
 
-/** Get all unique authors */
-export async function getUniqueResearchAuthors(): Promise<
-  Array<{
-    name: string;
-    affiliation?: string;
-    count: number;
-  }>
+/** Get all unique research contributors (people) */
+export async function getUniqueResearchContributors(): Promise<
+  Array<{ name: string; affiliation?: string; count: number }>
 > {
-  const researchEntries = await getAllResearch();
-  const authorMap = new Map<string, { affiliation?: string; count: number }>();
+  const entries = await loadResearchEntries();
+  const contributorMap = new Map<string, { affiliation?: string; count: number }>();
 
-  researchEntries.forEach((study) => {
-    study.data.authors.forEach((author) => {
-      const existing = authorMap.get(author.personId);
-      if (existing) {
-        existing.count++;
-        if (!existing.affiliation && author.affiliationSnapshot) {
-          existing.affiliation = author.affiliationSnapshot;
-        }
-      } else {
-        authorMap.set(author.personId, {
-          ...(author.affiliationSnapshot && {
-            affiliation: author.affiliationSnapshot,
-          }),
-          count: 1,
-        });
+  entries.forEach((entry) => {
+    (entry.data.contributors ?? []).forEach((contributor) => {
+      const existing = contributorMap.get(contributor.personId) ?? {
+        count: 0,
+      };
+      existing.count += 1;
+      if (!existing.affiliation && contributor.affiliationSnapshot) {
+        existing.affiliation = contributor.affiliationSnapshot;
       }
+      contributorMap.set(contributor.personId, existing);
     });
   });
 
-  return Array.from(authorMap.entries())
+  return Array.from(contributorMap.entries())
     .map(([personId, data]) => ({ name: personId, ...data }))
     .sort((a, b) => b.count - a.count);
 }
 
+export async function getUniqueResearchAuthors(): Promise<
+  Array<{ name: string; affiliation?: string; count: number }>
+> {
+  return getUniqueResearchContributors();
+}
+
 /** Get study count by type */
 export async function getResearchCountByType(): Promise<Record<string, number>> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.reduce(
-    (acc, study) => {
-      const type = study.data.type;
-      acc[type] = (acc[type] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
+  const entries = await loadResearchEntries();
+  return entries.reduce((acc, entry) => {
+    acc[entry.data.type] = (acc[entry.data.type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 }
 
 /** Get study count by year */
 export async function getResearchCountByYear(): Promise<Record<number, number>> {
-  const researchEntries = await getAllResearch();
-  return researchEntries.reduce(
-    (acc, study) => {
-      const year = study.data.year;
+  const entries = await loadResearchEntries();
+  return entries.reduce((acc, entry) => {
+    const year = getPublishYear(entry);
+    if (year !== null) {
       acc[year] = (acc[year] || 0) + 1;
-      return acc;
-    },
-    {} as Record<number, number>,
-  );
+    }
+    return acc;
+  }, {} as Record<number, number>);
 }
 
-/** Get study count by research area */
-export async function getResearchCountByResearchArea(): Promise<
-  Record<string, number>
-> {
-  const researchEntries = await getAllResearch();
-  const counts: Record<string, number> = {};
-
-  researchEntries.forEach((study) => {
-    study.data.researchArea.forEach((area) => {
-      counts[area] = (counts[area] || 0) + 1;
-    });
-  });
-
-  return counts;
-}
-
-/** Search researchEntries by query string */
+/** Search research entries by query string */
 export async function searchResearch(
   query: string,
-): Promise<CollectionEntry<"research">[]> {
-  const researchEntries = await getAllResearch();
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
   const lowerQuery = query.toLowerCase();
 
-  return researchEntries.filter((study) => {
+  return entries.filter((entry) => {
+    const titleMatch = entry.data.title.toLowerCase().includes(lowerQuery);
+    const descriptionMatch = entry.data.description
+      ?.toLowerCase()
+      .includes(lowerQuery) ?? false;
+    const topicMatch = normalizeTopics(entry).some((topic) =>
+      topic.toLowerCase().includes(lowerQuery),
+    );
+    const contributorMatch = (entry.data.contributors ?? []).some(
+      (contributor) =>
+        contributor.personId.toLowerCase().includes(lowerQuery) ||
+        contributor.affiliationSnapshot
+          ?.toLowerCase()
+          .includes(lowerQuery),
+    );
+    const organizationMatch = (entry.data.organizations ?? []).some((org) =>
+      org.organizationId.toLowerCase().includes(lowerQuery) ||
+      org.role.toLowerCase().includes(lowerQuery) ||
+      org.note?.toLowerCase().includes(lowerQuery),
+    );
+    const venue = getLegacyField(entry, "venue");
+    const venueMatch = venue ? venue.toLowerCase().includes(lowerQuery) : false;
+    const hardwareMatch = entry.data.relatedHardware?.some((hw) =>
+      hw.toLowerCase().includes(lowerQuery),
+    ) ?? false;
+    const softwareMatch = entry.data.relatedSoftware?.some((sw) =>
+      sw.toLowerCase().includes(lowerQuery),
+    ) ?? false;
+
     return (
-      study.data.title.toLowerCase().includes(lowerQuery) ||
-      study.data.abstract.toLowerCase().includes(lowerQuery) ||
-      study.data.keywords.some((keyword) =>
-        keyword.toLowerCase().includes(lowerQuery),
-      ) ||
-      study.data.researchArea.some((area) =>
-        area.toLowerCase().includes(lowerQuery),
-      ) ||
-      study.data.authors.some(
-        (author) =>
-          author.personId.toLowerCase().includes(lowerQuery) ||
-          (author.affiliationSnapshot?.toLowerCase().includes(lowerQuery) ??
-            false),
-      ) ||
-      (study.data.venue?.toLowerCase().includes(lowerQuery) ?? false)
+      titleMatch ||
+      descriptionMatch ||
+      topicMatch ||
+      contributorMatch ||
+      organizationMatch ||
+      venueMatch ||
+      hardwareMatch ||
+      softwareMatch
     );
   });
 }
 
-/** Get related researchEntries (by shared keywords, research areas, or authors) */
+/** Get related research entries */
 export async function getRelatedResearch(
-  currentStudy: CollectionEntry<"research">,
+  currentStudy: ResearchEntry,
   limit: number = 5,
-): Promise<CollectionEntry<"research">[]> {
-  const allEntries = await getAllResearch();
+): Promise<ResearchEntry[]> {
+  const entries = await loadResearchEntries();
+  const others = entries.filter((entry) => entry.id !== currentStudy.id);
 
-  // Filter out the current study
-  const otherEntries = allEntries.filter(
-    (study) => study.id !== currentStudy.id,
+  const currentTopics = new Set(normalizeTopics(currentStudy));
+  const currentContributors = new Set(getContributorIds(currentStudy));
+  const currentOrganizations = new Set(
+    (currentStudy.data.organizations ?? []).map(
+      (organization) => organization.organizationId,
+    ),
   );
+  const currentYear = getPublishYear(currentStudy);
 
-  // Score each study based on shared attributes
-  const scored = otherEntries.map((study) => {
+  const scored = others.map((entry) => {
     let score = 0;
 
-    // Score for shared keywords
-    const sharedKeywords = study.data.keywords.filter((keyword) =>
-      currentStudy.data.keywords.includes(keyword),
+    const sharedTopics = normalizeTopics(entry).filter((topic) =>
+      currentTopics.has(topic),
     );
-    score += sharedKeywords.length * 3;
+    score += sharedTopics.length * 3;
 
-    // Score for shared research areas
-    const sharedAreas = study.data.researchArea.filter((area) =>
-      currentStudy.data.researchArea.includes(area),
+    const contributorIds = getContributorIds(entry);
+    const sharedContributors = contributorIds.filter((id) =>
+      currentContributors.has(id),
     );
-    score += sharedAreas.length * 4;
+    score += sharedContributors.length * 4;
 
-    // Score for shared authors
-    const sharedAuthors = study.data.authors.filter((author) =>
-      currentStudy.data.authors.some(
-        (currentAuthor) => currentAuthor.personId === author.personId,
-      ),
+    const sharedOrganizations = (entry.data.organizations ?? []).filter((org) =>
+      currentOrganizations.has(org.organizationId),
     );
-    score += sharedAuthors.length * 5;
+    score += sharedOrganizations.length * 2;
 
-    // Score for same type
-    if (study.data.type === currentStudy.data.type) {
-      score += 1;
-    }
-
-    // Score for same venue
-    if (
-      study.data.venue &&
-      currentStudy.data.venue &&
-      study.data.venue === currentStudy.data.venue
-    ) {
-      score += 2;
-    }
-
-    // Score for related hardware
-    if (currentStudy.data.relatedHardware && study.data.relatedHardware) {
-      const sharedHardware = study.data.relatedHardware.filter((hw) =>
+    if (currentStudy.data.relatedHardware && entry.data.relatedHardware) {
+      const sharedHardware = entry.data.relatedHardware.filter((hw) =>
         currentStudy.data.relatedHardware!.includes(hw),
       );
       score += sharedHardware.length * 2;
     }
 
-    // Score for related software
-    if (currentStudy.data.relatedSoftware && study.data.relatedSoftware) {
-      const sharedSoftware = study.data.relatedSoftware.filter((sw) =>
+    if (currentStudy.data.relatedSoftware && entry.data.relatedSoftware) {
+      const sharedSoftware = entry.data.relatedSoftware.filter((sw) =>
         currentStudy.data.relatedSoftware!.includes(sw),
       );
       score += sharedSoftware.length * 2;
     }
 
-    // Slight preference for researchEntries from the same year or nearby years
-    const yearDiff = Math.abs(study.data.year - currentStudy.data.year);
-    if (yearDiff <= 1) {
+    const entryYear = getPublishYear(entry);
+    if (
+      currentYear !== null &&
+      entryYear !== null &&
+      Math.abs(entryYear - currentYear) <= 1
+    ) {
       score += 1;
     }
 
-    return { study, score };
+    return { entry, score };
   });
 
-  // Sort by score and return top researchEntries
   return scored
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
-    .map(({ study }) => study);
+    .map(({ entry }) => entry);
 }
 
-/** Group researchEntries by year for timeline view */
+/** Group research entries by year */
 export function groupResearchByYear(
-  researchEntries: CollectionEntry<"research">[],
-): Record<number, CollectionEntry<"research">[]> {
-  const grouped: Record<number, CollectionEntry<"research">[]> = {};
+  researchEntries: ResearchEntry[],
+): Record<number, ResearchEntry[]> {
+  const grouped: Record<number, ResearchEntry[]> = {};
 
-  researchEntries.forEach((study) => {
-    const year = study.data.year;
+  researchEntries.forEach((entry) => {
+    const year = getPublishYear(entry);
+    if (year === null) return;
     if (!grouped[year]) {
       grouped[year] = [];
     }
-    grouped[year].push(study);
+    grouped[year]!.push(entry);
   });
 
-  // Sort researchEntries within each year by citations
-  Object.keys(grouped).forEach((key) => {
-    const yearGroup = grouped[Number(key)];
-    if (yearGroup) {
-      yearGroup.sort((a, b) => b.data.citations - a.data.citations);
-    }
+  Object.values(grouped).forEach((group) => {
+    group.sort((a, b) => {
+      const bTime = normalizePublishDate(b)?.getTime() ?? 0;
+      const aTime = normalizePublishDate(a)?.getTime() ?? 0;
+      return bTime - aTime;
+    });
   });
 
   return grouped;
 }
 
-/** Group researchEntries by type */
+/** Group research entries by type */
 export function groupResearchByType(
-  researchEntries: CollectionEntry<"research">[],
-): Record<string, CollectionEntry<"research">[]> {
-  const grouped: Record<string, CollectionEntry<"research">[]> = {};
+  researchEntries: ResearchEntry[],
+): Record<string, ResearchEntry[]> {
+  const grouped: Record<string, ResearchEntry[]> = {};
 
-  researchEntries.forEach((study) => {
-    const type = study.data.type;
-    if (!grouped[type]) {
-      grouped[type] = [];
+  researchEntries.forEach((entry) => {
+    if (!grouped[entry.data.type]) {
+      grouped[entry.data.type] = [];
     }
-    grouped[type].push(study);
+    grouped[entry.data.type]!.push(entry);
   });
 
   return grouped;
 }
 
-/** Filter researchEntries by multiple criteria */
+/** Filter research entries by multiple criteria */
 export async function filterResearch(criteria: {
   type?: string;
   yearFrom?: number;
   yearTo?: number;
-  researchAreas?: string[];
-  keywords?: string[];
-  authors?: string[];
+  topics?: string[];
+  contributors?: string[];
   venues?: string[];
-  minCitations?: number;
+  organizations?: string[];
   relatedHardware?: string[];
   relatedSoftware?: string[];
-}): Promise<CollectionEntry<"research">[]> {
-  let researchEntries = await getAllResearch();
+}): Promise<ResearchEntry[]> {
+  let entries = await loadResearchEntries();
 
   if (criteria.type) {
-    researchEntries = researchEntries.filter((study) => study.data.type === criteria.type);
+    entries = entries.filter((entry) => entry.data.type === criteria.type);
   }
 
-  if (criteria.yearFrom) {
-    researchEntries = researchEntries.filter((study) => study.data.year >= criteria.yearFrom!);
+  if (criteria.yearFrom !== undefined) {
+    entries = entries.filter((entry) => {
+      const year = getPublishYear(entry);
+      return year !== null && year >= criteria.yearFrom!;
+    });
   }
 
-  if (criteria.yearTo) {
-    researchEntries = researchEntries.filter((study) => study.data.year <= criteria.yearTo!);
+  if (criteria.yearTo !== undefined) {
+    entries = entries.filter((entry) => {
+      const year = getPublishYear(entry);
+      return year !== null && year <= criteria.yearTo!;
+    });
   }
 
-  if (criteria.researchAreas && criteria.researchAreas.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.researchAreas!.some((area) =>
-        study.data.researchArea.some((studyArea) =>
-          studyArea.toLowerCase().includes(area.toLowerCase()),
-        ),
+  if (criteria.topics && criteria.topics.length > 0) {
+    const lowerTopics = criteria.topics.map((topic) => topic.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerTopics.some((topic) =>
+        normalizeTopics(entry)
+          .map((value) => value.toLowerCase())
+          .includes(topic),
       ),
     );
   }
 
-  if (criteria.keywords && criteria.keywords.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.keywords!.some((keyword) =>
-        study.data.keywords.some((studyKeyword) =>
-          studyKeyword.toLowerCase().includes(keyword.toLowerCase()),
-        ),
-      ),
-    );
-  }
-
-  if (criteria.authors && criteria.authors.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.authors!.some((author) =>
-        study.data.authors.some((studyAuthor) =>
-          studyAuthor.personId.toLowerCase().includes(author.toLowerCase()),
-        ),
+  if (criteria.contributors && criteria.contributors.length > 0) {
+    const lowerContributors = criteria.contributors.map((c) => c.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerContributors.some((personId) =>
+        getContributorIds(entry).includes(personId),
       ),
     );
   }
 
   if (criteria.venues && criteria.venues.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.venues!.some(
-        (venue) =>
-          study.data.venue?.toLowerCase().includes(venue.toLowerCase()) ??
-          false,
+    const lowerVenues = criteria.venues.map((venue) => venue.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerVenues.some((venue) => {
+        const value = getLegacyField(entry, "venue");
+        return value ? value.toLowerCase().includes(venue) : false;
+      }),
+    );
+  }
+
+  if (criteria.organizations && criteria.organizations.length > 0) {
+    const lowerOrgs = criteria.organizations.map((org) => org.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerOrgs.some((organizationId) =>
+        (entry.data.organizations ?? []).some(
+          (org) => org.organizationId.toLowerCase() === organizationId,
+        ),
       ),
     );
   }
 
-  if (criteria.minCitations !== undefined) {
-    researchEntries = researchEntries.filter(
-      (study) => study.data.citations >= criteria.minCitations!,
-    );
-  }
-
   if (criteria.relatedHardware && criteria.relatedHardware.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.relatedHardware!.some(
-        (hw) => study.data.relatedHardware?.includes(hw) ?? false,
+    const lowerHardware = criteria.relatedHardware.map((hw) => hw.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerHardware.some((hardwareId) =>
+        entry.data.relatedHardware?.some(
+          (hw) => hw.toLowerCase() === hardwareId,
+        ) ?? false,
       ),
     );
   }
 
   if (criteria.relatedSoftware && criteria.relatedSoftware.length > 0) {
-    researchEntries = researchEntries.filter((study) =>
-      criteria.relatedSoftware!.some(
-        (sw) => study.data.relatedSoftware?.includes(sw) ?? false,
+    const lowerSoftware = criteria.relatedSoftware.map((sw) => sw.toLowerCase());
+    entries = entries.filter((entry) =>
+      lowerSoftware.some((softwareId) =>
+        entry.data.relatedSoftware?.some(
+          (sw) => sw.toLowerCase() === softwareId,
+        ) ?? false,
       ),
     );
   }
 
-  return researchEntries;
+  return entries;
 }
 
-/** Get study statistics */
+/** Get research statistics */
 export async function getResearchStatistics(): Promise<{
   total: number;
   byType: Record<string, number>;
   byYear: Record<number, number>;
-  averageCitations: number;
-  totalCitations: number;
-  mostCitedStudy?: CollectionEntry<"research">;
-  mostRecentStudy?: CollectionEntry<"research">;
-  uniqueAuthorsCount: number;
+  uniqueContributorsCount: number;
   uniqueVenuesCount: number;
+  mostRecentStudy?: ResearchEntry;
 }> {
-  const researchEntries = await getAllResearch();
-  const totalCitations = researchEntries.reduce(
-    (sum, study) => sum + study.data.citations,
-    0,
-  );
-  const averageCitations =
-    researchEntries.length > 0 ? totalCitations / researchEntries.length : 0;
-
-  const sortedByCitations = [...researchEntries].sort(
-    (a, b) => b.data.citations - a.data.citations,
-  );
-  const sortedByDate = [...researchEntries].sort(
-    (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime(),
-  );
-
-  const authors = await getUniqueResearchAuthors();
-  const venues = await getUniqueResearchVenues();
+  const entries = await loadResearchEntries();
+  const [byType, byYear, uniqueContributors, uniqueVenues] = await Promise.all([
+    getResearchCountByType(),
+    getResearchCountByYear(),
+    getUniqueResearchContributors(),
+    getUniqueResearchVenues(),
+  ]);
 
   return {
-    total: researchEntries.length,
-    byType: await getResearchCountByType(),
-    byYear: await getResearchCountByYear(),
-    averageCitations: Math.round(averageCitations),
-    totalCitations,
-    ...(sortedByCitations[0] && { mostCitedStudy: sortedByCitations[0] }),
-    ...(sortedByDate[0] && { mostRecentStudy: sortedByDate[0] }),
-    uniqueAuthorsCount: authors.length,
-    uniqueVenuesCount: venues.length,
+    total: entries.length,
+    byType,
+    byYear,
+    uniqueContributorsCount: uniqueContributors.length,
+    uniqueVenuesCount: uniqueVenues.length,
+    mostRecentStudy: entries[0],
   };
 }
 
-/** Get co-authorship network data */
+/** Build co-authorship network */
 export async function getResearchCoAuthorshipNetwork(): Promise<{
-  nodes: Array<{
-    id: string;
-    name: string;
-    affiliation?: string;
-    count: number;
-  }>;
+  nodes: Array<{ id: string; name: string; affiliation?: string; count: number }>;
   edges: Array<{ source: string; target: string; weight: number }>;
 }> {
-  const researchEntries = await getAllResearch();
-  const nodes = await getUniqueResearchAuthors();
-  const edges: Map<string, number> = new Map();
+  const entries = await loadResearchEntries();
+  const nodeMap = new Map<string, { affiliation?: string; count: number }>();
+  const edgeMap = new Map<string, number>();
 
-  // Build co-authorship edges
-  researchEntries.forEach((study) => {
-    const authors = study.data.authors;
-    for (let i = 0; i < authors.length; i++) {
-      for (let j = i + 1; j < authors.length; j++) {
-        const author1 = authors[i];
-        const author2 = authors[j];
-        if (author1?.personId && author2?.personId) {
-          const key = [author1.personId, author2.personId].sort().join("|||");
-          edges.set(key, (edges.get(key) || 0) + 1);
-        }
+  entries.forEach((entry) => {
+    const people = (entry.data.contributors ?? []).filter(
+      (contributor): contributor is typeof contributor & { personId: string } =>
+        Boolean(contributor.personId),
+    );
+
+    people.forEach((contributor) => {
+      const existing = nodeMap.get(contributor.personId) ?? { count: 0 };
+      existing.count += 1;
+      if (!existing.affiliation && contributor.affiliationSnapshot) {
+        existing.affiliation = contributor.affiliationSnapshot;
+      }
+      nodeMap.set(contributor.personId, existing);
+    });
+
+    for (let i = 0; i < people.length; i++) {
+      for (let j = i + 1; j < people.length; j++) {
+        const key = [people[i]!.personId, people[j]!.personId]
+          .sort()
+          .join("|||");
+        edgeMap.set(key, (edgeMap.get(key) || 0) + 1);
       }
     }
   });
 
-  // Convert edges to array format
-  const edgeArray = Array.from(edges.entries()).map(([key, weight]) => {
-    const [source, target] = key.split("|||");
-    return { source, target, weight };
-  });
+  const nodes = Array.from(nodeMap.entries()).map(([id, data]) => ({
+    id,
+    name: id,
+    ...(data.affiliation && { affiliation: data.affiliation }),
+    count: data.count,
+  }));
 
-  return {
-    nodes: nodes.map((author) => ({
-      id: author.name,
-      name: author.name,
-      ...(author.affiliation && { affiliation: author.affiliation }),
-      count: author.count,
-    })),
-    edges: edgeArray.filter((edge) => edge.source && edge.target) as Array<{
-      source: string;
-      target: string;
-      weight: number;
-    }>,
-  };
+  const edges = Array.from(edgeMap.entries())
+    .map(([key, weight]) => {
+      const [source, target] = key.split("|||");
+      if (!source || !target) return null;
+      return { source, target, weight };
+    })
+    .filter(
+      (edge): edge is { source: string; target: string; weight: number } =>
+        edge !== null,
+    );
+
+  return { nodes, edges };
 }

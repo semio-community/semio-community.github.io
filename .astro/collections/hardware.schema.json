@@ -4,6 +4,13 @@
     "hardware": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "errorMessage": {
+            "minLength": "hardwareId must reference a hardware collection entry"
+          }
+        },
         "name": {
           "type": "string"
         },
@@ -69,52 +76,50 @@
             "type": "string"
           }
         },
-        "applications": {
+        "topics": {
           "type": "array",
           "items": {
             "type": "string"
           }
-        },
-        "researchAreas": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "pricing": {
-          "type": "object",
-          "properties": {
-            "purchase": {
-              "type": "number"
-            },
-            "rental": {
-              "type": "object",
-              "properties": {
-                "daily": {
-                  "type": "number"
-                },
-                "weekly": {
-                  "type": "number"
-                },
-                "monthly": {
-                  "type": "number"
-                }
-              },
-              "additionalProperties": false
-            }
-          },
-          "additionalProperties": false
         },
         "links": {
           "type": "object",
           "properties": {
-            "documentation": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "website": {
               "type": "string"
             },
             "github": {
               "type": "string"
             },
-            "website": {
+            "linkedin": {
+              "type": "string"
+            },
+            "twitter": {
+              "type": "string"
+            },
+            "bluesky": {
+              "type": "string"
+            },
+            "mastodon": {
+              "type": "string"
+            },
+            "scheduling": {
+              "type": "string"
+            },
+            "googleScholar": {
+              "type": "string"
+            },
+            "orcid": {
+              "type": "string"
+            },
+            "documentation": {
               "type": "string"
             },
             "paper": {
@@ -124,6 +129,45 @@
               "type": "string"
             },
             "rental": {
+              "type": "string"
+            },
+            "demo": {
+              "type": "string"
+            },
+            "pypi": {
+              "type": "string"
+            },
+            "npm": {
+              "type": "string"
+            },
+            "pdf": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "arxiv": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "video": {
+              "type": "string"
+            },
+            "registration": {
+              "type": "string"
+            },
+            "program": {
+              "type": "string"
+            },
+            "proceedings": {
+              "type": "string"
+            },
+            "recordings": {
               "type": "string"
             }
           },
@@ -150,80 +194,105 @@
         "contributors": {
           "type": "array",
           "items": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "person",
-                  "organization"
-                ]
-              },
-              "id": {
-                "type": "string"
-              },
-              "role": {
-                "type": "string"
-              },
-              "startDate": {
-                "anyOf": [
-                  {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
                     "type": "string",
-                    "format": "date-time"
+                    "const": "person"
                   },
-                  {
+                  "personId": {
                     "type": "string",
-                    "format": "date"
+                    "minLength": 1,
+                    "errorMessage": {
+                      "minLength": "personId must reference a people collection entry"
+                    }
                   },
-                  {
-                    "type": "integer",
-                    "format": "unix-time"
+                  "role": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "primary": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "startDate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      {
+                        "type": "integer",
+                        "format": "unix-time"
+                      }
+                    ]
+                  },
+                  "endDate": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      {
+                        "type": "integer",
+                        "format": "unix-time"
+                      }
+                    ]
                   }
-                ]
+                },
+                "required": [
+                  "type",
+                  "personId",
+                  "role"
+                ],
+                "additionalProperties": false
               },
-              "endDate": {
-                "anyOf": [
-                  {
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
                     "type": "string",
-                    "format": "date-time"
+                    "const": "organization"
                   },
-                  {
+                  "organizationId": {
                     "type": "string",
-                    "format": "date"
+                    "minLength": 1,
+                    "errorMessage": {
+                      "minLength": "organizationId must reference an organizations collection entry"
+                    }
                   },
-                  {
-                    "type": "integer",
-                    "format": "unix-time"
+                  "role": {
+                    "$ref": "#/definitions/hardware/properties/contributors/items/anyOf/0/properties/role"
+                  },
+                  "primary": {
+                    "$ref": "#/definitions/hardware/properties/contributors/items/anyOf/0/properties/primary"
+                  },
+                  "startDate": {
+                    "$ref": "#/definitions/hardware/properties/contributors/items/anyOf/0/properties/startDate"
+                  },
+                  "endDate": {
+                    "$ref": "#/definitions/hardware/properties/contributors/items/anyOf/0/properties/endDate"
                   }
-                ]
-              },
-              "current": {
-                "type": "boolean",
-                "default": true
+                },
+                "required": [
+                  "type",
+                  "organizationId",
+                  "role"
+                ],
+                "additionalProperties": false
               }
-            },
-            "required": [
-              "type",
-              "id"
-            ],
-            "additionalProperties": false
+            ]
           }
-        },
-        "leadOrganization": {
-          "type": "string"
-        },
-        "supportingOrganizations": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": []
         },
         "featured": {
           "type": "boolean",
@@ -231,30 +300,6 @@
         },
         "draft": {
           "type": "boolean"
-        },
-        "publishDate": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "string",
-                  "format": "date"
-                },
-                {
-                  "type": "integer",
-                  "format": "unix-time"
-                }
-              ]
-            }
-          ],
-          "default": "2025-10-17T00:33:14.007Z"
         },
         "$schema": {
           "type": "string"
@@ -267,9 +312,7 @@
         "category",
         "status",
         "features",
-        "applications",
-        "researchAreas",
-        "links"
+        "topics"
       ],
       "additionalProperties": false
     }

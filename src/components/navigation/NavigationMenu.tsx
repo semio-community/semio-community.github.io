@@ -23,8 +23,7 @@ type ResearchItem = {
   id: string;
   title: string;
   type: string;
-  year: number;
-  citations: number;
+  year?: number;
 };
 
 interface NavigationMenuProps {
@@ -288,26 +287,29 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                               <div className="text-xs font-semibold text-color-500 uppercase tracking-wider px-3">
                                 Featured Research
                               </div>
-                              {researchForDropdown.map((item) => (
-                                <a
-                                  key={item.id}
-                                  href={url(`/research/${item.id}`)}
-                                  className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
-                                >
-                                  <div className="min-w-0 flex-1">
-                                    <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors line-clamp-2">
-                                      {item.title}
+                              {researchForDropdown.map((item) => {
+                                const details = [item.type, item.year]
+                                  .filter(Boolean)
+                                  .join(" • ");
+                                return (
+                                  <a
+                                    key={item.id}
+                                    href={url(`/research/${item.id}`)}
+                                    className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent-base/10 transition-colors group/link"
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <div className="font-medium text-sm text-foreground group-hover/link:text-accent-base transition-colors line-clamp-2">
+                                        {item.title}
+                                      </div>
+                                      {details && (
+                                        <div className="text-xs text-color-500">
+                                          {details}
+                                        </div>
+                                      )}
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-color-500">
-                                      <span>{item.type}</span>
-                                      <span>•</span>
-                                      <span>{item.year}</span>
-                                      <span>•</span>
-                                      <span>{item.citations} citations</span>
-                                    </div>
-                                  </div>
-                                </a>
-                              ))}
+                                  </a>
+                                );
+                              })}
                             </div>
                           </>
                         )}

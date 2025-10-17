@@ -1,76 +1,57 @@
 import React from "react";
+import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
 export interface ResearchCardProps {
   researchId: string;
-  data: {
-    title?: string;
-    abstract?: string;
-    type?: string;
-    status?: string;
-    publishDate?: Date | string;
-    venue?: string;
-    doi?: string;
-    arxivId?: string;
-    images?: {
-      logo?: any;
-      hero?: any;
-    };
-    links?: {
-      projectPage?: string;
-      code?: string;
-      demo?: string;
-    };
-    featured?: boolean;
-  };
+  data: CollectionEntry<"research">["data"];
   className?: string;
 }
 
 export const ResearchCard: React.FC<ResearchCardProps> = ({
   researchId,
   data,
-  className,
+  className: _className,
 }) => {
-  // Build category from study type and year
-  const year = data.publishDate ? new Date(data.publishDate).getFullYear() : "";
+  const publishDate = data.publishDate ? new Date(data.publishDate) : undefined;
+  const yearLabel =
+    publishDate && !Number.isNaN(publishDate.getTime())
+      ? publishDate.getFullYear()
+      : ((data as { year?: number }).year ?? undefined);
+
   const typeLabel = data.type
     ? data.type.charAt(0).toUpperCase() + data.type.slice(1)
     : "";
-  const category = [typeLabel, year].filter(Boolean).join(" • ");
+  const category = [typeLabel, yearLabel].filter(Boolean).join(" • ");
 
-  // Determine status based on publication status
-  let status = data.status;
-  if (!status) {
-    if (data.type === "preprint") {
-      status = "preprint";
-    } else if (data.arxivId || data.venue?.includes("arXiv")) {
-      status = "preprint";
-    } else if (data.doi) {
-      status = "published";
-    }
-  }
+  const docsLink =
+    data.links?.paper ||
+    data.links?.documentation ||
+    data.links?.pdf ||
+    data.links?.proceedings ||
+    (data.links?.doi ? `https://doi.org/${data.links.doi}` : undefined) ||
+    (data.links?.arxiv ? `https://arxiv.org/abs/${data.links.arxiv}` : undefined);
+
+  const githubLink = data.links?.code || data.links?.github;
+  const demoLink = data.links?.demo || data.links?.video;
+  const websiteLink = data.links?.website || data.links?.program;
 
   return (
     <ItemCard
       title={data.title || researchId}
-      description={data.abstract}
+      description={data.description}
       href={`/research/${researchId}`}
       type="research"
       image={data.images?.hero}
-      imageAlt={data.images?.hero?.alt || data.title}
+      imageAlt={data.title}
       logo={data.images?.logo}
-      status={status}
       category={category}
       featured={data.featured}
       links={{
-        website: data.links?.projectPage,
-        github: data.links?.code,
-        demo: data.links?.demo,
-        docs: data.doi
-          ? `https://doi.org/${data.doi}`
-          : data.arxivId
-            ? `https://arxiv.org/abs/${data.arxivId}`
-            : undefined,
+        website: websiteLink,
+        github: githubLink,
+        demo: demoLink,
+        docs: docsLink,
       }}
     />
   );

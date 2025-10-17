@@ -5,7 +5,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "errorMessage": {
+            "minLength": "organizationId must reference an organizations collection entry"
+          }
         },
         "name": {
           "type": "string"
@@ -40,100 +44,7 @@
           "type": "boolean",
           "default": false
         },
-        "contact": {
-          "type": "object",
-          "properties": {
-            "email": {
-              "type": "string",
-              "format": "email"
-            },
-            "phone": {
-              "type": "string"
-            },
-            "department": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false
-        },
-        "keyContacts": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "personId": {
-                "type": "string"
-              },
-              "role": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "personId",
-              "role"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "collaboration": {
-          "type": "object",
-          "properties": {
-            "areas": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "projects": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "startDate": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "string",
-                  "format": "date"
-                },
-                {
-                  "type": "integer",
-                  "format": "unix-time"
-                }
-              ]
-            },
-            "endDate": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "string",
-                  "format": "date"
-                },
-                {
-                  "type": "integer",
-                  "format": "unix-time"
-                }
-              ]
-            },
-            "active": {
-              "type": "boolean",
-              "default": true
-            }
-          },
-          "required": [
-            "areas",
-            "startDate"
-          ],
-          "additionalProperties": false
-        },
-        "website": {
+        "collaborationSummary": {
           "type": "string"
         },
         "images": {
@@ -154,16 +65,92 @@
           },
           "additionalProperties": false
         },
-        "socialMedia": {
+        "links": {
           "type": "object",
           "properties": {
-            "twitter": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            },
+            "github": {
               "type": "string"
             },
             "linkedin": {
               "type": "string"
             },
-            "github": {
+            "twitter": {
+              "type": "string"
+            },
+            "bluesky": {
+              "type": "string"
+            },
+            "mastodon": {
+              "type": "string"
+            },
+            "scheduling": {
+              "type": "string"
+            },
+            "googleScholar": {
+              "type": "string"
+            },
+            "orcid": {
+              "type": "string"
+            },
+            "documentation": {
+              "type": "string"
+            },
+            "paper": {
+              "type": "string"
+            },
+            "purchase": {
+              "type": "string"
+            },
+            "rental": {
+              "type": "string"
+            },
+            "demo": {
+              "type": "string"
+            },
+            "pypi": {
+              "type": "string"
+            },
+            "npm": {
+              "type": "string"
+            },
+            "pdf": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "arxiv": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "video": {
+              "type": "string"
+            },
+            "registration": {
+              "type": "string"
+            },
+            "program": {
+              "type": "string"
+            },
+            "proceedings": {
+              "type": "string"
+            },
+            "recordings": {
               "type": "string"
             }
           },
@@ -206,8 +193,6 @@
         "description",
         "type",
         "category",
-        "collaboration",
-        "website",
         "location"
       ],
       "additionalProperties": false

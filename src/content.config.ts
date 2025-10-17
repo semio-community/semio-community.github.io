@@ -8,87 +8,129 @@ function removeDupsAndLowerCase(array: string[]) {
 // Helper function to parse dates consistently without timezone shifts
 function parseDate(val: string | Date): Date {
   if (typeof val === "string") {
-    // Parse YYYY-MM-DD format as local date to avoid timezone shifts
     const parts = val.split("-").map(Number);
     if (parts.length === 3 && parts.every((p) => !isNaN(p))) {
-      // We've verified length is 3, so these are definitely defined
       return new Date(parts[0]!, parts[1]! - 1, parts[2]!);
     }
-    // Fallback to standard parsing for other formats
     return new Date(val);
   }
   return new Date(val);
 }
 
-// Enhanced People Collection
+// Shared schemas for cross-collection references
+const organizationIdSchema = z
+  .string()
+  .min(1, "organizationId must reference an organizations collection entry");
+
+const personIdSchema = z
+  .string()
+  .min(1, "personId must reference a people collection entry");
+
+const hardwareIdSchema = z
+  .string()
+  .min(1, "hardwareId must reference a hardware collection entry");
+
+const softwareIdSchema = z
+  .string()
+  .min(1, "softwareId must reference a software collection entry");
+
+const temporalMetadataSchema = z.object({
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+});
+
+const linksSchema = z.object({
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  website: z.string().optional(),
+  github: z.string().optional(),
+  linkedin: z.string().optional(),
+  twitter: z.string().optional(),
+  bluesky: z.string().optional(),
+  mastodon: z.string().optional(),
+  scheduling: z.string().optional(),
+  googleScholar: z.string().optional(),
+  orcid: z.string().optional(),
+  documentation: z.string().optional(),
+  paper: z.string().optional(),
+  purchase: z.string().optional(),
+  rental: z.string().optional(),
+  demo: z.string().optional(),
+  pypi: z.string().optional(),
+  npm: z.string().optional(),
+  pdf: z.string().optional(),
+  doi: z.string().optional(),
+  arxiv: z.string().optional(),
+  code: z.string().optional(),
+  data: z.string().optional(),
+  video: z.string().optional(),
+  registration: z.string().optional(),
+  program: z.string().optional(),
+  proceedings: z.string().optional(),
+  recordings: z.string().optional(),
+});
+
+const contributorRoleSchema = z.string().min(1);
+
+const baseContributorSchema = z
+  .object({
+    role: contributorRoleSchema,
+    primary: z.boolean().default(false),
+  })
+  .merge(temporalMetadataSchema);
+
+const contributorSchema = z.discriminatedUnion("type", [
+  z
+    .object({
+      type: z.literal("person"),
+      personId: personIdSchema,
+    })
+    .merge(baseContributorSchema),
+  z
+    .object({
+      type: z.literal("organization"),
+      organizationId: organizationIdSchema,
+    })
+    .merge(baseContributorSchema),
+]);
+
+// Proposed People Collection
 const people = defineCollection({
   loader: glob({ base: "./src/content/people", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
-      // Core identification
-      id: z.string(), // e.g., "john-doe"
+      id: personIdSchema,
       name: z.string(),
-      displayName: z.string().optional(), // For preferred name display
+      honorific: z.string().optional(),
       pronouns: z.string().optional(),
-
-      // Professional information
       title: z.string().optional(),
       bio: z.string().optional(),
       expertise: z.array(z.string()).optional(),
-
-      // Current and past affiliations
       affiliations: z
         .array(
-          z.object({
-            partnerId: z.string(), // Reference to partners collection
-            role: z.string(),
-            department: z.string().optional(),
-            startDate: z.date().optional(),
-            endDate: z.date().optional(),
-            current: z.boolean().default(true),
-          }),
+          z
+            .object({
+              organizationId: organizationIdSchema,
+              role: z.string(),
+              department: z.string().optional(),
+              isPrimary: z.boolean().default(false),
+            })
+            .merge(temporalMetadataSchema),
         )
         .optional(),
-
-      // Academic identifiers
-      orcid: z.string().optional(),
-      googleScholar: z.string().optional(),
-
-      // Contact and social
-      email: z.string().email().optional(),
-
-      links: z
-        .object({
-          website: z.string().optional(),
-          github: z.string().optional(),
-          linkedin: z.string().optional(),
-          twitter: z.string().optional(),
-          bluesky: z.string().optional(),
-          mastodon: z.string().optional(),
-          scheduling: z.string().optional(),
-        })
-        .optional(),
-
-      // Media
-
+      links: linksSchema.optional(),
       images: z
         .object({
           avatar: image().optional(),
           hero: image().optional(),
         })
         .optional(),
-
-      // Metadata
-      visibility: z.enum(["public", "members", "private"]).default("public"),
       featured: z.boolean().default(false),
-
       draft: z.boolean().optional(),
-
-      lastUpdated: z.date(),
     }),
 });
 
-// Organizations Collection (includes partners)
+// Proposed Organizations Collection
 const organizations = defineCollection({
   loader: glob({
     base: "./src/content/organizations",
@@ -96,13 +138,10 @@ const organizations = defineCollection({
   }),
   schema: ({ image }) =>
     z.object({
-      // Core identification
-      id: z.string(), // e.g., "george-mason-university"
+      id: organizationIdSchema,
       name: z.string(),
-      shortName: z.string().optional(), // e.g., "GMU"
+      shortName: z.string().optional(),
       description: z.string(),
-
-      // Organization details
       type: z.enum([
         "academic",
         "industry",
@@ -118,38 +157,7 @@ const organizations = defineCollection({
         "outreach",
       ]),
       isPartner: z.boolean().default(false),
-
-      // Contact information (no individual names)
-      contact: z
-        .object({
-          email: z.string().email().optional(),
-          phone: z.string().optional(),
-          department: z.string().optional(),
-        })
-        .optional(),
-
-      // Key contacts (references to people collection)
-      keyContacts: z
-        .array(
-          z.object({
-            personId: z.string(), // Reference to people collection
-            role: z.string(), // e.g., "Primary Contact", "Technical Lead"
-          }),
-        )
-        .optional(),
-
-      // Collaboration details
-      collaboration: z.object({
-        areas: z.array(z.string()),
-        projects: z.array(z.string()).optional(),
-        startDate: z.date(),
-        endDate: z.date().optional(),
-        active: z.boolean().default(true),
-      }),
-
-      // Additional properties
-      website: z.string(),
-
+      collaborationSummary: z.string().optional(),
       images: z
         .object({
           logo: image().optional(),
@@ -157,13 +165,7 @@ const organizations = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
-      socialMedia: z
-        .object({
-          twitter: z.string().optional(),
-          linkedin: z.string().optional(),
-          github: z.string().optional(),
-        })
-        .optional(),
+      links: linksSchema.optional(),
       location: z.object({
         city: z.string(),
         country: z.string(),
@@ -174,11 +176,12 @@ const organizations = defineCollection({
     }),
 });
 
-// Updated Hardware Collection
+// Proposed Hardware Collection
 const hardware = defineCollection({
   loader: glob({ base: "./src/content/hardware", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      id: hardwareIdSchema.optional(),
       name: z.string(),
       description: z.string(),
       shortDescription: z.string().max(200),
@@ -201,28 +204,9 @@ const hardware = defineCollection({
         })
         .optional(),
       features: z.array(z.string()),
-      applications: z.array(z.string()),
-      researchAreas: z.array(z.string()),
-      pricing: z
-        .object({
-          purchase: z.number().optional(),
-          rental: z
-            .object({
-              daily: z.number().optional(),
-              weekly: z.number().optional(),
-              monthly: z.number().optional(),
-            })
-            .optional(),
-        })
-        .optional(),
-      links: z.object({
-        documentation: z.string().optional(),
-        github: z.string().optional(),
-        website: z.string().optional(),
-        paper: z.string().optional(),
-        purchase: z.string().optional(),
-        rental: z.string().optional(),
-      }),
+      // Combines applications and researchAreas into topics
+      topics: z.array(z.string()),
+      links: linksSchema.optional(),
       images: z
         .object({
           logo: image().optional(),
@@ -230,41 +214,18 @@ const hardware = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
-
-      // New reference-based fields
-      contributors: z
-        .array(
-          z.object({
-            type: z.enum(["person", "organization"]),
-            id: z.string(), // Reference to people or partners collection
-            role: z.string().optional(), // e.g., "Lead Developer", "Maintainer"
-            startDate: z.date().optional(),
-            endDate: z.date().optional(),
-            current: z.boolean().default(true),
-          }),
-        )
-        .optional(),
-
-      // Primary affiliations
-      leadOrganization: z.string().optional(), // Partner ID
-      supportingOrganizations: z.array(z.string()).optional(), // Partner IDs
-
-      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+      contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
-      draft: z.boolean().optional(),
-      publishDate: z
-        .string()
-        .or(z.date())
-        .transform(parseDate)
-        .default(() => new Date()),
+      draft: z.boolean().optional()
     }),
 });
 
-// Updated Software Collection
+// Proposed Software Collection
 const software = defineCollection({
   loader: glob({ base: "./src/content/software", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      id: softwareIdSchema.optional(),
       name: z.string(),
       description: z.string(),
       shortDescription: z.string().max(200),
@@ -278,8 +239,8 @@ const software = defineCollection({
       ]),
       status: z.enum(["stable", "beta", "alpha", "in-progress", "deprecated"]),
       license: z.string(),
-      language: z.array(z.string()), // Programming languages
-      platform: z.array(z.string()), // OS/platforms supported
+      language: z.array(z.string()),
+      platform: z.array(z.string()),
       requirements: z
         .object({
           runtime: z.array(z.string()).optional(),
@@ -288,16 +249,8 @@ const software = defineCollection({
         })
         .optional(),
       features: z.array(z.string()),
-      useCases: z.array(z.string()),
-      links: z.object({
-        documentation: z.string().optional(),
-        github: z.string(),
-        website: z.string().optional(),
-        paper: z.string().optional(),
-        demo: z.string().optional(),
-        pypi: z.string().optional(),
-        npm: z.string().optional(),
-      }),
+      topics: z.array(z.string()),
+      links: linksSchema.optional(),
       images: z
         .object({
           logo: image().optional(),
@@ -305,29 +258,9 @@ const software = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
-
-      // New reference-based fields
-      contributors: z
-        .array(
-          z.object({
-            type: z.enum(["person", "organization"]),
-            id: z.string(), // Reference to people or partners collection
-            role: z.string().optional(), // e.g., "Lead Developer", "Maintainer"
-            startDate: z.date().optional(),
-            endDate: z.date().optional(),
-            current: z.boolean().default(true),
-          }),
-        )
-        .optional(),
-
-      // Primary affiliations
-      leadOrganization: z.string().optional(), // Partner ID
-      supportingOrganizations: z.array(z.string()).optional(), // Partner IDs
-
-      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+      contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
-      lastUpdate: z.string().or(z.date()).transform(parseDate),
       publishDate: z
         .string()
         .or(z.date())
@@ -336,26 +269,25 @@ const software = defineCollection({
     }),
 });
 
-// Research Collection
+// Proposed Research Collection
 const research = defineCollection({
   loader: glob({ base: "./src/content/research", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      id: z.string().optional(),
       title: z.string(),
-      abstract: z.string(),
-
-      // Replace embedded authors with references
-      authors: z.array(
-        z.object({
-          personId: z.string(), // Reference to people collection
-          order: z.number(), // Author order in publication
-          corresponding: z.boolean().default(false),
-          equalContribution: z.boolean().default(false),
-          // Affiliation at time of publication (snapshot)
-          affiliationSnapshot: z.string().optional(),
-        }),
+      description: z.string(),
+      contributors: z.array(
+        z
+          .object({
+            personId: personIdSchema,
+            order: z.number(),
+            corresponding: z.boolean().default(false),
+            equalContribution: z.boolean().default(false),
+            affiliationSnapshot: z.string().optional(),
+          })
+          .merge(temporalMetadataSchema),
       ),
-
       type: z.enum([
         "paper",
         "thesis",
@@ -363,29 +295,28 @@ const research = defineCollection({
         "preprint",
         "dataset",
         "benchmark",
-        "study"
+        "study",
       ]),
-      venue: z.string().optional(), // Conference/Journal
-      year: z.number(),
-      keywords: z.array(z.string()),
-      researchArea: z.array(z.string()),
-
-      // Institutional associations
-      affiliatedOrganizations: z.array(z.string()).optional(), // Partner IDs
-      fundingOrganizations: z.array(z.string()).optional(), // Partner IDs
-
-      relatedHardware: z.array(z.string()).optional(), // References to hardware IDs
-      relatedSoftware: z.array(z.string()).optional(), // References to software IDs
-
-      links: z.object({
-        pdf: z.string().optional(),
-        doi: z.string().optional(),
-        arxiv: z.string().optional(),
-        website: z.string().optional(),
-        code: z.string().optional(),
-        data: z.string().optional(),
-        video: z.string().optional(),
-      }),
+      topics: z.array(z.string()),
+      organizations: z
+        .array(
+          z
+            .object({
+              organizationId: organizationIdSchema,
+              role: z.enum([
+                "affiliated",
+                "funding",
+                "lead",
+                "collaborator",
+              ]),
+              note: z.string().optional(),
+            })
+            .merge(temporalMetadataSchema),
+        )
+        .optional(),
+      relatedHardware: z.array(hardwareIdSchema).optional(),
+      relatedSoftware: z.array(softwareIdSchema).optional(),
+      links: linksSchema.optional(),
       images: z
         .object({
           logo: image().optional(),
@@ -393,14 +324,13 @@ const research = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
-      citations: z.number().default(0),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
       publishDate: z.string().or(z.date()).transform(parseDate).optional(),
     }),
 });
 
-// Updated Events Collection
+// Proposed Events Collection (unchanged for now)
 const events = defineCollection({
   loader: glob({ base: "./src/content/events", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
@@ -416,14 +346,8 @@ const events = defineCollection({
         "webinar",
         "competition",
       ]),
-      format: z.enum(["in-person", "virtual", "hybrid"]),
       startDate: z.string().or(z.date()).transform(parseDate),
       endDate: z.string().or(z.date()).transform(parseDate),
-      registrationDeadline: z
-        .string()
-        .or(z.date())
-        .transform(parseDate)
-        .optional(),
       location: z.object({
         venue: z.string().optional(),
         city: z.string(),
@@ -436,7 +360,6 @@ const events = defineCollection({
           })
           .optional(),
       }),
-
       roles: z
         .array(
           z.enum([
@@ -453,7 +376,6 @@ const events = defineCollection({
         )
         .default([])
         .transform((values) => [...new Set(values)]),
-
       images: z
         .object({
           logo: image().optional(),
@@ -461,29 +383,18 @@ const events = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
-
-      tracks: z.array(z.string()).optional(),
-      topics: z.array(z.string()),
-      links: z.object({
-        website: z.string(),
-        registration: z.string().optional(),
-        program: z.string().optional(),
-        proceedings: z.string().optional(),
-        recordings: z.string().optional(),
-      }),
-      capacity: z.number().optional(),
+      links: linksSchema.optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
-      tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
+      topics: z.array(z.string()),
     }),
 });
 
-// Export all collections
 export const collections = {
   people,
+  organizations,
   hardware,
   software,
   research,
   events,
-  organizations,
 };

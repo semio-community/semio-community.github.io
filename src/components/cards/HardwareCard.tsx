@@ -1,35 +1,18 @@
 import React from "react";
+import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
 export interface HardwareCardProps {
   hardwareId: string;
-  data: {
-    name?: string;
-    description?: string;
-    shortDescription?: string;
-    category?: string;
-    status?: string;
-    images?: {
-      logo?: any;
-      hero?: any;
-    };
-    links?: {
-      github?: string;
-      documentation?: string;
-      website?: string;
-      demo?: string;
-    };
-    featured?: boolean;
-  };
+  data: CollectionEntry<"hardware">["data"];
   className?: string;
 }
 
 export const HardwareCard: React.FC<HardwareCardProps> = ({
   hardwareId,
   data,
-  className,
+  className: _className,
 }) => {
-  // Build category label
   const categoryLabel = data.category
     ? data.category.charAt(0).toUpperCase() + data.category.slice(1)
     : "";
@@ -41,14 +24,14 @@ export const HardwareCard: React.FC<HardwareCardProps> = ({
       href={`/hardware/${hardwareId}`}
       type="hardware"
       image={data.images?.hero}
-      imageAlt={data.images?.hero?.alt || data.name}
+      imageAlt={data.name}
       status={data.status}
       category={categoryLabel}
       featured={data.featured}
       links={{
-        github: data.links?.github,
-        docs: data.links?.documentation,
         website: data.links?.website,
+        github: data.links?.github || data.links?.code,
+        docs: data.links?.documentation,
         demo: data.links?.demo,
       }}
     />

@@ -55,17 +55,20 @@ export async function getFeaturedHardware(): Promise<
   return hardware.filter((item) => item.data.featured);
 }
 
-/** Get hardware by research area */
-export async function getHardwareByResearchArea(
-  area: string,
+/** Get hardware by topic */
+export async function getHardwareByTopic(
+  topic: string,
 ): Promise<CollectionEntry<"hardware">[]> {
   const hardware = await getAllHardware();
   return hardware.filter((item) =>
-    item.data.researchAreas.some(
-      (researchArea) => researchArea.toLowerCase() === area.toLowerCase(),
+    item.data.topics?.some(
+      (value) => value.toLowerCase() === topic.toLowerCase(),
     ),
   );
 }
+
+// Backward compatibility alias
+export const getHardwareByResearchArea = getHardwareByTopic;
 
 /** Get hardware by organization */
 export async function getHardwareByOrganization(
@@ -73,19 +76,12 @@ export async function getHardwareByOrganization(
 ): Promise<CollectionEntry<"hardware">[]> {
   const hardware = await getAllHardware();
   return hardware.filter((item) => {
-    const isLead = item.data.leadOrganization === organizationId;
-    const isSupporting =
-      item.data.supportingOrganizations?.includes(organizationId);
-    return isLead || isSupporting;
+    return (item.data.contributors ?? []).some(
+      (contributor) =>
+        contributor.type === "organization" &&
+        contributor.organizationId === organizationId,
+    );
   });
-}
-
-/** Get all unique tags from hardware entries */
-export function getUniqueHardwareTags(
-  hardware: CollectionEntry<"hardware">[],
-): string[] {
-  const tags = hardware.flatMap((item) => item.data.tags);
-  return [...new Set(tags)].sort();
 }
 
 /** Get all unique categories */
@@ -95,28 +91,23 @@ export async function getUniqueCategories(): Promise<string[]> {
   return [...new Set(categories)];
 }
 
-/** Get all unique research areas */
-export async function getUniqueResearchAreas(): Promise<string[]> {
+/** Get all unique hardware topics */
+export async function getUniqueHardwareTopics(): Promise<string[]> {
   const hardware = await getAllHardware();
-  const areas = hardware.flatMap((item) => item.data.researchAreas);
-  return [...new Set(areas)].sort();
+  const topics = hardware.flatMap((item) => item.data.topics ?? []);
+  return [...new Set(topics)].sort((a, b) => a.localeCompare(b));
 }
 
 /** Get all unique organizations */
 export async function getUniqueOrganizations(): Promise<string[]> {
   const hardware = await getAllHardware();
-  const organizations: string[] = [];
+  const organizations = hardware.flatMap((item) =>
+    (item.data.contributors ?? [])
+      .filter((contributor) => contributor.type === "organization")
+      .map((contributor) => contributor.organizationId),
+  );
 
-  hardware.forEach((item) => {
-    if (item.data.leadOrganization) {
-      organizations.push(item.data.leadOrganization);
-    }
-    if (item.data.supportingOrganizations) {
-      organizations.push(...item.data.supportingOrganizations);
-    }
-  });
-
-  return [...new Set(organizations)].sort();
+  return [...new Set(organizations)].sort((a, b) => a.localeCompare(b));
 }
 
 /** Get hardware count by category */
@@ -157,20 +148,31 @@ export async function searchHardware(
   const lowerQuery = query.toLowerCase();
 
   return hardware.filter((item) => {
+    const contributorMatch = (item.data.contributors ?? []).some(
+      (contributor) => {
+        if (contributor.role?.toLowerCase().includes(lowerQuery)) {
+          return true;
+        }
+        if (contributor.type === "organization") {
+          return contributor.organizationId
+            .toLowerCase()
+            .includes(lowerQuery);
+        }
+        if (contributor.type === "person") {
+          return contributor.personId.toLowerCase().includes(lowerQuery);
+        }
+        return false;
+      },
+    );
+
     return (
       item.data.name.toLowerCase().includes(lowerQuery) ||
       item.data.description.toLowerCase().includes(lowerQuery) ||
       item.data.shortDescription.toLowerCase().includes(lowerQuery) ||
-      item.data.tags.some((tag) => tag.includes(lowerQuery)) ||
-      item.data.researchAreas.some((area) =>
-        area.toLowerCase().includes(lowerQuery),
+      (item.data.topics ?? []).some((topic) =>
+        topic.toLowerCase().includes(lowerQuery),
       ) ||
-      (item.data.leadOrganization &&
-        item.data.leadOrganization.toLowerCase().includes(lowerQuery)) ||
-      (item.data.supportingOrganizations &&
-        item.data.supportingOrganizations.some((org) =>
-          org.toLowerCase().includes(lowerQuery),
-        ))
+      contributorMatch
     );
   });
 }
@@ -187,21 +189,14 @@ export async function getRelatedHardware(
     (item) => item.id !== currentItem.id,
   );
 
-  // Score each item based on shared tags and research areas
+  // Score each item based on shared topics
   const scored = otherHardware.map((item) => {
     let score = 0;
 
-    // Score for shared tags
-    const sharedTags = item.data.tags.filter((tag) =>
-      currentItem.data.tags.includes(tag),
+    const sharedTopics = (item.data.topics ?? []).filter((topic) =>
+      (currentItem.data.topics ?? []).includes(topic),
     );
-    score += sharedTags.length * 2;
-
-    // Score for shared research areas
-    const sharedAreas = item.data.researchAreas.filter((area) =>
-      currentItem.data.researchAreas.includes(area),
-    );
-    score += sharedAreas.length * 3;
+    score += sharedTopics.length * 3;
 
     // Score for same category
     if (item.data.category === currentItem.data.category) {

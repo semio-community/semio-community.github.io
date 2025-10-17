@@ -1,10 +1,5 @@
 ---
-import {
-  type CollectionEntry,
-  getCollection,
-  render,
-  getEntry,
-} from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
@@ -14,9 +9,7 @@ import LinkButton from "@/components/detail/LinkButton.astro";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import FeaturesList from "@/components/detail/FeaturesList.astro";
-import ChipsList from "@/components/detail/ChipsList.astro";
 import TagsList from "@/components/detail/TagsList.astro";
-import PricingInfo from "@/components/detail/PricingInfo.astro";
 import { getRelatedHardware } from "@/data/hardware";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
@@ -68,23 +61,13 @@ const badges = [
 // Prepare link buttons using centralized configuration
 const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
-// Get organization details
-const leadOrg = data.leadOrganization
-  ? await getEntry("organizations", data.leadOrganization)
-  : null;
-const supportingOrgs = data.supportingOrganizations
-  ? await Promise.all(
-      data.supportingOrganizations.map((id) => getEntry("organizations", id)),
-    )
-  : [];
-
 // Get contributors with their full data
 const contributors = data.contributors || [];
 const peopleContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "person")
     .map(async (contributor) => {
-      const person = await getPerson(contributor.id);
+      const person = await getPerson(contributor.personId);
       return {
         ...contributor,
         data: person?.data,
@@ -100,13 +83,21 @@ const orgContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "organization")
     .map(async (contributor) => {
-      const org = await getEntry("organizations", contributor.id);
+      const org = await getEntry(
+        "organizations",
+        contributor.organizationId,
+      );
       return {
         ...contributor,
         data: org?.data,
       };
     }),
 );
+
+const primaryOrganization = orgContributors.find((c) => c.primary);
+const supportingOrganizations = orgContributors.filter((c) => !c.primary);
+
+const topics = data.topics ?? [];
 
 // Get category label using centralized configuration
 const categoryLabel = getCategoryLabel("hardware", data.category);
@@ -170,7 +161,7 @@ const specificationItems = data.specifications || {};
                   <div class="flex flex-wrap gap-2">
                     {orgContributors.map((contributor) => (
                       <OrganizationChip
-                        partnerId={contributor.id}
+                        partnerId={contributor.organizationId}
                         role={contributor.role || "Contributing Organization"}
                       />
                     ))}
@@ -187,7 +178,7 @@ const specificationItems = data.specifications || {};
                   <div class="flex flex-wrap gap-2">
                     {validPeopleContributors.map((contributor) => (
                       <PersonPopoverWrapper
-                        personId={contributor.id}
+                        personId={contributor.personId}
                         role={contributor.role}
                       />
                     ))}
@@ -200,26 +191,29 @@ const specificationItems = data.specifications || {};
                 {categoryLabel && (
                   <BasicChip text={categoryLabel} variant="tertiary" />
                 )}
-                {data.researchAreas &&
-                  data.researchAreas.map((area: string) => (
-                    <BasicChip text={area} variant="default" />
-                  ))}
+                {topics.map((topic: string) => (
+                  <BasicChip text={topic} variant="default" />
+                ))}
               </div>
 
               {/* Stats Row */}
               <div class="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
-                {leadOrg && (
+                {primaryOrganization && (
                   <div class="flex items-center gap-2">
                     <span class="font-semibold">Lead:</span>
-                    <span>{leadOrg.data?.shortName || leadOrg.data?.name}</span>
+                    <span>
+                      {primaryOrganization.data?.shortName ||
+                        primaryOrganization.data?.name ||
+                        primaryOrganization.organizationId}
+                    </span>
                   </div>
                 )}
-                {supportingOrgs.length > 0 && (
+                {supportingOrganizations.length > 0 && (
                   <div class="flex items-center gap-2">
                     <span class="font-semibold">Supporting:</span>
                     <span>
-                      {supportingOrgs.length} org
-                      {supportingOrgs.length !== 1 ? "s" : ""}
+                      {supportingOrganizations.length} org
+                      {supportingOrganizations.length !== 1 ? "s" : ""}
                     </span>
                   </div>
                 )}
@@ -255,23 +249,13 @@ const specificationItems = data.specifications || {};
       <FeaturesList title="KEY FEATURES" features={data.features} />
     </Fragment>
 
-    {/* Metadata (Pricing) */}
-    <Fragment slot="metadata">
-      {data.pricing && <PricingInfo pricing={data.pricing} />}
-    </Fragment>
-
-    {/* Tags and Applications */}
+    {/* Topics */}
     <Fragment slot="tags">
       {
-        data.applications && data.applications.length > 0 && (
-          <ChipsList
-            title="APPLICATIONS"
-            items={data.applications}
-            variant="secondary"
-          />
+        topics.length > 0 && (
+          <TagsList tags={topics} baseUrl="/hardware/topics" variant="secondary" />
         )
       }
-      <TagsList tags={data.tags} baseUrl="/hardware/tags" variant="secondary" />
     </Fragment>
 
     {/* Main content from MDX file */}

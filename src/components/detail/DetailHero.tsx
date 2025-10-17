@@ -32,6 +32,7 @@ export interface DetailHeroProps {
   logo?: ImageMetadata | { src: string; alt?: string };
   avatar?: ImageMetadata | { src: string; alt?: string };
   thumbnail?: ImageMetadata | { src: string; alt?: string };
+  logoText?: string;
   entityType?:
     | "person"
     | "organization"
@@ -54,6 +55,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
   logo,
   avatar,
   thumbnail,
+  logoText,
   entityType = "organization",
 }) => {
   const getBadgeClasses = (badge: DetailHeroBadge) => {
@@ -149,7 +151,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                 <Avatar
                   src={profileImage}
                   alt={title}
-                  name={title}
+                  name={logoText ?? title}
                   type={avatarType}
                   size="2xl"
                   rounded="full"

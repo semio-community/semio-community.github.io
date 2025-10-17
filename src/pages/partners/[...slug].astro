@@ -11,7 +11,7 @@ import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 import PartnerCard from "@/components/cards/PartnerCard.astro";
 import { getAllPartners } from "@/data/partners";
-import { getPerson } from "@/data/people";
+import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
@@ -61,12 +61,6 @@ async function getRelatedPartners(
     // Same category gets points
     if (p.data.category === partner.data.category) score += 2;
 
-    // Overlapping collaboration areas get points
-    const partnerAreas = new Set(partner.data.collaboration.areas || []);
-    const otherAreas = p.data.collaboration.areas || [];
-    const overlap = otherAreas.filter((area) => partnerAreas.has(area)).length;
-    score += overlap;
-
     // Same location country gets a point
     if (p.data.location.country === partner.data.location.country) score += 1;
 
@@ -97,11 +91,10 @@ async function getPartnerRelatedContent(partnerId: string) {
   const allHardware = await getAllHardware();
   const hardware = allHardware.filter(
     (hw) =>
-      hw.data.leadOrganization === partnerId ||
-      hw.data.supportingOrganizations?.includes(partnerId) ||
       hw.data.contributors?.some(
         (contributor) =>
-          contributor.type === "organization" && contributor.id === partnerId,
+          contributor.type === "organization" &&
+          contributor.organizationId === partnerId,
       ),
   );
 
@@ -109,11 +102,10 @@ async function getPartnerRelatedContent(partnerId: string) {
   const allSoftware = await getAllSoftware();
   const software = allSoftware.filter(
     (sw) =>
-      sw.data.leadOrganization === partnerId ||
-      sw.data.supportingOrganizations?.includes(partnerId) ||
       sw.data.contributors?.some(
         (contributor) =>
-          contributor.type === "organization" && contributor.id === partnerId,
+          contributor.type === "organization" &&
+          contributor.organizationId === partnerId,
       ),
   );
 
@@ -130,21 +122,7 @@ const meta = {
   description: data.description,
 };
 
-// Prepare status badges
 const badges = [];
-if (data.collaboration.active) {
-  badges.push({
-    text: "Active Partner",
-    color: "green" as const,
-    variant: "solid" as const,
-  });
-} else {
-  badges.push({
-    text: "Past Partner",
-    color: "gray" as const,
-    variant: "outline" as const,
-  });
-}
 
 // Add type badge
 const typeLabels = {
@@ -162,95 +140,80 @@ badges.push({
 
 // Prepare link buttons using centralized configuration
 const linkButtons = [];
-if (data.website) {
-  linkButtons.push(createLinkButton("website", data.website, "Visit Website"));
-}
-if (data.contact?.email) {
+if (data.links?.website) {
   linkButtons.push(
-    createLinkButton("email", `mailto:${data.contact.email}`, "Contact", {
+    createLinkButton("website", data.links.website, "Visit Website"),
+  );
+}
+if (data.links?.email) {
+  linkButtons.push(
+    createLinkButton("email", `mailto:${data.links.email}`, "Email", {
       variant: "primary",
     }),
   );
 }
-if (data.socialMedia?.github) {
-  linkButtons.push(
-    createLinkButton("github", `https://github.com/${data.socialMedia.github}`),
-  );
+if (data.links?.github) {
+  const href = data.links.github.startsWith("http")
+    ? data.links.github
+    : `https://github.com/${data.links.github}`;
+  linkButtons.push(createLinkButton("github", href));
 }
-if (data.socialMedia?.linkedin) {
-  linkButtons.push(
-    createLinkButton(
-      "linkedin",
-      `https://linkedin.com/company/${data.socialMedia.linkedin}`,
-    ),
-  );
+if (data.links?.linkedin) {
+  const href = data.links.linkedin.startsWith("http")
+    ? data.links.linkedin
+    : `https://linkedin.com/company/${data.links.linkedin}`;
+  linkButtons.push(createLinkButton("linkedin", href));
 }
-if (data.socialMedia?.twitter) {
-  linkButtons.push(
-    createLinkButton(
-      "twitter",
-      `https://twitter.com/${data.socialMedia.twitter}`,
-    ),
-  );
+if (data.links?.twitter) {
+  const href = data.links.twitter.startsWith("http")
+    ? data.links.twitter
+    : `https://twitter.com/${data.links.twitter}`;
+  linkButtons.push(createLinkButton("twitter", href));
+}
+if (data.links?.mastodon) {
+  linkButtons.push(createLinkButton("mastodon", data.links.mastodon));
+}
+if (data.links?.scheduling) {
+  linkButtons.push(createLinkButton("calendar", data.links.scheduling, "Schedule"));
 }
 
 // Prepare contact metadata
 const contactItems = [];
-if (data.contact?.department) {
-  contactItems.push({
-    label: "Department",
-    value: data.contact.department,
-  });
-}
-if (data.contact?.email) {
+if (data.links?.email) {
   contactItems.push({
     label: "Email",
-    value: data.contact.email,
-    link: `mailto:${data.contact.email}`,
+    value: data.links.email,
+    link: `mailto:${data.links.email}`,
   });
 }
-if (data.contact?.phone) {
+if (data.links?.phone) {
   contactItems.push({
     label: "Phone",
-    value: data.contact.phone,
-    link: `tel:${data.contact.phone}`,
+    value: data.links.phone,
+    link: `tel:${data.links.phone}`,
+  });
+}
+if (data.links?.scheduling) {
+  contactItems.push({
+    label: "Scheduling",
+    value: data.links.scheduling,
+    link: data.links.scheduling,
   });
 }
 
-// Prepare key contacts with PersonPopover
-const keyContactsWithData = await Promise.all(
-  (data.keyContacts || []).map(async (contact) => {
-    const person = await getPerson(contact.personId);
-    return {
-      ...contact,
-      person: person?.data,
-    };
-  }),
-);
+const affiliatedPeople = await getPeopleByOrganization(entry.id);
+const keyContacts = affiliatedPeople.slice(0, 6).map((person) => {
+  const affiliation = person.data.affiliations?.find(
+    (aff) => aff.organizationId === entry.id,
+  );
+  return {
+    person,
+    role: affiliation?.role,
+    department: affiliation?.department,
+  };
+});
 
-// Filter out contacts where person data couldn't be found
-const validKeyContacts = keyContactsWithData.filter((c) => c.person);
-
-// Prepare collaboration details
-const collaborationItems = [];
-if (data.collaboration.startDate) {
-  const startDate = new Date(data.collaboration.startDate);
-  const endDate = data.collaboration.endDate
-    ? new Date(data.collaboration.endDate)
-    : null;
-
-  let dateRange = startDate.getFullYear().toString();
-  if (endDate) {
-    dateRange += ` - ${endDate.getFullYear()}`;
-  } else if (data.collaboration.active) {
-    dateRange += " - Present";
-  }
-
-  collaborationItems.push({
-    label: "Partnership Period",
-    value: dateRange,
-  });
-}
+const collaborationSummary = data.collaborationSummary;
 
 // Category label
 const categoryLabels = {
@@ -301,40 +264,27 @@ const categoryLabel = categoryLabels[data.category] || data.category;
             />
           </div>
 
-          {/* Details Grid */}
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span
-                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-                >Location</span
-              >
-              <span class="text-accent-base"
-                >{data.location.city}, {data.location.country}</span
-              >
+              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+                Location
+              </span>
+              <span class="text-accent-base">
+                {data.location.city}, {data.location.country}
+              </span>
             </div>
-            {
-              collaborationItems.map((item) => (
-                <div>
-                  <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
-                    {item.label}
-                  </span>
-                  <span class="text-accent-base">{item.value}</span>
-                </div>
-              ))
-            }
-            {
-              data.collaboration.projects &&
-                data.collaboration.projects.length > 0 && (
-                  <div>
-                    <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
-                      Active Projects
-                    </span>
-                    <span class="text-accent-base">
-                      {data.collaboration.projects.length}
-                    </span>
-                  </div>
-                )
-            }
+            <div>
+              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+                Partner Type
+              </span>
+              <span class="text-accent-base">{typeLabels[data.type]}</span>
+            </div>
+            <div>
+              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+                Category
+              </span>
+              <span class="text-accent-base">{categoryLabels[data.category]}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -382,44 +332,42 @@ const categoryLabel = categoryLabels[data.category] || data.category;
       }
     </Fragment>
 
-    {/* Key Contacts */}
+    {/* Key People */}
     <Fragment slot="contributors">
-      {
-        validKeyContacts.length > 0 && (
-          <InfoCard title="KEY CONTACTS">
-            <div class="flex flex-wrap gap-2">
-              {validKeyContacts.map((contact) => (
-                <PersonPopoverWrapper
-                  personId={contact.personId}
-                  role={contact.role}
-                />
-              ))}
-            </div>
-          </InfoCard>
-        )
-      }
+      {keyContacts.length > 0 && (
+        <InfoCard title="KEY PEOPLE">
+          <div class="flex flex-wrap gap-2">
+            {keyContacts.map((contact) => (
+              <PersonPopoverWrapper
+                personId={contact.person.id}
+                role={
+                  contact.role
+                    ? contact.department
+                      ? `${contact.role}, ${contact.department}`
+                      : contact.role
+                    : undefined
+                }
+              />
+            ))}
+          </div>
+        </InfoCard>
+      )}
     </Fragment>
 
-    {/* Collaboration Areas */}
+    {/* Collaboration Summary */}
     <Fragment slot="tags">
-      {
-        data.collaboration.areas && data.collaboration.areas.length > 0 && (
-          <div class="collaboration-areas mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                COLLABORATION AREAS
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {data.collaboration.areas.map((area) => (
-                  <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
-                    {area}
-                  </span>
-                ))}
-              </div>
-            </div>
+      {collaborationSummary && (
+        <div class="collaboration-summary mb-8">
+          <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+            <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+              COLLABORATION SUMMARY
+            </h3>
+            <p class="text-sm text-accent-base leading-relaxed">
+              {collaborationSummary}
+            </p>
           </div>
-        )
-      }
+        </div>
+      )}
     </Fragment>
 
     {/* About/Description */}

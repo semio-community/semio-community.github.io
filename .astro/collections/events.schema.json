@@ -24,14 +24,6 @@
             "competition"
           ]
         },
-        "format": {
-          "type": "string",
-          "enum": [
-            "in-person",
-            "virtual",
-            "hybrid"
-          ]
-        },
         "startDate": {
           "anyOf": [
             {
@@ -56,29 +48,6 @@
           ]
         },
         "endDate": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "string",
-                  "format": "date"
-                },
-                {
-                  "type": "integer",
-                  "format": "unix-time"
-                }
-              ]
-            }
-          ]
-        },
-        "registrationDeadline": {
           "anyOf": [
             {
               "type": "string"
@@ -176,22 +145,80 @@
           },
           "additionalProperties": false
         },
-        "tracks": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "topics": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "links": {
           "type": "object",
           "properties": {
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            },
             "website": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "twitter": {
+              "type": "string"
+            },
+            "bluesky": {
+              "type": "string"
+            },
+            "mastodon": {
+              "type": "string"
+            },
+            "scheduling": {
+              "type": "string"
+            },
+            "googleScholar": {
+              "type": "string"
+            },
+            "orcid": {
+              "type": "string"
+            },
+            "documentation": {
+              "type": "string"
+            },
+            "paper": {
+              "type": "string"
+            },
+            "purchase": {
+              "type": "string"
+            },
+            "rental": {
+              "type": "string"
+            },
+            "demo": {
+              "type": "string"
+            },
+            "pypi": {
+              "type": "string"
+            },
+            "npm": {
+              "type": "string"
+            },
+            "pdf": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "arxiv": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "video": {
               "type": "string"
             },
             "registration": {
@@ -207,13 +234,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "website"
-          ],
           "additionalProperties": false
-        },
-        "capacity": {
-          "type": "number"
         },
         "featured": {
           "type": "boolean",
@@ -222,12 +243,11 @@
         "draft": {
           "type": "boolean"
         },
-        "tags": {
+        "topics": {
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "default": []
+          }
         },
         "$schema": {
           "type": "string"
@@ -237,12 +257,10 @@
         "name",
         "description",
         "type",
-        "format",
         "startDate",
         "endDate",
         "location",
-        "topics",
-        "links"
+        "topics"
       ],
       "additionalProperties": false
     }

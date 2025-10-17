@@ -1,36 +1,23 @@
 import React from "react";
+import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
 export interface PartnerCardProps {
   partnerId: string;
-  data: {
-    name: string;
-    shortName?: string;
-    description?: string;
-    type?: string;
-    category?: string;
-    images?: {
-      logo?: any;
-      hero?: any;
-    };
-    website?: string;
-    featured?: boolean;
-  };
+  data: CollectionEntry<"organizations">["data"];
   className?: string;
 }
 
 export const PartnerCard: React.FC<PartnerCardProps> = ({
   partnerId,
   data,
-  className,
+  className: _className,
 }) => {
-  // Build category label
   const typeLabel = data.type
     ? data.type.charAt(0).toUpperCase() + data.type.slice(1)
     : "";
-  const categoryLabel = data.category
-    ? data.category.charAt(0).toUpperCase() + data.category.slice(1)
-    : "";
+
+  const showLogo = !data.images?.hero;
 
   return (
     <ItemCard
@@ -38,13 +25,14 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
       description={data.description}
       href={`/partners/${partnerId}`}
       type="partners"
-      // logo={data.images?.logo}
       image={data.images?.hero}
-      imageAlt={data.images?.hero?.alt || data.name}
+      imageAlt={data.name}
+      logo={showLogo ? data.images?.logo : undefined}
       category={typeLabel}
       featured={data.featured}
       links={{
-        website: data.website,
+        website: data.links?.website,
+        docs: data.links?.documentation,
       }}
     />
   );
