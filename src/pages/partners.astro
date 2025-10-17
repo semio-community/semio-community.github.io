@@ -8,7 +8,6 @@ import { Icon } from "astro-icon/components";
 import {
   getAllPartners,
   getFeaturedPartners,
-  getPartnerCountByType,
   getPartnerCountByCategory,
   getUniquePartnerTypes,
   getUniquePartnerCategories,
@@ -24,7 +23,6 @@ const meta = {
 // Fetch partners from content collections
 const allPartners = await getAllPartners();
 const featuredPartners = await getFeaturedPartners();
-const partnerTypeCounts = await getPartnerCountByType();
 const partnerCategoryCounts = await getPartnerCountByCategory();
 const partnerTypes = await getUniquePartnerTypes();
 const partnerCategories = await getUniquePartnerCategories();
@@ -108,7 +106,8 @@ const benefits = [
   {
     icon: "solar:test-tube-minimalistic-line-duotone",
     title: "Research Collaboration",
-    description: "Partner on cutting-edge HRI research projects and research initiatives",
+    description:
+      "Partner on cutting-edge HRI research projects and research initiatives",
   },
   {
     icon: "solar:rocket-line-duotone",
@@ -305,7 +304,7 @@ const benefits = [
   >
     <div class="max-w-4xl mx-auto">
       <div
-        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20"
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20"
       >
         <h3 class="text-2xl font-semibold mb-4 text-center gradient-brand-text">
           Partnership Opportunities
@@ -365,15 +364,9 @@ const benefits = [
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <CallToActionButton
-            href="/get-involved"
+            href="https://forms.gle/5iiaThSsGUMzXWsu6"
             text="Partner With Us"
             size="large"
-          />
-          <CallToActionButton
-            href="/about"
-            text="Learn More"
-            size="large"
-            variant="tertiary"
           />
         </div>
       </div>

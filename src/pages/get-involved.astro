@@ -36,14 +36,10 @@ const meta = {
       <p
         class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
       >
-        Be part of a global community advancing human-centered robotics and
-        AI. Your support helps us foster reproducible
-        science and develop reusable systems for human-robot interaction.
+        Be part of a global community advancing human-centered robotics and AI.
+        Your support helps us foster reproducible science and develop reusable
+        systems for human-robot interaction.
       </p>
-
-      
-
-      
 
       <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
@@ -76,9 +72,9 @@ const meta = {
   >
     <div class="max-w-5xl mx-auto">
       <div
-        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-one/20 mb-8"
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20 mb-8"
       >
-        <h3 class="text-2xl font-semibold mb-4 text-center gradient-brand-text">
+        <h3 class="text-2xl font-semibold mb-4 text-center text-accent-base">
           Why Your Support Matters
         </h3>
         <p class="text-center mb-6 text-color-600 dark:text-color-400">
@@ -138,7 +134,7 @@ const meta = {
           <div>
             <Icon
               name="solar:buildings-2-line-duotone"
-              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+              class="w-10 h-10 mx-auto mb-3 text-accent-two"
             />
             <h4 class="font-semibold mb-2">Corporate Sponsorship</h4>
             <p class="text-sm text-color-600 dark:text-color-400">
@@ -148,7 +144,7 @@ const meta = {
           <div>
             <Icon
               name="solar:gift-line-duotone"
-              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+              class="w-10 h-10 mx-auto mb-3 text-accent-two"
             />
             <h4 class="font-semibold mb-2">In-Kind Donations</h4>
             <p class="text-sm text-color-600 dark:text-color-400">
@@ -158,7 +154,7 @@ const meta = {
           <div>
             <Icon
               name="solar:hand-money-line-duotone"
-              class="w-10 h-10 mx-auto mb-3 text-accent-one"
+              class="w-10 h-10 mx-auto mb-3 text-accent-two"
             />
             <h4 class="font-semibold mb-2">Planned Giving</h4>
             <p class="text-sm text-color-600 dark:text-color-400">
@@ -175,22 +171,23 @@ const meta = {
     id="volunteer"
     title="Join the Community"
     subtitle="Share your skills and passion to advance human-centered robotics and AI"
+    variant="secondary"
   >
     <div class="max-w-5xl mx-auto">
       <!-- Volunteer Opportunities section removed per specification. -->
 
       <!-- Volunteer Benefits -->
       <div
-        class="bg-gradient-to-r from-accent-two/10 to-special/10 rounded-lg p-8 border border-accent-two/20"
+        class="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20"
       >
-        <h3 class="text-xl font-semibold mb-6 text-center">
+        <h3 class="text-xl font-semibold mb-6 text-center text-accent-base">
           Volunteer Benefits
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
+              class="w-5 h-5 text-accent-one flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Professional Network</h4>
@@ -202,20 +199,21 @@ const meta = {
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
+              class="w-5 h-5 text-accent-one flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Skill Development</h4>
               <p class="text-sm text-color-600 dark:text-color-400">
-                Gain hands-on experience with cutting-edge robotics and AI technologies
+                Gain hands-on experience with cutting-edge robotics and AI
+                technologies
               </p>
             </div>
           </div>
-          
+
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
+              class="w-5 h-5 text-accent-one flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Recognition</h4>
@@ -227,7 +225,7 @@ const meta = {
           <div class="flex items-start gap-3">
             <Icon
               name="solar:check-circle-bold"
-              class="w-5 h-5 text-accent-two flex-shrink-0 mt-2"
+              class="w-5 h-5 text-accent-one flex-shrink-0 mt-2"
             />
             <div>
               <h4 class="font-semibold mb-1">Flexible Commitment</h4>
@@ -240,9 +238,10 @@ const meta = {
 
         <div class="text-center">
           <CallToActionButton
-            href="#volunteer-form"
+            href="https://forms.gle/5iiaThSsGUMzXWsu6"
             text="Sign Up as Volunteer"
             size="large"
+            variant="secondary"
           />
         </div>
       </div>
@@ -254,6 +253,7 @@ const meta = {
     id="mailing-list"
     title="Join Our Mailing List"
     subtitle="Stay connected with the latest news, events, and opportunities"
+    variant="tertiary"
   >
     <div class="max-w-4xl mx-auto">
       <div class="bg-special-lighter rounded-lg p-8 border border-special">
@@ -264,7 +264,7 @@ const meta = {
               <li class="flex items-start gap-2">
                 <Icon
                   name="solar:letter-line-duotone"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                  class="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5"
                 />
                 <span class="text-sm"
                   >Regular newsletter with community updates</span
@@ -273,7 +273,7 @@ const meta = {
               <li class="flex items-start gap-2">
                 <Icon
                   name="solar:calendar-mark-line-duotone"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                  class="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5"
                 />
                 <span class="text-sm"
                   >Early announcements for events and workshops</span
@@ -282,14 +282,14 @@ const meta = {
               <li class="flex items-start gap-2">
                 <Icon
                   name="solar:test-tube-line-duotone"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                  class="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5"
                 />
                 <span class="text-sm">Research highlights and findings</span>
               </li>
               <li class="flex items-start gap-2">
                 <Icon
                   name="solar:users-group-two-rounded-line-duotone"
-                  class="w-5 h-5 text-accent-one flex-shrink-0 mt-0.5"
+                  class="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5"
                 />
                 <span class="text-sm"
                   >Volunteer and collaboration opportunities</span
@@ -299,48 +299,14 @@ const meta = {
           </div>
 
           <div>
-            <h3 class="text-lg font-semibold mb-4">Subscribe Now:</h3>
-            <form class="space-y-4" action="#" method="POST">
-              <div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your email address"
-                  required
-                  class="w-full px-4 py-2 rounded-lg border border-color-300 dark:border-color-700 bg-surface focus:outline-none focus:ring-2 focus:ring-accent-one"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your name (optional)"
-                  class="w-full px-4 py-2 rounded-lg border border-color-300 dark:border-color-700 bg-surface focus:outline-none focus:ring-2 focus:ring-accent-one"
-                />
-              </div>
-              <div class="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  id="gdpr"
-                  name="gdpr"
-                  required
-                  class="mt-1"
-                />
-                <label
-                  for="gdpr"
-                  class="text-xs text-color-600 dark:text-color-400"
-                >
-                  I agree to receive emails from Semio Community and understand
-                  I can unsubscribe at any time.
-                </label>
-              </div>
-              <CallToActionButton
-                type="submit"
-                text="Submit Application"
-                size="large"
-                fullWidth={true}
-              />
-            </form>
+            <h3 class="text-lg font-semibold mb-4">Sign Up:</h3>
+            <CallToActionButton
+              text="Connect with Us"
+              size="large"
+              variant="tertiary"
+              fullWidth={true}
+              href="https://forms.gle/5iiaThSsGUMzXWsu6"
+            />
           </div>
         </div>
 
@@ -432,7 +398,7 @@ const meta = {
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <CallToActionButton
-          href="mailto:ross@semio.ai"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Contact Us"
           size="large"
         />

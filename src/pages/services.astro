@@ -24,7 +24,8 @@ const hardwareServices = [
     icon: "solar:box-minimalistic-line-duotone",
     title: "Manufacturing",
     subtitle: "Contract Manufacturing",
-    description: "End-to-end scale manufacturing services for robotics hardware",
+    description:
+      "End-to-end scale manufacturing services for robotics hardware",
   },
   {
     icon: "solar:database-line-duotone",
@@ -36,7 +37,8 @@ const hardwareServices = [
     icon: "solar:cart-large-2-line-duotone",
     title: "Sales",
     subtitle: "Sales & Distribution",
-    description: "Make your hardware available to the broader robotics community",
+    description:
+      "Make your hardware available to the broader robotics community",
   },
   {
     icon: "solar:delivery-line-duotone",
@@ -48,7 +50,8 @@ const hardwareServices = [
     icon: "solar:headphones-round-line-duotone",
     title: "Support",
     subtitle: "Technical Support",
-    description: "Ongoing technical support for your robotics hardware platforms",
+    description:
+      "Ongoing technical support for your robotics hardware platforms",
   },
 ];
 
@@ -186,6 +189,7 @@ const researchServices = [
     id="hardware"
     title="Hardware Services"
     subtitle="Comprehensive support for scaling robotics hardware development and deployment"
+    variant="primary"
   >
     <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -205,7 +209,7 @@ const researchServices = [
           support for your robotics hardware projects.
         </p>
         <CallToActionButton
-          href="/get-involved"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Request Hardware Services"
           size="large"
         />
@@ -218,6 +222,7 @@ const researchServices = [
     id="software"
     title="Software Services"
     subtitle="Supporting the transition from research code to production-ready systems"
+    variant="secondary"
   >
     <div class="max-w-6xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -227,6 +232,7 @@ const researchServices = [
               icon={service.icon}
               title={service.title}
               description={service.description}
+              variant="secondary"
             />
           ))
         }
@@ -237,9 +243,10 @@ const researchServices = [
           with our comprehensive software services.
         </p>
         <CallToActionButton
-          href="/get-involved"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Request Software Services"
           size="large"
+          variant="secondary"
         />
       </div>
     </div>
@@ -250,6 +257,7 @@ const researchServices = [
     id="research"
     title="Research Services"
     subtitle="Comprehensive support for conducting replicable HRI research and studies"
+    variant="tertiary"
   >
     <div class="max-w-5xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -259,13 +267,14 @@ const researchServices = [
               icon={service.icon}
               title={service.title}
               description={service.description}
+              variant="tertiary"
             >
               <ul class="space-y-1 mt-3">
                 {service.features.map((feature) => (
                   <li class="flex items-center gap-2 text-xs">
                     <Icon
                       name="solar:check-circle-bold"
-                      class="w-3 h-3 text-accent-two flex-shrink-0"
+                      class="w-3 h-3 text-accent-three flex-shrink-0"
                     />
                     <span>{feature}</span>
                   </li>
@@ -281,9 +290,10 @@ const researchServices = [
           support services.
         </p>
         <CallToActionButton
-          href="/get-involved"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Request Research Services"
           size="large"
+          variant="tertiary"
         />
       </div>
     </div>
@@ -432,7 +442,7 @@ const researchServices = [
       </p>
       <div class="flex flex-wrap justify-center gap-4">
         <CallToActionButton
-          href="/get-involved"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Request Services"
           size="large"
         />

@@ -2,19 +2,13 @@
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import EventCard from "@/components/cards/EventCard.astro";
-import FeatureCard from "@/components/cards/FeatureCard.astro";
-import Timeline from "@/components/ui/Timeline.astro";
 import CallToActionButton from "@/components/ui/CallToActionButton.astro";
 import { Icon } from "astro-icon/components";
 import {
-  getAllEvents,
   getUpcomingEvents,
   getPastEvents,
   getCurrentEvents,
   getFeaturedEvents,
-  getEventCountByType,
-  getUniqueEventTopics,
-  groupEventsByMonth,
 } from "@/data/events";
 import Hero from "@/components/Hero.astro";
 
@@ -36,7 +30,9 @@ const featuredEvents = [
     (currentEvent) =>
       !featuredOnlyEvents.some((featured) => featured.id === currentEvent.id),
   ),
-  ...featuredOnlyEvents.filter((featuredEvent)=>featuredEvent.data.startDate > currentDate),
+  ...featuredOnlyEvents.filter(
+    (featuredEvent) => featuredEvent.data.startDate > currentDate,
+  ),
 ];
 
 // Group upcoming events by year
@@ -48,11 +44,9 @@ upcomingEvents.forEach((event) => {
   }
   upcomingEventsByYear[year].push(event);
 });
-
 ---
 
 <PageLayout meta={meta} noPaddingTop>
-
   <div
     class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
     style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
@@ -75,12 +69,16 @@ upcomingEvents.forEach((event) => {
 
       <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
-        {featuredEvents.length > 0 && (<CallToActionButton
-          href="#featured"
-          text="Featured Events"
-          size="large"
-          indicatorText={featuredEvents.length?.toString()}
-        />)}
+        {
+          featuredEvents.length > 0 && (
+            <CallToActionButton
+              href="#featured"
+              text="Featured Events"
+              size="large"
+              indicatorText={featuredEvents.length?.toString()}
+            />
+          )
+        }
         <CallToActionButton
           href="#upcoming"
           text="Upcoming Events"
@@ -99,7 +97,6 @@ upcomingEvents.forEach((event) => {
     </Hero>
   </div>
 
-
   <!-- Featured Events -->
   {
     featuredEvents.length > 0 && (
@@ -107,6 +104,7 @@ upcomingEvents.forEach((event) => {
         id="featured"
         title="Featured Events"
         subtitle="Highlighted events, including events happening right now"
+        variant="primary"
       >
         <div class="max-w-6xl mx-auto">
           <div data-expandable-section data-initial-count="6">
@@ -157,6 +155,7 @@ upcomingEvents.forEach((event) => {
         id="upcoming"
         title="Upcoming Events"
         subtitle="Meet with the community at these future gatherings"
+        variant="secondary"
       >
         <div class="max-w-6xl mx-auto">
           {Object.keys(upcomingEventsByYear)
@@ -185,6 +184,7 @@ upcomingEvents.forEach((event) => {
         id="past"
         title="Past Events"
         subtitle="Explore our full archive of previous community events"
+        variant="tertiary"
       >
         <div class="max-w-6xl mx-auto">
           <div data-expandable-section data-initial-count="6">
@@ -231,12 +231,15 @@ upcomingEvents.forEach((event) => {
   <!-- Call to Action -->
   <Section id="events-contribute" title="Partner for an Event">
     <div class="max-w-4xl mx-auto text-center">
+      <p class="mb-8 -mt-6 md:-mt-8">
+        Planning a conference, workshop, or other community gathering?<br /><br
+          class="md:hidden"
+        /> Partner with Semio Community to reach a broader robotics/AI audience.
+      </p>
 
-      <p class="mb-8 -mt-6 md:-mt-8">Planning a conference, workshop, or other community gathering?<br/><br class="md:hidden"/> Partner with Semio Community to reach a broader robotics/AI audience.</p>
-      
       <div class="flex flex-wrap justify-center gap-4">
         <CallToActionButton
-          href="/get-involved"
+          href="https://forms.gle/5iiaThSsGUMzXWsu6"
           text="Request Event Services"
           size="large"
         />

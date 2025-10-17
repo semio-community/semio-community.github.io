@@ -6,20 +6,30 @@ export interface Props {
   title: string;
   description?: string;
   class?: string;
+  variant?: "primary" | "secondary" | "tertiary" | "default";
 }
 
-const { icon, title, description, class: className = "" } = Astro.props;
+const {
+  icon,
+  title,
+  description,
+  class: className = "",
+  variant = "primary",
+} = Astro.props;
+
+const textClass = {
+  primary: "text-accent-two",
+  secondary: "text-accent-one",
+  tertiary: "text-accent-three",
+  default: "text-accent-base",
+}[variant];
 ---
 
 <div
   class={`p-4 sm:p-6 bg-special-lighter rounded-lg text-center ${className}`}
 >
-  <Icon name={icon} class="w-12 h-12 mx-auto mb-4 text-accent-two" />
+  <Icon name={icon} class={`w-12 h-12 mx-auto mb-4 ${textClass}`} />
   <h3 class="text-lg font-semibold mb-2">{title}</h3>
-  {
-    description && (
-      <p class="text-sm text-color-600 dark:text-color-400">{description}</p>
-    )
-  }
+  {description && <p class="text-sm text-accent-base/50">{description}</p>}
   <slot />
 </div>

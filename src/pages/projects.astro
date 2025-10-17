@@ -25,28 +25,6 @@ const allSoftware = await getAllSoftware();
 
 // Fetch research data - handle empty collection gracefully
 const allResearch = await getAllResearch();
-
-// let featuredResearch = [];
-// let researchStatistics = null;
-// let featuredResearchWithAuthors: any[] = [];
-
-// try {
-//   // Dynamically import to avoid build errors when collection is empty
-//   const researchModule = await import("@/data/research");
-//   featuredResearch = await researchModule.getFeaturedResearch();
-//   researchStatistics = await researchModule.getResearchStatistics();
-
-//   // Pre-fetch author names for featured research
-//   featuredResearchWithAuthors = await Promise.all(
-//     featuredResearch.slice(0, featuredResearch.length).map(async (entry) => ({
-//       ...entry,
-//       authorString: await getFormattedAuthors(entry.data.authors, 1),
-//     })),
-//   );
-// } catch (error) {
-//   // Research collection is empty or doesn't exist
-//   console.log("Research collection not available");
-// }
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -101,6 +79,7 @@ const allResearch = await getAllResearch();
     id="hardware"
     title="Hardware Projects"
     subtitle="Community-driven robotics hardware for research and education"
+    variant="primary"
   >
     <div class="max-w-6xl mx-auto">
       {
@@ -161,6 +140,7 @@ const allResearch = await getAllResearch();
     id="software"
     title="Software Projects"
     subtitle="Comprehensive software tools for every aspect of HRI development"
+    variant="secondary"
   >
     <div class="max-w-6xl mx-auto">
       {
@@ -221,6 +201,7 @@ const allResearch = await getAllResearch();
     id="research"
     title="Research Projects"
     subtitle="Reproducible science and studies advancing the field of human-robot interaction"
+    variant="tertiary"
   >
     <div class="max-w-6xl mx-auto">
       {
