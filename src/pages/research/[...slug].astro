@@ -4,14 +4,12 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import InfoCard from "@/components/detail/InfoCard.astro";
-import LinkButton from "@/components/detail/LinkButton.astro";
+import LinkSection from "@/components/detail/LinkSection";
 import { getRelatedResearch as fetchRelatedResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
 import OrganizationChip from "@/components/ui/OrganizationChip.astro";
 import { Fragment } from "react";
-import { transformLinksToButtons } from "@/config/linkConfig";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
 import SoftwareCard from "@/components/cards/SoftwareCard.astro";
 
@@ -55,7 +53,11 @@ const meta = {
   description: data.description,
 };
 
-const badges: Array<{ text: string; color: "blue" | "gray" | "accent"; variant: "solid" | "outline" }> = [];
+const badges: Array<{
+  text: string;
+  color: "blue" | "gray" | "accent";
+  variant: "solid" | "outline";
+}> = [];
 
 const typeLabels = {
   study: "Study",
@@ -87,8 +89,6 @@ if (data.featured) {
     variant: "solid" as const,
   });
 }
-
-const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
 
 const authorsWithData = await Promise.all(
   authors.map(async (contributor) => {
@@ -187,11 +187,14 @@ for (const item of organizationLinks) {
   });
 }
 
-const organizationRoleEntries = (Object.entries(
-  organizationsByRole,
-) as Array<
-  [OrganizationRole, Array<{ organization: CollectionEntry<"organizations">; note?: string }>]
->).filter(([, list]) => list.length > 0);
+const organizationRoleEntries = (
+  Object.entries(organizationsByRole) as Array<
+    [
+      OrganizationRole,
+      Array<{ organization: CollectionEntry<"organizations">; note?: string }>,
+    ]
+  >
+).filter(([, list]) => list.length > 0);
 
 // Get related hardware
 const relatedHardwareItems = data.relatedHardware
@@ -246,21 +249,14 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
 
       {/* External Links */}
       {
-        linkButtons.length > 0 && (
+        data.links && Object.keys(data.links).length > 0 && (
           <div class="mt-6">
-            <InfoCard title="LINKS & RESOURCES">
-              <div class="flex flex-wrap gap-3">
-                {linkButtons.map((button) => (
-                  <LinkButton
-                    href={button.href}
-                    text={button.text}
-                    icon={button.icon}
-                    external={button.external}
-                    variant={button.variant || "default"}
-                  />
-                ))}
-              </div>
-            </InfoCard>
+            <LinkSection
+              client:load
+              links={data.links}
+              size="md"
+              className="gap-1"
+            />
           </div>
         )
       }

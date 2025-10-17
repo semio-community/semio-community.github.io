@@ -4,12 +4,10 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import InfoCard from "@/components/detail/InfoCard.astro";
-import LinkButton from "@/components/detail/LinkButton.astro";
+import LinkSection from "@/components/detail/LinkSection";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import FeaturesList from "@/components/detail/FeaturesList.astro";
-import TagsList from "@/components/detail/TagsList.astro";
 import { getRelatedHardware } from "@/data/hardware";
 import { getPerson } from "@/data/people";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
@@ -21,7 +19,7 @@ import {
   getStatusColor,
   getCategoryLabel,
 } from "@/config/statusConfig";
-import { transformLinksToButtons } from "@/config/linkConfig";
+import { ChipsList } from "@/components/detail";
 
 export async function getStaticPaths() {
   const hardware = await getCollection("hardware", ({ data }) => {
@@ -58,9 +56,6 @@ const badges = [
   variant: "solid" | "outline";
 }>;
 
-// Prepare link buttons using centralized configuration
-const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
-
 // Get contributors with their full data
 const contributors = data.contributors || [];
 const peopleContributors = await Promise.all(
@@ -83,10 +78,7 @@ const orgContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "organization")
     .map(async (contributor) => {
-      const org = await getEntry(
-        "organizations",
-        contributor.organizationId,
-      );
+      const org = await getEntry("organizations", contributor.organizationId);
       return {
         ...contributor,
         data: org?.data,
@@ -123,20 +115,13 @@ const specificationItems = data.specifications || {};
     {/* External Links */}
     <Fragment slot="links">
       {
-        linkButtons.length > 0 && (
-          <InfoCard title="LINKS & RESOURCES">
-            <div class="flex flex-wrap gap-3">
-              {linkButtons.map((button) => (
-                <LinkButton
-                  href={button.href}
-                  text={button.text}
-                  icon={button.icon}
-                  external={button.external}
-                  variant={button.variant || "default"}
-                />
-              ))}
-            </div>
-          </InfoCard>
+        data.links && Object.keys(data.links).length > 0 && (
+          <LinkSection
+            client:load
+            links={data.links}
+            size="md"
+            className="gap-1"
+          />
         )
       }
     </Fragment>
@@ -253,7 +238,7 @@ const specificationItems = data.specifications || {};
     <Fragment slot="tags">
       {
         topics.length > 0 && (
-          <TagsList tags={topics} baseUrl="/hardware/topics" variant="secondary" />
+          <ChipsList title="TOPICS" items={topics} variant="primary" />
         )
       }
     </Fragment>

@@ -4,8 +4,7 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import InfoCard from "@/components/detail/InfoCard.astro";
-import LinkButton from "@/components/detail/LinkButton.astro";
+import LinkSection from "@/components/detail/LinkSection";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import FeaturesList from "@/components/detail/FeaturesList.astro";
@@ -17,7 +16,6 @@ import OrganizationChip from "@/components/ui/OrganizationChip.astro";
 import BasicChip from "@/components/ui/BasicChip.astro";
 import { Fragment } from "react";
 import { getStatusLabel, getStatusColor } from "@/config/statusConfig";
-import { transformLinksToButtons } from "@/config/linkConfig";
 
 export async function getStaticPaths() {
   const software = await getCollection("software", ({ data }) => {
@@ -59,8 +57,6 @@ const badges = [
   variant: "solid" | "outline";
 }>;
 
-const linkButtons = data.links ? transformLinksToButtons(data.links) : [];
-
 // Get contributors with their full data
 const contributors = data.contributors || [];
 const peopleContributors = await Promise.all(
@@ -83,10 +79,7 @@ const orgContributors = await Promise.all(
   contributors
     .filter((c) => c.type === "organization")
     .map(async (contributor) => {
-      const org = await getEntry(
-        "organizations",
-        contributor.organizationId,
-      );
+      const org = await getEntry("organizations", contributor.organizationId);
       return {
         ...contributor,
         data: org?.data,
@@ -156,20 +149,13 @@ if (data.requirements) {
     {/* External Links */}
     <Fragment slot="links">
       {
-        linkButtons.length > 0 && (
-          <InfoCard title="LINKS & RESOURCES">
-            <div class="flex flex-wrap gap-3">
-              {linkButtons.map((button) => (
-                <LinkButton
-                  href={button.href}
-                  text={button.text}
-                  icon={button.icon}
-                  external={button.external}
-                  variant={button.variant || "default"}
-                />
-              ))}
-            </div>
-          </InfoCard>
+        data.links && Object.keys(data.links).length > 0 && (
+          <LinkSection
+            client:load
+            links={data.links}
+            size="md"
+            className="gap-1"
+          />
         )
       }
     </Fragment>
@@ -326,9 +312,11 @@ if (data.requirements) {
 
     {/* Tags and Use Cases */}
     <Fragment slot="tags">
-      {topics.length > 0 && (
-        <ChipsList title="TOPICS" items={topics} variant="primary" />
-      )}
+      {
+        topics.length > 0 && (
+          <ChipsList title="TOPICS" items={topics} variant="primary" />
+        )
+      }
     </Fragment>
 
     {/* Main content from MDX file */}

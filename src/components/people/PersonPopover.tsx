@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { Avatar } from "@/components/ui/Avatar";
 import "./PersonPopover.css";
 import { User, UserBlockRounded } from "@solar-icons/react-perf/LineDuotone";
-import { IconButton, type LinkType } from "@/components/ui/IconButton";
-import { linkPriority } from "@/data/links";
+import type { LinkType } from "@/components/ui/IconButton";
+import LinkSection from "@/components/detail/LinkSection";
 
 interface PersonPopoverProps {
   person: {
@@ -23,7 +23,7 @@ interface PersonPopoverProps {
       endDate?: Date;
       isPrimary?: boolean;
     }>;
-    links?: Partial<Record<LinkType,string>>;
+    links?: Partial<Record<LinkType, string>>;
     images?: {
       avatar?: {
         src: string;
@@ -60,29 +60,15 @@ export function PersonPopover({
     ? `${person.honorific} ${person.name}`
     : person.name;
 
-  const linkButtons: Array<{ type: LinkType; href: string }> = useMemo(()=>{
-    const links: Array<{ type: LinkType; href: string }> = [];
-  
-    linkPriority.forEach(linkType=>{
-      if (links.length < 5 && person.links?.[linkType as LinkType]) {
-        links.push({type: linkType, href: person.links?.[linkType as LinkType]!})
-      }
-    })
-    return links.reverse()
-
-  }, [person.links])
-
-  
-
   const handleClick = (
-      event:
-        | React.MouseEvent<HTMLButtonElement>
-        | React.MouseEvent<HTMLAnchorElement>,
-    ) => {
-      event.stopPropagation();
-      event.preventDefault();
-      window.location.href = `/people/${person.id}`;
-    };
+    event:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.stopPropagation();
+    event.preventDefault();
+    window.location.href = `/people/${person.id}`;
+  };
 
   return (
     <Popover.Root>
@@ -95,9 +81,7 @@ export function PersonPopover({
             type="person"
             size="xs"
           />
-          <span className="text-sm font-medium">
-            {displayName}
-          </span>
+          <span className="text-sm font-medium">{displayName}</span>
           {role && (
             <span className="text-xs text-color-600 dark:text-color-400">
               • {role}
@@ -116,7 +100,7 @@ export function PersonPopover({
             href={`/people/${person.id}`}
             className="flex items-start gap-4 no-underline hover:opacity-90 transition-opacity"
           >
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 mt-3">
               <Avatar
                 src={person.images?.avatar}
                 alt={displayName}
@@ -185,19 +169,14 @@ export function PersonPopover({
               <User className="w-3 h-3" />
               View Profile
             </button>
-            <div className='gap-1 flex'>
-            {linkButtons.map(linkButton=>(
-              <IconButton 
-                key={`${linkButton.type}-${linkButton.href}`}
-                type={linkButton.type}
-                href={linkButton.href}
-                size="sm"
-                as="button"
-                external
-                stopPropagation
-              />
-            ))}
-            </div>
+            <LinkSection
+              links={person.links}
+              size="sm"
+              max={5}
+              as="button"
+              external
+              stopPropagation
+            />
           </div>
         </Popover.Content>
       </Popover.Portal>

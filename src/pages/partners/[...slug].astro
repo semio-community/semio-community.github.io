@@ -4,7 +4,7 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import InfoCard from "@/components/detail/InfoCard.astro";
-import LinkButton from "@/components/detail/LinkButton.astro";
+import LinkSection from "@/components/detail/LinkSection";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import ResearchCard from "@/components/cards/ResearchCard.astro";
 import HardwareCard from "@/components/cards/HardwareCard.astro";
@@ -17,7 +17,6 @@ import { getAllSoftware } from "@/data/software";
 import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
 import BasicChip from "@/components/ui/BasicChip.astro";
 import { Fragment } from "react";
-import { createLinkButton } from "@/config/linkConfig";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
@@ -41,10 +40,7 @@ const { entry } = Astro.props as Props;
 const { data } = entry;
 
 // Get related partners (by category or collaboration areas)
-async function getRelatedPartners(
-  partner: PartnerEntry,
-  limit: number = 3,
-) {
+async function getRelatedPartners(partner: PartnerEntry, limit: number = 3) {
   const allPartners = await getAllPartners();
   const relatedPartners: PartnerEntry[] = [];
 
@@ -89,24 +85,22 @@ async function getPartnerRelatedContent(partnerId: string) {
 
   // Get hardware where this partner is lead or supporting
   const allHardware = await getAllHardware();
-  const hardware = allHardware.filter(
-    (hw) =>
-      hw.data.contributors?.some(
-        (contributor) =>
-          contributor.type === "organization" &&
-          contributor.organizationId === partnerId,
-      ),
+  const hardware = allHardware.filter((hw) =>
+    hw.data.contributors?.some(
+      (contributor) =>
+        contributor.type === "organization" &&
+        contributor.organizationId === partnerId,
+    ),
   );
 
   // Get software where this partner is lead or supporting
   const allSoftware = await getAllSoftware();
-  const software = allSoftware.filter(
-    (sw) =>
-      sw.data.contributors?.some(
-        (contributor) =>
-          contributor.type === "organization" &&
-          contributor.organizationId === partnerId,
-      ),
+  const software = allSoftware.filter((sw) =>
+    sw.data.contributors?.some(
+      (contributor) =>
+        contributor.type === "organization" &&
+        contributor.organizationId === partnerId,
+    ),
   );
 
   // Event participation is now captured at the Semio-community level only.
@@ -137,45 +131,6 @@ badges.push({
   color: "blue" as const,
   variant: "outline" as const,
 });
-
-// Prepare link buttons using centralized configuration
-const linkButtons = [];
-if (data.links?.website) {
-  linkButtons.push(
-    createLinkButton("website", data.links.website, "Visit Website"),
-  );
-}
-if (data.links?.email) {
-  linkButtons.push(
-    createLinkButton("email", `mailto:${data.links.email}`, "Email", {
-      variant: "primary",
-    }),
-  );
-}
-if (data.links?.github) {
-  const href = data.links.github.startsWith("http")
-    ? data.links.github
-    : `https://github.com/${data.links.github}`;
-  linkButtons.push(createLinkButton("github", href));
-}
-if (data.links?.linkedin) {
-  const href = data.links.linkedin.startsWith("http")
-    ? data.links.linkedin
-    : `https://linkedin.com/company/${data.links.linkedin}`;
-  linkButtons.push(createLinkButton("linkedin", href));
-}
-if (data.links?.twitter) {
-  const href = data.links.twitter.startsWith("http")
-    ? data.links.twitter
-    : `https://twitter.com/${data.links.twitter}`;
-  linkButtons.push(createLinkButton("twitter", href));
-}
-if (data.links?.mastodon) {
-  linkButtons.push(createLinkButton("mastodon", data.links.mastodon));
-}
-if (data.links?.scheduling) {
-  linkButtons.push(createLinkButton("calendar", data.links.scheduling, "Schedule"));
-}
 
 // Prepare contact metadata
 const contactItems = [];
@@ -266,7 +221,9 @@ const categoryLabel = categoryLabels[data.category] || data.category;
 
           <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+              <span
+                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+              >
                 Location
               </span>
               <span class="text-accent-base">
@@ -274,16 +231,22 @@ const categoryLabel = categoryLabels[data.category] || data.category;
               </span>
             </div>
             <div>
-              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+              <span
+                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+              >
                 Partner Type
               </span>
               <span class="text-accent-base">{typeLabels[data.type]}</span>
             </div>
             <div>
-              <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+              <span
+                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+              >
                 Category
               </span>
-              <span class="text-accent-base">{categoryLabels[data.category]}</span>
+              <span class="text-accent-base"
+                >{categoryLabels[data.category]}</span
+              >
             </div>
           </div>
         </div>
@@ -293,81 +256,80 @@ const categoryLabel = categoryLabels[data.category] || data.category;
     {/* Links & Contact */}
     <Fragment slot="links">
       {
-        linkButtons.length > 0 && (
-          <InfoCard title="LINKS & CONTACT">
-            <div class="flex flex-wrap gap-3">
-              {linkButtons.map((button) => (
-                <LinkButton
-                  href={button.href}
-                  text={button.text}
-                  icon={button.icon}
-                  external={button.external}
-                  variant={button.variant || "default"}
-                />
-              ))}
-            </div>
-            {contactItems.length > 0 && (
-              <div class="mt-4 pt-4 border-t border-accent-one/10 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                {contactItems.map((item) => (
-                  <div class="flex items-center gap-2">
-                    <span class="text-color-600 dark:text-color-400">
-                      {item.label}:
-                    </span>
-                    {item.link ? (
-                      <a
-                        href={item.link}
-                        class="text-accent-one hover:text-accent-two transition-colors"
-                      >
-                        {item.value}
-                      </a>
-                    ) : (
-                      <span class="text-accent-base">{item.value}</span>
-                    )}
-                  </div>
-                ))}
+        data.links && Object.keys(data.links).length > 0 && (
+          <LinkSection
+            client:load
+            links={data.links}
+            size="md"
+            className="gap-1"
+          />
+        )
+      }
+      {
+        contactItems.length > 0 && (
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            {contactItems.map((item) => (
+              <div class="flex items-center gap-2">
+                <span class="text-color-600 dark:text-color-400">
+                  {item.label}:
+                </span>
+                {item.link ? (
+                  <a
+                    href={item.link}
+                    class="text-accent-one hover:text-accent-two transition-colors"
+                  >
+                    {item.value}
+                  </a>
+                ) : (
+                  <span class="text-accent-base">{item.value}</span>
+                )}
               </div>
-            )}
-          </InfoCard>
+            ))}
+          </div>
         )
       }
     </Fragment>
 
     {/* Key People */}
     <Fragment slot="contributors">
-      {keyContacts.length > 0 && (
-        <InfoCard title="KEY PEOPLE">
-          <div class="flex flex-wrap gap-2">
-            {keyContacts.map((contact) => (
-              <PersonPopoverWrapper
-                personId={contact.person.id}
-                role={
-                  contact.role
-                    ? contact.department
-                      ? `${contact.role}, ${contact.department}`
-                      : contact.role
-                    : undefined
-                }
-              />
-            ))}
-          </div>
-        </InfoCard>
-      )}
+      {
+        keyContacts.length > 0 && (
+          <InfoCard title="KEY PEOPLE">
+            <div class="flex flex-wrap gap-2">
+              {keyContacts.map((contact) => (
+                <PersonPopoverWrapper
+                  personId={contact.person.id}
+                  role={
+                    contact.role
+                      ? contact.department
+                        ? `${contact.role}, ${contact.department}`
+                        : contact.role
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </InfoCard>
+        )
+      }
     </Fragment>
 
     {/* Collaboration Summary */}
     <Fragment slot="tags">
-      {collaborationSummary && (
-        <div class="collaboration-summary mb-8">
-          <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-            <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-              COLLABORATION SUMMARY
-            </h3>
-            <p class="text-sm text-accent-base leading-relaxed">
-              {collaborationSummary}
-            </p>
+      {
+        collaborationSummary && (
+          <div class="collaboration-summary mb-8">
+            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                COLLABORATION SUMMARY
+              </h3>
+              <p class="text-sm text-accent-base leading-relaxed">
+                {collaborationSummary}
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </Fragment>
 
     {/* About/Description */}

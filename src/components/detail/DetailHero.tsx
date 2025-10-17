@@ -1,6 +1,6 @@
 import React from "react";
 import type { ImageMetadata } from "astro";
-import { Star } from "@solar-icons/react-perf/LineDuotone";
+import { Star } from "@solar-icons/react-perf/Bold";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
 export interface DetailHeroBadge {

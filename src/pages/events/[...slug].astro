@@ -4,14 +4,13 @@ import PageLayout from "@/layouts/Base.astro";
 import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
 import { DetailHero } from "@/components/detail/DetailHero";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import InfoCard from "@/components/detail/InfoCard.astro";
-import LinkButton from "@/components/detail/LinkButton.astro";
+import LinkSection from "@/components/detail/LinkSection";
 import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllEvents } from "@/data/events";
 import SpecificationsList from "@/components/detail/SpecificationsList.astro";
 import BasicChip from "@/components/ui/BasicChip.astro";
 import { Fragment } from "react";
-import { createLinkButton } from "@/config/linkConfig";
+
 import { getEventPreviewDescriptionText } from "@/utils/events";
 
 export async function getStaticPaths() {
@@ -161,42 +160,9 @@ badges.push({
   variant: "outline" as const,
 });
 
-// Prepare link buttons using centralized configuration
-const linkButtons = [];
-if (data.links?.registration && eventStatus !== "past") {
-  linkButtons.push(
-    createLinkButton("registration", data.links.registration, "Register Now", {
-      variant: "primary",
-    }),
-  );
-}
-if (data.links?.website) {
-  linkButtons.push(
-    createLinkButton("website", data.links.website, "Event Website"),
-  );
-}
-if (data.links?.program) {
-  linkButtons.push(
-    createLinkButton("documentation", data.links.program, "Program", {
-      variant: "secondary",
-      icon: "solar:document-text-line-duotone",
-    }),
-  );
-}
-if (data.links?.proceedings && eventStatus === "past") {
-  linkButtons.push(
-    createLinkButton("documentation", data.links.proceedings, "Proceedings", {
-      variant: "tertiary",
-      icon: "solar:book-line-duotone",
-    }),
-  );
-}
-if (data.links?.recordings && eventStatus === "past") {
-  linkButtons.push(
-    createLinkButton("video", data.links.recordings, "Recordings", {
-      variant: "tertiary",
-    }),
-  );
+const eventLinks = { ...(data.links || {}) };
+if (eventStatus === "past") {
+  delete eventLinks.registration;
 }
 
 // Format dates for display
@@ -263,7 +229,7 @@ const roleEntries = (data.roles || []).map((role) => ({
   label: formatRoleLabel(role),
 }));
 
-const descriptionText = getEventPreviewDescriptionText(data)
+const descriptionText = getEventPreviewDescriptionText(data);
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -284,20 +250,13 @@ const descriptionText = getEventPreviewDescriptionText(data)
     {/* External Links */}
     <Fragment slot="links">
       {
-        linkButtons.length > 0 && (
-          <InfoCard title="LINKS & RESOURCES">
-            <div class="flex flex-wrap gap-3">
-              {linkButtons.map((button) => (
-                <LinkButton
-                  href={button.href}
-                  text={button.text}
-                  icon={button.icon}
-                  external={button.external}
-                  variant={button.variant || "default"}
-                />
-              ))}
-            </div>
-          </InfoCard>
+        eventLinks && Object.keys(eventLinks).length > 0 && (
+          <LinkSection
+            client:load
+            links={eventLinks}
+            size="md"
+            className="gap-1"
+          />
         )
       }
     </Fragment>
@@ -335,10 +294,7 @@ const descriptionText = getEventPreviewDescriptionText(data)
               </h3>
               <div class="flex flex-wrap gap-2">
                 {roleEntries.map((role) => (
-                  <BasicChip
-                    text={role.label}
-                    variant="primary"
-                  />
+                  <BasicChip text={role.label} variant="primary" />
                 ))}
               </div>
             </div>
