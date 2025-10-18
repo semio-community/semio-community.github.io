@@ -100,37 +100,40 @@ const softwareServices = [
 
 const researchServices = [
   {
-    icon: "hugeicons:user-group",
-    title: "Populations",
-    description: "Access diverse participant pools for HRI research",
-    features: [
-      "In-person studies",
-      "Diverse demographics",
-      "Special populations",
-      "Remote participants",
-    ],
+    icon: "solar:test-tube-line-duotone",
+    title: "Replication Studies",
+    description:
+      "Plan, pre-register, and execute confirmatory studies with standardized protocols",
   },
   {
-    icon: "solar:test-tube-line-duotone",
-    title: "Research Studies",
-    description: "Standardized study protocols and experimental designs",
-    features: [
-      "Study pre-registration",
-      "Replication studies",
-      "Multi-site studies",
-      "Longitudinal studies",
-    ],
+    icon: "solar:document-line-duotone",
+    title: "Grants",
+    description:
+      "Identify, develop, and coordinate submissions for research funding",
+  },
+  {
+    icon: "solar:users-group-two-rounded-line-duotone",
+    title: "Broader Impacts",
+    description:
+      "Design and deliver activities and artifacts that meet program requirements",
+  },
+  {
+    icon: "solar:square-academic-cap-line-duotone",
+    title: "Events",
+    description:
+      "Plan, host, and support workshops, user studies, and symposia for the community",
+  },
+  {
+    icon: "hugeicons:user-group",
+    title: "Populations",
+    description:
+      "Recruit diverse in-person and remote participants, including special populations",
   },
   {
     icon: "solar:chart-2-line-duotone",
     title: "Analysis",
-    description: "Statistical analysis and data processing pipelines",
-    features: [
-      "Standardized metrics",
-      "Statistical tools",
-      "Data visualization",
-      "Open datasets",
-    ],
+    description:
+      "Build robust pipelines for data cleaning, statistical modeling, and visualization",
   },
 ];
 ---
@@ -178,7 +181,7 @@ const researchServices = [
           text="Research Services"
           size="large"
           variant="tertiary"
-          indicatorText="3"
+          indicatorText="6"
         />
       </div>
     </Hero>
@@ -268,19 +271,7 @@ const researchServices = [
               title={service.title}
               description={service.description}
               variant="tertiary"
-            >
-              <ul class="space-y-1 mt-3">
-                {service.features.map((feature) => (
-                  <li class="flex items-center gap-2 text-xs">
-                    <Icon
-                      name="solar:check-circle-bold"
-                      class="w-3 h-3 text-accent-three flex-shrink-0"
-                    />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </FeatureCard>
+            />
           ))
         }
       </div>
