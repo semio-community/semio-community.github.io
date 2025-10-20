@@ -1,6 +1,4 @@
 ---
-import Search from "@/components/navigation/Search.astro";
-import ThemeToggle from "@/components/theme/ThemeToggle.astro";
 import { NavigationMenuComponent } from "@/components/navigation/NavigationMenu.tsx";
 import { MobileNavigation } from "@/components/navigation/MobileNavigation.tsx";
 import { siteConfig, menuLinks } from "@/site.config";
@@ -8,6 +6,7 @@ import { homeUrl, url } from "@/utils/url";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getFeaturedResearch } from "@/data/research";
+import { SearchApp } from "@/components/search/SearchApp.tsx";
 
 // Fetch data for navigation and simplify for React component
 const allHardware = await getAllHardware();
@@ -84,20 +83,11 @@ const menuSections = {
 
 <style>
   @import "@/components/navigation/navigation-menu.css";
-  /* Keep site-search mounted on mobile but hide its open button */
-  .hide-search-trigger [data-open-modal] {
-    display: none;
-  }
-  @media (min-width: 768px) {
-    .hide-search-trigger [data-open-modal] {
-      display: flex;
-    }
-  }
 </style>
 
 <header
   id="main-header"
-  class="fixed left-0 right-0 z-50 lg:sticky top-0 h-16 w-full bg-surface/80 backdrop-blur-xl lg:bg-surface/85 lg:backdrop-blur-lg border-b border-accent-base/10 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.07)] dark:shadow-[0_2px_8px_-3px_rgba(0,0,0,0.3)]"
+  class="fixed left-0 right-0 z-50 lg:sticky top-0 h-[72px] w-full bg-surface/80 backdrop-blur-xl lg:bg-surface/85 lg:backdrop-blur-lg border-b border-accent-base/10 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.07)] dark:shadow-[0_2px_8px_-3px_rgba(0,0,0,0.3)]"
 >
   <!-- Background
 			TODO: This approach is not optimal and requires improvements.
@@ -148,7 +138,7 @@ const menuSections = {
     <a
       aria-label={siteConfig.title}
       aria-current={Astro.url.pathname === "/" ? "page" : false}
-      class="group flex h-8 items-center hover:filter-none sm:relative"
+      class="group flex items-center sm:relative h-8 w-8 rounded-lg justify-center hover:bg-accent-base/10 transition-colors lg:w-auto lg:justify-start"
       href={homeUrl()}
     >
       <!-- Logo -->
@@ -190,24 +180,110 @@ const menuSections = {
 
     <!-- Right side buttons and mobile menu -->
     <div class="flex items-center gap-x-1 md:gap-x-2">
-      <div id="buttons-panel" class="flex space-x-1 md:space-x-2">
-        <div class="hide-search-trigger">
-          <Search />
-        </div>
-        <div class="hidden md:block">
-          <ThemeToggle />
-        </div>
+      <div id="buttons-panel" class="hidden md:flex space-x-1 md:space-x-2">
+        <button
+          class="hidden md:flex relative inline-flex items-center justify-center select-none rounded-lg transition-colors bg-color-100 text-accent-base hover:bg-accent-base/10 focus:outline-2 focus:outline-accent-two outline-offset-2 h-8 w-8"
+          type="button"
+          aria-label="Toggle theme"
+          onclick="(function(){var root=document.documentElement;var isDark=root.getAttribute('data-theme')==='dark';var ev=new CustomEvent('theme-change',{detail:{theme:isDark?'light':'dark'}});document.dispatchEvent(ev);})()"
+        >
+          <svg
+            aria-hidden="true"
+            class="absolute w-5 h-5 opacity-100 scale-100 transition-all dark:opacity-0 dark:scale-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"
+            ></circle>
+            <line
+              x1="12"
+              y1="2"
+              x2="12"
+              y2="5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="12"
+              y1="19"
+              x2="12"
+              y2="22"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="2"
+              y1="12"
+              x2="5"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="19"
+              y1="12"
+              x2="22"
+              y2="12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="4.22"
+              y1="4.22"
+              x2="6.34"
+              y2="6.34"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="17.66"
+              y1="17.66"
+              x2="19.78"
+              y2="19.78"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="17.66"
+              y1="6.34"
+              x2="19.78"
+              y2="4.22"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+            <line
+              x1="4.22"
+              y1="19.78"
+              x2="6.34"
+              y2="17.66"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></line>
+          </svg>
+          <svg
+            aria-hidden="true"
+            class="absolute w-5 h-5 opacity-0 scale-0 transition-all dark:opacity-100 dark:scale-100"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"></path>
+          </svg>
+        </button>
       </div>
 
-      <!-- Mobile Navigation with Radix UI Dialog -->
-      <div class="md:hidden">
-        <MobileNavigation
-          client:load
-          menuLinks={menuLinks}
-          currentPath={Astro.url.pathname}
-          urlPrefix=""
-        />
-      </div>
+      <!-- Centralized Search + Mobile Nav (React island) -->
+      <SearchApp
+        client:load
+        menuLinks={menuLinks}
+        currentPath={Astro.url.pathname}
+        urlPrefix=""
+      />
     </div>
   </div>
 </header>
