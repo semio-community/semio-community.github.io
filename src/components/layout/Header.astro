@@ -1,6 +1,5 @@
 ---
 import { NavigationMenuComponent } from "@/components/navigation/NavigationMenu.tsx";
-import { MobileNavigation } from "@/components/navigation/MobileNavigation.tsx";
 import { siteConfig, menuLinks } from "@/site.config";
 import { homeUrl, url } from "@/utils/url";
 import { getAllHardware } from "@/data/hardware";
@@ -53,30 +52,28 @@ const menuSections = {
     { title: "Hardware Projects", href: "/projects/#hardware" },
     { title: "Software Projects", href: "/projects/#software" },
     { title: "Research Projects", href: "/projects/#research" },
-    { title: "Contribute", href: "/projects/#contribute" },
   ],
   "/services/": [
-    { title: "Hardware Services", href: "/services/#hardware-services" },
-    { title: "Software Services", href: "/services/#software-services" },
-    { title: "Research Services", href: "/services/#research-services" },
+    { title: "Hardware Services", href: "/services/#hardware" },
+    { title: "Software Services", href: "/services/#software" },
+    { title: "Research Services", href: "/services/#research" },
+    { title: "Benefits", href: "/services/#benefits" },
+    { title: "Process", href: "/services/#process" },
     { title: "Get Started", href: "/services/#get-started" },
   ],
 
   "/events/": [
+    { title: "Featured Events", href: "/events/#featured" },
     { title: "Upcoming Events", href: "/events/#upcoming" },
     { title: "Past Events", href: "/events/#past" },
-    { title: "Host an Event", href: "/events/#host" },
+    { title: "Partner for an Event", href: "/events/#events-contribute" },
   ],
   "/partners/": [
-    { title: "Current Partners", href: "/partners/#current" },
-    { title: "Become a Partner", href: "/partners/#become" },
-    { title: "Benefits", href: "/partners/#benefits" },
-  ],
-  "/get-involved/": [
-    { title: "Contribute", href: "/get-involved/#contribute" },
-    { title: "Donate", href: "/get-involved/#donate" },
-    { title: "Volunteer", href: "/get-involved/#volunteer" },
-    { title: "Join Community", href: "/get-involved/#community" },
+    { title: "Featured Partners", href: "/partners/#featured-partners" },
+    { title: "Current Partners", href: "/partners/#current-partners" },
+    { title: "Partner Benefits", href: "/partners/#benefits" },
+    { title: "Partnership Areas", href: "/partners/#categories" },
+    { title: "Become a Partner", href: "/partners/#become-partner" },
   ],
 };
 ---
@@ -138,7 +135,7 @@ const menuSections = {
     <a
       aria-label={siteConfig.title}
       aria-current={Astro.url.pathname === "/" ? "page" : false}
-      class="group flex items-center sm:relative h-8 w-8 rounded-lg justify-center hover:bg-accent-base/10 transition-colors lg:w-auto lg:justify-start"
+      class="group flex items-center sm:relative h-8 w-8 md:p-2 rounded-lg justify-center hover:bg-accent-base/10 transition-colors lg:w-auto lg:justify-start"
       href={homeUrl()}
     >
       <!-- Logo -->
@@ -158,7 +155,7 @@ const menuSections = {
       </div>
 
       <strong
-        class="'max-[320px]:hidden' lowercase text-base hidden lg:block z-10 mb-0.5 ms-2 lg:text-base xl:text-lg hover:opacity-90 whitespace-nowrap"
+        class="'max-[320px]:hidden' lowercase text-base hidden lg:block z-10 mb-0.5 ms-2 lg:text-base xl:text-xl hover:opacity-90 whitespace-nowrap"
       >
         {siteConfig.title}
       </strong>
@@ -182,7 +179,7 @@ const menuSections = {
     <div class="flex items-center gap-x-1 md:gap-x-2">
       <div id="buttons-panel" class="hidden md:flex space-x-1 md:space-x-2">
         <button
-          class="hidden md:flex relative inline-flex items-center justify-center select-none rounded-lg transition-colors bg-color-100 text-accent-base hover:bg-accent-base/10 focus:outline-2 focus:outline-accent-two outline-offset-2 h-8 w-8"
+          class="hidden md:flex relative items-center justify-center select-none rounded-lg transition-colors bg-color-100 text-accent-base hover:bg-accent-base/10 focus:outline-2 focus:outline-accent-two outline-offset-2 h-8 w-8"
           type="button"
           aria-label="Toggle theme"
           onclick="(function(){var root=document.documentElement;var isDark=root.getAttribute('data-theme')==='dark';var ev=new CustomEvent('theme-change',{detail:{theme:isDark?'light':'dark'}});document.dispatchEvent(ev);})()"
@@ -283,6 +280,7 @@ const menuSections = {
         menuLinks={menuLinks}
         currentPath={Astro.url.pathname}
         urlPrefix=""
+        menuSections={menuSections}
       />
     </div>
   </div>

@@ -15,6 +15,14 @@ interface MobileNavigationProps {
   }>;
   currentPath: string;
   urlPrefix?: string;
+  menuSections?: Record<
+    string,
+    Array<{
+      title: string;
+      href: string;
+      icon?: string;
+    }>
+  >;
 }
 
 // Helper function to construct URLs
@@ -99,11 +107,15 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   menuLinks,
   currentPath,
   urlPrefix = "",
+  menuSections = {},
 }) => {
   const [open, setOpen] = React.useState(false);
 
   const { query, setQuery, results, loading } = useSearch();
   const [searchOpen, setSearchOpen] = React.useState(false);
+  const [openSection, setOpenSection] = React.useState<string | null>(null);
+  const toggleSection = (path: string) =>
+    setOpenSection((prev) => (prev === path ? null : path));
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   React.useEffect(() => {
     if (open && searchOpen) {
@@ -112,6 +124,16 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   }, [open, searchOpen]);
 
   const url = (path: string) => makeUrl(path, urlPrefix);
+  const getCurrentPageName = () => {
+    if (currentPath === "/" || currentPath === "") return "Home";
+    const exact = menuLinks.find((m) => m.path === currentPath);
+    if (exact?.title) return exact.title;
+    const prefix = menuLinks.find((m) => currentPath.startsWith(m.path));
+    if (prefix?.title) return prefix.title;
+    const seg = currentPath.split("/").filter(Boolean)[0] || "";
+    return seg ? seg.charAt(0).toUpperCase() + seg.slice(1) : "Home";
+  };
+  const currentPageName = getCurrentPageName();
 
   return (
     <Dialog.Root
@@ -124,11 +146,16 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
         }
       }}
     >
-      <Dialog.Trigger asChild>
-        <NavIconButton label="Open navigation menu" className="md:hidden">
-          <HamburgerIcon />
-        </NavIconButton>
-      </Dialog.Trigger>
+      <div className="md:hidden ml-auto flex items-center gap-2">
+        <span className="text-sm font-medium text-foreground/80 truncate max-w-[40vw] text-right">
+          {currentPageName}
+        </span>
+        <Dialog.Trigger asChild>
+          <NavIconButton label="Open navigation menu">
+            <HamburgerIcon />
+          </NavIconButton>
+        </Dialog.Trigger>
+      </div>
 
       <AnimatePresence>
         {open && (
@@ -465,17 +492,75 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                                   {link.title}
                                 </CallToActionButton>
                               ) : (
-                                <a
-                                  href={url(link.path)}
-                                  className={clsx(
-                                    "block px-4 py-3 rounded-lg transition-all duration-200",
-                                    currentPath === link.path
-                                      ? "bg-accent-base/10 text-accent-two font-semibold"
-                                      : "text-foreground hover:bg-accent-base/5 hover:text-accent-base",
-                                  )}
-                                >
-                                  {link.title}
-                                </a>
+                                <>
+                                  <div className="flex items-center gap-2">
+                                    <a
+                                      href={url(link.path)}
+                                      className={clsx(
+                                        "flex-1 block px-4 py-3 rounded-lg transition-all duration-200",
+                                        currentPath === link.path
+                                          ? "bg-accent-base/10 text-accent-two font-semibold"
+                                          : "text-foreground hover:bg-accent-base/5 hover:text-accent-base",
+                                      )}
+                                    >
+                                      {link.title}
+                                    </a>
+                                    {Array.isArray(menuSections[link.path]) &&
+                                      menuSections[link.path]!.length > 0 && (
+                                        <button
+                                          type="button"
+                                          aria-label={`Toggle sections for ${link.title}`}
+                                          onClick={() =>
+                                            toggleSection(link.path)
+                                          }
+                                          className={clsx(
+                                            "inline-flex items-center justify-center h-8 w-8 rounded-lg bg-color-100 text-accent-base hover:bg-accent-base/10 transition-colors focus:outline-2 focus:outline-accent-two outline-offset-2",
+                                            openSection === link.path &&
+                                              "bg-accent-base/10",
+                                          )}
+                                        >
+                                          <svg
+                                            className={clsx(
+                                              "h-4 w-4 transition-transform",
+                                              openSection === link.path
+                                                ? "rotate-180"
+                                                : "rotate-0",
+                                            )}
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                          >
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                          </svg>
+                                        </button>
+                                      )}
+                                  </div>
+                                  {openSection === link.path &&
+                                    Array.isArray(menuSections[link.path]) &&
+                                    menuSections[link.path]!.length > 0 && (
+                                      <motion.ul
+                                        className="mt-2 ml-4 space-y-1"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        transition={{ duration: 0.2 }}
+                                      >
+                                        {menuSections[link.path]!.map(
+                                          (section) => (
+                                            <li key={section.href}>
+                                              <a
+                                                href={url(section.href)}
+                                                className="block px-3 py-2 rounded-md text-sm text-foreground hover:bg-accent-base/5 hover:text-accent-base transition-colors"
+                                              >
+                                                {section.title}
+                                              </a>
+                                            </li>
+                                          ),
+                                        )}
+                                      </motion.ul>
+                                    )}
+                                </>
                               )}
                             </motion.li>
                           ))}

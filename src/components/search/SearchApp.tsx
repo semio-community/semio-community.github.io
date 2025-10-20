@@ -33,6 +33,18 @@ export interface SearchAppProps {
   currentPath: string;
   urlPrefix?: string;
   /**
+   * Sections for each top-level page to render in desktop and mobile accordions.
+   * Keys are page paths (e.g., "/projects/"), values are arrays of section links.
+   */
+  menuSections?: Record<
+    string,
+    Array<{
+      title: string;
+      href: string;
+      icon?: string;
+    }>
+  >;
+  /**
    * Whether to show the desktop trigger button that opens the React SearchModal.
    * Defaults to true.
    */
@@ -87,6 +99,7 @@ export const SearchApp: React.FC<SearchAppProps> = ({
   menuLinks,
   currentPath,
   urlPrefix = "",
+  menuSections = {},
   showDesktopTrigger = true,
   className,
 }) => {
@@ -110,6 +123,7 @@ export const SearchApp: React.FC<SearchAppProps> = ({
             menuLinks={menuLinks}
             currentPath={currentPath}
             urlPrefix={urlPrefix}
+            menuSections={menuSections}
           />
         </div>
       </div>
