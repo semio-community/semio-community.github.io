@@ -84,6 +84,15 @@ const menuSections = {
 
 <style>
   @import "@/components/navigation/navigation-menu.css";
+  /* Keep site-search mounted on mobile but hide its open button */
+  .hide-search-trigger [data-open-modal] {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .hide-search-trigger [data-open-modal] {
+      display: flex;
+    }
+  }
 </style>
 
 <header
@@ -182,8 +191,12 @@ const menuSections = {
     <!-- Right side buttons and mobile menu -->
     <div class="flex items-center gap-x-1 md:gap-x-2">
       <div id="buttons-panel" class="flex space-x-1 md:space-x-2">
-        <Search />
-        <ThemeToggle />
+        <div class="hide-search-trigger">
+          <Search />
+        </div>
+        <div class="hidden md:block">
+          <ThemeToggle />
+        </div>
       </div>
 
       <!-- Mobile Navigation with Radix UI Dialog -->

@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { motion, AnimatePresence } from "motion/react";
 import { clsx } from "clsx";
 import { CallToActionButton } from "../ui/CallToActionButton";
+import { MobileNavButton } from "./MobileNavButton";
 
 interface MobileNavigationProps {
   menuLinks: Array<{
@@ -105,12 +106,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button
-          className="relative h-8 w-8 rounded-lg bg-color-100 hover:bg-accent-base/10 text-accent-base md:hidden flex items-center justify-center transition-colors"
-          aria-label="Open navigation menu"
-        >
+        <MobileNavButton label="Open navigation menu" className="md:hidden">
           <HamburgerIcon />
-        </button>
+        </MobileNavButton>
       </Dialog.Trigger>
 
       <AnimatePresence>
@@ -151,14 +149,181 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                     <Dialog.Title className="text-lg font-semibold text-foreground">
                       Menu
                     </Dialog.Title>
-                    <Dialog.Close asChild>
-                      <button
-                        className="relative h-8 w-8 rounded-lg bg-color-100 hover:bg-accent-base/10 text-accent-base flex items-center justify-center transition-colors focus:outline-2 focus:outline-accent-two outline-offset-2"
-                        aria-label="Close navigation"
+
+                    <div className="flex items-center gap-2">
+                      {/* Search button - opens existing search modal */}
+                      <MobileNavButton
+                        label="Open search"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const nativeEvent: any = (e as any).nativeEvent ?? e;
+                          const el = document.querySelector(
+                            "site-search",
+                          ) as any;
+                          if (el && typeof el.openModal === "function") {
+                            el.openModal(nativeEvent);
+                          } else {
+                            const keyEvent = new KeyboardEvent("keydown", {
+                              key: "/",
+                            });
+                            window.dispatchEvent(keyEvent);
+                          }
+                          // Close the nav on the next frame to preserve the event propagation inside search
+                          window.requestAnimationFrame(() => setOpen(false));
+                        }}
                       >
-                        <CloseIcon />
-                      </button>
-                    </Dialog.Close>
+                        <svg
+                          className="w-5 h-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="11"
+                            cy="11"
+                            r="7"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          />
+                          <line
+                            x1="16.65"
+                            y1="16.65"
+                            x2="21"
+                            y2="21"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </MobileNavButton>
+
+                      {/* Theme toggle button - dispatches 'theme-change' event */}
+                      <MobileNavButton
+                        label="Toggle theme"
+                        onClick={() => {
+                          const root = document.documentElement;
+                          const isDark =
+                            root.getAttribute("data-theme") === "dark";
+                          const themeChangeEvent = new CustomEvent(
+                            "theme-change",
+                            {
+                              detail: { theme: isDark ? "light" : "dark" },
+                            },
+                          );
+                          document.dispatchEvent(themeChangeEvent);
+                        }}
+                      >
+                        {/* Sun (shown in light mode) */}
+                        <svg
+                          aria-hidden="true"
+                          className="absolute w-5 h-5 opacity-100 scale-100 transition-all dark:opacity-0 dark:scale-0"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="4"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          />
+                          <line
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="12"
+                            y1="19"
+                            x2="12"
+                            y2="22"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="2"
+                            y1="12"
+                            x2="5"
+                            y2="12"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="19"
+                            y1="12"
+                            x2="22"
+                            y2="12"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="4.22"
+                            y1="4.22"
+                            x2="6.34"
+                            y2="6.34"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="17.66"
+                            y1="17.66"
+                            x2="19.78"
+                            y2="19.78"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="17.66"
+                            y1="6.34"
+                            x2="19.78"
+                            y2="4.22"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <line
+                            x1="4.22"
+                            y1="19.78"
+                            x2="6.34"
+                            y2="17.66"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        {/* Moon (shown in dark mode) */}
+                        <svg
+                          aria-hidden="true"
+                          className="absolute w-5 h-5 opacity-0 scale-0 transition-all dark:opacity-100 dark:scale-100"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            fill="none"
+                          />
+                        </svg>
+                      </MobileNavButton>
+
+                      <Dialog.Close asChild>
+                        <MobileNavButton label="Close navigation">
+                          <CloseIcon />
+                        </MobileNavButton>
+                      </Dialog.Close>
+                    </div>
                   </motion.div>
 
                   {/* Navigation Items */}
