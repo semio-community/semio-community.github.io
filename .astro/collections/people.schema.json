@@ -197,6 +197,18 @@
           },
           "additionalProperties": false
         },
+        "boardMember": {
+          "type": "boolean",
+          "default": false
+        },
+        "isContributor": {
+          "type": "boolean",
+          "default": false
+        },
+        "isDonor": {
+          "type": "boolean",
+          "default": false
+        },
         "featured": {
           "type": "boolean",
           "default": false

@@ -19,9 +19,6 @@ export const PersonCard: React.FC<PersonCardProps> = ({
     data.affiliations?.find((aff) => aff.isPrimary) ??
     data.affiliations?.find((aff) => !aff.endDate);
 
-  const affiliationLabel = currentAffiliation?.role;
-  const organizationLabel = currentAffiliation?.organizationId;
-
   const description =
     data.bio ||
     (data.expertise && data.expertise.length > 0

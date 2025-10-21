@@ -74,6 +74,41 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   const softwareForDropdown = softwareItems.slice(0, maxItemsInDropdown);
   const researchForDropdown = researchItems.slice(0, 3);
 
+  // Robust path normalization and active detection
+  const normalize = (p: string | undefined) => {
+    if (!p) return "/";
+    const withoutQuery = p.split("?")[0]!.split("#")[0]!;
+    let s = withoutQuery;
+    if (!s.startsWith("/")) s = `/${s}`;
+    if (s !== "/" && s.endsWith("/")) s = s.slice(0, -1);
+    return s;
+  };
+
+  const isActive = (current: string, linkPath: string) => {
+    const cur = normalize(current);
+    const base = normalize(linkPath);
+    if (base === "/") return cur === "/";
+    return cur === base || cur.startsWith(`${base}/`);
+  };
+
+  // Determine a single active header link via longest prefix match
+  const activeHeaderPath = (() => {
+    const cur = normalize(currentPath);
+    let bestPath = "";
+    let bestLen = -1;
+    for (const link of menuLinks.filter((l) => l.inHeader)) {
+      const base = normalize(link.path);
+      const matches =
+        (base === "/" && cur === "/") ||
+        (base !== "/" && (cur === base || cur.startsWith(`${base}/`)));
+      if (matches && base.length > bestLen) {
+        bestPath = link.path;
+        bestLen = base.length;
+      }
+    }
+    return bestPath;
+  })();
+
   // Fallback if no menu links
   if (!menuLinks || menuLinks.length === 0) {
     return <div className="text-accent-two">Loading navigation...</div>;
@@ -111,7 +146,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                     className={clsx(
                       "block select-none rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm font-medium leading-none no-underline transition-all duration-200 whitespace-nowrap",
                       "text-accent-two hover:text-accent-base focus:text-accent-base",
-                      currentPath === link.path &&
+                      link.path === activeHeaderPath &&
                         "font-semibold text-foreground",
                     )}
                     href={url(link.path)}
@@ -128,7 +163,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                 <NavigationMenu.Trigger
                   className={clsx(
                     "group inline-flex select-none items-center gap-0.5 md:gap-1 rounded-lg px-2 md:px-3 py-1.5 md:py-2 text-xs sm:text-sm font-medium leading-none outline-none transition-colors whitespace-nowrap",
-                    currentPath === link.path
+                    link.path === activeHeaderPath
                       ? "font-semibold text-accent-two"
                       : "text-foreground hover:text-accent-base focus:text-accent-base data-[state=open]:text-accent-base",
                   )}

@@ -1,3 +1,26 @@
 [build]
   publish = "dist"
-  
+
+[[redirects]]
+  from = "/software"
+  to = "/projects"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hardware"
+  to = "/projects"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/organization"
+  to = "/contributors#partners"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/partners/*"
+  to = "/organization/:splat"
+  status = 301
+  force = true

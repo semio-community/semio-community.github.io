@@ -51,8 +51,8 @@ export const menuLinks: {
     inHeader: true,
   },
   {
-    path: "/partners/",
-    title: "Partners",
+    path: "/contributors/",
+    title: "Contributors",
     inHeader: true,
   },
   {

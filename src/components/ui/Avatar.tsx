@@ -131,7 +131,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
   const imageSrc = getImageSrc();
   const imageAlt = alt || name || "Avatar";
-  const baseClasses = `relative inline-flex ${sizeClasses[size]} ${roundedClasses[rounded]} overflow-hidden flex-shrink-0`;
+  const baseClasses = `relative inline-flex align-middle ${sizeClasses[size]} ${roundedClasses[rounded]} overflow-hidden flex-shrink-0`;
   const fallbackBaseClasses = `w-full h-full flex items-center justify-center ${typeGradients[type]} ${roundedClasses[rounded]}`;
 
   return (
@@ -139,7 +139,7 @@ export const Avatar: React.FC<AvatarProps> = ({
       <AvatarPrimitive.Image
         src={imageSrc}
         alt={imageAlt}
-        className={`absolute inset-0 w-full h-full object-cover`}
+        className={`absolute inset-0 w-full h-full object-cover block`}
       />
       <AvatarPrimitive.Fallback
         className={`${fallbackBaseClasses} ${fallbackClassName}`}

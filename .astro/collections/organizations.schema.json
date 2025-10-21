@@ -44,6 +44,14 @@
           "type": "boolean",
           "default": false
         },
+        "isGrantMaker": {
+          "type": "boolean",
+          "default": false
+        },
+        "isDonor": {
+          "type": "boolean",
+          "default": false
+        },
         "collaborationSummary": {
           "type": "string"
         },

@@ -193,13 +193,14 @@ async function loadPagefind(): Promise<PagefindClientApi> {
         excerpt: "Offerings and engagements for partners and contributors.",
       },
       {
-        url: "/partners/",
-        title: "Partners",
-        description: "Current partners and collaboration details.",
-        tags: ["partners", "collaboration"],
+        url: "/contributors/",
+        title: "Contributors",
+        description:
+          "People and organizations advancing human-centered robotics and AI together.",
+        tags: ["contributors", "people", "organizations"],
         type: "page",
         year: 2025,
-        excerpt: "Organizations that support and collaborate with Semio.",
+        excerpt: "People, partners, and sponsors supporting the community.",
       },
       {
         url: "/events/",

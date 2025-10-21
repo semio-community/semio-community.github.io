@@ -23,8 +23,8 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
     <ItemCard
       title={data.shortName || data.name || partnerId}
       description={data.description}
-      href={`/partners/${partnerId}`}
-      type="partners"
+      href={`/organizations/${partnerId}`}
+      type="organizations"
       image={data.images?.hero}
       imageAlt={data.name}
       logo={showLogo ? data.images?.logo : undefined}

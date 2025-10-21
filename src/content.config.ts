@@ -125,6 +125,9 @@ const people = defineCollection({
           hero: image().optional(),
         })
         .optional(),
+      boardMember: z.boolean().default(false),
+      isContributor: z.boolean().default(false),
+      isDonor: z.boolean().default(false),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
     }),
@@ -157,6 +160,8 @@ const organizations = defineCollection({
         "outreach",
       ]),
       isPartner: z.boolean().default(false),
+      isGrantMaker: z.boolean().default(false),
+      isDonor: z.boolean().default(false),
       collaborationSummary: z.string().optional(),
       images: z
         .object({
@@ -216,7 +221,7 @@ const hardware = defineCollection({
         .optional(),
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
-      draft: z.boolean().optional()
+      draft: z.boolean().optional(),
     }),
 });
 
@@ -303,12 +308,7 @@ const research = defineCollection({
           z
             .object({
               organizationId: organizationIdSchema,
-              role: z.enum([
-                "affiliated",
-                "funding",
-                "lead",
-                "collaborator",
-              ]),
+              role: z.enum(["affiliated", "funding", "lead", "collaborator"]),
               note: z.string().optional(),
             })
             .merge(temporalMetadataSchema),

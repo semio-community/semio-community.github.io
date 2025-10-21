@@ -32,7 +32,7 @@ export interface ItemCardProps {
     | "hardware"
     | "software"
     | "people"
-    | "partners"
+    | "organizations"
     | "research"
     | "events";
   listItems?: { icon?: ReactNode; text: string }[];
@@ -73,7 +73,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     hardware: "hardware",
     software: "software",
     people: "person",
-    partners: "organization",
+    organizations: "organization",
     research: "research",
     events: "event",
   };
