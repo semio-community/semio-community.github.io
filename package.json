@@ -15,10 +15,10 @@
     "verify:drafts": "node test/verify-drafts.mjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.1",
-    "@astrojs/react": "^4.4.0",
-    "@astrojs/rss": "^4.0.12",
-    "@astrojs/sitemap": "^3.4.1",
+    "@astrojs/mdx": "^4.3.10",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/rss": "^4.0.13",
+    "@astrojs/sitemap": "^3.6.0",
     "@hugeicons/react": "^1.1.1",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -29,7 +29,7 @@
     "@shikijs/transformers": "^1.25.1",
     "@solar-icons/react-perf": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",
-    "astro": "^5.12.0",
+    "astro": "^5.15.5",
     "astro-icon": "^1.1.5",
     "astro-robots-txt": "^1.0.0",
     "astro-webmanifest": "^1.0.0",
@@ -53,7 +53,7 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.5",
     "@biomejs/biome": "^1.9.4",
     "@iconify-json/hugeicons": "^1.2.3",
     "@iconify-json/mdi": "^1.2.2",

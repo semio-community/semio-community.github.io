@@ -136,7 +136,8 @@ const allPartnerTypesInOrder = [
           text="People"
           size="large"
           indicatorText={(
-            boardMembers.length + communityMembers.length || 0
+            (HIDE_BOARD_MEMBERS ? 0 : boardMembers.length) +
+              communityMembers.length || 0
           ).toString()}
         />
         <CallToActionButton

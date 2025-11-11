@@ -1,16 +1,11 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
-import EventCard from "@/components/cards/EventCard.astro";
+
 import CallToActionButton from "@/components/ui/CallToActionButton.astro";
-import { Icon } from "astro-icon/components";
-import {
-  getUpcomingEvents,
-  getPastEvents,
-  getCurrentEvents,
-  getFeaturedEvents,
-} from "@/data/events";
+import { getAllEvents } from "@/data/events";
 import Hero from "@/components/Hero.astro";
+import EventsSections from "@/components/events/EventsSections";
 
 const meta = {
   title: "Events",
@@ -18,32 +13,7 @@ const meta = {
     "Conferences, workshops, and training events for the human-robot interaction community",
 };
 
-const currentDate = new Date();
-
-// Fetch events from content collections
-const upcomingEvents = await getUpcomingEvents();
-const pastEvents = await getPastEvents();
-const currentEvents = await getCurrentEvents();
-const featuredOnlyEvents = await getFeaturedEvents();
-const featuredEvents = [
-  ...currentEvents.filter(
-    (currentEvent) =>
-      !featuredOnlyEvents.some((featured) => featured.id === currentEvent.id),
-  ),
-  ...featuredOnlyEvents.filter(
-    (featuredEvent) => featuredEvent.data.startDate > currentDate,
-  ),
-];
-
-// Group upcoming events by year
-const upcomingEventsByYear: Record<number, typeof upcomingEvents> = {};
-upcomingEvents.forEach((event) => {
-  const year = event.data.startDate.getFullYear();
-  if (!upcomingEventsByYear[year]) {
-    upcomingEventsByYear[year] = [];
-  }
-  upcomingEventsByYear[year].push(event);
-});
+const allEvents = await getAllEvents();
 ---
 
 <PageLayout meta={meta} noPaddingTop>
@@ -69,162 +39,37 @@ upcomingEvents.forEach((event) => {
 
       <!-- CTA Button -->
       <div class="flex flex-wrap justify-center gap-4 mb-8">
-        {
-          featuredEvents.length > 0 && (
-            <CallToActionButton
-              href="#featured"
-              text="Featured Events"
-              size="large"
-              indicatorText={featuredEvents.length?.toString()}
-            />
-          )
-        }
+        <CallToActionButton
+          href="#featured"
+          text="Featured Events"
+          size="large"
+        />
         <CallToActionButton
           href="#upcoming"
           text="Upcoming Events"
           size="large"
           variant="secondary"
-          indicatorText={upcomingEvents.length?.toString()}
         />
         <CallToActionButton
           href="#past"
           text="Past Events"
           size="large"
           variant="tertiary"
-          indicatorText={pastEvents.length?.toString()}
         />
       </div>
     </Hero>
   </div>
 
-  <!-- Featured Events -->
   {
-    featuredEvents.length > 0 && (
-      <Section
-        id="featured"
-        title="Featured Events"
-        subtitle="Highlighted events, including events happening right now"
-        variant="primary"
-      >
-        <div class="max-w-6xl mx-auto">
-          <div data-expandable-section data-initial-count="6">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              data-items-container
-            >
-              {featuredEvents.map((event, index) => (
-                <div
-                  data-expandable-item
-                  data-index={index}
-                  class={index >= 6 ? "hidden" : ""}
-                >
-                  <EventCard eventId={event.id} />
-                </div>
-              ))}
-            </div>
-            {featuredEvents.length > 6 && (
-              <div class="text-center mt-6">
-                <button
-                  data-expand-button
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
-                >
-                  <span data-expand-text>
-                    View All {featuredEvents.length} Featured & Current Events
-                  </span>
-                  <span data-collapse-text class="hidden">
-                    Show Less
-                  </span>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-4 h-4 transition-transform"
-                    data-expand-icon
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </Section>
-    )
-  }
-
-  <!-- Upcoming Events -->
-  {
-    upcomingEvents.length > 0 && (
-      <Section
-        id="upcoming"
-        title="Upcoming Events"
-        subtitle="Meet with the community at these future gatherings"
-        variant="secondary"
-      >
-        <div class="max-w-6xl mx-auto">
-          {Object.keys(upcomingEventsByYear)
-            .sort()
-            .map((year) => (
-              <div class="mb-8">
-                <h3 class="text-2xl font-semibold mb-4 gradient-brand-text">
-                  {year}
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {upcomingEventsByYear[Number(year)]?.map((event) => (
-                    <EventCard eventId={event.id} />
-                  ))}
-                </div>
-              </div>
-            ))}
-        </div>
-      </Section>
-    )
-  }
-
-  <!-- Past Events -->
-  {
-    pastEvents.length > 0 && (
-      <Section
-        id="past"
-        title="Past Events"
-        subtitle="Explore our full archive of previous community events"
-        variant="tertiary"
-      >
-        <div class="max-w-6xl mx-auto">
-          <div data-expandable-section data-initial-count="6">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              data-items-container
-            >
-              {pastEvents.map((event, index) => (
-                <div
-                  data-expandable-item
-                  data-index={index}
-                  class={index >= 6 ? "hidden" : ""}
-                >
-                  <EventCard eventId={event.id} />
-                </div>
-              ))}
-            </div>
-            {pastEvents.length > 6 && (
-              <div class="mt-6 text-center">
-                <button
-                  data-expand-button
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
-                >
-                  <span data-expand-text>
-                    View All {pastEvents.length} Past Events
-                  </span>
-                  <span data-collapse-text class="hidden">
-                    Show Less
-                  </span>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-4 h-4 transition-transform"
-                    data-expand-icon
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </Section>
+    allEvents.length > 0 && (
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0">
+        <EventsSections
+          client:load
+          events={allEvents.map((e) => ({ id: e.id, data: e.data }))}
+          initialFeaturedCount={6}
+          initialPastCount={6}
+        />
+      </div>
     )
   }
 
@@ -247,70 +92,3 @@ upcomingEvents.forEach((event) => {
     </div>
   </Section>
 </PageLayout>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const expandableSections = document.querySelectorAll(
-      "[data-expandable-section]",
-    );
-
-    expandableSections.forEach((section) => {
-      const button = section.querySelector("[data-expand-button]");
-      const items = section.querySelectorAll("[data-expandable-item]");
-      const expandText = section.querySelector("[data-expand-text]");
-      const collapseText = section.querySelector("[data-collapse-text]");
-      const icon = section.querySelector("[data-expand-icon]");
-      const initialCount = parseInt(
-        (section as HTMLElement).dataset.initialCount || "6",
-      );
-
-      if (!button || items.length <= initialCount) {
-        if (button) (button as HTMLElement).style.display = "none";
-        return;
-      }
-
-      let isExpanded = false;
-
-      button.addEventListener("click", () => {
-        isExpanded = !isExpanded;
-
-        items.forEach((item, index) => {
-          if (index >= initialCount) {
-            if (isExpanded) {
-              item.classList.remove("hidden");
-            } else {
-              item.classList.add("hidden");
-            }
-          }
-        });
-
-        if (expandText && collapseText) {
-          if (isExpanded) {
-            expandText.classList.add("hidden");
-            collapseText.classList.remove("hidden");
-          } else {
-            expandText.classList.remove("hidden");
-            collapseText.classList.add("hidden");
-          }
-        }
-
-        if (icon) {
-          if (isExpanded) {
-            (icon as HTMLElement).style.transform = "rotate(180deg)";
-          } else {
-            (icon as HTMLElement).style.transform = "rotate(0deg)";
-          }
-        }
-
-        if (!isExpanded) {
-          const sectionTop =
-            section.getBoundingClientRect().top + window.scrollY - 100;
-          window.scrollTo({
-            top: sectionTop,
-            behavior: "smooth",
-          });
-        }
-      });
-    });
-  });
-</script>
