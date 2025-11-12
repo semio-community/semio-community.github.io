@@ -13,6 +13,7 @@ export interface SectionReactProps {
   className?: string;
   id?: string;
   ariaLabel?: string;
+  html?: string;
   children?: React.ReactNode;
 }
 
@@ -27,6 +28,7 @@ export const SectionReact: React.FC<SectionReactProps> = ({
   className = "",
   id,
   ariaLabel,
+  html,
   children,
 }) => {
   const textClass =
@@ -125,7 +127,14 @@ export const SectionReact: React.FC<SectionReactProps> = ({
         </div>
       ) : null}
 
-      <div className={innerPadding}>{children}</div>
+      {html ? (
+        <div
+          className={innerPadding}
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      ) : (
+        <div className={innerPadding}>{children}</div>
+      )}
     </div>
   );
 };

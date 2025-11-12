@@ -1,0 +1,102 @@
+---
+import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
+
+export interface Props {
+  /**
+   * Apply top padding to account for the fixed header (false = keep padding).
+   * Mirrors SiteLayout's noPaddingTop prop.
+   */
+  noPaddingTop?: boolean;
+
+  /**
+   * Whether to render the hydrated parallax background.
+   * If true, the shell injects a client-hydrated background and disables
+   * SiteLayout's internal background to avoid double-rendering.
+   */
+  showBackground?: boolean;
+
+  /**
+   * Optional class names for SiteLayout's inner content container.
+   */
+  containerClassName?: string;
+
+  /**
+   * Background customization props, forwarded to ParallaxHexBackground.
+   */
+  backgroundCount?: number;
+  backgroundSeed?: string | number;
+  backgroundVerticalSpanVh?: number;
+  backgroundHorizontalRangeVw?: { min: number; max: number };
+  backgroundPalette?: string[];
+  backgroundOpacity?: { stroke: [number, number]; fill: [number, number] };
+  backgroundClassName?: string;
+}
+
+const {
+  noPaddingTop = false,
+  showBackground = true,
+  containerClassName,
+  backgroundCount,
+  backgroundSeed,
+  backgroundVerticalSpanVh,
+  backgroundHorizontalRangeVw,
+  backgroundPalette,
+  backgroundOpacity,
+  backgroundClassName,
+} = Astro.props;
+---
+
+<!--
+  SiteShell.astro
+
+  Purpose:
+  - Compose the React SiteLayout while allowing an Astro-controlled hydration boundary
+    for the parallax background (Framer Motion) via client:only="react".
+  - Avoid passing Astro components as React props (which can cause invalid element type errors).
+  - Keep header/theme/skip/footer as Astro-rendered elements via named slots.
+
+  Slots:
+  - name="theme"   → place ThemeProvider (Astro)
+  - name="skip"    → place SkipLink (Astro)
+  - name="header"  → place Header (Astro)
+  - (default)      → page content rendered inside React SiteLayout
+  - name="footer"  → place Footer (Astro)
+--><!-- Top-level Astro-rendered UI (no hydration needed here) -->
+<slot name="theme" />
+<slot name="skip" />
+<slot name="header" />
+
+<!-- Hydrated parallax background (client-only React) -->
+{
+  showBackground && (
+    <ParallaxHexBackground
+      client:only="react"
+      count={backgroundCount}
+      seed={backgroundSeed}
+      verticalSpanVh={backgroundVerticalSpanVh}
+      horizontalRangeVw={backgroundHorizontalRangeVw}
+      palette={backgroundPalette}
+      opacity={backgroundOpacity}
+      className={backgroundClassName}
+    />
+  )
+}
+
+<!-- Layout grid (matches Base.astro) so footer resides inside container -->
+<div class="relative flex min-h-screen w-full flex-col">
+  <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
+    <div
+      id="container"
+      class={`relative m-auto max-w-4xl grow ${containerClassName || ""}`}
+    >
+      <div
+        class={`m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 ${noPaddingTop ? "" : "pt-[72px] lg:pt-4"}`}
+      >
+        <main id="main" class="relative flex-grow" data-pagefind-body>
+          <slot />
+        </main>
+        <slot name="footer" />
+      </div>
+    </div>
+  </div>
+</div>

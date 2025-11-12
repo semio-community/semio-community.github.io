@@ -1,0 +1,353 @@
+---
+import BaseHead from "@/components/BaseHead.astro";
+import ThemeProvider from "@/components/theme/ThemeProvider.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import SkipLink from "@/components/SkipLink.astro";
+
+import SiteShell from "@/layouts/SiteShell.astro";
+import SectionReact from "@/components/SectionReact";
+import HeroReact from "@/components/HeroReact";
+import LinkCard from "@/components/cards/LinkCard.astro";
+import CallToActionButton from "@/components/ui/CallToActionButton.astro";
+import { url } from "@/utils/url";
+import { Icon } from "astro-icon/components";
+
+import "../styles/global.css";
+import "../assets/fonts/Gilroy.css";
+
+import { siteConfig } from "@/site.config";
+
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+import { getAllResearch } from "@/data/research";
+import {
+  getCurrentEvents,
+  getFeaturedEvents,
+  getUpcomingEvents,
+} from "@/data/events";
+
+// Load data on the server (Astro)
+const allHardware = await getAllHardware();
+const allSoftware = await getAllSoftware();
+const allResearch = await getAllResearch();
+
+const projectCount =
+  allHardware.length + allSoftware.length + allResearch.length;
+
+const now = new Date();
+const currentEvents = await getCurrentEvents();
+const upcomingEvents = await getUpcomingEvents();
+const featuredOnly = await getFeaturedEvents();
+const featuredEventCount = [
+  ...currentEvents.filter((c) => !featuredOnly.some((f) => f.id === c.id)),
+  ...upcomingEvents.filter((u) => !featuredOnly.some((f) => f.id === u.id)),
+  ...featuredOnly.filter((f) => f.data.startDate > now),
+].length;
+
+const pageTitle = "Home (React Experimental)";
+const description = siteConfig.description;
+---
+
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang={siteConfig.lang}
+>
+  <head>
+    <BaseHead title={pageTitle} description={description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground>
+      <Fragment slot="theme"><ThemeProvider /></Fragment>
+      <Fragment slot="skip"><SkipLink /></Fragment>
+      <Fragment slot="header"><Header /></Fragment>
+      <!-- Hero component full-width -->
+      <div
+        class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+        style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
+      >
+        <HeroReact>
+          <!-- Tagline -->
+          <h1
+            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-3 sm:mb-4 md:mb-6"
+          >
+            <span
+              class="text-accent-three font-semibold uppercase tracking-wide"
+              >Reproducible</span
+            >{" "}
+            <span class="text-accent-one font-semibold uppercase tracking-wide"
+              >Robot</span
+            >
+            <span class="text-accent-two font-semibold uppercase tracking-wide"
+              >Science</span
+            >
+            {" "}
+          </h1>
+
+          <!-- Subtitle -->
+          <p
+            class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-color-600 dark:text-color-400 mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+          >
+            A nonprofit supporting the{" "}<span
+              class="font-medium text-foreground">science and systems</span
+            > of<br class="hidden md:flex" />
+            <span class="font-medium text-foreground"
+              >human-centered robotics</span
+            >
+            and{" "}
+            <span class="font-medium text-foreground"
+              >artificial intelligence</span
+            >
+          </p>
+
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <CallToActionButton
+              href={url("projects")}
+              text="Active Projects"
+              size="large"
+              indicatorText={projectCount.toString()}
+            />
+            <CallToActionButton
+              href={url("services")}
+              text="Available Services"
+              size="large"
+              variant="secondary"
+              indicatorText="18"
+            />
+            <CallToActionButton
+              href={url("events")}
+              text="Upcoming Events"
+              size="large"
+              variant="tertiary"
+              indicatorText={featuredEventCount.toString()}
+            />
+          </div>
+        </HeroReact>
+      </div>
+
+      <!-- Mission Section -->
+      <SectionReact
+        id="mission"
+        title="Our Mission"
+        subtitle="Advancing human-centered robotics and AI through community collaboration"
+        variant="primary"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div
+            class="bg-special-lighter rounded-lg p-8 border border-special mb-8 backdrop-blur-lg"
+          >
+            <p class="text-lg leading-relaxed text-center mb-6">
+              Semio Community is a <span class="font-semibold"
+                >501(c)(3) nonprofit organization</span
+              > facilitating community-driven robotics hardware, software, and research
+              to foster reproducible, replicable, and generalizable science and reusable
+              systems within human-robot interaction (HRI).
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="text-center">
+                <Icon
+                  name="hugeicons:user-multiple"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-two"
+                />
+                <h3 class="font-semibold mb-2">Community-Driven</h3>
+                <p class="text-sm text-accent-base/50">
+                  Fostering collaboration and knowledge-sharing across
+                  disciplines
+                </p>
+              </div>
+              <div class="text-center">
+                <Icon
+                  name="solar:cpu-bolt-line-duotone"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-two"
+                />
+                <h3 class="font-semibold mb-2">Human-Centered</h3>
+                <p class="text-sm text-accent-base/50">
+                  Prioritizing ethical and accessible robotics and AI
+                  technologies
+                </p>
+              </div>
+              <div class="text-center">
+                <Icon
+                  name="hugeicons:book-open-01"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-two"
+                />
+                <h3 class="font-semibold mb-2">Replicable</h3>
+                <p class="text-sm text-accent-base/50">
+                  Promoting reproducible scientific research and reusable
+                  systems
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="prose prose-citrus max-w-none">
+            <p class="text-center text-color-600 dark:text-color-400">
+              Founded with the belief that the future of robotics lies in
+              collaborative innovation, we work to break down barriers between
+              research and application, making cutting-edge robotics technology
+              accessible to researchers, developers, and educators worldwide.
+            </p>
+          </div>
+        </div>
+      </SectionReact>
+
+      <!-- Quick Links Section -->
+      <SectionReact
+        id="programs"
+        title="Our Programs"
+        subtitle="Discover our projects and services for robotics hardware, software, and research"
+        ariaLabel="Explore"
+        variant="secondary"
+      >
+        <div
+          class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-0 overflow-x-hidden mb-8"
+        >
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+          >
+            <LinkCard
+              icon="solar:cpu-bolt-line-duotone"
+              title="Hardware"
+              description="Community-driven robotics hardware platforms"
+              variant="secondary"
+              extraLinks={[
+                { label: "Projects", href: url("projects#hardware") },
+                { label: "Services", href: url("services#hardware") },
+              ]}
+            />
+
+            <LinkCard
+              icon="solar:code-square-line-duotone"
+              title="Software"
+              description="Open-source AI software tools and frameworks"
+              variant="secondary"
+              extraLinks={[
+                { label: "Projects", href: url("projects#software") },
+                { label: "Services", href: url("services#software") },
+              ]}
+            />
+
+            <LinkCard
+              icon="solar:test-tube-line-duotone"
+              title="Research"
+              description="Reproducible scientific research and studies"
+              variant="secondary"
+              extraLinks={[
+                { label: "Projects", href: url("projects#research") },
+                { label: "Services", href: url("services#research") },
+              ]}
+            />
+          </div>
+        </div>
+
+        <div class="prose prose-citrus max-w-none text-center">
+          <p class="text-center text-color-600 dark:text-color-400 mb-4">
+            Gather with the community at our events, which explore on a broad
+            range of topics, including, but not limited to, human-centered robot
+            hardware, software, and research that, with reasonable effort, can
+            be incorporated into the design, development, or deployment of an
+            HRI system.
+          </p>
+          <CallToActionButton
+            href={url("events")}
+            text="Upcoming Events"
+            size="large"
+            variant="default"
+          />
+        </div>
+      </SectionReact>
+
+      <SectionReact
+        id="partners"
+        title="Our Partners"
+        subtitle="Building the future of human-centered robotics and AI together"
+        variant="tertiary"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div
+            class="bg-special-lighter rounded-lg p-8 border border-special backdrop-blur-lg"
+          >
+            <p class="text-lg leading-relaxed text-center mb-6">
+              Semio Community actively encourages multidisciplinary
+              collaboration among academia, industry, and the public sector to
+              drive innovation, ethical practices, and the widespread adoption
+              of human-centered robotics and AI technologies.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="text-center">
+                <Icon
+                  name="solar:square-academic-cap-line-duotone"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-three"
+                />
+                <h3 class="font-semibold mb-2">Academia</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Supporting research institutions with tools and infrastructure
+                </p>
+              </div>
+              <div class="text-center">
+                <Icon
+                  name="solar:buildings-2-line-duotone"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-three"
+                />
+                <h3 class="font-semibold mb-2">Industry</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Bridging the gap between research and commercial applications
+                </p>
+              </div>
+              <div class="text-center">
+                <Icon
+                  name="solar:flag-2-line-duotone"
+                  class="w-12 h-12 mx-auto mb-3 text-accent-three"
+                />
+                <h3 class="font-semibold mb-2">Public Sector</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Partnering with government to advance robotics policy and
+                  standards
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionReact>
+
+      <!-- Connect Section -->
+      <SectionReact
+        id="connect"
+        title="Connect With Us"
+        subtitle="Join our community and stay informed about our initiatives"
+        aria-label="Connect"
+      >
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 grid-rows-3 md:grid-rows-1 gap-10 bg-accent-base/10 p-10 rounded-lg backdrop-blur-lg"
+        >
+          <CallToActionButton
+            href="https://donate.stripe.com/cNiaEX4ZE07R8Wj8Yva7C00"
+            text="Make a Donation"
+            size="large"
+            variant="primary"
+            fullWidth
+          />
+
+          <CallToActionButton
+            href="https://forms.gle/5iiaThSsGUMzXWsu6"
+            text="Volunteer"
+            size="large"
+            variant="secondary"
+            fullWidth
+          />
+
+          <CallToActionButton
+            href="https://forms.gle/5iiaThSsGUMzXWsu6"
+            text="Join the Mailing List"
+            size="large"
+            variant="tertiary"
+            fullWidth
+          />
+        </div>
+      </SectionReact>
+      <Fragment slot="footer"><Footer /></Fragment>
+    </SiteShell>
+  </body>
+</html>

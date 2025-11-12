@@ -1,0 +1,60 @@
+---
+/**
+ * BackgroundParallaxHexIsland.astro
+ *
+ * Thin Astro island wrapper that hydrates the ParallaxHexBackground React component
+ * without hydrating the rest of the page. Use this when you want minimal hydration
+ * while keeping SiteLayout (or other page content) SSR-only.
+ *
+ * Typical usage in a route:
+ *   <BackgroundParallaxHexIsland client:only="react" />
+ *
+ * With options:
+ *   <BackgroundParallaxHexIsland
+ *     client:only="react"
+ *     count={64}
+ *     seed="2025-11-12"
+ *     verticalSpanVh={240}
+ *     horizontalRangeVw={{ min: -15, max: 115 }}
+ *     palette={["#50C4B6", "#FF9E00", "#EF6129"]}
+ *     opacity={{ stroke: [0.22, 0.6], fill: [0.06, 0.2] }}
+ *     className="opacity-90"
+ *   />
+ */
+
+// Suppress potential TS2306 false negative when importing a React component from an Astro file.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
+
+export interface Props {
+  count?: number;
+  seed?: string | number;
+  verticalSpanVh?: number;
+  horizontalRangeVw?: { min: number; max: number };
+  palette?: string[];
+  opacity?: { stroke: [number, number]; fill: [number, number] };
+  className?: string; // forwarded to React component
+}
+
+const {
+  count,
+  seed,
+  verticalSpanVh,
+  horizontalRangeVw,
+  palette,
+  opacity,
+  className,
+} = Astro.props;
+---
+
+<ParallaxHexBackground
+  client:only="react"
+  count={count}
+  seed={seed}
+  verticalSpanVh={verticalSpanVh}
+  horizontalRangeVw={horizontalRangeVw}
+  palette={palette}
+  opacity={opacity}
+  className={className}
+/>

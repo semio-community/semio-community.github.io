@@ -87,7 +87,7 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
   const baseClasses = clsx(
     // Layout & spacing
     "inline-flex items-center justify-center pointer-events-auto group/button",
-    "rounded-md font-semibold transition-all duration-200 -outline-offset-1",
+    "rounded-md font-semibold transition-all duration-200 -outline-offset-1 backdrop-blur-lg",
     // Variant-specific styles
     variantClasses[variant],
     // Width

@@ -1,0 +1,366 @@
+import React, { useMemo } from "react";
+import {
+  motion,
+  useMotionTemplate,
+  useScroll,
+  useTransform,
+} from "motion/react";
+
+/**
+ * ParallaxHexBackground
+ *
+ * Renders a fixed, full-viewport background of hexagons at varying "depths".
+ * As the page scrolls, each hexagon translates vertically at a fraction of the
+ * scroll distance to create a parallax effect:
+ *  - Near hexagons (larger) move more with the scroll (appear closer).
+ *  - Far hexagons (smaller) move less (appear farther).
+ *
+ * Positions and sizes are generated from a seeded PRNG so the layout is
+ * semi-stable across renders (e.g., seeded by day).
+ *
+ * Usage:
+ *   <ParallaxHexBackground />
+ *
+ * Notes:
+ * - The container is fixed and pointer-events are disabled so it sits behind content.
+ * - Colors are subtle by default; override via the `palette` prop if desired.
+ */
+
+export interface ParallaxHexBackgroundProps {
+  /**
+   * Total number of hexagons (distributed across depth layers).
+   * Default: 48
+   */
+  count?: number;
+  /**
+   * Seed for randomization; defaults to YYYY-MM-DD (current date).
+   * Provide a string or number for stable layout between reloads.
+   */
+  seed?: string | number;
+  /**
+   * How many viewport heights (vh) to cover vertically above/below the viewport.
+   * Example: with verticalSpanVh = 220, hexes may appear from -20vh to 200vh.
+   * Default: 220
+   */
+  verticalSpanVh?: number;
+  /**
+   * Expand horizontal range beyond the viewport in vw (e.g. -10..110) to avoid edges.
+   * Default: { min: -10, max: 110 }
+   */
+  horizontalRangeVw?: { min: number; max: number };
+  /**
+   * Colors for strokes/fills. You can pass hex strings or rgba strings.
+   * The renderer will apply strokeOpacity/fillOpacity per hex.
+   * Default: brand-inspired palette.
+   */
+  palette?: string[];
+  /**
+   * Opacity ranges applied per hex. Values are multiplied with depth-based factors.
+   * Default: { stroke: [0.25, 0.55], fill: [0.05, 0.18] }
+   */
+  opacity?: { stroke: [number, number]; fill: [number, number] };
+  /**
+   * Optional className for outer fixed container.
+   */
+  className?: string;
+}
+
+type GlyphSpec = {
+  id: string;
+  xVw: number; // 0..100 (or slightly outside per range)
+  yVh: number; // -buffer..100+buffer
+  size: number; // px (used to compute scale)
+  rotationDeg: number; // 0 | 120 | 240
+  variant: "primary" | "secondary" | "tertiary";
+  parallax: number; // 0..1 (1 moves with content, 0 is static)
+  zIndex: number; // 1..3
+  strokeOpacity: number;
+  fillOpacity: number;
+};
+
+/** PRNG (Mulberry32) with string/number seed support */
+function createRng(seed: string | number | undefined): () => number {
+  let h = 2166136261 >>> 0;
+  const s = String(seed ?? new Date().toISOString().slice(0, 10));
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  let a = (h ^ 0x85ebca6b) >>> 0;
+  return function mulberry32() {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Sample in [min, max) using rng() */
+function rndIn(rng: () => number, min: number, max: number) {
+  return min + rng() * (max - min);
+}
+
+/** Pick one from array using rng() */
+function pick<T>(rng: () => number, arr: T[]): T {
+  return arr[Math.floor(rng() * arr.length)]!;
+}
+
+function generateGlyphs({
+  count,
+  seed,
+  palette,
+  verticalSpanVh,
+  horizontalRangeVw,
+  opacity,
+}: Required<
+  Pick<
+    ParallaxHexBackgroundProps,
+    | "count"
+    | "seed"
+    | "palette"
+    | "verticalSpanVh"
+    | "horizontalRangeVw"
+    | "opacity"
+  >
+>): GlyphSpec[] {
+  const rng = createRng(seed);
+
+  // Depth bands: near/mid/far proportions
+  const nearCount = Math.round(count * 0.22);
+  const midCount = Math.round(count * 0.34);
+  const farCount = Math.max(0, count - nearCount - midCount);
+
+  const result: GlyphSpec[] = [];
+
+  const bands: Array<{
+    n: number;
+    sizePx: [number, number];
+    parallax: [number, number];
+    z: number;
+    strokeScale: number;
+    fillScale: number;
+  }> = [
+    // Near: larger, moves more, foreground
+    {
+      n: nearCount,
+      sizePx: [72, 144],
+      parallax: [0.65, 1.0],
+      z: 3,
+      strokeScale: 1.0,
+      fillScale: 1.0,
+    },
+    // Mid
+    {
+      n: midCount,
+      sizePx: [42, 92],
+      parallax: [0.35, 0.6],
+      z: 2,
+      strokeScale: 0.9,
+      fillScale: 0.9,
+    },
+    // Far: smaller, moves less, background
+    {
+      n: farCount,
+      sizePx: [18, 48],
+      parallax: [0.08, 0.3],
+      z: 1,
+      strokeScale: 0.8,
+      fillScale: 0.8,
+    },
+  ];
+
+  const variants: Array<"primary" | "secondary" | "tertiary"> = [
+    "primary",
+    "secondary",
+    "tertiary",
+  ];
+
+  for (const band of bands) {
+    for (let i = 0; i < band.n; i++) {
+      const size = rndIn(rng, band.sizePx[0], band.sizePx[1]);
+      const parallax = rndIn(rng, band.parallax[0], band.parallax[1]);
+      const xVw = rndIn(rng, horizontalRangeVw.min, horizontalRangeVw.max);
+      const yVh = rndIn(rng, -verticalSpanVh * 0.1, 100 + verticalSpanVh * 0.8); // spread above/below
+      const variant = variants[Math.floor(rng() * variants.length)]!;
+      const rotationDeg =
+        variant === "primary" ? 0 : variant === "secondary" ? 120 : 240;
+
+      const strokeOpacity =
+        rndIn(rng, opacity.stroke[0], opacity.stroke[1]) * band.strokeScale;
+      const fillOpacity =
+        rndIn(rng, opacity.fill[0], opacity.fill[1]) * band.fillScale;
+
+      result.push({
+        id: `${band.z}-${i}-${Math.floor(rng() * 1e9)}`,
+        xVw,
+        yVh,
+        size,
+        rotationDeg,
+        variant,
+        parallax,
+        zIndex: band.z,
+        strokeOpacity,
+        fillOpacity,
+      });
+    }
+  }
+
+  return result;
+}
+
+/** Brand glyph path and dimensions (matches GlyphField.astro) */
+const GLYPH_PATH_D =
+  "M0.55,10.626L18.002,0.55L35.456,10.627L35.472,30.771L24.893,36.879L29.541,39.562C29.543,39.564 29.546,39.565 29.548,39.567L30.716,40.241L23.83,44.202L14.575,38.873L0.55,30.778L0.55,10.626Z";
+const GLYPH_W = 37;
+const GLYPH_H = 45;
+
+/** Color helpers (align with GlyphField variant colors) */
+function getStrokeColor(
+  variant: "primary" | "secondary" | "tertiary",
+  grayscale = false,
+): string {
+  if (grayscale) {
+    switch (variant) {
+      case "primary":
+        return "#d4d4d4";
+      case "secondary":
+        return "#bdbdbd";
+      case "tertiary":
+        return "#a3a3a3";
+    }
+  }
+  switch (variant) {
+    case "primary":
+      return "#EF6129"; // red-orange
+    case "secondary":
+      return "#FF9E00"; // yellow-orange
+    case "tertiary":
+      return "#50C4B6"; // teal
+  }
+}
+
+function getFillColor(
+  variant: "primary" | "secondary" | "tertiary",
+  grayscale = false,
+): string {
+  if (grayscale) {
+    switch (variant) {
+      case "primary":
+        return "#d4d4d4";
+      case "secondary":
+        return "#bdbdbd";
+      case "tertiary":
+        return "#a3a3a3";
+    }
+  }
+  switch (variant) {
+    case "primary":
+      return "#EF6129";
+    case "secondary":
+      return "#FF9E00";
+    case "tertiary":
+      return "#50C4B6";
+  }
+}
+
+function Glyph({
+  spec,
+  scrollY,
+}: {
+  spec: GlyphSpec;
+  scrollY: ReturnType<typeof useScroll>["scrollY"];
+}) {
+  // Foreground factor: 1 means move fully with content; 0 means static
+  const y = useTransform(scrollY, (v) => -v * spec.parallax);
+  const translate = useMotionTemplate`translateY(${y}px)`;
+
+  // Near (parallax ~1) should be sharp; far (parallax small) slightly blurred.
+  const blurPx = useTransform(scrollY, () => {
+    const p = Math.max(0, Math.min(1, spec.parallax));
+    const far = 6; // px blur for far layer
+    const near = 0.5; // px blur for near layer
+    return far - p * (far - near);
+  });
+  const blurFilter = useMotionTemplate`blur(${blurPx}px)`;
+
+  const stroke = getStrokeColor(spec.variant);
+  const fill = getFillColor(spec.variant);
+
+  // Scale based on desired pixel size vs intrinsic glyph height
+  const s = spec.size / GLYPH_H;
+  const MAX_BLUR = 10;
+  const margin = MAX_BLUR;
+  const paddedSize = spec.size + margin * 2;
+
+  return (
+    <motion.svg
+      width={paddedSize}
+      height={paddedSize}
+      viewBox={`${-GLYPH_W / 2} ${-GLYPH_H / 2} ${GLYPH_W} ${GLYPH_H}`}
+      style={{
+        position: "absolute",
+        left: `calc(${spec.xVw}vw - ${margin}px)`,
+        top: `calc(${spec.yVh}vh - ${margin}px)`,
+        transform: translate as unknown as string, // motion template -> style transform
+        zIndex: spec.zIndex,
+        opacity: 1,
+        pointerEvents: "none",
+        overflow: "visible",
+        willChange: "transform, filter",
+      }}
+      aria-hidden="true"
+    >
+      <g transform={`rotate(${spec.rotationDeg})`}>
+        <motion.path
+          d={GLYPH_PATH_D}
+          fill={fill}
+          fillOpacity={spec.fillOpacity}
+          stroke={stroke}
+          strokeOpacity={spec.strokeOpacity}
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+          transform={`translate(${(-GLYPH_W / 2) * s}, ${(-GLYPH_H / 2) * s}) scale(${s})`}
+          style={{ filter: blurFilter as unknown as string }}
+        />
+      </g>
+    </motion.svg>
+  );
+}
+
+export default function ParallaxHexBackground({
+  count = 48,
+  seed,
+  verticalSpanVh = 220,
+  horizontalRangeVw = { min: -10, max: 110 },
+  palette = ["#50C4B6", "#FF9E00", "#EF6129"], // teal, yellow-orange, red-orange
+  opacity = { stroke: [0.22, 0.55], fill: [0.05, 0.18] },
+  className = "",
+}: ParallaxHexBackgroundProps) {
+  const glyphs = useMemo(
+    () =>
+      generateGlyphs({
+        count,
+        seed: seed ?? new Date().toISOString().slice(0, 10),
+        palette,
+        verticalSpanVh,
+        horizontalRangeVw,
+        opacity,
+      }).sort((a, b) => a.zIndex - b.zIndex), // ensure back-to-front rendering
+    [count, seed, palette, verticalSpanVh, horizontalRangeVw, opacity],
+  );
+
+  // Subscribe to page scroll once and pass motion value to children
+  const { scrollY } = useScroll();
+
+  return (
+    <div
+      className={`pointer-events-none fixed inset-0 ${className}`}
+      aria-hidden="true"
+    >
+      {glyphs.map((g) => (
+        <Glyph key={g.id} spec={g} scrollY={scrollY} />
+      ))}
+    </div>
+  );
+}
