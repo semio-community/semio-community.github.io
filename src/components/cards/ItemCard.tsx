@@ -95,7 +95,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   return (
     <a
       href={href}
-      className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden"
+      className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden backdrop-blur-lg"
     >
       {/* Image section */}
       {imageSrc ? (

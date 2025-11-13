@@ -1,10 +1,32 @@
 ---
-import PageLayout from "@/layouts/Base.astro";
-import Section from "@/components/Section.astro";
-import FeatureCard from "@/components/cards/FeatureCard.astro";
-import CallToActionButton from "@/components/ui/CallToActionButton.astro";
-import { Icon } from "astro-icon/components";
-import Hero from "@/components/Hero.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import ThemeProvider from "@/components/theme/ThemeProvider.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import SkipLink from "@/components/SkipLink.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
+import SectionReact from "@/components/SectionReact";
+import FeatureCardReact from "@/components/cards/FeatureCardReact";
+import { CallToActionButton } from "@/components/ui/CallToActionButton";
+import HeroReact from "@/components/HeroReact";
+import {
+  SettingsMinimalistic,
+  BoxMinimalistic,
+  Database,
+  CartLarge2,
+  Delivery,
+  HeadphonesRound,
+  Code2,
+  UsersGroupTwoRounded,
+  ShieldCheck,
+  Document,
+  SquareAcademicCap,
+  TestTube,
+  Chart2,
+  VerifiedCheck,
+  Rocket,
+} from "@solar-icons/react-perf/LineDuotone";
+import HugeUserGroup from "@/components/icons/HugeUserGroup";
 
 const meta = {
   title: "Services",
@@ -138,306 +160,343 @@ const researchServices = [
 ];
 ---
 
-<PageLayout meta={meta} noPaddingTop>
-  <!-- Hero Section -->
-  <div
-    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
-    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
-  >
-    <Hero>
-      <!-- Title -->
-      <h1
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title={meta.title} description={meta.description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground>
+      <Fragment slot="theme"><ThemeProvider /></Fragment>
+      <Fragment slot="skip"><SkipLink /></Fragment>
+      <Fragment slot="header"><Header /></Fragment>
+      <!-- Hero Section -->
+      <div
+        class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+        style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
       >
-        Services
-      </h1>
+        <HeroReact>
+          <!-- Title -->
+          <h1
+            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+          >
+            Services
+          </h1>
 
-      <!-- Subtitle -->
-      <p
-        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
-      >
-        Comprehensive support services to accelerate your robotics development,
-        from hardware manufacturing to software deployment and research
-        facilitation.
-      </p>
+          <!-- Subtitle -->
+          <p
+            class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+          >
+            Comprehensive support services to accelerate your robotics
+            development, from hardware manufacturing to software deployment and
+            research facilitation.
+          </p>
 
-      <!-- CTA Button -->
-      <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <CallToActionButton
-          href="#hardware"
-          text="Hardware Services"
-          size="large"
-          indicatorText="6"
-        />
-        <CallToActionButton
-          href="#software"
-          text="Software Services"
-          size="large"
-          variant="secondary"
-          indicatorText="6"
-        />
-        <CallToActionButton
-          href="#research"
-          text="Research Services"
-          size="large"
-          variant="tertiary"
-          indicatorText="6"
-        />
-      </div>
-    </Hero>
-  </div>
-
-  <!-- Hardware Services Section -->
-  <Section
-    id="hardware"
-    title="Hardware Services"
-    subtitle="Comprehensive support for scaling robotics hardware development and deployment"
-    variant="primary"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          hardwareServices.map((service) => (
-            <FeatureCard
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
-            />
-          ))
-        }
-      </div>
-      <div class="text-center mt-12">
-        <p class="text-color-600 dark:text-color-400 mb-6">
-          From initial design to global distribution, we provide end-to-end
-          support for your robotics hardware projects.
-        </p>
-        <CallToActionButton
-          href="https://forms.gle/5iiaThSsGUMzXWsu6"
-          text="Request Hardware Services"
-          size="large"
-        />
-      </div>
-    </div>
-  </Section>
-
-  <!-- Software Services Section -->
-  <Section
-    id="software"
-    title="Software Services"
-    subtitle="Supporting the transition from research code to production-ready systems"
-    variant="secondary"
-  >
-    <div class="max-w-6xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {
-          softwareServices.map((service) => (
-            <FeatureCard
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
+          <!-- CTA Button -->
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <CallToActionButton href="#hardware" size="large" indicatorText="6">
+              Hardware Services
+            </CallToActionButton>
+            <CallToActionButton
+              href="#software"
+              size="large"
               variant="secondary"
-            />
-          ))
-        }
-      </div>
-      <div class="text-center mt-12">
-        <p class="text-color-600 dark:text-color-400 mb-6">
-          Transform your research code into robust, production-ready systems
-          with our comprehensive software services.
-        </p>
-        <CallToActionButton
-          href="https://forms.gle/5iiaThSsGUMzXWsu6"
-          text="Request Software Services"
-          size="large"
-          variant="secondary"
-        />
-      </div>
-    </div>
-  </Section>
-
-  <!-- Research Services Section -->
-  <Section
-    id="research"
-    title="Research Services"
-    subtitle="Comprehensive support for conducting replicable HRI research and studies"
-    variant="tertiary"
-  >
-    <div class="max-w-5xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {
-          researchServices.map((service) => (
-            <FeatureCard
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
+              indicatorText="6"
+            >
+              Software Services
+            </CallToActionButton>
+            <CallToActionButton
+              href="#research"
+              size="large"
               variant="tertiary"
-            />
-          ))
-        }
+              indicatorText="6"
+            >
+              Research Services
+            </CallToActionButton>
+          </div>
+        </HeroReact>
       </div>
-      <div class="text-center mt-12">
-        <p class="text-color-600 dark:text-color-400 mb-6">
-          Enable reproducible, scalable research with our comprehensive study
-          support services.
-        </p>
-        <CallToActionButton
-          href="https://forms.gle/5iiaThSsGUMzXWsu6"
-          text="Request Research Services"
-          size="large"
-          variant="tertiary"
-        />
-      </div>
-    </div>
-  </Section>
 
-  <!-- Benefits Section -->
-  <Section
-    id="benefits"
-    title="Why Choose Our Services?"
-    subtitle="Benefits of working with the Semio Community"
-  >
-    <div class="max-w-5xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="flex items-start gap-4">
-          <Icon
-            name="solar:verified-check-line-duotone"
-            class="w-10 h-10 text-accent-one flex-shrink-0"
-          />
-          <div>
-            <h3 class="font-semibold mb-2">Community-Driven</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Benefit from collective expertise and shared resources across the
-              entire HRI community.
+      <!-- Hardware Services Section -->
+      <SectionReact
+        id="hardware"
+        title="Hardware Services"
+        subtitle="Comprehensive support for scaling robotics hardware development and deployment"
+        variant="primary"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {
+              hardwareServices.map((service, index) => (
+                <FeatureCardReact
+                  title={service.title}
+                  description={service.description}
+                  variant="primary"
+                  iconComponent={
+                    [
+                      SettingsMinimalistic,
+                      BoxMinimalistic,
+                      Database,
+                      CartLarge2,
+                      Delivery,
+                      HeadphonesRound,
+                    ][index] || SettingsMinimalistic
+                  }
+                />
+              ))
+            }
+          </div>
+          <div class="text-center mt-12">
+            <p class="text-color-600 dark:text-color-400 mb-6">
+              From initial design to global distribution, we provide end-to-end
+              support for your robotics hardware projects.
             </p>
+            <CallToActionButton
+              href="https://forms.gle/5iiaThSsGUMzXWsu6"
+              size="large"
+            >
+              Request Hardware Services
+            </CallToActionButton>
           </div>
         </div>
-        <div class="flex items-start gap-4">
-          <Icon
-            name="solar:rocket-line-duotone"
-            class="w-10 h-10 text-accent-two flex-shrink-0"
-          />
-          <div>
-            <h3 class="font-semibold mb-2">Accelerate Development</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Speed up your time to market with proven solutions and expert
-              guidance.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <Icon
-            name="solar:shield-check-line-duotone"
-            class="w-10 h-10 text-special flex-shrink-0"
-          />
-          <div>
-            <h3 class="font-semibold mb-2">Quality Assurance</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Ensure reliability and robustness with industry-standard testing
-              and validation.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <Icon
-            name="solar:users-group-two-rounded-line-duotone"
-            class="w-10 h-10 text-green-500 flex-shrink-0"
-          />
-          <div>
-            <h3 class="font-semibold mb-2">Global Network</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Connect with researchers, developers, and industry partners
-              worldwide.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Section>
+      </SectionReact>
 
-  <!-- Process Section -->
-  <Section
-    id="process"
-    title="How It Works"
-    subtitle="Simple steps to access our services"
-  >
-    <div class="max-w-4xl mx-auto">
-      <div class="space-y-8">
-        <div class="flex items-start gap-4">
-          <div
-            class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
-          >
-            <span class="text-lg font-bold text-accent-base">1</span>
+      <!-- Software Services Section -->
+      <SectionReact
+        id="software"
+        title="Software Services"
+        subtitle="Supporting the transition from research code to production-ready systems"
+        variant="secondary"
+      >
+        <div class="max-w-6xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {
+              softwareServices.map((service, index) => (
+                <FeatureCardReact
+                  title={service.title}
+                  description={service.description}
+                  variant="secondary"
+                  iconComponent={
+                    [
+                      Code2,
+                      UsersGroupTwoRounded,
+                      ShieldCheck,
+                      Document,
+                      SquareAcademicCap,
+                      HeadphonesRound,
+                    ][index] || Code2
+                  }
+                />
+              ))
+            }
           </div>
-          <div>
-            <h3 class="font-semibold mb-1">Contact Us</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Reach out through our Get Involved page to discuss your project
-              needs and requirements.
+          <div class="text-center mt-12">
+            <p class="text-color-600 dark:text-color-400 mb-6">
+              Transform your research code into robust, production-ready systems
+              with our comprehensive software services.
             </p>
+            <CallToActionButton
+              href="https://forms.gle/5iiaThSsGUMzXWsu6"
+              size="large"
+              variant="secondary"
+            >
+              Request Software Services
+            </CallToActionButton>
           </div>
         </div>
-        <div class="flex items-start gap-4">
-          <div
-            class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
-          >
-            <span class="text-lg font-bold text-accent-base">2</span>
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1">Consultation</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              We'll work with you to understand your goals and recommend the
-              best services for your needs.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <div
-            class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
-          >
-            <span class="text-lg font-bold text-accent-base">3</span>
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1">Implementation</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Our expert team will deliver the services, keeping you informed
-              throughout the process.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-start gap-4">
-          <div
-            class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
-          >
-            <span class="text-lg font-bold text-accent-base">4</span>
-          </div>
-          <div>
-            <h3 class="font-semibold mb-1">Ongoing Support</h3>
-            <p class="text-sm text-color-600 dark:text-color-400">
-              Continue to benefit from community support and updates as your
-              project evolves.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </Section>
+      </SectionReact>
 
-  <!-- Call to Action -->
-  <Section id="get-started">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-      <p class="text-lg mb-8 text-color-600 dark:text-color-400">
-        Whether you're developing hardware, software, or conducting research,
-        our services can help you achieve your goals faster and more
-        effectively.
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <CallToActionButton
-          href="https://forms.gle/5iiaThSsGUMzXWsu6"
-          text="Request Services"
-          size="large"
-        />
-      </div>
-    </div>
-  </Section>
-</PageLayout>
+      <!-- Research Services Section -->
+      <SectionReact
+        id="research"
+        title="Research Services"
+        subtitle="Comprehensive support for conducting replicable HRI research and studies"
+        variant="tertiary"
+      >
+        <div class="max-w-5xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {
+              researchServices.map((service, index) => (
+                <FeatureCardReact
+                  title={service.title}
+                  description={service.description}
+                  variant="tertiary"
+                  iconComponent={
+                    [
+                      TestTube,
+                      Document,
+                      UsersGroupTwoRounded,
+                      SquareAcademicCap,
+                      HugeUserGroup,
+                      Chart2,
+                    ][index] || TestTube
+                  }
+                />
+              ))
+            }
+          </div>
+          <div class="text-center mt-12">
+            <p class="text-color-600 dark:text-color-400 mb-6">
+              Enable reproducible, scalable research with our comprehensive
+              study support services.
+            </p>
+            <CallToActionButton
+              href="https://forms.gle/5iiaThSsGUMzXWsu6"
+              size="large"
+              variant="tertiary"
+            >
+              Request Research Services
+            </CallToActionButton>
+          </div>
+        </div>
+      </SectionReact>
+
+      <!-- Benefits Section -->
+      <SectionReact
+        id="benefits"
+        title="Why Choose Our Services?"
+        subtitle="Benefits of working with the Semio Community"
+      >
+        <div class="max-w-5xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="flex items-start gap-4">
+              <VerifiedCheck
+                className="w-10 h-10 text-accent-one flex-shrink-0"
+              />
+              <div>
+                <h3 class="font-semibold mb-2">Community-Driven</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Benefit from collective expertise and shared resources across
+                  the entire HRI community.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <Rocket className="w-10 h-10 text-accent-two flex-shrink-0" />
+              <div>
+                <h3 class="font-semibold mb-2">Accelerate Development</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Speed up your time to market with proven solutions and expert
+                  guidance.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <ShieldCheck className="w-10 h-10 text-special flex-shrink-0" />
+              <div>
+                <h3 class="font-semibold mb-2">Quality Assurance</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Ensure reliability and robustness with industry-standard
+                  testing and validation.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <UsersGroupTwoRounded
+                className="w-10 h-10 text-green-500 flex-shrink-0"
+              />
+              <div>
+                <h3 class="font-semibold mb-2">Global Network</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Connect with researchers, developers, and industry partners
+                  worldwide.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionReact>
+
+      <!-- Process Section -->
+      <SectionReact
+        id="process"
+        title="How It Works"
+        subtitle="Simple steps to access our services"
+      >
+        <div class="max-w-4xl mx-auto">
+          <div class="space-y-8">
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-lg font-bold text-accent-base">1</span>
+              </div>
+              <div>
+                <h3 class="font-semibold mb-1">Contact Us</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Reach out through our Get Involved page to discuss your
+                  project needs and requirements.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-lg font-bold text-accent-base">2</span>
+              </div>
+              <div>
+                <h3 class="font-semibold mb-1">Consultation</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  We'll work with you to understand your goals and recommend the
+                  best services for your needs.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-lg font-bold text-accent-base">3</span>
+              </div>
+              <div>
+                <h3 class="font-semibold mb-1">Implementation</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Our expert team will deliver the services, keeping you
+                  informed throughout the process.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4">
+              <div
+                class="w-10 h-10 rounded-full bg-accent-base/20 flex items-center justify-center flex-shrink-0"
+              >
+                <span class="text-lg font-bold text-accent-base">4</span>
+              </div>
+              <div>
+                <h3 class="font-semibold mb-1">Ongoing Support</h3>
+                <p class="text-sm text-color-600 dark:text-color-400">
+                  Continue to benefit from community support and updates as your
+                  project evolves.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionReact>
+
+      <!-- Call to Action -->
+      <SectionReact id="get-started">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+          <p class="text-lg mb-8 text-color-600 dark:text-color-400">
+            Whether you're developing hardware, software, or conducting
+            research, our services can help you achieve your goals faster and
+            more effectively.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <CallToActionButton
+              href="https://forms.gle/5iiaThSsGUMzXWsu6"
+              size="large"
+            >
+              Request Services
+            </CallToActionButton>
+          </div>
+        </div>
+      </SectionReact>
+      <Fragment slot="footer"><Footer /></Fragment>
+    </SiteShell>
+  </body>
+</html>

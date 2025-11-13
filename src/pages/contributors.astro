@@ -1,12 +1,17 @@
 ---
-import PageLayout from "@/layouts/Base.astro";
-import Section from "@/components/Section.astro";
-import Hero from "@/components/Hero.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import ThemeProvider from "@/components/theme/ThemeProvider.astro";
+import Header from "@/components/layout/Header.astro";
+import Footer from "@/components/layout/Footer.astro";
+import SkipLink from "@/components/SkipLink.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
+import SectionReact from "@/components/SectionReact";
+import HeroReact from "@/components/HeroReact";
+import SubsectionGrid from "@/components/sections/SubsectionGrid.astro";
 import PersonListElement from "@/components/cards/PersonListElement.astro";
 import PersonCard from "@/components/cards/PersonCard.astro";
 import PartnerCard from "@/components/cards/PartnerCard.astro";
-import SubsectionGrid from "@/components/sections/SubsectionGrid.astro";
-import CallToActionButton from "@/components/ui/CallToActionButton.astro";
+import { CallToActionButton } from "@/components/ui/CallToActionButton";
 import { getAllPartners } from "@/data/partners";
 import { getAllPeople } from "@/data/people";
 import { getCollection } from "astro:content";
@@ -52,9 +57,6 @@ for (const partner of allPartners) {
 }
 
 // People groups (contributors only)
-// Temporary flag to hide board members and include them in community list
-// To restore: set HIDE_BOARD_MEMBERS to false (or remove this flag entirely)
-// and revert the communityMembers filter to exclude board members.
 const HIDE_BOARD_MEMBERS = true;
 
 const boardMembers = allPeople.filter(
@@ -108,170 +110,198 @@ const allPartnerTypesInOrder = [
     (t) => !orderedPartnerTypes.includes(t),
   ),
 ];
+
+const pageTitle = meta.title;
+const description = meta.description;
 ---
 
-<PageLayout meta={meta} noPaddingTop>
-  <!-- Hero Section -->
-  <div
-    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
-    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
-  >
-    <Hero>
-      <h1
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title={pageTitle} description={description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground>
+      <Fragment slot="theme"><ThemeProvider /></Fragment>
+      <Fragment slot="skip"><SkipLink /></Fragment>
+      <Fragment slot="header"><Header /></Fragment>
+
+      <!-- Hero Section -->
+      <div
+        class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
+        style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
       >
-        Contributors
-      </h1>
-
-      <p
-        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
-      >
-        Meet the people and organizations collaborating to advance
-        human-centered robotics and AI.
-      </p>
-
-      <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <CallToActionButton
-          href="#people"
-          text="People"
-          size="large"
-          indicatorText={(
-            (HIDE_BOARD_MEMBERS ? 0 : boardMembers.length) +
-              communityMembers.length || 0
-          ).toString()}
-        />
-        <CallToActionButton
-          href="#partners"
-          text="Partners"
-          size="large"
-          variant="secondary"
-          indicatorText={(allPartners.length || 0).toString()}
-        />
-        <CallToActionButton
-          href="#sponsors"
-          text="Sponsors"
-          size="large"
-          variant="tertiary"
-          indicatorText={(sponsorsUniqueCount || 0).toString()}
-        />
-      </div>
-    </Hero>
-  </div>
-
-  <!-- People -->
-  <Section
-    id="people"
-    title="People"
-    subtitle="The individuals who lead and support our community"
-  >
-    <div class="max-w-6xl mx-auto">
-      {
-        !HIDE_BOARD_MEMBERS && (
-          <SubsectionGrid
-            id="board-members"
-            title="Board Members"
-            icon="solar:crown-line-duotone"
-            count={boardMembers.length}
-            gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
-            empty={boardMembers.length === 0}
-            emptyIcon="solar:users-group-rounded-line-duotone"
-            emptyMessage="Board members will be announced soon."
+        <HeroReact>
+          <h1
+            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
           >
-            {boardMembers.map((person) => (
-              <PersonListElement
-                personId={person.id}
-                affiliationLabel={affiliationLabelFor(person)}
-              />
-            ))}
-          </SubsectionGrid>
-        )
-      }
+            Contributors
+          </h1>
 
-      <SubsectionGrid
-        id="community-members"
-        title="Community Members"
-        icon="solar:users-group-rounded-line-duotone"
-        count={communityMembers.length}
-        gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
-        empty={communityMembers.length === 0}
-        emptyIcon="solar:users-group-rounded-line-duotone"
-        emptyMessage="Community contributors coming soon."
-      >
-        {
-          communityMembers.map((person) => (
-            <PersonListElement
-              personId={person.id}
-              affiliationLabel={affiliationLabelFor(person)}
-            />
-          ))
-        }
-      </SubsectionGrid>
-    </div>
-  </Section>
+          <p
+            class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
+          >
+            Meet the people and organizations collaborating to advance
+            human-centered robotics and AI.
+          </p>
 
-  <!-- Partners -->
-  <Section
-    id="partners"
-    title="Partners"
-    subtitle="Organizations committed to advancing HRI together"
-  >
-    <div class="max-w-6xl mx-auto">
-      {
-        allPartnerTypesInOrder.map((type) => {
-          const partners = partnersByType[type] || [];
-          const info = partnerTypeInfo[type];
-          return (
-            <SubsectionGrid
-              id={`partners-${type}`}
-              title={info?.title || type}
-              subtitle={info?.description}
-              icon={info?.icon || "solar:folder-line-duotone"}
-              count={partners.length}
-              empty={partners.length === 0}
-              emptyIcon="solar:buildings-2-line-duotone"
-              emptyMessage="Partner information coming soon."
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <CallToActionButton
+              href="#people"
+              size="large"
+              indicatorText={(
+                (HIDE_BOARD_MEMBERS ? 0 : boardMembers.length) +
+                  communityMembers.length || 0
+              ).toString()}
             >
-              {partners.map((partner) => (
-                <PartnerCard partnerId={partner.id} />
-              ))}
-            </SubsectionGrid>
-          );
-        })
-      }
-    </div>
-  </Section>
+              People
+            </CallToActionButton>
 
-  <!-- Sponsors -->
-  <Section
-    id="sponsors"
-    title="Sponsors"
-    subtitle="Financial supporters that power our mission"
-  >
-    <div class="max-w-6xl mx-auto">
-      <SubsectionGrid
-        id="sponsors-donors"
-        title="Donors"
-        icon="solar:wallet-money-line-duotone"
-        count={donorsCount}
-        empty={donorsCount === 0}
-        emptyIcon="solar:wallet-money-line-duotone"
-        emptyMessage="Donor acknowledgments coming soon."
-      >
-        {donorPeople.map((person) => <PersonCard personId={person.id} />)}
-        {donorOrganizations.map((org) => <PartnerCard partnerId={org.id} />)}
-      </SubsectionGrid>
+            <CallToActionButton
+              href="#partners"
+              size="large"
+              variant="secondary"
+              indicatorText={(allPartners.length || 0).toString()}
+            >
+              Partners
+            </CallToActionButton>
 
-      <SubsectionGrid
-        id="sponsors-grants"
-        title="Grant-making Agencies"
-        icon="solar:hand-money-line-duotone"
-        count={grantMakers.length}
-        empty={grantMakers.length === 0}
-        emptyIcon="solar:hand-money-line-duotone"
-        emptyMessage="Grant-making agencies coming soon."
+            <CallToActionButton
+              href="#sponsors"
+              size="large"
+              variant="tertiary"
+              indicatorText={(sponsorsUniqueCount || 0).toString()}
+            >
+              Sponsors
+            </CallToActionButton>
+          </div>
+        </HeroReact>
+      </div>
+
+      <!-- People -->
+      <SectionReact
+        id="people"
+        title="People"
+        subtitle="The individuals who lead and support our community"
       >
-        {grantMakers.map((org) => <PartnerCard partnerId={org.id} />)}
-      </SubsectionGrid>
-    </div>
-  </Section>
-</PageLayout>
+        <div class="max-w-6xl mx-auto">
+          {
+            !HIDE_BOARD_MEMBERS && (
+              <SubsectionGrid
+                id="board-members"
+                title="Board Members"
+                icon="solar:crown-line-duotone"
+                count={boardMembers.length}
+                gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
+                empty={boardMembers.length === 0}
+                emptyIcon="solar:users-group-rounded-line-duotone"
+                emptyMessage="Board members will be announced soon."
+              >
+                {boardMembers.map((person) => (
+                  <PersonListElement
+                    personId={person.id}
+                    affiliationLabel={affiliationLabelFor(person)}
+                  />
+                ))}
+              </SubsectionGrid>
+            )
+          }
+
+          <SubsectionGrid
+            id="community-members"
+            title="Community Members"
+            icon="solar:users-group-rounded-line-duotone"
+            count={communityMembers.length}
+            gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
+            empty={communityMembers.length === 0}
+            emptyIcon="solar:users-group-rounded-line-duotone"
+            emptyMessage="Community contributors coming soon."
+          >
+            {
+              communityMembers.map((person) => (
+                <PersonListElement
+                  personId={person.id}
+                  affiliationLabel={affiliationLabelFor(person)}
+                />
+              ))
+            }
+          </SubsectionGrid>
+        </div>
+      </SectionReact>
+
+      <!-- Partners -->
+      <SectionReact
+        id="partners"
+        title="Partners"
+        subtitle="Organizations committed to advancing HRI together"
+      >
+        <div class="max-w-6xl mx-auto">
+          {
+            allPartnerTypesInOrder.map((type) => {
+              const partners = partnersByType[type] || [];
+              const info = partnerTypeInfo[type];
+              return (
+                <SubsectionGrid
+                  id={`partners-${type}`}
+                  title={info?.title || type}
+                  subtitle={info?.description}
+                  icon={info?.icon || "solar:folder-line-duotone"}
+                  count={partners.length}
+                  empty={partners.length === 0}
+                  emptyIcon="solar:buildings-2-line-duotone"
+                  emptyMessage="Partner information coming soon."
+                >
+                  {partners.map((partner) => (
+                    <PartnerCard partnerId={partner.id} />
+                  ))}
+                </SubsectionGrid>
+              );
+            })
+          }
+        </div>
+      </SectionReact>
+
+      <!-- Sponsors -->
+      <SectionReact
+        id="sponsors"
+        title="Sponsors"
+        subtitle="Financial supporters that power our mission"
+      >
+        <div class="max-w-6xl mx-auto">
+          <SubsectionGrid
+            id="sponsors-donors"
+            title="Donors"
+            icon="solar:wallet-money-line-duotone"
+            count={donorsCount}
+            empty={donorsCount === 0}
+            emptyIcon="solar:wallet-money-line-duotone"
+            emptyMessage="Donor acknowledgments coming soon."
+          >
+            {donorPeople.map((person) => <PersonCard personId={person.id} />)}
+            {
+              donorOrganizations.map((org) => (
+                <PartnerCard partnerId={org.id} />
+              ))
+            }
+          </SubsectionGrid>
+
+          <SubsectionGrid
+            id="sponsors-grants"
+            title="Grant-making Agencies"
+            icon="solar:hand-money-line-duotone"
+            count={grantMakers.length}
+            empty={grantMakers.length === 0}
+            emptyIcon="solar:hand-money-line-duotone"
+            emptyMessage="Grant-making agencies coming soon."
+          >
+            {grantMakers.map((org) => <PartnerCard partnerId={org.id} />)}
+          </SubsectionGrid>
+        </div>
+      </SectionReact>
+
+      <Fragment slot="footer"><Footer /></Fragment>
+    </SiteShell>
+  </body>
+</html>
