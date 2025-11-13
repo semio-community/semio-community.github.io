@@ -247,3 +247,50 @@ Phase 5 — Cleanup and stabilization
   - Add PR preview builds (e.g., publish build artifacts and comment URLs, or deploy previews to a secondary static host).
 - Success criteria baseline:
   - Capture current Lighthouse scores and JS payload sizes for Home, Projects, and a Detail page to compare post-migration.
+
+## Icon migration registry (homepage React components)
+
+Purpose:
+- Keep a running record of icons used in React components to ensure consistent, solar-only icon usage and aid future migrations.
+
+Library:
+- Use line icons from "@solar-icons/react-perf/LineDuotone".
+- Icons should inherit color via currentColor; pass className to control size/color/hover transforms.
+- Prefer passing a React element (icon) or a render function (iconRender) over string-based icon names.
+
+Components and icons (current homepage):
+
+- ProgramsSection (src/react-pages/home/sections/ProgramsSection.tsx)
+  - Hardware: CpuBolt
+  - Software: CodeSquare
+  - Research: TestTube
+  - Notes:
+    - Icons are injected via iconRender={(className) => <Icon className={className} />} so they receive size/variant color classes and hover scaling.
+
+- PartnersSection (src/react-pages/home/sections/PartnersSection.tsx)
+  - Academia: SquareAcademicCap
+  - Industry: Buildings2
+  - Public Sector: Flag2
+  - Notes:
+    - Icons use className="w-12 h-12" and inherit contextual color (e.g., variant text classes).
+
+- LinkCardReact (src/components/cards/LinkCardReact.tsx)
+  - Accepts either:
+    - icon: a React node (must respect currentColor), or
+    - iconRender: (className) => ReactNode (recommended to ensure consistent styling)
+  - Used by ProgramsSection to render the three program tiles.
+
+Pending mappings / TODO:
+- MissionSection (src/react-pages/home/sections/MissionSection.tsx)
+  - Currently rendered without icons in React for parity. The original Astro used mixed icon sets (hugeicons and a solar icon).
+  - Action: decide on solar-only equivalents for:
+    - Community-Driven (TBD)
+    - Human-Centered (TBD)
+    - Replicable (TBD)
+  - Apply the same pattern as ProgramsSection (iconRender) once decided.
+
+Conventions (for future components):
+- Import icons from "@solar-icons/react-perf/LineDuotone".
+- Standard size: "w-12 h-12" unless a specific component requires a different scale.
+- Color and hover: let parent container provide the color via variant text classes; icons inherit via currentColor.
+- Avoid string-based icon lookups. Pass React elements directly to maintain type-safety and remove runtime resolution.

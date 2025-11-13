@@ -73,12 +73,22 @@ const ExpandableGrid = <T extends { id: string }>({
   const [expanded, setExpanded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  const didMountRef = useRef(false);
+  const prevExpandedRef = useRef(expanded);
+
   useEffect(() => {
-    if (!expanded && sectionRef.current) {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      prevExpandedRef.current = expanded;
+      return;
+    }
+    // Only scroll when collapsing from expanded -> collapsed
+    if (prevExpandedRef.current && !expanded && sectionRef.current) {
       const top =
         sectionRef.current.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top, behavior: "smooth" });
     }
+    prevExpandedRef.current = expanded;
   }, [expanded]);
 
   return (

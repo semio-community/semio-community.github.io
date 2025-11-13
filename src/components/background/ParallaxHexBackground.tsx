@@ -144,7 +144,7 @@ function generateGlyphs({
     // Near: larger, moves more, foreground
     {
       n: nearCount,
-      sizePx: [72, 144],
+      sizePx: [72, 96],
       parallax: [0.65, 1.0],
       z: 3,
       strokeScale: 1.0,
@@ -162,7 +162,7 @@ function generateGlyphs({
     // Far: smaller, moves less, background
     {
       n: farCount,
-      sizePx: [18, 48],
+      sizePx: [36, 48],
       parallax: [0.08, 0.3],
       z: 1,
       strokeScale: 0.8,
@@ -178,7 +178,9 @@ function generateGlyphs({
 
   for (const band of bands) {
     for (let i = 0; i < band.n; i++) {
-      const size = rndIn(rng, band.sizePx[0], band.sizePx[1]);
+      const u = rng();
+      const t = band.z === 3 ? Math.sqrt(u) : band.z === 1 ? u * u : u;
+      const size = band.sizePx[0] + (band.sizePx[1] - band.sizePx[0]) * t;
       const parallax = rndIn(rng, band.parallax[0], band.parallax[1]);
       const xVw = rndIn(rng, horizontalRangeVw.min, horizontalRangeVw.max);
       const yVh = rndIn(rng, -verticalSpanVh * 0.1, 100 + verticalSpanVh * 0.8); // spread above/below
@@ -276,55 +278,58 @@ function Glyph({
   const translate = useMotionTemplate`translateY(${y}px)`;
 
   // Near (parallax ~1) should be sharp; far (parallax small) slightly blurred.
-  const blurPx = useTransform(scrollY, () => {
-    const p = Math.max(0, Math.min(1, spec.parallax));
-    const far = 6; // px blur for far layer
-    const near = 0.5; // px blur for near layer
-    return far - p * (far - near);
-  });
-  const blurFilter = useMotionTemplate`blur(${blurPx}px)`;
+  // Depth-based blur: numeric per glyph (constant with respect to scroll)
+  const p = Math.max(0, Math.min(1, spec.parallax));
+  const nearBlur = 0.15; // px
+  const farBlur = 6; // px
+  const blurPx = farBlur - p * (farBlur - nearBlur);
+  const blurFilter = `blur(${blurPx}px)`;
 
   const stroke = getStrokeColor(spec.variant);
   const fill = getFillColor(spec.variant);
 
   // Scale based on desired pixel size vs intrinsic glyph height
   const s = spec.size / GLYPH_H;
-  const MAX_BLUR = 10;
+  const MAX_BLUR = 16;
   const margin = MAX_BLUR;
   const paddedSize = spec.size + margin * 2;
 
   return (
-    <motion.svg
-      width={paddedSize}
-      height={paddedSize}
-      viewBox={`${-GLYPH_W / 2} ${-GLYPH_H / 2} ${GLYPH_W} ${GLYPH_H}`}
-      style={{
-        position: "absolute",
-        left: `calc(${spec.xVw}vw - ${margin}px)`,
-        top: `calc(${spec.yVh}vh - ${margin}px)`,
-        transform: translate as unknown as string, // motion template -> style transform
-        zIndex: spec.zIndex,
-        opacity: 1,
-        pointerEvents: "none",
-        overflow: "visible",
-        willChange: "transform, filter",
-      }}
-      aria-hidden="true"
-    >
-      <g transform={`rotate(${spec.rotationDeg})`}>
-        <motion.path
-          d={GLYPH_PATH_D}
-          fill={fill}
-          fillOpacity={spec.fillOpacity}
-          stroke={stroke}
-          strokeOpacity={spec.strokeOpacity}
-          strokeWidth={1}
-          vectorEffect="non-scaling-stroke"
-          transform={`translate(${(-GLYPH_W / 2) * s}, ${(-GLYPH_H / 2) * s}) scale(${s})`}
-          style={{ filter: blurFilter as unknown as string }}
-        />
-      </g>
-    </motion.svg>
+    <div style={{ filter: blurFilter, WebkitFilter: blurFilter }}>
+      <motion.svg
+        width={paddedSize}
+        height={paddedSize}
+        viewBox={`${-GLYPH_W / 2} ${-GLYPH_H / 2} ${GLYPH_W} ${GLYPH_H}`}
+        style={{
+          position: "absolute",
+          left: `calc(${spec.xVw}vw - ${margin}px)`,
+          top: `calc(${spec.yVh}vh - ${margin}px)`,
+          transform: translate as unknown as string, // motion template -> style transform
+          zIndex: spec.zIndex,
+          opacity: 1,
+          pointerEvents: "none",
+          overflow: "visible",
+          willChange: "transform, filter",
+        }}
+        aria-hidden="true"
+      >
+        <motion.g
+          transform={`rotate(${spec.rotationDeg})`}
+          style={{ filter: blurFilter, WebkitFilter: blurFilter }}
+        >
+          <path
+            d={GLYPH_PATH_D}
+            fill={fill}
+            fillOpacity={spec.fillOpacity}
+            stroke={stroke}
+            strokeOpacity={spec.strokeOpacity}
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+            transform={`translate(${(-GLYPH_W / 2) * s}, ${(-GLYPH_H / 2) * s}) scale(${s})`}
+          />
+        </motion.g>
+      </motion.svg>
+    </div>
   );
 }
 
