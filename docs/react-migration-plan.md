@@ -1,8 +1,8 @@
 # React Migration Plan
 
 Audience: Maintainers and contributors of the Semio Community website.
-Status: Draft
-Last updated: YYYY-MM-DD
+Status: In progress
+Last updated: 2025-11-13
 
 ## Purpose
 
@@ -56,7 +56,7 @@ Standardize the codebase on React for components and page UIs while retaining As
 - React shared components:
   - Continue using `src/components/**` for shared UI; prefer `.tsx`.
 - Layout:
-  - Create `src/layouts/BaseLayout.tsx` to mirror the existing `Base.astro` layout features.
+  - Use `src/layouts/SiteLayout.tsx` (React) for the content wrapper and `src/layouts/SiteShell.astro` (Astro) to compose shell concerns (ThemeProvider, SkipLink, Header/Footer slots) and hydrate only backgrounds where needed.
 - Data modules:
   - Keep and extend `src/data/**` for content queries (already in use).
 
@@ -70,6 +70,8 @@ Standardize the codebase on React for components and page UIs while retaining As
 - Avoid `client:load` unless the interaction must be immediately available at page load.
 - Consider dynamic `import()` for heavy subtrees within interactive components.
 - Validate that any component with hydration has a clear user interaction justification.
+- Current usage:
+  - Background parallax (ParallaxHexBackground) hydrates via a small island composed by `SiteShell` while the rest of the homepage remains SSR-only.
 
 ## Performance guardrails
 
@@ -83,52 +85,54 @@ Standardize the codebase on React for components and page UIs while retaining As
 
 ## Phased migration approach
 
-Phase 0 — Preparation
-- Document the migration decision (ADR in `docs/`).
-- Add a lint rule and Biome/Prettier preferences that:
-  - Encourage React `.tsx` for UI components.
-  - Keep `.astro` primarily for routes, head tags, and client directives.
-- Confirm TypeScript configs support React 19 and JSX in `.tsx`.
-- Add a simple bundle size check and/or Lighthouse CI to CI pipeline.
-- Define a hydration policy (which components can hydrate; which directive to prefer).
+Phase 0 — Preparation (Status: partially complete)
+- Completed:
+  - Created `src/react-pages/` and established React-first page composition for the experimental homepage route.
+  - Baseline conventions documented in this plan; directory naming aligned.
+  - TypeScript strict settings and React 19 compat verified.
+- Remaining:
+  - Short ADR documenting “React-first UI; `.astro` for routing/head/hydration islands.”
+  - Hydration policy doc (codify current background-only hydration; SSR-first elsewhere).
+  - CI: Lighthouse/bundle-size reporting and budgets.
 
-Phase 1 — Layout and head
-- Create `BaseLayout.tsx` that replicates `Base.astro` structure:
-  - `<html lang>`, `<head>` SEO and social tags, fonts and CSS.
-  - ThemeProvider, SkipLink, Header, Footer.
-  - Content container structure and background layers.
-- Convert `BaseHead.astro` into a React head utility used inside the layout (while still allowing Astro to manipulate `<head>` via the route).
-- Update 1–2 `.astro` routes (e.g., `index.astro`) to render the React page component within `BaseLayout`.
-- Validate no change in visual or functional behavior.
+Phase 1 — Layout and head (Status: in progress)
+- Completed:
+  - Introduced `SiteLayout.tsx` (SSR-only React layout wrapper).
+  - Introduced `SiteShell.astro` to compose ThemeProvider/SkipLink/Header/Footer and hydrate background only.
+  - Implemented a parallax background as a dedicated React component with island hydration (minimal scope).
+- Remaining:
+  - A React head utility (optional) if we decide to manage `<head>` in React; currently `BaseHead.astro` remains in use.
+  - Apply `SiteShell` across additional routes once React pages are introduced.
 
-Phase 2 — Shared components
-- Convert `.astro` UI components to React, preserving props contracts:
-  - `Hero.astro`, `Section.astro`, `GlyphField.astro`, etc.
-  - Replace in pages with `.tsx` equivalents.
-- Keep purely presentational components SSR-only (no hydration).
-- For interactive atoms (e.g., tooltips, popovers, mobile nav):
-  - Opt into hydration with `client:visible` or `client:idle`.
-- Remove or deprecate `.astro` versions once replaced and tested.
+Phase 2 — Shared components (Status: in progress)
+- Completed:
+  - Ported and/or created React equivalents used on the homepage:
+    - `HeroReact`, `ParallaxHexBackground`, `SectionBlock` (shared), `LinkCardReact`.
+  - Ensured exact style parity for cards/sections (class translations).
+- Remaining:
+  - Convert remaining `.astro` UI used across other pages (e.g., Section.astro consumers) to React where appropriate.
+  - Keep purely presentational components SSR-only; hydrate only interactive leaves.
 
-Phase 3 — Page components
-- Introduce React page components for:
-  - Home (index), projects, contributors, events, etc.
-- Each `.astro` route:
-  - Imports server-side data from `src/data/**`.
-  - Passes props to the corresponding React page component.
-- Ensure Pagefind/search still functions with minimal hydration scope.
+Phase 3 — Page components (Status: in progress)
+- Completed:
+  - Homepage content now composed of reusable React sections:
+    - `HeroSection`, `MissionSection`, `ProgramsSection`, `PartnersSection`, `ConnectSection`.
+  - Background hydration constrained to the background component; page remains SSR-only React.
+- Remaining:
+  - Convert additional pages (projects, contributors, events, etc.) to React compositions, retaining Astro routes for data-loading and head.
+  - Verify Pagefind/search remains unaffected.
 
-Phase 4 — Dynamic routes
-- Keep `.astro` dynamic routes (e.g., `[...slug].astro`) as thin wrappers:
-  - Load the MDX entry via `astro:content`.
-  - Render a React detail page component with the entry as props.
-- Replace any `.astro`-only detail widgets with React variants.
+Phase 4 — Dynamic routes (Status: not started)
+- Plan:
+  - Keep `.astro` dynamic routes (e.g., `[...slug].astro`) as thin wrappers to load content via `astro:content`.
+  - Render React detail components with passed props.
+  - Replace any `.astro`-only widgets within details with React variants.
 
-Phase 5 — Cleanup and stabilization
-- Remove unused `.astro` components.
-- Ensure all pages use `BaseLayout.tsx`.
-- Rebaseline performance metrics and compare to Phase 0.
-- Update documentation and onboarding guidance.
+Phase 5 — Cleanup and stabilization (Status: not started)
+- Plan:
+  - Remove deprecated `.astro` components after React parity is verified site-wide.
+  - Ensure all pages standardize on `SiteLayout` + `SiteShell`.
+  - Rebaseline performance metrics and update onboarding docs.
 
 ## Data and content considerations
 
@@ -178,9 +182,9 @@ Phase 5 — Cleanup and stabilization
 
 ## Task checklist (high level)
 
-- Create `BaseLayout.tsx` with props parity and SSR-only by default.
-- Convert: `Header.astro`, `Footer.astro`, `Hero.astro`, `Section.astro`, and other shared components to React.
-- Migrate `index.astro` to render `<HomePage />` within `<BaseLayout />`.
+- Create `SiteLayout.tsx` and `SiteShell.astro`; keep SSR-only by default and hydrate background only.
+- Convert: `Header.astro`, `Footer.astro`, `Hero.astro`, `Section.astro`, and other shared components to React (as needed per page).
+- Migrate `index.astro`/homepage route to render React sections within `SiteShell`.
 - Migrate `projects.astro`, `contributors.astro`, `events.astro`, and dynamic detail pages.
 - Replace hydration for nav/search/popovers with `client:visible`/`client:idle`.
 - Remove deprecated `.astro` components after parity is confirmed.
@@ -235,7 +239,7 @@ Phase 5 — Cleanup and stabilization
 - Directory structure:
   - Create src/react-pages/ and add a README.md describing usage (one React page component per route).
 - Layout scaffolding:
-  - Introduce src/layouts/BaseLayout.tsx that mirrors Base.astro structure. Keep Base.astro temporarily until parity is verified.
+  - Introduce `SiteLayout.tsx` and `SiteShell.astro`. Keep `Base.astro` temporarily until parity is verified.
 - Linting/formatting:
   - Keep current setup. Optionally remove "*.astro" ignore from Biome formatter once most UI moves to React; Prettier already formats .astro via plugin.
 - CI enhancements:
