@@ -109,8 +109,9 @@ Phase 2 — Shared components (Status: in progress)
   - Ported and/or created React equivalents used on the homepage:
     - `HeroReact`, `ParallaxHexBackground`, `SectionBlock` (shared), `LinkCardReact`.
   - Ensured exact style parity for cards/sections (class translations).
+  - Removed unused legacy wrappers (`Hero.astro`, `Section.astro`, `GlyphField.astro`, `CallToActionButton.astro`, `ItemCard.astro`, `FeatureCard.astro`, `LinkCard.astro`, `Search.astro`, `ThemeToggle.astro`, `Timeline.astro`, `LinkButton.astro`, `TagsList.astro`, `PricingInfo.astro`, background island) now that React replacements exist.
 - Remaining:
-  - Convert remaining `.astro` UI used across other pages (e.g., Section.astro consumers) to React where appropriate.
+  - Convert remaining `.astro` UI used across other pages (contributors/projects/events wrappers, detail layouts, card data bridges) to React where appropriate.
   - Keep purely presentational components SSR-only; hydrate only interactive leaves.
 
 Phase 3 — Page components (Status: in progress)
@@ -183,7 +184,7 @@ Phase 5 — Cleanup and stabilization (Status: not started)
 ## Task checklist (high level)
 
 - Create `SiteLayout.tsx` and `SiteShell.astro`; keep SSR-only by default and hydrate background only.
-- Convert: `Header.astro`, `Footer.astro`, `Hero.astro`, `Section.astro`, and other shared components to React (as needed per page).
+- Convert: `Header.astro`, `Footer.astro`, and the remaining shared `.astro` wrappers (cards, chips, detail layout) to React as each page migrates.
 - Migrate `index.astro`/homepage route to render React sections within `SiteShell`.
 - Migrate `projects.astro`, `contributors.astro`, `events.astro`, and dynamic detail pages.
 - Replace hydration for nav/search/popovers with `client:visible`/`client:idle`.
@@ -298,3 +299,19 @@ Conventions (for future components):
 - Standard size: "w-12 h-12" unless a specific component requires a different scale.
 - Color and hover: let parent container provide the color via variant text classes; icons inherit via currentColor.
 - Avoid string-based icon lookups. Pass React elements directly to maintain type-safety and remove runtime resolution.
+
+## Astro component audit (2025-11-13)
+
+Legacy `.astro` wrappers that no longer had importers have been deleted in this pass (`Hero.astro`, `Section.astro`, `GlyphField.astro`, `CallToActionButton.astro`, `ItemCard.astro`, `FeatureCard.astro`, `LinkCard.astro`, `Search.astro`, `ThemeToggle.astro`, `Timeline.astro`, `LinkButton.astro`, `TagsList.astro`, `PricingInfo.astro`, `BackgroundParallaxHexIsland.astro`). The list below tracks the remaining files under `src/components/**/*.astro`, their current usage, and what needs to happen before they can be removed.
+
+| Component(s) | Current usage | Removal path |
+| --- | --- | --- |
+| `BaseHead.astro` | Head meta helper for every route | Keep until we decide on a React head strategy or confirm Astro head stays indefinitely. |
+| `layout/Header.astro`, `layout/Footer.astro`, `SkipLink.astro`, `theme/ThemeProvider.astro` | Injected into every route via `SiteShell` slots | Replace once the global header/footer/theme logic moves to React (can happen before slug work). |
+| `sections/SubsectionGrid.astro`, `cards/PersonCard.astro`, `cards/PersonListElement.astro`, `cards/PartnerCard.astro` | Only used by `src/pages/contributors.astro` | Remove after the Contributors page is rewritten as a React composition. |
+| `cards/HardwareCard.astro`, `cards/SoftwareCard.astro`, `cards/ResearchCard.astro`, `cards/EventCard.astro` | Feed data from `astro:content` into React cards on `projects.astro` + slug detail pages | Replace with server utilities (e.g., `src/data/*`) and hydrate React cards directly once projects + slug routes migrate. |
+| `ui/BasicChip.astro`, `ui/OrganizationChip.astro` | Metadata chips rendered inside slug detail pages | Convert to React and load data via the slug’s React detail component once those routes migrate. |
+| `detail/BaseDetailLayout.astro`, `detail/ContentSection.astro`, `detail/InfoCard.astro`, `detail/ChipsList.astro`, `detail/FeaturesList.astro`, `detail/SpecificationsList.astro` | Core scaffolding for `[...slug].astro` detail pages | Replace with React detail shells/components when Phase 4 (dynamic routes) lands. |
+| `people/PersonPopoverWrapper.astro` | Hover/focus popovers for people lists within slug detail pages | Convert when the related detail views move to React; depends on the same Phase 4 work. |
+
+All of the components above (except `BaseHead` and the layout shell pieces) can disappear immediately after slug migrations because the React counterparts already exist or have clear design targets. Track deletions per route to keep diffs reviewable.

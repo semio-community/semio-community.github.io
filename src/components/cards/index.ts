@@ -15,8 +15,3 @@ export type { SoftwareCardProps } from "./SoftwareCard";
 export type { ResearchCardProps } from "./ResearchCard";
 export type { PersonCardProps } from "./PersonCard";
 export type { ItemCardProps } from "./ItemCard";
-
-// Astro wrappers
-export { default as ItemCardAstro } from "./ItemCard.astro";
-export { default as FeatureCard } from "./FeatureCard.astro";
-export { default as LinkCard } from "./LinkCard.astro";

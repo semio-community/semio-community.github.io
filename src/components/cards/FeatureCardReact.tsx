@@ -47,7 +47,7 @@ export interface FeatureCardReactProps {
 /**
  * FeatureCardReact
  *
- * React translation of FeatureCard.astro with visual parity:
+ * React translation of the legacy FeatureCard.astro with visual parity:
  * - Wrapper: p-4 sm:p-6 bg-special-lighter rounded-lg text-center
  * - Icon: w-12 h-12 mx-auto mb-4 + variant color
  * - Title: text-lg font-semibold mb-2

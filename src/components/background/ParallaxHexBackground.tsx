@@ -211,7 +211,7 @@ function generateGlyphs({
   return result;
 }
 
-/** Brand glyph path and dimensions (matches GlyphField.astro) */
+/** Brand glyph path and dimensions (lifted from the legacy GlyphField.astro) */
 const GLYPH_PATH_D =
   "M0.55,10.626L18.002,0.55L35.456,10.627L35.472,30.771L24.893,36.879L29.541,39.562C29.543,39.564 29.546,39.565 29.548,39.567L30.716,40.241L23.83,44.202L14.575,38.873L0.55,30.778L0.55,10.626Z";
 const GLYPH_W = 37;

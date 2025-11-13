@@ -48,6 +48,7 @@ Hero section component with image overlay, title, badges, and featured indicator
 
 #### `ActionButtonGroup.tsx`
 Group of action buttons for primary CTAs (visit website, view publication, etc.).
+Replaces the legacy `LinkButton.astro` implementation; all CTA rendering now lives in this React component.
 
 #### `RelatedItemsGrid.tsx`
 Grid display for related content items (research, hardware, software, events, people).
@@ -64,15 +65,6 @@ Reusable card wrapper for content sections with consistent styling.
 
 #### `ContentSection.astro`
 Simple section wrapper for text content with a title.
-
-#### `LinkButton.astro`
-Button component for links with automatic icon detection.
-
-**Features:**
-- Auto-detects appropriate icon based on text/URL
-- Supports internal and external links
-- Multiple visual variants
-- Consistent hover states
 
 #### `MetadataItem.astro`
 Component for displaying individual metadata items with icons.

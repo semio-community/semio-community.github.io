@@ -78,7 +78,7 @@ function variantExtraLinkClass(variant: LinkCardVariant) {
 /**
  * LinkCardReact
  *
- * React translation of LinkCard.astro to ensure visual parity:
+ * React translation of the legacy LinkCard.astro to ensure visual parity:
  * - Outer card with special background, rounded corners, blur, centered content
  * - Large accent icon at the top
  * - Title, optional description

@@ -420,21 +420,20 @@ This plan preserves Pagefind’s fast static search while giving you full contro
 - Step 6 (pending): Finalize Pagefind data mapping
   - Verify that frontmatter (title, description, tags, type, status, year) is visible in `result.data()`
   - Adjust normalization if fields differ; tweak selection/indexing to reduce noisy body content
-- Step 7 (pending): Remove dependency on `Search.astro`
-  - Keep it temporarily mounted if needed during migration
-  - Once the React search is fully wired, remove `Search.astro` and its triggers entirely
+- Step 7 (completed): Remove dependency on `Search.astro`
+  - Legacy component deleted; ensure React triggers cover both desktop and mobile flows
 
 ## Next steps checklist (actionable)
 
 - [ ] Mount `SearchProvider` around header/nav (e.g., React island in Header.astro or Base.astro)
 - [ ] Render `<SearchModal />` once at the same level
-- [ ] Swap desktop search trigger to call `openDesktopModal()` (remove `Search.astro` trigger on desktop)
+- [ ] Swap desktop search trigger to call `openDesktopModal()` (old handler assumed the legacy Astro search element)
 - [ ] Implement `SearchMobilePanel` and gate nav content with provider `mode`
 - [ ] Replace mobile dialog header search button’s handler with `enterMobileMode()`
 - [ ] Create `SearchInput`, `SearchResultItem`, `SearchResultsList` and swap them into both desktop and mobile shells
 - [ ] Validate Pagefind path under the site’s base URL (adjust import path if needed)
 - [ ] Cross-browser QA: focus traps, hotkeys, scrolling, dark mode
-- [ ] Remove `Search.astro` entirely when new React UI is verified on mobile and desktop
+- [x] Remove `Search.astro` entirely when new React UI is verified on mobile and desktop (deleted; ensure React triggers stay wired)
 
 ## Notes and pitfalls
 
