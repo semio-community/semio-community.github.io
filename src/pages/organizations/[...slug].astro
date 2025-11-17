@@ -1,28 +1,30 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import PageLayout from "@/layouts/Base.astro";
-import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
-import { DetailHero } from "@/components/detail/DetailHero";
-import InfoCard from "@/components/detail/InfoCard.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
+import {
+  BaseDetailLayout,
+  DetailHero,
+  ContentSection,
+  InfoCard,
+} from "@/components/detail";
 import LinkSection from "@/components/detail/LinkSection";
-import ContentSection from "@/components/detail/ContentSection.astro";
-import ResearchCard from "@/components/cards/ResearchCard.astro";
-import HardwareCard from "@/components/cards/HardwareCard.astro";
-import SoftwareCard from "@/components/cards/SoftwareCard.astro";
-import PartnerCard from "@/components/cards/PartnerCard.astro";
+import { ResearchCard } from "@/components/cards/ResearchCard";
+import { HardwareCard } from "@/components/cards/HardwareCard";
+import { SoftwareCard } from "@/components/cards/SoftwareCard";
+import { PartnerCard } from "@/components/cards/PartnerCard";
 import { getAllPartners } from "@/data/partners";
 import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import PersonPopoverWrapper from "@/components/people/PersonPopoverWrapper.astro";
-import BasicChip from "@/components/ui/BasicChip.astro";
-import { Fragment } from "react";
+import { PersonPopover } from "@/components/people/PersonPopover";
+import BasicChip from "@/components/ui/BasicChip";
+import { serializePersonForPopover } from "@/utils/person";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
 export async function getStaticPaths() {
   const organizations = await getCollection("organizations", ({ data }) => {
-    // In production, exclude drafts. In development, show all.
     return import.meta.env.PROD ? data.draft !== true : true;
   });
   const partners = organizations.filter((org) => org.data.isPartner);
@@ -32,60 +34,35 @@ export async function getStaticPaths() {
   }));
 }
 
-type Props = {
+interface Props {
   entry: PartnerEntry;
-};
+}
 
 const { entry } = Astro.props as Props;
 const { data } = entry;
 
-// Get related partners (by category or collaboration areas)
-async function getRelatedPartners(partner: PartnerEntry, limit: number = 3) {
+async function getRelatedPartners(partner: PartnerEntry, limit = 3) {
   const allPartners = await getAllPartners();
-  const relatedPartners: PartnerEntry[] = [];
-
-  // Filter out the current partner and find related ones
   const otherPartners = allPartners.filter((p) => p.id !== partner.id);
 
-  // Score each partner based on similarity
-  const scoredPartners = otherPartners.map((p) => {
-    let score = 0;
-
-    // Same type gets points
-    if (p.data.type === partner.data.type) score += 2;
-
-    // Same category gets points
-    if (p.data.category === partner.data.category) score += 2;
-
-    // Same location country gets a point
-    if (p.data.location.country === partner.data.location.country) score += 1;
-
-    return { partner: p, score };
-  });
-
-  // Sort by score and take the top ones
-  scoredPartners.sort((a, b) => b.score - a.score);
-
-  return scoredPartners
+  const scoredPartners = otherPartners
+    .map((p) => {
+      let score = 0;
+      if (p.data.type === partner.data.type) score += 2;
+      if (p.data.category === partner.data.category) score += 2;
+      if (p.data.location.country === partner.data.location.country) score += 1;
+      return { partner: p, score };
+    })
     .filter((sp) => sp.score > 0)
-    .slice(0, limit)
-    .map((sp) => sp.partner);
+    .sort((a, b) => b.score - a.score);
+
+  return scoredPartners.slice(0, limit).map((sp) => sp.partner);
 }
 
 const relatedPartners = await getRelatedPartners(entry, 3);
 
-// Get related content for this partner
 async function getPartnerRelatedContent(partnerId: string) {
-  // TODO: Re-enable when research entries include institution references
-  // const allResearch = await getAllResearch();
-  // const research = allResearch.filter((entry) =>
-  //   entry.data.institutions?.some((inst: any) => inst.partnerId === partnerId),
-  // );
-  const research: any[] = []; // Placeholder until research schema includes institutions
-
-  // Get hardware where this partner is lead or supporting
-  const allHardware = await getAllHardware();
-  const hardware = allHardware.filter((hw) =>
+  const hardware = (await getAllHardware()).filter((hw) =>
     hw.data.contributors?.some(
       (contributor) =>
         contributor.type === "organization" &&
@@ -93,9 +70,7 @@ async function getPartnerRelatedContent(partnerId: string) {
     ),
   );
 
-  // Get software where this partner is lead or supporting
-  const allSoftware = await getAllSoftware();
-  const software = allSoftware.filter((sw) =>
+  const software = (await getAllSoftware()).filter((sw) =>
     sw.data.contributors?.some(
       (contributor) =>
         contributor.type === "organization" &&
@@ -103,10 +78,12 @@ async function getPartnerRelatedContent(partnerId: string) {
     ),
   );
 
-  // Event participation is now captured at the Semio-community level only.
-  const events: CollectionEntry<"events">[] = [];
-
-  return { research, hardware, software, events };
+  return { research: [], hardware, software, events: [] } as {
+    research: CollectionEntry<"research">[];
+    hardware: CollectionEntry<"hardware">[];
+    software: CollectionEntry<"software">[];
+    events: CollectionEntry<"events">[];
+  };
 }
 
 const relatedContent = await getPartnerRelatedContent(entry.id);
@@ -116,9 +93,6 @@ const meta = {
   description: data.description,
 };
 
-const badges = [];
-
-// Add type badge
 const typeLabels = {
   academic: "Academic Institution",
   industry: "Industry Partner",
@@ -126,14 +100,16 @@ const typeLabels = {
   government: "Government Agency",
   community: "Community Organization",
 };
-badges.push({
-  text: typeLabels[data.type] || data.type,
-  color: "blue" as const,
-  variant: "outline" as const,
-});
 
-// Prepare contact metadata
-const contactItems = [];
+const badges = [
+  {
+    text: typeLabels[data.type] || data.type,
+    color: "blue" as const,
+    variant: "outline" as const,
+  },
+];
+
+const contactItems: Array<{ label: string; value: string; link?: string }> = [];
 if (data.links?.email) {
   contactItems.push({
     label: "Email",
@@ -157,20 +133,25 @@ if (data.links?.scheduling) {
 }
 
 const affiliatedPeople = await getPeopleByOrganization(entry.id);
-const keyContacts = affiliatedPeople.slice(0, 6).map((person) => {
-  const affiliation = person.data.affiliations?.find(
+const keyContacts = affiliatedPeople.slice(0, 6).map((personEntry) => {
+  const affiliation = personEntry.data.affiliations?.find(
     (aff) => aff.organizationId === entry.id,
   );
   return {
-    person,
+    personId: personEntry.id,
+    person: serializePersonForPopover(personEntry),
     role: affiliation?.role,
     department: affiliation?.department,
+    currentAffiliation: affiliation
+      ? {
+          organizationId: entry.id,
+          partnerName: data.shortName || data.name,
+          role: affiliation.role,
+        }
+      : undefined,
   };
 });
 
-const collaborationSummary = data.collaborationSummary;
-
-// Category label
 const categoryLabels = {
   research: "Research Collaboration",
   development: "Development Partner",
@@ -181,234 +162,242 @@ const categoryLabels = {
 const categoryLabel = categoryLabels[data.category] || data.category;
 ---
 
-<PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout>
-    <Fragment slot="hero">
-      <DetailHero
-        client:load
-        image={data.images?.hero}
-        title={data.shortName ? data.shortName : data.name}
-        subtitle={data.shortName && data.shortName !== data.name
-          ? data.name
-          : undefined}
-        badges={badges}
-        featuredState={data.featured ? "featured" : "not-featured"}
-        logo={data.images?.logo}
-        entityType="organization"
-      />
-    </Fragment>
-
-    {/* Partnership Details */}
-    <Fragment slot="metadata">
-      <div class="partnership-details mb-8">
-        <div
-          class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
-        >
-          <h3
-            class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider"
-          >
-            PARTNERSHIP DETAILS
-          </h3>
-
-          {/* Category and Type */}
-          <div class="flex flex-wrap gap-2 mb-4">
-            <BasicChip text={categoryLabel} variant="primary" />
-            <BasicChip
-              text={typeLabels[data.type] || data.type}
-              variant="default"
-            />
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span
-                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-              >
-                Location
-              </span>
-              <span class="text-accent-base">
-                {data.location.city}, {data.location.country}
-              </span>
-            </div>
-            <div>
-              <span
-                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-              >
-                Partner Type
-              </span>
-              <span class="text-accent-base">{typeLabels[data.type]}</span>
-            </div>
-            <div>
-              <span
-                class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-              >
-                Category
-              </span>
-              <span class="text-accent-base"
-                >{categoryLabels[data.category]}</span
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-    </Fragment>
-
-    {/* Links & Contact */}
-    <Fragment slot="links">
-      {
-        data.links && Object.keys(data.links).length > 0 && (
-          <LinkSection
-            client:load
-            links={data.links}
-            size="md"
-            className="gap-1"
-          />
-        )
-      }
-      {
-        contactItems.length > 0 && (
-          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            {contactItems.map((item) => (
-              <div class="flex items-center gap-2">
-                <span class="text-color-600 dark:text-color-400">
-                  {item.label}:
-                </span>
-                {item.link ? (
-                  <a
-                    href={item.link}
-                    class="text-accent-one hover:text-accent-two transition-colors"
-                  >
-                    {item.value}
-                  </a>
-                ) : (
-                  <span class="text-accent-base">{item.value}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        )
-      }
-    </Fragment>
-
-    {/* Key People */}
-    <Fragment slot="contributors">
-      {
-        keyContacts.length > 0 && (
-          <InfoCard title="KEY PEOPLE">
-            <div class="flex flex-wrap gap-2">
-              {keyContacts.map((contact) => (
-                <PersonPopoverWrapper
-                  personId={contact.person.id}
-                  role={
-                    contact.role
-                      ? contact.department
-                        ? `${contact.role}, ${contact.department}`
-                        : contact.role
-                      : undefined
-                  }
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title={meta.title} description={meta.description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
+                        
+            <BaseDetailLayout>
+              <Fragment slot="hero">
+                <DetailHero
+                  image={data.images?.hero}
+                  title={data.shortName ? data.shortName : data.name}
+                  subtitle={data.shortName && data.shortName !== data.name
+                    ? data.name
+                    : undefined}
+                  badges={badges}
+                  featuredState={data.featured ? "featured" : "not-featured"}
+                  logo={data.images?.logo}
+                  entityType="organization"
                 />
-              ))}
-            </div>
-          </InfoCard>
-        )
-      }
-    </Fragment>
-
-    {/* Collaboration Summary */}
-    <Fragment slot="tags">
-      {
-        collaborationSummary && (
-          <div class="collaboration-summary mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                COLLABORATION SUMMARY
-              </h3>
-              <p class="text-sm text-accent-base leading-relaxed">
-                {collaborationSummary}
-              </p>
-            </div>
-          </div>
-        )
-      }
-    </Fragment>
-
-    {/* About/Description */}
-    <Fragment slot="description">
-      <ContentSection title="ABOUT" content={data.description} />
-    </Fragment>
-
-    {/* Main content from MDX file */}
-    <!-- <Content /> -->
-
-    {/* Related Content */}
-    <Fragment slot="related">
-      {
-        (relatedContent.research.length > 0 ||
-          relatedContent.hardware.length > 0 ||
-          relatedContent.software.length > 0 ||
-          relatedContent.events.length > 0) && (
-          <div class="mt-12">
-            <h2 class="text-2xl font-bold mb-2">Partner Contributions</h2>
-            <p class="text-color-600 dark:text-color-400 mb-8">
-              Research, projects, and events involving{" "}
-              {data.shortName || data.name}
-            </p>
-
-            {/* Research Grid */}
-            {relatedContent.research.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Research</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.research.map((item) => (
-                    <ResearchCard researchId={item.id} />
-                  ))}
+              </Fragment>
+      
+              <Fragment slot="links">
+                <div class="space-y-4">
+                  {
+                    data.links && Object.keys(data.links).length > 0 && (
+                      <LinkSection
+                        client:idle
+                        links={data.links}
+                        size="md"
+                        className="gap-1"
+                      />
+                    )
+                  }
+                  {
+                    contactItems.length > 0 && (
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                        {contactItems.map((item) => (
+                          <div class="flex items-center gap-2">
+                            <span class="text-color-600 dark:text-color-400">
+                              {item.label}:
+                            </span>
+                            {item.link ? (
+                              <a
+                                href={item.link}
+                                class="text-accent-one hover:text-accent-two transition-colors"
+                              >
+                                {item.value}
+                              </a>
+                            ) : (
+                              <span class="text-accent-base">{item.value}</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  }
                 </div>
-              </div>
-            )}
-
-            {/* Hardware Grid */}
-            {relatedContent.hardware.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Hardware</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.hardware.map((hw) => (
-                    <HardwareCard hardwareId={hw.id} />
-                  ))}
+              </Fragment>
+      
+              <Fragment slot="metadata">
+                <div class="partnership-details mb-8">
+                  <div
+                    class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
+                  >
+                    <h3
+                      class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider"
+                    >
+                      PARTNERSHIP DETAILS
+                    </h3>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                      <BasicChip text={categoryLabel} variant="primary" />
+                      <BasicChip
+                        text={typeLabels[data.type] || data.type}
+                        variant="default"
+                      />
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span
+                          class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+                        >
+                          Location
+                        </span>
+                        <span class="text-accent-base">
+                          {data.location.city}, {data.location.country}
+                        </span>
+                      </div>
+                      <div>
+                        <span
+                          class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+                        >
+                          Partner Type
+                        </span>
+                        <span class="text-accent-base">{typeLabels[data.type]}</span>
+                      </div>
+                      <div>
+                        <span
+                          class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
+                        >
+                          Category
+                        </span>
+                        <span class="text-accent-base"
+                          >{categoryLabels[data.category]}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* Software Grid */}
-            {relatedContent.software.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Software</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedContent.software.map((sw) => (
-                    <SoftwareCard softwareId={sw.id} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )
-      }
-
-      {/* Related Partners */}
-      {
-        relatedPartners && relatedPartners.length > 0 && (
-          <div class="mt-12">
-            <h2 class="text-2xl font-bold mb-2">Related Partners</h2>
-            <p class="text-color-600 dark:text-color-400 mb-8">
-              Organizations with similar focus areas
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedPartners.map((partner) => (
-                <PartnerCard partnerId={partner.id} />
-              ))}
-            </div>
-          </div>
-        )
-      }
-    </Fragment>
-  </BaseDetailLayout>
-</PageLayout>
+              </Fragment>
+      
+              <Fragment slot="contributors">
+                {
+                  keyContacts.length > 0 ? (
+                    <InfoCard title="KEY PEOPLE">
+                      <div class="flex flex-wrap gap-2">
+                        {keyContacts.map((contact) => (
+                          <PersonPopover
+                            client:load
+                            personId={contact.personId}
+                            person={contact.person}
+                            role={
+                              contact.role
+                                ? contact.department
+                                  ? `${contact.role}, ${contact.department}`
+                                  : contact.role
+                                : undefined
+                            }
+                            currentAffiliation={contact.currentAffiliation}
+                          />
+                        ))}
+                      </div>
+                    </InfoCard>
+                  ) : null
+                }
+              </Fragment>
+      
+              <Fragment slot="tags">
+                {
+                  data.collaborationSummary ? (
+                    <div class="collaboration-summary mb-8">
+                      <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+                        <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                          COLLABORATION SUMMARY
+                        </h3>
+                        <p class="text-sm text-accent-base leading-relaxed">
+                          {data.collaborationSummary}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null
+                }
+              </Fragment>
+      
+              <Fragment slot="description">
+                <ContentSection title="ABOUT" content={data.description} />
+              </Fragment>
+      
+              <Fragment slot="related">
+                {
+                  (relatedContent.research.length > 0 ||
+                    relatedContent.hardware.length > 0 ||
+                    relatedContent.software.length > 0 ||
+                    relatedPartners.length > 0) && (
+                    <div class="space-y-12">
+                      {(relatedContent.research.length > 0 ||
+                        relatedContent.hardware.length > 0 ||
+                        relatedContent.software.length > 0) && (
+                        <div>
+                          <h2 class="text-2xl font-bold mb-2">
+                            Partner Contributions
+                          </h2>
+                          <p class="text-color-600 dark:text-color-400 mb-8">
+                            Research, projects, and events involving{" "}
+                            {data.shortName || data.name}
+                          </p>
+                          {relatedContent.research.length > 0 && (
+                            <div class="mb-12">
+                              <h3 class="text-lg font-semibold mb-4">Research</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {relatedContent.research.map((item) => (
+                                  <ResearchCard
+                                    researchId={item.id}
+                                    data={item.data}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {relatedContent.hardware.length > 0 && (
+                            <div class="mb-12">
+                              <h3 class="text-lg font-semibold mb-4">Hardware</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {relatedContent.hardware.map((hw) => (
+                                  <HardwareCard hardwareId={hw.id} data={hw.data} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {relatedContent.software.length > 0 && (
+                            <div class="mb-12">
+                              <h3 class="text-lg font-semibold mb-4">Software</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {relatedContent.software.map((sw) => (
+                                  <SoftwareCard softwareId={sw.id} data={sw.data} />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+      
+                      {relatedPartners.length > 0 && (
+                        <div>
+                          <h2 class="text-2xl font-bold mb-2">Related Partners</h2>
+                          <p class="text-color-600 dark:text-color-400 mb-8">
+                            Organizations with similar focus areas
+                          </p>
+                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {relatedPartners.map((partner) => (
+                              <PartnerCard
+                                partnerId={partner.id}
+                                data={partner.data}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
+              </Fragment>
+            </BaseDetailLayout>
+    </SiteShell>
+  </body>
+</html>

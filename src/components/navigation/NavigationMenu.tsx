@@ -3,6 +3,13 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
 import { CallToActionButton } from "../ui/CallToActionButton";
 import { getStatusColor } from "@/config/statusConfig";
+import {
+  TestTube,
+  UserHandUp,
+  Calendar,
+  UsersGroupTwoRounded,
+  UserPlusRounded,
+} from "@solar-icons/react-perf/LineDuotone";
 
 // Simplified type for serialized data
 type HardwareItem = {
@@ -57,6 +64,17 @@ const makeUrl = (path: string, prefix: string = "") => {
   // Ensure path starts with /
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${prefix}${normalizedPath}`;
+};
+
+const dropdownIconMap: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = {
+  "/projects/": TestTube,
+  "/services/": UserHandUp,
+  "/events/": Calendar,
+  "/contributors/": UsersGroupTwoRounded,
+  "/get-involved/": UserPlusRounded,
 };
 
 export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
@@ -198,17 +216,27 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent-base/10 transition-colors mb-3 group/link"
                     >
                       <div className="w-10 h-10 rounded-lg bg-accent-base/10 flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-5 h-5 text-accent-base"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
+                        {(() => {
+                          const IconComponent = dropdownIconMap[link.path];
+                          if (IconComponent) {
+                            return (
+                              <IconComponent className="w-5 h-5 text-accent-base" />
+                            );
+                          }
+                          return (
+                            <svg
+                              className="w-5 h-5 text-accent-base"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                          );
+                        })()}
                       </div>
                       <div>
                         <div className="font-semibold text-sm text-foreground group-hover/link:text-accent-base transition-colors">

@@ -37,17 +37,11 @@ This separation gives us:
   - Recommendation: Keep `showBackground={false}` unless you want the layout to render its own background (which would require hydrating the layout in the route).
 
 - `SiteShell.astro` (Astro)
-  - Purpose: Compose `SiteLayout` in a DRY way while hydrating the background only.
-  - Slots:
-    - `theme` — Theme provider
-    - `skip` — Skip link
-    - `header` — Page/site header
-    - default — Page content
-    - `footer` — Footer
+  - Purpose: Compose `SiteLayout` in a DRY way while hydrating only the background and header (for nav/search interactivity).
   - Props:
-    - Layout: `noPaddingTop?`, `containerClassName?`, `showBackground?` (usually true)
+    - Layout: `noPaddingTop?`, `containerClassName?`, `showBackground?`
     - Background customization: `backgroundCount?`, `backgroundSeed?`, `backgroundVerticalSpanVh?`, `backgroundHorizontalRangeVw?`, `backgroundPalette?`, `backgroundOpacity?`, `backgroundClassName?`
-  - Behavior: Hydrates `ParallaxHexBackground` directly via `client:only="react"` (when `showBackground` is true) while keeping `SiteLayout` SSR-only.
+  - Behavior: Automatically renders the ThemeProvider, SkipLink, Header, Footer, and Parallax background so routes only need to provide page content.
 
 ## Minimal hydration patterns (recommended)
 
@@ -56,26 +50,10 @@ Use `SiteShell` to keep hydration scoped to the background:
 ```astro
 ---
 import SiteShell from "@/layouts/SiteShell.astro";
-import ThemeProvider from "@/components/theme/ThemeProvider.astro";
-import Header from "@/components/layout/Header.astro";
-import Footer from "@/components/layout/Footer.astro";
-import SkipLink from "@/components/SkipLink.astro";
 ---
 
-<SiteShell
-  noPaddingTop
-  showBackground
-  backgroundCount={48}
-  backgroundSeed="2025-11-12"
-  backgroundClassName="opacity-80"
->
-  <Fragment slot="theme"><ThemeProvider /></Fragment>
-  <Fragment slot="skip"><SkipLink /></Fragment>
-  <Fragment slot="header"><Header /></Fragment>
-
+<SiteShell showBackground backgroundCount={48} backgroundSeed="2025-11-12">
   <!-- Your SSR page content here (React SSR components or Astro) -->
-
-  <Fragment slot="footer"><Footer /></Fragment>
 </SiteShell>
 ```
 

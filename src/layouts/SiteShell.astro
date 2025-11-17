@@ -1,28 +1,17 @@
 ---
 import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
+import ThemeProvider from "@/components/theme/ThemeProvider";
+import SkipLink from "@/components/layout/SkipLink";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+import { getFeaturedResearch } from "@/data/research";
 
 export interface Props {
-  /**
-   * Apply top padding to account for the fixed header (false = keep padding).
-   * Mirrors SiteLayout's noPaddingTop prop.
-   */
   noPaddingTop?: boolean;
-
-  /**
-   * Whether to render the hydrated parallax background.
-   * If true, the shell injects a client-hydrated background and disables
-   * SiteLayout's internal background to avoid double-rendering.
-   */
   showBackground?: boolean;
-
-  /**
-   * Optional class names for SiteLayout's inner content container.
-   */
   containerClassName?: string;
-
-  /**
-   * Background customization props, forwarded to ParallaxHexBackground.
-   */
   backgroundCount?: number;
   backgroundSeed?: string | number;
   backgroundVerticalSpanVh?: number;
@@ -44,29 +33,65 @@ const {
   backgroundOpacity,
   backgroundClassName,
 } = Astro.props;
+
+const [allHardware, allSoftware, featuredResearch] = await Promise.all([
+  getAllHardware(),
+  getAllSoftware(),
+  getFeaturedResearch(),
+]);
+
+const hardwareItems = allHardware.map((item) => ({
+  id: item.id,
+  name: item.data.name ?? item.id,
+  shortDescription: item.data.shortDescription ?? "",
+  status: (item.data.status ?? "in-progress") as
+    | "available"
+    | "in-progress"
+    | "coming-soon"
+    | "deprecated",
+}));
+
+const softwareItems = allSoftware.map((item) => ({
+  id: item.id,
+  name: item.data.name ?? item.id,
+  shortDescription: item.data.shortDescription ?? "",
+  status: (item.data.status ?? "in-progress") as
+    | "stable"
+    | "beta"
+    | "alpha"
+    | "in-progress"
+    | "deprecated",
+}));
+
+const researchItems = featuredResearch.map((entry) => {
+  const publishDate = entry.data.publishDate
+    ? new Date(entry.data.publishDate)
+    : null;
+  const rawYear =
+    publishDate && !Number.isNaN(publishDate.getTime())
+      ? publishDate.getFullYear()
+      : (entry.data as { year?: number }).year;
+  const year =
+    typeof rawYear === "number" && !Number.isNaN(rawYear) ? rawYear : undefined;
+  return {
+    id: entry.id,
+    title: entry.data.title ?? entry.id,
+    type: entry.data.type ?? "Research",
+    year,
+  };
+});
 ---
 
-<!--
-  SiteShell.astro
+<ThemeProvider />
+<SkipLink />
+<Header
+  client:load
+  currentPath={Astro.url.pathname}
+  hardwareItems={hardwareItems}
+  softwareItems={softwareItems}
+  researchItems={researchItems}
+/>
 
-  Purpose:
-  - Compose the React SiteLayout while allowing an Astro-controlled hydration boundary
-    for the parallax background (Framer Motion) via client:only="react".
-  - Avoid passing Astro components as React props (which can cause invalid element type errors).
-  - Keep header/theme/skip/footer as Astro-rendered elements via named slots.
-
-  Slots:
-  - name="theme"   → place ThemeProvider (Astro)
-  - name="skip"    → place SkipLink (Astro)
-  - name="header"  → place Header (Astro)
-  - (default)      → page content rendered inside React SiteLayout
-  - name="footer"  → place Footer (Astro)
---><!-- Top-level Astro-rendered UI (no hydration needed here) -->
-<slot name="theme" />
-<slot name="skip" />
-<slot name="header" />
-
-<!-- Hydrated parallax background (client-only React) -->
 {
   showBackground && (
     <ParallaxHexBackground
@@ -82,7 +107,6 @@ const {
   )
 }
 
-<!-- Layout grid (matches Base.astro) so footer resides inside container -->
 <div class="relative flex min-h-screen w-full flex-col">
   <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
     <div
@@ -95,7 +119,7 @@ const {
         <main id="main" class="relative flex-grow" data-pagefind-body>
           <slot />
         </main>
-        <slot name="footer" />
+        <Footer />
       </div>
     </div>
   </div>

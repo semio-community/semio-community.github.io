@@ -1,24 +1,15 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
-import ThemeProvider from "@/components/theme/ThemeProvider.astro";
-import Header from "@/components/layout/Header.astro";
-import Footer from "@/components/layout/Footer.astro";
-import SkipLink from "@/components/SkipLink.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import SectionReact from "@/components/SectionReact";
-
-import { CallToActionButton } from "@/components/ui/CallToActionButton";
-import { getAllEvents } from "@/data/events";
-import HeroReact from "@/components/HeroReact";
+import EventsPage from "@/react-pages/events/EventsPage";
 import EventsSections from "@/components/events/EventsSections";
+import { getAllEvents } from "@/data/events";
 
 const meta = {
   title: "Events",
   description:
     "Conferences, workshops, and training events for the human-robot interaction community",
 };
-const pageTitle = meta.title;
-const description = meta.description;
 
 const allEvents = await getAllEvents();
 ---
@@ -28,87 +19,28 @@ const allEvents = await getAllEvents();
   lang="en"
 >
   <head>
-    <BaseHead title={pageTitle} description={description} />
+    <BaseHead title={meta.title} description={meta.description} />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground>
-      <Fragment slot="theme"><ThemeProvider /></Fragment>
-      <Fragment slot="skip"><SkipLink /></Fragment>
-      <Fragment slot="header"><Header /></Fragment>
-
-      <div
-        class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
-        style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
-      >
-        <HeroReact>
-          <!-- Title -->
-          <h1
-            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
-          >
-            Events
-          </h1>
-
-          <!-- Subtitle -->
-          <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
-          >
-            Gather with the Semio Community at conferences, workshops, and
-            training events focused on human-centered robotics and AI.
-          </p>
-
-          <!-- CTA Button -->
-          <div class="flex flex-wrap justify-center gap-4 mb-8">
-            <CallToActionButton href="#featured" size="large">
-              Featured Events
-            </CallToActionButton>
-            <CallToActionButton
-              href="#upcoming"
-              size="large"
-              variant="secondary"
-            >
-              Upcoming Events
-            </CallToActionButton>
-            <CallToActionButton href="#past" size="large" variant="tertiary">
-              Past Events
-            </CallToActionButton>
-          </div>
-        </HeroReact>
-      </div>
-
-      {
-        allEvents.length > 0 && (
-          <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0">
-            <EventsSections
-              client:load
-              events={allEvents.map((e) => ({ id: e.id, data: e.data }))}
-              initialFeaturedCount={6}
-              initialPastCount={6}
-            />
-          </div>
-        )
-      }
-
-      <!-- Call to Action -->
-      <SectionReact id="events-contribute" title="Partner for an Event">
-        <div class="max-w-4xl mx-auto text-center">
-          <p class="mb-8 -mt-6 md:-mt-8">
-            Planning a conference, workshop, or other community gathering?<br
-            /><br class="md:hidden" /> Partner with Semio Community to reach a broader
-            robotics/AI audience.
-          </p>
-
-          <div class="flex flex-wrap justify-center gap-4">
-            <CallToActionButton
-              href="https://forms.gle/5iiaThSsGUMzXWsu6"
-              size="large"
-            >
-              Request Event Services
-            </CallToActionButton>
-          </div>
-        </div>
-      </SectionReact>
-
-      <Fragment slot="footer"><Footer /></Fragment>
+                        
+            <EventsPage>
+              {
+                allEvents.length > 0 && (
+                  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0">
+                    <EventsSections
+                      client:load
+                      events={allEvents.map((event) => ({
+                        id: event.id,
+                        data: event.data,
+                      }))}
+                      initialFeaturedCount={6}
+                      initialPastCount={6}
+                    />
+                  </div>
+                )
+              }
+            </EventsPage>
     </SiteShell>
   </body>
 </html>

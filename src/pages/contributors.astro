@@ -1,17 +1,7 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
-import ThemeProvider from "@/components/theme/ThemeProvider.astro";
-import Header from "@/components/layout/Header.astro";
-import Footer from "@/components/layout/Footer.astro";
-import SkipLink from "@/components/SkipLink.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import SectionReact from "@/components/SectionReact";
-import HeroReact from "@/components/HeroReact";
-import SubsectionGrid from "@/components/sections/SubsectionGrid.astro";
-import PersonListElement from "@/components/cards/PersonListElement.astro";
-import PersonCard from "@/components/cards/PersonCard.astro";
-import PartnerCard from "@/components/cards/PartnerCard.astro";
-import { CallToActionButton } from "@/components/ui/CallToActionButton";
+import ContributorsPage from "@/react-pages/contributors/ContributorsPage";
 import { getAllPartners } from "@/data/partners";
 import { getAllPeople } from "@/data/people";
 import { getCollection } from "astro:content";
@@ -22,43 +12,17 @@ const meta = {
     "People and organizations advancing human-centered robotics and AI together",
 };
 
-// Fetch data
 const allPartners = await getAllPartners();
 const allPeople = await getAllPeople();
-
-// Preload organizations and build id -> shortName/name map
 const organizations = await getCollection("organizations", ({ data }) =>
   import.meta.env.PROD ? data.draft !== true : true,
 );
+
 const orgNameById = Object.fromEntries(
   organizations.map((org) => [org.id, org.data.shortName || org.data.name]),
 );
-const donorPeople = allPeople.filter((p) => p.data.isDonor);
-const donorOrganizations = organizations.filter((org) => org.data.isDonor);
-const donorsCount = donorPeople.length + donorOrganizations.length;
-const grantMakers = organizations.filter((org) => org.data.isGrantMaker);
 
-// Aggregate unique sponsors across donors (people + orgs) and grant-making agencies
-const sponsorsUniqueCount = (() => {
-  const ids = new Set<string>();
-  donorPeople.forEach((p) => ids.add(`p:${p.id}`));
-  donorOrganizations.forEach((o) => ids.add(`o:${o.id}`));
-  grantMakers.forEach((o) => ids.add(`o:${o.id}`));
-  return ids.size;
-})();
-
-// Group partners by type
-const partnersByType: Record<string, typeof allPartners> = {};
-for (const partner of allPartners) {
-  if (!partnersByType[partner.data.type]) {
-    partnersByType[partner.data.type] = [];
-  }
-  partnersByType[partner.data.type]!.push(partner);
-}
-
-// People groups (contributors only)
 const HIDE_BOARD_MEMBERS = true;
-
 const boardMembers = allPeople.filter(
   (p) => p.data.isContributor && p.data.boardMember,
 );
@@ -67,7 +31,11 @@ const communityMembers = allPeople.filter(
     p.data.isContributor && (HIDE_BOARD_MEMBERS ? true : !p.data.boardMember),
 );
 
-// Partner type info and ordering
+const donorPeople = allPeople.filter((p) => p.data.isDonor);
+const donorOrganizations = organizations.filter((org) => org.data.isDonor);
+const donorsCount = donorPeople.length + donorOrganizations.length;
+const grantMakers = organizations.filter((org) => org.data.isGrantMaker);
+
 const partnerTypeInfo: Record<
   string,
   { title: string; icon: string; description: string }
@@ -95,24 +63,30 @@ const partnerTypeInfo: Record<
 };
 const orderedPartnerTypes = ["industry", "nonprofit", "academic", "government"];
 
-// Helper to compute a human-readable current/primary affiliation label
-function affiliationLabelFor(person: any) {
-  const aff =
-    person.data.affiliations?.find((a: any) => a.isPrimary) ??
-    person.data.affiliations?.find((a: any) => !a.endDate);
-  return aff
-    ? orgNameById[aff.organizationId] || aff.organizationId
-    : undefined;
+const partnersByType: Record<string, typeof allPartners> = {};
+for (const partner of allPartners) {
+  if (!partnersByType[partner.data.type]) {
+    partnersByType[partner.data.type] = [];
+  }
+  partnersByType[partner.data.type]!.push(partner);
 }
-const allPartnerTypesInOrder = [
-  ...orderedPartnerTypes,
-  ...Object.keys(partnersByType).filter(
-    (t) => !orderedPartnerTypes.includes(t),
-  ),
-];
 
-const pageTitle = meta.title;
-const description = meta.description;
+const partnerSections = [
+  ...orderedPartnerTypes,
+  ...Object.keys(partnersByType).filter((type) => !orderedPartnerTypes.includes(type)),
+].map((type) => ({
+  type,
+  info: partnerTypeInfo[type] ?? null,
+  partners: partnersByType[type] ?? [],
+}));
+
+const sponsorsUniqueCount = (() => {
+  const ids = new Set<string>();
+  donorPeople.forEach((p) => ids.add(`p:${p.id}`));
+  donorOrganizations.forEach((o) => ids.add(`o:${o.id}`));
+  grantMakers.forEach((o) => ids.add(`o:${o.id}`));
+  return ids.size;
+})();
 ---
 
 <html
@@ -120,188 +94,24 @@ const description = meta.description;
   lang="en"
 >
   <head>
-    <BaseHead title={pageTitle} description={description} />
+    <BaseHead title={meta.title} description={meta.description} />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
-    <SiteShell noPaddingTop showBackground>
-      <Fragment slot="theme"><ThemeProvider /></Fragment>
-      <Fragment slot="skip"><SkipLink /></Fragment>
-      <Fragment slot="header"><Header /></Fragment>
-
-      <!-- Hero Section -->
-      <div
-        class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
-        style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
-      >
-        <HeroReact>
-          <h1
-            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
-          >
-            Contributors
-          </h1>
-
-          <p
-            class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
-          >
-            Meet the people and organizations collaborating to advance
-            human-centered robotics and AI.
-          </p>
-
-          <div class="flex flex-wrap justify-center gap-4 mb-8">
-            <CallToActionButton
-              href="#people"
-              size="large"
-              indicatorText={(
-                (HIDE_BOARD_MEMBERS ? 0 : boardMembers.length) +
-                  communityMembers.length || 0
-              ).toString()}
-            >
-              People
-            </CallToActionButton>
-
-            <CallToActionButton
-              href="#partners"
-              size="large"
-              variant="secondary"
-              indicatorText={(allPartners.length || 0).toString()}
-            >
-              Partners
-            </CallToActionButton>
-
-            <CallToActionButton
-              href="#sponsors"
-              size="large"
-              variant="tertiary"
-              indicatorText={(sponsorsUniqueCount || 0).toString()}
-            >
-              Sponsors
-            </CallToActionButton>
-          </div>
-        </HeroReact>
-      </div>
-
-      <!-- People -->
-      <SectionReact
-        id="people"
-        title="People"
-        subtitle="The individuals who lead and support our community"
-      >
-        <div class="max-w-6xl mx-auto">
-          {
-            !HIDE_BOARD_MEMBERS && (
-              <SubsectionGrid
-                id="board-members"
-                title="Board Members"
-                icon="solar:crown-line-duotone"
-                count={boardMembers.length}
-                gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
-                empty={boardMembers.length === 0}
-                emptyIcon="solar:users-group-rounded-line-duotone"
-                emptyMessage="Board members will be announced soon."
-              >
-                {boardMembers.map((person) => (
-                  <PersonListElement
-                    personId={person.id}
-                    affiliationLabel={affiliationLabelFor(person)}
-                  />
-                ))}
-              </SubsectionGrid>
-            )
-          }
-
-          <SubsectionGrid
-            id="community-members"
-            title="Community Members"
-            icon="solar:users-group-rounded-line-duotone"
-            count={communityMembers.length}
-            gridClass="grid grid-cols-1 md:grid-cols-2 gap-4"
-            empty={communityMembers.length === 0}
-            emptyIcon="solar:users-group-rounded-line-duotone"
-            emptyMessage="Community contributors coming soon."
-          >
-            {
-              communityMembers.map((person) => (
-                <PersonListElement
-                  personId={person.id}
-                  affiliationLabel={affiliationLabelFor(person)}
-                />
-              ))
-            }
-          </SubsectionGrid>
-        </div>
-      </SectionReact>
-
-      <!-- Partners -->
-      <SectionReact
-        id="partners"
-        title="Partners"
-        subtitle="Organizations committed to advancing HRI together"
-      >
-        <div class="max-w-6xl mx-auto">
-          {
-            allPartnerTypesInOrder.map((type) => {
-              const partners = partnersByType[type] || [];
-              const info = partnerTypeInfo[type];
-              return (
-                <SubsectionGrid
-                  id={`partners-${type}`}
-                  title={info?.title || type}
-                  subtitle={info?.description}
-                  icon={info?.icon || "solar:folder-line-duotone"}
-                  count={partners.length}
-                  empty={partners.length === 0}
-                  emptyIcon="solar:buildings-2-line-duotone"
-                  emptyMessage="Partner information coming soon."
-                >
-                  {partners.map((partner) => (
-                    <PartnerCard partnerId={partner.id} />
-                  ))}
-                </SubsectionGrid>
-              );
-            })
-          }
-        </div>
-      </SectionReact>
-
-      <!-- Sponsors -->
-      <SectionReact
-        id="sponsors"
-        title="Sponsors"
-        subtitle="Financial supporters that power our mission"
-      >
-        <div class="max-w-6xl mx-auto">
-          <SubsectionGrid
-            id="sponsors-donors"
-            title="Donors"
-            icon="solar:wallet-money-line-duotone"
-            count={donorsCount}
-            empty={donorsCount === 0}
-            emptyIcon="solar:wallet-money-line-duotone"
-            emptyMessage="Donor acknowledgments coming soon."
-          >
-            {donorPeople.map((person) => <PersonCard personId={person.id} />)}
-            {
-              donorOrganizations.map((org) => (
-                <PartnerCard partnerId={org.id} />
-              ))
-            }
-          </SubsectionGrid>
-
-          <SubsectionGrid
-            id="sponsors-grants"
-            title="Grant-making Agencies"
-            icon="solar:hand-money-line-duotone"
-            count={grantMakers.length}
-            empty={grantMakers.length === 0}
-            emptyIcon="solar:hand-money-line-duotone"
-            emptyMessage="Grant-making agencies coming soon."
-          >
-            {grantMakers.map((org) => <PartnerCard partnerId={org.id} />)}
-          </SubsectionGrid>
-        </div>
-      </SectionReact>
-
-      <Fragment slot="footer"><Footer /></Fragment>
+    <SiteShell noPaddingTop showBackground containerClassName="max-w-6xl">
+                        
+            <ContributorsPage
+              meta={meta}
+              hideBoardMembers={HIDE_BOARD_MEMBERS}
+              boardMembers={boardMembers}
+              communityMembers={communityMembers}
+              partnerSections={partnerSections}
+              donorPeople={donorPeople}
+              donorOrganizations={donorOrganizations}
+              grantMakers={grantMakers}
+              donorsCount={donorsCount}
+              sponsorsUniqueCount={sponsorsUniqueCount}
+              orgNameById={orgNameById}
+            />
     </SiteShell>
   </body>
 </html>

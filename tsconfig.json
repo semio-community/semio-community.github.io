@@ -11,6 +11,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "lib": ["es2022", "dom", "dom.iterable"],
     "paths": {
       "@/*": ["src/*"]

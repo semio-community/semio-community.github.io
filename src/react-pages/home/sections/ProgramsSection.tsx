@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import SectionBlock, {
   type SectionVariant,
 } from "@/components/sections/SectionBlock";
-import LinkCardReact from "@/components/cards/LinkCardReact";
+import LinkCard from "@/components/cards/LinkCard";
 import {
   CpuBolt,
   CodeSquare,
@@ -82,7 +82,7 @@ export default function ProgramsSection({
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {items.map((item, idx) => (
-            <LinkCardReact
+            <LinkCard
               key={`${item.title}-${idx}`}
               title={item.title}
               description={item.description}

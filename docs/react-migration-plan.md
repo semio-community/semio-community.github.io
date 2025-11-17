@@ -2,7 +2,7 @@
 
 Audience: Maintainers and contributors of the Semio Community website.
 Status: In progress
-Last updated: 2025-11-13
+Last updated: 2025-11-14
 
 ## Purpose
 
@@ -11,8 +11,8 @@ Standardize the codebase on React for components and page UIs while retaining As
 ## Current state (summary)
 
 - Astro v5 with React integration enabled.
-- Routes: primarily `.astro` files in `src/pages/**`.
-- UI: mixture of `.astro` components and React `.tsx` components.
+- Routes: `.astro` files remain in `src/pages/**`, but most static routes now simply load data and render a React page from `src/react-pages/**` (home, about, contributors, projects, events, services, get-involved, 404). Dynamic slugs still use `.astro` to access `astro:content`.
+- UI: shared components are React-first; only the global layout primitives (`BaseHead`, Header/Footer, SkipLink, ThemeProvider) remain in `.astro` while a React rewrite of the shell is planned.
 - Content: Astro Content Collections + Zod schemas + MDX in `src/content/**`.
 - Styling: Tailwind v4 via Vite plugin.
 - Search: Pagefind.
@@ -72,6 +72,8 @@ Standardize the codebase on React for components and page UIs while retaining As
 - Validate that any component with hydration has a clear user interaction justification.
 - Current usage:
   - Background parallax (ParallaxHexBackground) hydrates via a small island composed by `SiteShell` while the rest of the homepage remains SSR-only.
+  - Events listing uses `<EventsSections client:load>` passed from the `.astro` route into the React page so only the expandable grid hydrates.
+  - Person popovers hydrate via `client:idle` and receive fully-serialized people objects computed in the route.
 
 ## Performance guardrails
 
@@ -90,9 +92,8 @@ Phase 0 — Preparation (Status: partially complete)
   - Created `src/react-pages/` and established React-first page composition for the experimental homepage route.
   - Baseline conventions documented in this plan; directory naming aligned.
   - TypeScript strict settings and React 19 compat verified.
+  - Added ADR 0001 (React-first UI; `.astro` only for routing/head/hydration glue) and a hydration policy reference document for contributors.
 - Remaining:
-  - Short ADR documenting “React-first UI; `.astro` for routing/head/hydration islands.”
-  - Hydration policy doc (codify current background-only hydration; SSR-first elsewhere).
   - CI: Lighthouse/bundle-size reporting and budgets.
 
 Phase 1 — Layout and head (Status: in progress)
@@ -100,28 +101,29 @@ Phase 1 — Layout and head (Status: in progress)
   - Introduced `SiteLayout.tsx` (SSR-only React layout wrapper).
   - Introduced `SiteShell.astro` to compose ThemeProvider/SkipLink/Header/Footer and hydrate background only.
   - Implemented a parallax background as a dedicated React component with island hydration (minimal scope).
+  - Applied `SiteShell` across every top-level route now that each renders a React page component.
+  - Rebuilt ThemeProvider, SkipLink, Header, and Footer as React components and render them automatically from `SiteShell` (header hydrates with `client:load` for nav/search).
 - Remaining:
   - A React head utility (optional) if we decide to manage `<head>` in React; currently `BaseHead.astro` remains in use.
-  - Apply `SiteShell` across additional routes once React pages are introduced.
 
-Phase 2 — Shared components (Status: in progress)
+Phase 2 — Shared components (Status: ✅ complete)
 - Completed:
   - Ported and/or created React equivalents used on the homepage:
-    - `HeroReact`, `ParallaxHexBackground`, `SectionBlock` (shared), `LinkCardReact`.
+    - `HeroHeader`, `ParallaxHexBackground`, `SectionBlock` (shared), `LinkCard`.
   - Ensured exact style parity for cards/sections (class translations).
-  - Removed unused legacy wrappers (`Hero.astro`, `Section.astro`, `GlyphField.astro`, `CallToActionButton.astro`, `ItemCard.astro`, `FeatureCard.astro`, `LinkCard.astro`, `Search.astro`, `ThemeToggle.astro`, `Timeline.astro`, `LinkButton.astro`, `TagsList.astro`, `PricingInfo.astro`, background island) now that React replacements exist.
+  - Converted the remaining detail primitives (`BaseDetailLayout`, `InfoCard`, `ContentSection`, `ChipsList`, `FeaturesList`, `SpecificationsList`, `BasicChip`, `OrganizationChip`, `PersonPopover`) to React and deleted their `.astro` shims now that every slug route consumes the React exports directly.
+  - Replaced the last card/section wrappers (`HardwareCard.astro`, `SoftwareCard.astro`, `ResearchCard.astro`, `PersonCard.astro`, `PersonListElement.astro`, `PartnerCard.astro`, `EventCard.astro`, `sections/SubsectionGrid.astro`) with their React counterparts so Contributors and Projects now render the React components directly.
 - Remaining:
-  - Convert remaining `.astro` UI used across other pages (contributors/projects/events wrappers, detail layouts, card data bridges) to React where appropriate.
-  - Keep purely presentational components SSR-only; hydrate only interactive leaves.
+  - Only the head/layout glue (`BaseHead.astro` + `SiteShell.astro`) remain as Astro files; plan a follow-up to replace BaseHead with a React head helper or confirm Astro head stays indefinitely.
 
-Phase 3 — Page components (Status: in progress)
+Phase 3 — Page components (Status: ✅ complete)
 - Completed:
-  - Homepage content now composed of reusable React sections:
-    - `HeroSection`, `MissionSection`, `ProgramsSection`, `PartnersSection`, `ConnectSection`.
-  - Background hydration constrained to the background component; page remains SSR-only React.
+  - Homepage content now composed of reusable React sections (`HeroSection`, `MissionSection`, `ProgramsSection`, `PartnersSection`, `ConnectSection`) with background hydration isolated to the Parallax background island.
+  - All static routes (`index`, `about`, `contributors`, `projects`, `events`, `services`, `get-involved`, `404`) now render dedicated React page modules from `src/react-pages/<route>/`.
+  - Slug routes (hardware, software, organizations, people, research, events) consume the React detail stack directly; `.astro` wrappers only load content collections and wire hydration directives for specific interactive leaves (e.g., `EventsSections client:load`).
+  - `src/react-pages/README.md` documents the pattern and every route folder now matches the "<route>/Page.tsx" convention, improving discoverability.
 - Remaining:
-  - Convert additional pages (projects, contributors, events, etc.) to React compositions, retaining Astro routes for data-loading and head.
-  - Verify Pagefind/search remains unaffected.
+  - Keep auditing new routes to ensure they follow the same pattern and continue to document any exceptions (e.g., client islands that must stay in `.astro` for hydration directives).
 
 Phase 4 — Dynamic routes (Status: not started)
 - Plan:
@@ -183,14 +185,14 @@ Phase 5 — Cleanup and stabilization (Status: not started)
 
 ## Task checklist (high level)
 
-- Create `SiteLayout.tsx` and `SiteShell.astro`; keep SSR-only by default and hydrate background only.
-- Convert: `Header.astro`, `Footer.astro`, and the remaining shared `.astro` wrappers (cards, chips, detail layout) to React as each page migrates.
-- Migrate `index.astro`/homepage route to render React sections within `SiteShell`.
-- Migrate `projects.astro`, `contributors.astro`, `events.astro`, and dynamic detail pages.
-- Replace hydration for nav/search/popovers with `client:visible`/`client:idle`.
-- Remove deprecated `.astro` components after parity is confirmed.
-- Establish CI checks for performance, bundle size, and a11y.
-- Update docs and contributor guide.
+- ✅ Create `SiteLayout.tsx` and `SiteShell.astro`; keep SSR-only by default and hydrate background only.
+- ✅ Convert legacy shared `.astro` wrappers (cards, chips, detail layout, CTA buttons) to React; only layout/head helpers remain in `.astro`.
+- ✅ Migrate `index.astro`, `about.astro`, `contributors.astro`, `projects.astro`, `events.astro`, `services.astro`, `get-involved.astro`, and `404.astro` to render React pages within `SiteShell`.
+- ✅ Move hardware/software/organization/people/research/events detail routes onto the React detail stack while keeping `.astro` for data loading and hydration directives.
+- 🔄 Replace hydration for nav/search/popovers with `client:visible`/`client:idle` where feasible (navigation/search audit pending).
+- 🔄 Remove the remaining `.astro` layout primitives once the React shell/head strategy is ready.
+- ⏱️ Establish CI checks for performance, bundle size, and a11y.
+- ⏱️ Update docs and contributor guide with hydration policy + ADR (in progress via this plan).
 
 ## Appendix: practical tips
 
@@ -212,13 +214,13 @@ Phase 5 — Cleanup and stabilization (Status: not started)
   - react and react-dom are at ^19.2.0.
   - @astrojs/react integration is installed and enabled in astro.config.ts.
 - Routing and data:
-  - Routes are primarily .astro files under src/pages/**.
-  - Data fetching is centralized in src/data/** modules and used in .astro routes (good baseline).
+  - `.astro` files now primarily serve as thin routers/head wrappers; every static page renders a React module from `src/react-pages/**`, and dynamic slugs only keep `.astro` for `astro:content` + hydration directives.
+  - Data fetching remains centralized in src/data/** modules and is only called from the `.astro` routes (good baseline).
 - Hydration/interactivity:
-  - Interactive components exist (navigation, search, tooltips/popovers) implemented in React TSX.
-  - No explicit, codified hydration policy yet (client:* directives applied ad hoc).
+  - Interactive components (navigation, search, person popovers, events grids) are implemented in React TSX; hydration relies on explicit `client:*` directives attached in the `.astro` route or `SiteShell` (e.g., `Header client:load`, `EventsSections client:load`, `PersonPopover client:idle`).
+  - Hydration policy is documented in `docs/hydration-policy.md`; default remains SSR-only React pages with targeted islands for specific interactions.
 - Layout:
-  - The primary layout is src/layouts/Base.astro; there is no React equivalent yet.
+  - `SiteShell.astro` is the shared layout wrapper; it renders the React ThemeProvider/SkipLink/Header/Footer set and hydrates only the background + header.
 - Content and images:
   - Astro Content Collections with Zod schemas in src/content.config.ts.
   - MDX entries under src/content/**.
@@ -235,19 +237,18 @@ Phase 5 — Cleanup and stabilization (Status: not started)
 ## Phase 0 — Actionable next steps
 
 - Conventions and docs:
-  - Add a short ADR in docs/ capturing "React-first components; .astro only for routes/head/hydration islands".
-  - Document hydration policy: default SSR-only; use client:visible or client:idle for specific interactive components; avoid client:load unless necessary.
+  - ✅ ADR 0001 + hydration policy landed; keep them updated as new routes/components come online.
 - Directory structure:
-  - Create src/react-pages/ and add a README.md describing usage (one React page component per route).
+  - ✅ `src/react-pages/` exists with per-route folders plus a README that documents the convention. Keep adding new routes here and avoid reintroducing flat React files under `src/components`.
 - Layout scaffolding:
-  - Introduce `SiteLayout.tsx` and `SiteShell.astro`. Keep `Base.astro` temporarily until parity is verified.
+  - ✅ `SiteLayout.tsx` + `SiteShell.astro` replaced `Base.astro`. Next milestone is a React head helper so we can consider dropping `BaseHead.astro` if/when desired.
 - Linting/formatting:
   - Keep current setup. Optionally remove "*.astro" ignore from Biome formatter once most UI moves to React; Prettier already formats .astro via plugin.
 - CI enhancements:
   - Add Lighthouse CI (or GitHub Action) to measure LCP/CLS/TBT on key routes.
   - Add a bundle size report step (e.g., vite-bundle-visualizer or rollup-plugin-visualizer in CI) with a basic budget.
 - Hydration guardrails:
-  - Inventory interactive components (nav, search, tooltips/popovers) and explicitly annotate with client:visible or client:idle in the route wrappers.
+  - Person popovers (`client:idle`), navigation/search (`Header client:load`), and events grids (`client:load`) are explicitly annotated per `docs/hydration-policy.md`. Continue documenting any new interactive leaves.
 - Previews (optional):
   - Add PR preview builds (e.g., publish build artifacts and comment URLs, or deploy previews to a secondary static host).
 - Success criteria baseline:
@@ -279,7 +280,7 @@ Components and icons (current homepage):
   - Notes:
     - Icons use className="w-12 h-12" and inherit contextual color (e.g., variant text classes).
 
-- LinkCardReact (src/components/cards/LinkCardReact.tsx)
+- LinkCard (src/components/cards/LinkCard.tsx)
   - Accepts either:
     - icon: a React node (must respect currentColor), or
     - iconRender: (className) => ReactNode (recommended to ensure consistent styling)
@@ -300,18 +301,15 @@ Conventions (for future components):
 - Color and hover: let parent container provide the color via variant text classes; icons inherit via currentColor.
 - Avoid string-based icon lookups. Pass React elements directly to maintain type-safety and remove runtime resolution.
 
-## Astro component audit (2025-11-13)
+## Astro component audit (2025-11-14)
 
-Legacy `.astro` wrappers that no longer had importers have been deleted in this pass (`Hero.astro`, `Section.astro`, `GlyphField.astro`, `CallToActionButton.astro`, `ItemCard.astro`, `FeatureCard.astro`, `LinkCard.astro`, `Search.astro`, `ThemeToggle.astro`, `Timeline.astro`, `LinkButton.astro`, `TagsList.astro`, `PricingInfo.astro`, `BackgroundParallaxHexIsland.astro`). The list below tracks the remaining files under `src/components/**/*.astro`, their current usage, and what needs to happen before they can be removed.
+Legacy `.astro` wrappers that no longer had importers have been deleted in this pass (`Hero.astro`, `Section.astro`, `GlyphField.astro`, `CallToActionButton.astro`, `ItemCard.astro`, `FeatureCard.astro`, `LinkCard.astro`, `Search.astro`, `ThemeToggle.astro`, `Timeline.astro`, `LinkButton.astro`, `TagsList.astro`, `PricingInfo.astro`, `BackgroundParallaxHexIsland.astro`, `detail/BaseDetailLayout.astro`, `detail/ContentSection.astro`, `detail/InfoCard.astro`, `detail/ChipsList.astro`, `detail/FeaturesList.astro`, `detail/SpecificationsList.astro`, `ui/BasicChip.astro`, `ui/OrganizationChip.astro`, `people/PersonPopoverWrapper.astro`, `sections/SubsectionGrid.astro`, `cards/EventCard.astro`, `cards/HardwareCard.astro`, `cards/SoftwareCard.astro`, `cards/ResearchCard.astro`, `cards/PersonCard.astro`, `cards/PersonListElement.astro`, `cards/PartnerCard.astro`). The list below tracks the remaining files under `src/components/**/*.astro`, their current usage, and what needs to happen before they can be removed.
 
 | Component(s) | Current usage | Removal path |
 | --- | --- | --- |
 | `BaseHead.astro` | Head meta helper for every route | Keep until we decide on a React head strategy or confirm Astro head stays indefinitely. |
-| `layout/Header.astro`, `layout/Footer.astro`, `SkipLink.astro`, `theme/ThemeProvider.astro` | Injected into every route via `SiteShell` slots | Replace once the global header/footer/theme logic moves to React (can happen before slug work). |
-| `sections/SubsectionGrid.astro`, `cards/PersonCard.astro`, `cards/PersonListElement.astro`, `cards/PartnerCard.astro` | Only used by `src/pages/contributors.astro` | Remove after the Contributors page is rewritten as a React composition. |
-| `cards/HardwareCard.astro`, `cards/SoftwareCard.astro`, `cards/ResearchCard.astro`, `cards/EventCard.astro` | Feed data from `astro:content` into React cards on `projects.astro` + slug detail pages | Replace with server utilities (e.g., `src/data/*`) and hydrate React cards directly once projects + slug routes migrate. |
-| `ui/BasicChip.astro`, `ui/OrganizationChip.astro` | Metadata chips rendered inside slug detail pages | Convert to React and load data via the slug’s React detail component once those routes migrate. |
-| `detail/BaseDetailLayout.astro`, `detail/ContentSection.astro`, `detail/InfoCard.astro`, `detail/ChipsList.astro`, `detail/FeaturesList.astro`, `detail/SpecificationsList.astro` | Core scaffolding for `[...slug].astro` detail pages | Replace with React detail shells/components when Phase 4 (dynamic routes) lands. |
-| `people/PersonPopoverWrapper.astro` | Hover/focus popovers for people lists within slug detail pages | Convert when the related detail views move to React; depends on the same Phase 4 work. |
+| `layouts/SiteShell.astro` | Layout glue that loads header data, injects ThemeProvider/SkipLink/Header/Footer, and hydrates the background island | Needed to keep hydration directives (`client:load` on Header, `client:only="react"` on Parallax). Can revisit once we adopt a pure React shell. |
 
-All of the components above (except `BaseHead` and the layout shell pieces) can disappear immediately after slug migrations because the React counterparts already exist or have clear design targets. Track deletions per route to keep diffs reviewable.
+✅ Audit outcome: no stray `.astro` wrappers remain under `src/components/**`. ThemeProvider, SkipLink, Header, and Footer now live in React; future deletions are blocked on the React head plan and possible SiteShell rewrite.
+
+All other component directories are now React-only, which keeps discovery predictable (`src/components/cards/**`, `src/components/sections/**`, etc.). The remaining Astro files live under `src/components/BaseHead.astro` and `src/layouts/SiteShell.astro` until we finalize the head/shell strategy.

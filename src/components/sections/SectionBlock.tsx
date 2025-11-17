@@ -46,7 +46,7 @@ export interface SectionBlockProps {
  * SectionBlock
  *
  * Reusable React wrapper for page sections, matching the structure and styles of the
- * existing SectionReact/Section.astro used across the site. Supports optional hero
+ * existing Section/Section.astro used across the site. Supports optional hero
  * image headers, anchor links on titles, and variant-based heading colors.
  */
 export function SectionBlock({

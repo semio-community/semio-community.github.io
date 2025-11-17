@@ -10,8 +10,8 @@ All detail pages use a consistent single-column layout with semantic content slo
 
 ### Core Layout Component
 
-#### `BaseDetailLayout.astro`
-The foundation component that provides the structure for all detail pages using semantic slots.
+#### `BaseDetailLayout` (React)
+The React foundation component that provides the structure for all detail pages using semantic slots. A thin `.astro` shim forwards slot content into the React layout to keep legacy routes working while new pages can import the React module directly.
 
 **Available Slots:**
 - `breadcrumbs` - Navigation breadcrumbs
@@ -55,7 +55,7 @@ Grid display for related content items (research, hardware, software, events, pe
 
 ### Content Organization Components
 
-#### `InfoCard.astro`
+#### `InfoCard`
 Reusable card wrapper for content sections with consistent styling.
 
 **Props:**
@@ -63,7 +63,7 @@ Reusable card wrapper for content sections with consistent styling.
 - `icon` - Optional icon name
 - `className` - Additional CSS classes
 
-#### `ContentSection.astro`
+#### `ContentSection`
 Simple section wrapper for text content with a title.
 
 #### `MetadataItem.astro`
@@ -74,14 +74,11 @@ Component for displaying individual metadata items with icons.
 #### `StatusBadge.tsx`
 Badge component for displaying status indicators. (Now located in `detail/legacy/`.)
 
-#### `BasicChip.astro` (referenced, not in this directory)
-Simple chip component for tags and categories. Lives in `components/ui/BasicChip.astro`.
+#### `BasicChip`
+Simple chip component for tags and categories. Implemented in React (`components/ui/BasicChip.tsx`) and now imported directly from Astro routes.
 
-#### `PersonPopoverWrapper.astro` (referenced, not in this directory)
-Wrapper for displaying person information with hover popover. Lives in `components/people/PersonPopoverWrapper.astro`.
-
-#### `OrganizationChip.astro` (referenced, not in this directory)
-Chip component for displaying organization references. Lives in `components/ui/OrganizationChip.astro`.
+#### `OrganizationChip`
+Chip component for displaying organization references. Use the React implementation in `components/ui/OrganizationChip.tsx` and pass the organization metadata from the route.
 
 ## Deprecated Components
 

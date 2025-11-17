@@ -70,21 +70,14 @@ export default function HomePage({ projectCount, featuredEventCount }: HomePageP
 
 ```astro
 ---
-// src/pages/index.astro
-import BaseLayout from "@/layouts/BaseLayout";
-import Header from "@/components/layout/Header.astro";
-import Footer from "@/components/layout/Footer.astro";
-import ThemeProvider from "@/components/theme/ThemeProvider.astro";
-import SkipLink from "@/components/SkipLink.astro";
+import BaseHead from "@/components/BaseHead.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
 import HomePage from "@/react-pages/home/HomePage";
-
-// Data modules (server-only)
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getAllResearch } from "@/data/research";
 import { getCurrentEvents, getFeaturedEvents, getUpcomingEvents } from "@/data/events";
 
-// Load data on the server (Astro side)
 const hardware = await getAllHardware();
 const software = await getAllSoftware();
 const research = await getAllResearch();
@@ -101,17 +94,16 @@ const featuredEventCount = [
 ].length;
 ---
 
-<!--
-  Render the React layout and page component.
-  Keep this SSR-only; hydrate only interactive subcomponents elsewhere as needed.
--->
-<BaseLayout
-  header={<Header />}
-  footer={<Footer />}
-  themeProvider={<ThemeProvider />}
-  skipLink={<SkipLink />}>
-  <HomePage projectCount={projectCount} featuredEventCount={featuredEventCount} />
-</BaseLayout>
+<html lang="en">
+  <head>
+    <BaseHead title="Home" description="Welcome to Semio Community" />
+  </head>
+  <body class="bg-surface">
+    <SiteShell showBackground>
+      <HomePage projectCount={projectCount} featuredEventCount={featuredEventCount} />
+    </SiteShell>
+  </body>
+</html>
 ```
 
 ## Conventions

@@ -425,7 +425,7 @@ This plan preserves Pagefind’s fast static search while giving you full contro
 
 ## Next steps checklist (actionable)
 
-- [ ] Mount `SearchProvider` around header/nav (e.g., React island in Header.astro or Base.astro)
+- [ ] Mount `SearchProvider` around header/nav (e.g., the React `Header` rendered from `SiteShell`)
 - [ ] Render `<SearchModal />` once at the same level
 - [ ] Swap desktop search trigger to call `openDesktopModal()` (old handler assumed the legacy Astro search element)
 - [ ] Implement `SearchMobilePanel` and gate nav content with provider `mode`

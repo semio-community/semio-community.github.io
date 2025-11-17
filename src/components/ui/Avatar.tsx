@@ -1,5 +1,4 @@
 import React from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import {
   User,
   Buildings,
@@ -134,32 +133,35 @@ export const Avatar: React.FC<AvatarProps> = ({
   const baseClasses = `relative inline-flex align-middle ${sizeClasses[size]} ${roundedClasses[rounded]} overflow-hidden flex-shrink-0`;
   const fallbackBaseClasses = `w-full h-full flex items-center justify-center ${typeGradients[type]} ${roundedClasses[rounded]}`;
 
+  if (imageSrc) {
+    return (
+      <div className={`${baseClasses} ${className}`}>
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className="absolute inset-0 w-full h-full object-cover block"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
   return (
-    <AvatarPrimitive.Root className={`${baseClasses} ${className}`}>
-      <AvatarPrimitive.Image
-        src={imageSrc}
-        alt={imageAlt}
-        className={`absolute inset-0 w-full h-full object-cover block`}
-      />
-      <AvatarPrimitive.Fallback
-        className={`${fallbackBaseClasses} ${fallbackClassName}`}
-        delayMs={0}
-      >
+    <div className={`${baseClasses} ${className}`}>
+      <div className={`${fallbackBaseClasses} ${fallbackClassName}`}>
         {type === "person" && name ? (
-          // Show initials only for people with names
           <span
             className={`font-semibold ${textSizeClasses[size]} text-accent-base select-none`}
           >
             {getInitials(name)}
           </span>
         ) : (
-          // Show icon for all non-person types or people without names
           <TypeIcon
             type={type}
             className={`${iconSizeClasses[size]} text-accent-base opacity-60`}
           />
         )}
-      </AvatarPrimitive.Fallback>
-    </AvatarPrimitive.Root>
+      </div>
+    </div>
   );
 };
