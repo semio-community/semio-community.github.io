@@ -102,9 +102,6 @@ function rndIn(rng: () => number, min: number, max: number) {
 }
 
 /** Pick one from array using rng() */
-function pick<T>(rng: () => number, arr: T[]): T {
-  return arr[Math.floor(rng() * arr.length)]!;
-}
 
 function generateGlyphs({
   count,
