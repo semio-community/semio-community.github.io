@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   motion,
   useMotionTemplate,
@@ -269,9 +269,11 @@ function getFillColor(
 function Glyph({
   spec,
   scrollY,
+  virtualWidth,
 }: {
   spec: GlyphSpec;
   scrollY: ReturnType<typeof useScroll>["scrollY"];
+  virtualWidth: number;
 }) {
   // Foreground factor: 1 means move fully with content; 0 means static
   const y = useTransform(scrollY, (v) => -v * spec.parallax);
@@ -294,6 +296,11 @@ function Glyph({
   const margin = MAX_BLUR;
   const paddedSize = spec.size + margin * 2;
 
+  const baselineEdge = 100;
+  const extra = Math.max(0, virtualWidth / 16);
+  const adjustedVw = spec.xVw >= baselineEdge ? spec.xVw + extra : spec.xVw;
+  const leftPx = (adjustedVw / 100) * virtualWidth - margin;
+
   return (
     <div style={{ filter: blurFilter, WebkitFilter: blurFilter }}>
       <motion.svg
@@ -302,7 +309,7 @@ function Glyph({
         viewBox={`${-GLYPH_W / 2} ${-GLYPH_H / 2} ${GLYPH_W} ${GLYPH_H}`}
         style={{
           position: "absolute",
-          left: `calc(${spec.xVw}vw - ${margin}px)`,
+          left: `${leftPx}px`,
           top: `calc(${spec.yVh}vh - ${margin}px)`,
           transform: translate as unknown as string, // motion template -> style transform
           zIndex: spec.zIndex,
@@ -342,6 +349,21 @@ export default function ParallaxHexBackground({
   opacity = { stroke: [0.22, 0.55], fill: [0.05, 0.18] },
   className = "",
 }: ParallaxHexBackgroundProps) {
+  const MIN_VIRTUAL_WIDTH = 768;
+  const [viewportWidth, setViewportWidth] = useState(() => {
+    if (typeof window === "undefined") return MIN_VIRTUAL_WIDTH;
+    return window.innerWidth;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const virtualWidth = Math.max(MIN_VIRTUAL_WIDTH, viewportWidth);
+
   const glyphs = useMemo(
     () =>
       generateGlyphs({
@@ -364,7 +386,12 @@ export default function ParallaxHexBackground({
       aria-hidden="true"
     >
       {glyphs.map((g) => (
-        <Glyph key={g.id} spec={g} scrollY={scrollY} />
+        <Glyph
+          key={g.id}
+          spec={g}
+          scrollY={scrollY}
+          virtualWidth={virtualWidth}
+        />
       ))}
     </div>
   );

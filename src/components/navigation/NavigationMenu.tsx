@@ -3,13 +3,7 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
 import { CallToActionButton } from "../ui/CallToActionButton";
 import { getStatusColor } from "@/config/statusConfig";
-import {
-  TestTube,
-  UserHandUp,
-  Calendar,
-  UsersGroupTwoRounded,
-  UserPlusRounded,
-} from "@solar-icons/react-perf/LineDuotone";
+import { navIconMap } from "@/components/navigation/navIcons";
 
 // Simplified type for serialized data
 type HardwareItem = {
@@ -66,16 +60,7 @@ const makeUrl = (path: string, prefix: string = "") => {
   return `${prefix}${normalizedPath}`;
 };
 
-const dropdownIconMap: Record<
-  string,
-  React.ComponentType<{ className?: string }>
-> = {
-  "/projects/": TestTube,
-  "/services/": UserHandUp,
-  "/events/": Calendar,
-  "/contributors/": UsersGroupTwoRounded,
-  "/get-involved/": UserPlusRounded,
-};
+const dropdownIconMap = navIconMap;
 
 export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   currentPath,

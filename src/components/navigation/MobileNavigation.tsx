@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import { CallToActionButton } from "../ui/CallToActionButton";
 import { NavIconButton } from "./NavIconButton";
 import { useSearch } from "@/components/search";
+import { navIconMap } from "@/components/navigation/navIcons";
 
 interface MobileNavigationProps {
   menuLinks: Array<{
@@ -503,7 +504,16 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                                           : "text-foreground hover:bg-accent-base/5 hover:text-accent-base",
                                       )}
                                     >
-                                      {link.title}
+                                      <span className="flex items-center gap-2">
+                                        {(() => {
+                                          const IconComponent =
+                                            navIconMap[link.path];
+                                          return IconComponent ? (
+                                            <IconComponent className="w-4 h-4 text-accent-base" />
+                                          ) : null;
+                                        })()}
+                                        <span>{link.title}</span>
+                                      </span>
                                     </a>
                                     {Array.isArray(menuSections[link.path]) &&
                                       menuSections[link.path]!.length > 0 && (
