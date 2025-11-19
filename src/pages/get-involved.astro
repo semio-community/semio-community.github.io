@@ -8,6 +8,7 @@ const meta = {
   description:
     "Join the Semio Community - donate, volunteer, and help advance human-centered robotics and AI",
 };
+const ogImage = "/og/get-involved.png";
 
 // Volunteer opportunities section removed per specification.
 
@@ -21,7 +22,11 @@ const meta = {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell>

@@ -122,6 +122,7 @@ const meta = {
   title: `${fullName} - Researcher Profile`,
   description: data.bio || `Profile of ${fullName}`,
 };
+const ogImage = `/og/people/${entry.id}.png`;
 
 // Prepare status badges
 const badges = [];
@@ -281,205 +282,208 @@ if (data.links?.mastodon) {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
-                        
-            <BaseDetailLayout>
-              <Fragment slot="hero">
-                <DetailHero
-                  image={data.images?.hero}
-                  title={fullName}
-                  subtitle={data.title}
-                  badges={badges}
-                  featuredState={data.featured ? "featured" : undefined}
-                  avatar={data.images?.avatar}
-                  entityType="person"
-                  logoText={data.name}
+      <BaseDetailLayout>
+        <Fragment slot="hero">
+          <DetailHero
+            image={data.images?.hero}
+            title={fullName}
+            subtitle={data.title}
+            badges={badges}
+            featuredState={data.featured ? "featured" : undefined}
+            avatar={data.images?.avatar}
+            entityType="person"
+            logoText={data.name}
+          />
+        </Fragment>
+
+        <Fragment slot="contributors">
+          {
+            (currentAffiliations.length > 0 || pastAffiliations.length > 0) && (
+              <InfoCard title="AFFILIATIONS">
+                {currentAffiliations.length > 0 && (
+                  <div class="mb-4">
+                    <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                      Current
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      {currentAffiliations.map((aff) => (
+                        <OrganizationChip
+                          partnerId={aff.organizationId}
+                          partnerName={
+                            aff.organization?.data?.shortName ||
+                            aff.organization?.data?.name
+                          }
+                          logo={aff.organization?.data?.images?.logo}
+                          role={
+                            aff.department
+                              ? `${aff.role}, ${aff.department}`
+                              : aff.role
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {pastAffiliations.length > 0 && (
+                  <div>
+                    <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                      Past
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      {pastAffiliations.map((aff) => (
+                        <OrganizationChip
+                          partnerId={aff.organizationId}
+                          partnerName={
+                            aff.organization?.data?.shortName ||
+                            aff.organization?.data?.name
+                          }
+                          logo={aff.organization?.data?.images?.logo}
+                          role={
+                            aff.department
+                              ? `${aff.role}, ${aff.department}`
+                              : aff.role
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </InfoCard>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="links">
+          {
+            data.links && Object.keys(data.links).length > 0 && (
+              <LinkSection
+                client:idle
+                links={data.links}
+                size="md"
+                className="gap-1"
+              />
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="tags">
+          {
+            data.expertise && data.expertise.length > 0 && (
+              <InfoCard title="EXPERTISE AREAS">
+                <div class="flex flex-wrap gap-2">
+                  {data.expertise.map((skill) => (
+                    <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </InfoCard>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="description">
+          <ContentSection title="BIOGRAPHY" content={data.bio} />
+        </Fragment>
+
+        <Fragment slot="related">
+          {
+            (relatedContent.research.length > 0 ||
+              relatedContent.hardware.length > 0 ||
+              relatedContent.software.length > 0 ||
+              relatedContent.events.length > 0) && (
+              <div class="mt-12">
+                <h2 class="text-2xl font-bold mb-2">
+                  Contributions &amp; Involvement
+                </h2>
+                <p class="text-color-600 dark:text-color-400 mb-8">
+                  Research, projects, and events
+                </p>
+
+                {relatedContent.research.length > 0 && (
+                  <div class="mb-12">
+                    <h3 class="text-lg font-semibold mb-4">Research</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {relatedContent.research.map((item) => (
+                        <ResearchCard researchId={item.id} data={item.data} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {relatedContent.hardware.length > 0 && (
+                  <div class="mb-12">
+                    <h3 class="text-lg font-semibold mb-4">Hardware</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {relatedContent.hardware.map((hw) => (
+                        <HardwareCard hardwareId={hw.id} data={hw.data} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {relatedContent.software.length > 0 && (
+                  <div class="mb-12">
+                    <h3 class="text-lg font-semibold mb-4">Software</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {relatedContent.software.map((sw) => (
+                        <SoftwareCard softwareId={sw.id} data={sw.data} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {relatedContent.events.length > 0 && (
+                  <div class="mb-12">
+                    <h3 class="text-lg font-semibold mb-4">Events</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {relatedContent.events.map((event) => (
+                        <EventCard eventId={event.id} data={event.data} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          }
+
+          {
+            relatedPeople && relatedPeople.length > 0 && (
+              <div class="mt-12">
+                <RelatedItemsGrid
+                  client:load
+                  title="Related Researchers"
+                  subtitle="Researchers with similar expertise or affiliations"
+                  items={relatedPeople.map((person) => ({
+                    id: person.id,
+                    data: {
+                      ...person.data,
+                      name: person.data.honorific
+                        ? `${person.data.honorific} ${person.data.name}`
+                        : person.data.name,
+                      description: person.data.bio || person.data.title || "",
+                      shortDescription: person.data.title || "",
+                      images: person.data.images,
+                      featured: person.data.featured,
+                    },
+                  }))}
+                  itemType="people"
+                  columns={3}
                 />
-              </Fragment>
-      
-              <Fragment slot="contributors">
-                {
-                  (currentAffiliations.length > 0 || pastAffiliations.length > 0) && (
-                    <InfoCard title="AFFILIATIONS">
-                      {currentAffiliations.length > 0 && (
-                        <div class="mb-4">
-                          <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                            Current
-                          </h4>
-                          <div class="flex flex-wrap gap-2">
-                            {currentAffiliations.map((aff) => (
-                              <OrganizationChip
-                                partnerId={aff.organizationId}
-                                partnerName={
-                                  aff.organization?.data?.shortName ||
-                                  aff.organization?.data?.name
-                                }
-                                logo={aff.organization?.data?.images?.logo}
-                                role={
-                                  aff.department
-                                    ? `${aff.role}, ${aff.department}`
-                                    : aff.role
-                                }
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-      
-                      {pastAffiliations.length > 0 && (
-                        <div>
-                          <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                            Past
-                          </h4>
-                          <div class="flex flex-wrap gap-2">
-                            {pastAffiliations.map((aff) => (
-                              <OrganizationChip
-                                partnerId={aff.organizationId}
-                                partnerName={
-                                  aff.organization?.data?.shortName ||
-                                  aff.organization?.data?.name
-                                }
-                                logo={aff.organization?.data?.images?.logo}
-                                role={
-                                  aff.department
-                                    ? `${aff.role}, ${aff.department}`
-                                    : aff.role
-                                }
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </InfoCard>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="links">
-                {
-                  data.links && Object.keys(data.links).length > 0 && (
-                    <LinkSection
-                      client:idle
-                      links={data.links}
-                      size="md"
-                      className="gap-1"
-                    />
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="tags">
-                {
-                  data.expertise && data.expertise.length > 0 && (
-                    <InfoCard title="EXPERTISE AREAS">
-                      <div class="flex flex-wrap gap-2">
-                        {data.expertise.map((skill) => (
-                          <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </InfoCard>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="description">
-                <ContentSection title="BIOGRAPHY" content={data.bio} />
-              </Fragment>
-      
-              <Fragment slot="related">
-                {
-                  (relatedContent.research.length > 0 ||
-                    relatedContent.hardware.length > 0 ||
-                    relatedContent.software.length > 0 ||
-                    relatedContent.events.length > 0) && (
-                    <div class="mt-12">
-                      <h2 class="text-2xl font-bold mb-2">
-                        Contributions &amp; Involvement
-                      </h2>
-                      <p class="text-color-600 dark:text-color-400 mb-8">
-                        Research, projects, and events
-                      </p>
-      
-                      {relatedContent.research.length > 0 && (
-                        <div class="mb-12">
-                          <h3 class="text-lg font-semibold mb-4">Research</h3>
-                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {relatedContent.research.map((item) => (
-                              <ResearchCard researchId={item.id} data={item.data} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-      
-                      {relatedContent.hardware.length > 0 && (
-                        <div class="mb-12">
-                          <h3 class="text-lg font-semibold mb-4">Hardware</h3>
-                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {relatedContent.hardware.map((hw) => (
-                              <HardwareCard hardwareId={hw.id} data={hw.data} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-      
-                      {relatedContent.software.length > 0 && (
-                        <div class="mb-12">
-                          <h3 class="text-lg font-semibold mb-4">Software</h3>
-                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {relatedContent.software.map((sw) => (
-                              <SoftwareCard softwareId={sw.id} data={sw.data} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-      
-                      {relatedContent.events.length > 0 && (
-                        <div class="mb-12">
-                          <h3 class="text-lg font-semibold mb-4">Events</h3>
-                          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {relatedContent.events.map((event) => (
-                              <EventCard eventId={event.id} data={event.data} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )
-                }
-      
-                {
-                  relatedPeople && relatedPeople.length > 0 && (
-                    <div class="mt-12">
-                      <RelatedItemsGrid
-                        client:load
-                        title="Related Researchers"
-                        subtitle="Researchers with similar expertise or affiliations"
-                        items={relatedPeople.map((person) => ({
-                          id: person.id,
-                          data: {
-                            ...person.data,
-                            name: person.data.honorific
-                              ? `${person.data.honorific} ${person.data.name}`
-                              : person.data.name,
-                            description: person.data.bio || person.data.title || "",
-                            shortDescription: person.data.title || "",
-                            images: person.data.images,
-                            featured: person.data.featured,
-                          },
-                        }))}
-                        itemType="people"
-                        columns={3}
-                      />
-                    </div>
-                  )
-                }
-              </Fragment>
-            </BaseDetailLayout>
+              </div>
+            )
+          }
+        </Fragment>
+      </BaseDetailLayout>
     </SiteShell>
   </body>
 </html>

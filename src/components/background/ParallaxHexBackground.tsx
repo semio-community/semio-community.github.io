@@ -281,8 +281,8 @@ function Glyph({
   // Near (parallax ~1) should be sharp; far (parallax small) slightly blurred.
   // Depth-based blur: numeric per glyph (constant with respect to scroll)
   const p = Math.max(0, Math.min(1, spec.parallax));
-  const nearBlur = 0.15; // px
-  const farBlur = 6; // px
+  const nearBlur = 1; // px
+  const farBlur = 4; // px
   const blurPx = farBlur - p * (farBlur - nearBlur);
   const blurFilter = `blur(${blurPx}px)`;
 

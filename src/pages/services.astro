@@ -8,6 +8,7 @@ const meta = {
   description:
     "Comprehensive support services for robotics hardware development, software engineering, and research programs in human-robot interaction",
 };
+const ogImage = "/og/services.png";
 ---
 
 <html
@@ -15,12 +16,15 @@ const meta = {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground>
-                        
-            <ServicesPage />
+      <ServicesPage />
     </SiteShell>
   </body>
 </html>
