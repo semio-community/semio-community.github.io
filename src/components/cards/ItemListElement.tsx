@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
@@ -42,7 +42,7 @@ export interface ItemListElementProps {
  *
  * Visual styling is aligned with ItemCard: background, rounded corners, hover effects.
  */
-export const ItemListElement: React.FC<ItemListElementProps> = ({
+export const ItemListElement: FC<ItemListElementProps> = ({
   title,
   description,
   href,
@@ -69,7 +69,7 @@ export const ItemListElement: React.FC<ItemListElementProps> = ({
   return (
     <a
       href={href}
-      className={`group flex items-center gap-3 sm:gap-4 bg-special-lighter rounded-lg hover:shadow-lg transition-[colors,transform] w-full overflow-hidden no-underline px-3 sm:px-4 py-2.5 scale-100 hover:scale-[1.02] ${className}`}
+      className={`group flex items-center gap-3 sm:gap-4 bg-special-lighter rounded-lg hover:shadow-lg transition-[colors,transform] w-full overflow-hidden no-underline px-3 sm:px-4 py-2.5 scale-100 hover:scale-[1.02] backdrop-blur-lg ${className}`}
     >
       {/* Avatar / Logo */}
       <div className="flex-shrink-0">

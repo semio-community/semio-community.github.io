@@ -1,15 +1,17 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
-import PageLayout from "@/layouts/Base.astro";
-import BaseDetailLayout from "@/components/detail/BaseDetailLayout.astro";
-import { DetailHero } from "@/components/detail/DetailHero";
+import BaseHead from "@/components/BaseHead.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
+import {
+  BaseDetailLayout,
+  DetailHero,
+  SpecificationsList,
+  ContentSection,
+} from "@/components/detail";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import LinkSection from "@/components/detail/LinkSection";
-import ContentSection from "@/components/detail/ContentSection.astro";
 import { getAllEvents } from "@/data/events";
-import SpecificationsList from "@/components/detail/SpecificationsList.astro";
-import BasicChip from "@/components/ui/BasicChip.astro";
-import { Fragment } from "react";
+import BasicChip from "@/components/ui/BasicChip";
 
 import { getEventPreviewDescriptionText } from "@/utils/events";
 
@@ -237,142 +239,136 @@ const featuredState = data.featured
   : undefined;
 ---
 
-<PageLayout meta={meta} noPaddingTop>
-  <BaseDetailLayout>
-    <Fragment slot="hero">
-      <DetailHero
-        client:load
-        image={data.images?.hero}
-        title={data.name}
-        subtitle={descriptionText}
-        badges={badges}
-        featuredState={featuredState}
-        logo={data.images?.logo}
-        entityType="event"
-      />
-    </Fragment>
-
-    {/* External Links */}
-    <Fragment slot="links">
-      {
-        eventLinks && Object.keys(eventLinks).length > 0 && (
-          <LinkSection
-            client:load
-            links={eventLinks}
-            size="md"
-            className="gap-1"
-          />
-        )
-      }
-    </Fragment>
-
-    {/* Description */}
-    <Fragment slot="description">
-      <ContentSection title="ABOUT THE EVENT" content={data.description} />
-    </Fragment>
-
-    {/* Event Metadata (Details & Location) */}
-    <Fragment slot="metadata">
-      {/* Event Details */}
-      <SpecificationsList
-        title="EVENT DETAILS"
-        items={eventDetailsItems}
-        defaultItemIcon="solar:calendar-line-duotone"
-      />
-
-      {/* Location */}
-      <SpecificationsList
-        title="LOCATION"
-        items={locationItems}
-        defaultItemIcon="solar:map-point-line-duotone"
-      />
-    </Fragment>
-
-    {/* Semio Community Roles */}
-    <Fragment slot="contributors">
-      {
-        roleEntries.length > 0 && (
-          <div class="roles-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                SEMIO COMMUNITY ROLES
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {roleEntries.map((role) => (
-                  <BasicChip text={role.label} variant="primary" />
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      }
-    </Fragment>
-
-    {/* Topics */}
-    {
-      data.topics && data.topics.length > 0 && (
-        <Fragment slot="tags">
-          <div class="topics-section mb-8">
-            <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-              <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                TOPICS
-              </h3>
-              <div class="flex flex-wrap gap-2">
-                {data.topics.map((topic: string) => (
-                  <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
-                    {topic}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Fragment>
-      )
-    }
-
-    {/* Main content from MDX file */}
-    <!-- <Content /> -->
-
-    {/* Related Events */}
-    <Fragment slot="related">
-      {
-        relatedEvents && relatedEvents.length > 0 && (
-          <RelatedItemsGrid
-            client:load
-            title="Related Events"
-            subtitle="Similar upcoming and past events"
-            items={
-              relatedEvents.map((event) => ({
-                id: event.id,
-                data: {
-                  name: event.data.name,
-                  title: undefined,
-                  displayName: event.data.displayName,
-                  description: event.data.description,
-                  abstract: undefined,
-                  status: undefined,
-                  type: event.data.type,
-                  category: undefined,
-                  featured: event.data.featured,
-                  images: event.data.images,
-                  avatar: undefined,
-                  logo: undefined,
-                  thumbnail: undefined,
-                  banner: event.data.images?.hero,
-                  links: event.data.links,
-                  startDate: event.data.startDate,
-                  endDate: event.data.endDate,
-                  shortDescription: `${
-                    typeLabels[event.data.type] || event.data.type
-                  } • ${event.data.location.city}`,
-                },
-              })) as any
-            }
-            itemType="events"
-            columns={3}
-          />
-        )
-      }
-    </Fragment>
-  </BaseDetailLayout>
-</PageLayout>
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title={meta.title} description={meta.description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
+                        
+            <BaseDetailLayout>
+              <Fragment slot="hero">
+                <DetailHero
+                  image={data.images?.hero}
+                  title={data.name}
+                  subtitle={descriptionText}
+                  badges={badges}
+                  featuredState={featuredState}
+                  logo={data.images?.logo}
+                  entityType="event"
+                />
+              </Fragment>
+      
+              <Fragment slot="links">
+                {
+                  eventLinks && Object.keys(eventLinks).length > 0 && (
+                    <LinkSection
+                      client:idle
+                      links={eventLinks}
+                      size="md"
+                      className="gap-1"
+                    />
+                  )
+                }
+              </Fragment>
+      
+              <Fragment slot="description">
+                <ContentSection title="ABOUT THE EVENT" content={data.description} />
+              </Fragment>
+      
+              <Fragment slot="metadata">
+                <SpecificationsList
+                  title="EVENT DETAILS"
+                  items={eventDetailsItems}
+                  defaultItemIcon="solar:calendar-line-duotone"
+                />
+                <SpecificationsList
+                  title="LOCATION"
+                  items={locationItems}
+                  defaultItemIcon="solar:map-point-line-duotone"
+                />
+              </Fragment>
+      
+              <Fragment slot="contributors">
+                {
+                  roleEntries.length > 0 && (
+                    <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+                      <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                        SEMIO COMMUNITY ROLES
+                      </h3>
+                      <div class="flex flex-wrap gap-2">
+                        {roleEntries.map((role) => (
+                          <BasicChip text={role.label} variant="primary" />
+                        ))}
+                      </div>
+                    </div>
+                  )
+                }
+              </Fragment>
+      
+              <Fragment slot="tags">
+                {
+                  data.topics && data.topics.length > 0 && (
+                    <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+                      <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                        TOPICS
+                      </h3>
+                      <div class="flex flex-wrap gap-2">
+                        {data.topics.map((topic: string) => (
+                          <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                }
+              </Fragment>
+      
+              <Fragment slot="related">
+                {
+                  relatedEvents && relatedEvents.length > 0 && (
+                    <RelatedItemsGrid
+                      client:load
+                      title="Related Events"
+                      subtitle="Similar upcoming and past events"
+                      items={
+                        relatedEvents.map((event) => ({
+                          id: event.id,
+                          data: {
+                            name: event.data.name,
+                            title: undefined,
+                            displayName: event.data.displayName,
+                            description: event.data.description,
+                            abstract: undefined,
+                            status: undefined,
+                            type: event.data.type,
+                            category: undefined,
+                            featured: event.data.featured,
+                            images: event.data.images,
+                            avatar: undefined,
+                            logo: undefined,
+                            thumbnail: undefined,
+                            banner: event.data.images?.hero,
+                            links: event.data.links,
+                            startDate: event.data.startDate,
+                            endDate: event.data.endDate,
+                            shortDescription: `${
+                              typeLabels[event.data.type] || event.data.type
+                            } • ${event.data.location.city}`,
+                          },
+                        })) as any
+                      }
+                      itemType="events"
+                      columns={3}
+                    />
+                  )
+                }
+              </Fragment>
+            </BaseDetailLayout>
+    </SiteShell>
+  </body>
+</html>

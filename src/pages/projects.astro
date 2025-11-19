@@ -1,331 +1,38 @@
 ---
-import PageLayout from "@/layouts/Base.astro";
-import Section from "@/components/Section.astro";
-import HardwareCard from "@/components/cards/HardwareCard.astro";
-import SoftwareCard from "@/components/cards/SoftwareCard.astro";
-import ResearchCard from "@/components/cards/ResearchCard.astro";
-import CallToActionButton from "@/components/ui/CallToActionButton.astro";
-import { Icon } from "astro-icon/components";
+import BaseHead from "@/components/BaseHead.astro";
+import SiteShell from "@/layouts/SiteShell.astro";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { getAllResearch } from "@/data/research";
-import Hero from "@/components/Hero.astro";
+import ProjectsPage from "@/react-pages/projects/ProjectsPage";
+
+const hardware = await getAllHardware();
+const software = await getAllSoftware();
+const research = await getAllResearch();
 
 const meta = {
   title: "Projects",
   description:
     "Explore community-driven robotics hardware platforms, open-source software tools, and reproducible research contributions advancing human-robot interaction",
 };
-
-// Fetch hardware from content collections
-const allHardware = await getAllHardware();
-
-// Fetch software from content collections
-const allSoftware = await getAllSoftware();
-
-// Fetch research data - handle empty collection gracefully
-const allResearch = await getAllResearch();
 ---
 
-<PageLayout meta={meta} noPaddingTop>
-  <div
-    class="relative pt-16 md:pt-20 lg:pt-4 mb-8 sm:mb-12"
-    style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;"
-  >
-    <Hero>
-      <!-- Title -->
-      <h1
-        class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-accent-base mb-3 sm:mb-4 md:mb-6 font-semibold uppercase tracking-wide"
-      >
-        Projects
-      </h1>
-
-      <!-- Subtitle -->
-      <p
-        class="text-sm sm:text-base md:text-lg lg:text-xl font-light text-accent-base mb-8 sm:mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0"
-      >
-        Discover and contribute to our growing ecosystem of community-driven
-        robotics hardware, software, and research projects.
-      </p>
-
-      <!-- CTA Button -->
-      <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <CallToActionButton
-          href="#hardware"
-          text="Hardware Projects"
-          size="large"
-          indicatorText={allHardware.length?.toString()}
-        />
-        <CallToActionButton
-          href="#software"
-          text="Software Projects"
-          size="large"
-          variant="secondary"
-          indicatorText={allSoftware.length?.toString()}
-        />
-        <CallToActionButton
-          href="#research"
-          text="Research Projects"
-          size="large"
-          variant="tertiary"
-          indicatorText={allResearch.length?.toString()}
-        />
-      </div>
-    </Hero>
-  </div>
-
-  <!-- Hardware Section -->
-  <Section
-    id="hardware"
-    title="Hardware Projects"
-    subtitle="Community-driven robotics hardware for research and education"
-    variant="primary"
-  >
-    <div class="max-w-6xl mx-auto">
-      {
-        allHardware.length > 0 ? (
-          <div data-expandable-section data-initial-count="6">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              data-items-container
-            >
-              {allHardware.map((hw, index) => (
-                <div
-                  data-expandable-item
-                  data-index={index}
-                  class={index >= 6 ? "hidden" : ""}
-                >
-                  <HardwareCard hardwareId={hw.id} />
-                </div>
-              ))}
-            </div>
-            {allHardware.length > 6 && (
-              <div class="text-center mt-8">
-                <button
-                  data-expand-button
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
-                >
-                  <span data-expand-text>
-                    View All {allHardware.length} Platforms
-                  </span>
-                  <span data-collapse-text class="hidden">
-                    Show Less
-                  </span>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-4 h-4 transition-transform"
-                    data-expand-icon
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div class="text-center py-12">
-            <Icon
-              name="solar:box-minimalistic-line-duotone"
-              class="w-24 h-24 mx-auto mb-4 text-color-300"
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title={meta.title} description={meta.description} />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <SiteShell noPaddingTop showBackground>
+                        
+            <ProjectsPage
+              meta={meta}
+              hardware={hardware}
+              software={software}
+              research={research}
             />
-            <p class="text-lg text-color-600 dark:text-color-400">
-              Hardware platforms coming soon! Check back later for updates.
-            </p>
-          </div>
-        )
-      }
-    </div>
-  </Section>
-
-  <!-- Software Section -->
-  <Section
-    id="software"
-    title="Software Projects"
-    subtitle="Comprehensive software tools for every aspect of HRI development"
-    variant="secondary"
-  >
-    <div class="max-w-6xl mx-auto">
-      {
-        allSoftware.length > 0 ? (
-          <div data-expandable-section data-initial-count="6">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              data-items-container
-            >
-              {allSoftware.map((sw, index) => (
-                <div
-                  data-expandable-item
-                  data-index={index}
-                  class={index >= 6 ? "hidden" : ""}
-                >
-                  <SoftwareCard softwareId={sw.id} />
-                </div>
-              ))}
-            </div>
-            {allSoftware.length > 6 && (
-              <div class="text-center mt-8">
-                <button
-                  data-expand-button
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
-                >
-                  <span data-expand-text>
-                    View All {allSoftware.length} Tools
-                  </span>
-                  <span data-collapse-text class="hidden">
-                    Show Less
-                  </span>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-4 h-4 transition-transform"
-                    data-expand-icon
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div class="text-center py-12">
-            <Icon
-              name="solar:code-2-line-duotone"
-              class="w-24 h-24 mx-auto mb-4 text-color-300"
-            />
-            <p class="text-lg text-color-600 dark:text-color-400">
-              Software packages coming soon! Check back later for updates.
-            </p>
-          </div>
-        )
-      }
-    </div>
-  </Section>
-
-  <!-- Research Section -->
-  <Section
-    id="research"
-    title="Research Projects"
-    subtitle="Reproducible science and studies advancing the field of human-robot interaction"
-    variant="tertiary"
-  >
-    <div class="max-w-6xl mx-auto">
-      {
-        allResearch.length > 0 ? (
-          <div data-expandable-section data-initial-count="6">
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              data-items-container
-            >
-              {allResearch.map((st, index) => (
-                <div
-                  data-expandable-item
-                  data-index={index}
-                  class={index >= 6 ? "hidden" : ""}
-                >
-                  <ResearchCard researchId={st.id} />
-                </div>
-              ))}
-            </div>
-            {allResearch.length > 6 && (
-              <div class="text-center mt-8">
-                <button
-                  data-expand-button
-                  class="inline-flex items-center gap-2 px-6 py-3 bg-accent-base/10 hover:bg-accent-base/20 rounded-lg font-medium text-accent-base transition-all"
-                >
-                  <span data-expand-text>
-                    View All {allResearch.length} Publications
-                  </span>
-                  <span data-collapse-text class="hidden">
-                    Show Less
-                  </span>
-                  <Icon
-                    name="solar:alt-arrow-down-line-duotone"
-                    class="w-4 h-4 transition-transform"
-                    data-expand-icon
-                  />
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div class="text-center py-12">
-            <Icon
-              name="solar:document-add-line-duotone"
-              class="w-24 h-24 mx-auto mb-4 text-color-300"
-            />
-            <p class="text-lg text-color-600 dark:text-color-400">
-              Research publications coming soon! Check back later for updates.
-            </p>
-          </div>
-        )
-      }
-    </div>
-  </Section>
-</PageLayout>
-
-<script>
-  // Handle expandable sections
-  document.addEventListener("DOMContentLoaded", () => {
-    const expandableSections = document.querySelectorAll(
-      "[data-expandable-section]",
-    );
-
-    expandableSections.forEach((section) => {
-      const button = section.querySelector("[data-expand-button]");
-      const items = section.querySelectorAll("[data-expandable-item]");
-      const expandText = section.querySelector("[data-expand-text]");
-      const collapseText = section.querySelector("[data-collapse-text]");
-      const icon = section.querySelector("[data-expand-icon]");
-      const initialCount = parseInt(
-        (section as HTMLElement).dataset.initialCount || "6",
-      );
-
-      if (!button || items.length <= initialCount) {
-        // Hide button if not needed
-        if (button) (button as HTMLElement).style.display = "none";
-        return;
-      }
-
-      let isExpanded = false;
-
-      button.addEventListener("click", () => {
-        isExpanded = !isExpanded;
-
-        items.forEach((item, index) => {
-          if (index >= initialCount) {
-            if (isExpanded) {
-              item.classList.remove("hidden");
-            } else {
-              item.classList.add("hidden");
-            }
-          }
-        });
-
-        // Toggle button text
-        if (expandText && collapseText) {
-          if (isExpanded) {
-            expandText.classList.add("hidden");
-            collapseText.classList.remove("hidden");
-          } else {
-            expandText.classList.remove("hidden");
-            collapseText.classList.add("hidden");
-          }
-        }
-
-        // Rotate icon
-        if (icon) {
-          if (isExpanded) {
-            (icon as HTMLElement).style.transform = "rotate(180deg)";
-          } else {
-            (icon as HTMLElement).style.transform = "rotate(0deg)";
-          }
-        }
-
-        // Smooth scroll to section if collapsing
-        if (!isExpanded) {
-          const sectionTop =
-            section.getBoundingClientRect().top + window.scrollY - 100;
-          window.scrollTo({
-            top: sectionTop,
-            behavior: "smooth",
-          });
-        }
-      });
-    });
-  });
-</script>
+    </SiteShell>
+  </body>
+</html>

@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+import { useMemo, type FC } from "react";
+import type { ImageMetadata } from "astro";
 import { ItemCard } from "@/components/cards/ItemCard";
 import { getLocationString } from "@/utils/events";
 import { getFormattedDateRanges } from "@/utils/date";
@@ -15,8 +16,8 @@ export interface EventCardProps {
     endDate?: Date;
     type: string;
     images?: {
-      logo?: any;
-      hero?: any;
+      logo?: ImageMetadata | { src: string; width?: number; height?: number };
+      hero?: ImageMetadata | { src: string; width?: number; height?: number };
     };
     links?: {
       website?: string;
@@ -35,7 +36,7 @@ export interface EventCardProps {
   className?: string;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ eventId, data }) => {
+export const EventCard: FC<EventCardProps> = ({ eventId, data }) => {
   // Determine status based on dates
   const now = new Date();
   const startDate = new Date(data.startDate);

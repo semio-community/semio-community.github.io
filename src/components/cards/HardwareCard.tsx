@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
@@ -8,7 +8,7 @@ export interface HardwareCardProps {
   className?: string;
 }
 
-export const HardwareCard: React.FC<HardwareCardProps> = ({
+export const HardwareCard: FC<HardwareCardProps> = ({
   hardwareId,
   data,
   className: _className,

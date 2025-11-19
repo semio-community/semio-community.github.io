@@ -1,4 +1,4 @@
-import React, { useMemo, type ReactNode } from "react";
+import { useMemo, type FC, type ReactNode } from "react";
 import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
 import { SettingsMinimalistic } from "@solar-icons/react-perf/LineDuotone";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
@@ -39,7 +39,7 @@ export interface ItemCardProps {
   links?: Partial<Record<LinkType, string>>;
 }
 
-export const ItemCard: React.FC<ItemCardProps> = ({
+export const ItemCard: FC<ItemCardProps> = ({
   title,
   description,
   href,
@@ -81,11 +81,16 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const linkButtons: Array<{ type: LinkType; href: string }> = useMemo(() => {
     const cardLinks: Array<{ type: LinkType; href: string }> = [];
 
-    linkPriority.forEach((linkType) => {
-      if (cardLinks.length < 5 && links?.[linkType]) {
-        cardLinks.push({ type: linkType, href: links?.[linkType]! });
+    if (links) {
+      for (const linkType of linkPriority) {
+        if (cardLinks.length >= 5) break;
+        const hrefValue = links[linkType];
+        if (hrefValue) {
+          cardLinks.push({ type: linkType, href: hrefValue });
+        }
       }
-    });
+    }
+
     return cardLinks.reverse();
   }, [links]);
 
@@ -95,7 +100,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   return (
     <a
       href={href}
-      className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden"
+      className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden backdrop-blur-lg"
     >
       {/* Image section */}
       {imageSrc ? (

@@ -1,0 +1,126 @@
+---
+import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
+import ThemeProvider from "@/components/theme/ThemeProvider";
+import SkipLink from "@/components/layout/SkipLink";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import { getAllHardware } from "@/data/hardware";
+import { getAllSoftware } from "@/data/software";
+import { getFeaturedResearch } from "@/data/research";
+
+export interface Props {
+  noPaddingTop?: boolean;
+  showBackground?: boolean;
+  containerClassName?: string;
+  backgroundCount?: number;
+  backgroundSeed?: string | number;
+  backgroundVerticalSpanVh?: number;
+  backgroundHorizontalRangeVw?: { min: number; max: number };
+  backgroundPalette?: string[];
+  backgroundOpacity?: { stroke: [number, number]; fill: [number, number] };
+  backgroundClassName?: string;
+}
+
+const {
+  noPaddingTop = false,
+  showBackground = true,
+  containerClassName,
+  backgroundCount,
+  backgroundSeed,
+  backgroundVerticalSpanVh,
+  backgroundHorizontalRangeVw,
+  backgroundPalette,
+  backgroundOpacity,
+  backgroundClassName,
+} = Astro.props;
+
+const [allHardware, allSoftware, featuredResearch] = await Promise.all([
+  getAllHardware(),
+  getAllSoftware(),
+  getFeaturedResearch(),
+]);
+
+const hardwareItems = allHardware.map((item) => ({
+  id: item.id,
+  name: item.data.name ?? item.id,
+  shortDescription: item.data.shortDescription ?? "",
+  status: (item.data.status ?? "in-progress") as
+    | "available"
+    | "in-progress"
+    | "coming-soon"
+    | "deprecated",
+}));
+
+const softwareItems = allSoftware.map((item) => ({
+  id: item.id,
+  name: item.data.name ?? item.id,
+  shortDescription: item.data.shortDescription ?? "",
+  status: (item.data.status ?? "in-progress") as
+    | "stable"
+    | "beta"
+    | "alpha"
+    | "in-progress"
+    | "deprecated",
+}));
+
+const researchItems = featuredResearch.map((entry) => {
+  const publishDate = entry.data.publishDate
+    ? new Date(entry.data.publishDate)
+    : null;
+  const rawYear =
+    publishDate && !Number.isNaN(publishDate.getTime())
+      ? publishDate.getFullYear()
+      : (entry.data as { year?: number }).year;
+  const year =
+    typeof rawYear === "number" && !Number.isNaN(rawYear) ? rawYear : undefined;
+  return {
+    id: entry.id,
+    title: entry.data.title ?? entry.id,
+    type: entry.data.type ?? "Research",
+    year,
+  };
+});
+---
+
+<ThemeProvider />
+<SkipLink />
+<Header
+  client:load
+  currentPath={Astro.url.pathname}
+  hardwareItems={hardwareItems}
+  softwareItems={softwareItems}
+  researchItems={researchItems}
+/>
+
+{
+  showBackground && (
+    <ParallaxHexBackground
+      client:only="react"
+      count={backgroundCount}
+      seed={backgroundSeed}
+      verticalSpanVh={backgroundVerticalSpanVh}
+      horizontalRangeVw={backgroundHorizontalRangeVw}
+      palette={backgroundPalette}
+      opacity={backgroundOpacity}
+      className={backgroundClassName}
+    />
+  )
+}
+
+<div class="relative flex min-h-screen w-full flex-col">
+  <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
+    <div
+      id="container"
+      class={`relative m-auto max-w-4xl grow ${containerClassName || ""}`}
+    >
+      <div
+        class={`m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 ${noPaddingTop ? "" : "pt-[72px] lg:pt-4"}`}
+      >
+        <main id="main" class="relative flex-grow" data-pagefind-body>
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemListElement } from "@/components/cards/ItemListElement";
 
@@ -9,7 +9,7 @@ export interface PersonListElementProps {
   className?: string;
 }
 
-export const PersonListElement: React.FC<PersonListElementProps> = ({
+export const PersonListElement: FC<PersonListElementProps> = ({
   personId,
   data,
   affiliationLabel,

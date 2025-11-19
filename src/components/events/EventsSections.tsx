@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import { EventCard } from "@/components/cards/EventCard";
-import SectionReact from "@/components/SectionReact";
+import Section from "@/components/sections/Section";
 
 type LinkMap = {
   website?: string;
@@ -73,12 +73,22 @@ const ExpandableGrid = <T extends { id: string }>({
   const [expanded, setExpanded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  const didMountRef = useRef(false);
+  const prevExpandedRef = useRef(expanded);
+
   useEffect(() => {
-    if (!expanded && sectionRef.current) {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      prevExpandedRef.current = expanded;
+      return;
+    }
+    // Only scroll when collapsing from expanded -> collapsed
+    if (prevExpandedRef.current && !expanded && sectionRef.current) {
       const top =
         sectionRef.current.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top, behavior: "smooth" });
     }
+    prevExpandedRef.current = expanded;
   }, [expanded]);
 
   return (
@@ -248,7 +258,7 @@ export const EventsSections: React.FC<EventsSectionsProps> = ({
     <div className={cls("flex flex-col gap-10", className)}>
       {/* Featured */}
       {featuredEvents.length > 0 && (
-        <SectionReact
+        <Section
           id="featured"
           title="Featured Events"
           subtitle="Highlighted events, including events happening right now"
@@ -262,12 +272,12 @@ export const EventsSections: React.FC<EventsSectionsProps> = ({
               <EventCard key={e.id} eventId={e.id} data={e.data as any} />
             )}
           />
-        </SectionReact>
+        </Section>
       )}
 
       {/* Upcoming */}
       {upcomingEvents.length > 0 && (
-        <SectionReact
+        <Section
           id="upcoming"
           title="Upcoming Events"
           subtitle="Meet with the community at these future gatherings"
@@ -293,12 +303,12 @@ export const EventsSections: React.FC<EventsSectionsProps> = ({
                 </div>
               ))}
           </div>
-        </SectionReact>
+        </Section>
       )}
 
       {/* Past */}
       {pastEvents.length > 0 && (
-        <SectionReact
+        <Section
           id="past"
           title="Past Events"
           subtitle="Explore our full archive of previous community events"
@@ -312,7 +322,7 @@ export const EventsSections: React.FC<EventsSectionsProps> = ({
               <EventCard key={e.id} eventId={e.id} data={e.data as any} />
             )}
           />
-        </SectionReact>
+        </Section>
       )}
     </div>
   );

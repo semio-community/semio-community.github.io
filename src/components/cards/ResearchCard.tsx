@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
@@ -8,7 +8,7 @@ export interface ResearchCardProps {
   className?: string;
 }
 
-export const ResearchCard: React.FC<ResearchCardProps> = ({
+export const ResearchCard: FC<ResearchCardProps> = ({
   researchId,
   data,
   className: _className,

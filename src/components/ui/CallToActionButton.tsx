@@ -24,6 +24,8 @@ export interface CallToActionButtonProps {
   target?: string;
   /** Rel attribute for links */
   rel?: string;
+  /** An indicator chip rendered to the right of the label (parity with Astro) */
+  indicatorText?: string;
 }
 
 export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
@@ -38,6 +40,7 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
   ariaLabel,
   target,
   rel,
+  indicatorText,
 }) => {
   // Size-specific styles
   const sizeClasses = {
@@ -82,18 +85,31 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
       "focus:outline-2 focus:outline-accent-three focus:outline-offset-2",
     ],
   };
+  // Indicator chip classes (parity with Astro)
+  const indicatorClassLookup: Record<NonNullable<typeof variant>, string> = {
+    default:
+      "transition-colors px-2 bg-accent-base rounded-sm text-surface group-hover/button:bg-surface/75 group-hover/button:text-accent-base",
+    primary:
+      "transition-colors px-2 bg-accent-two rounded-sm text-surface group-hover/button:bg-surface/75 group-hover/button:text-accent-two",
+    secondary:
+      "transition-colors px-2 bg-accent-one rounded-sm text-surface group-hover/button:bg-surface/75 group-hover/button:text-accent-one",
+    tertiary:
+      "transition-colors px-2 bg-accent-three rounded-sm text-surface group-hover/button:bg-surface/75 group-hover/button:text-accent-three",
+  };
 
   // Base classes that apply to all CTA buttons
   const baseClasses = clsx(
     // Layout & spacing
     "inline-flex items-center justify-center pointer-events-auto group/button",
-    "rounded-md font-semibold transition-all duration-200 -outline-offset-1",
+    "rounded-md font-semibold transition-all duration-200 -outline-offset-1 backdrop-blur-lg",
     // Variant-specific styles
     variantClasses[variant],
     // Width
     fullWidth ? "w-full" : "",
     // Size-specific padding and text
     sizeClasses[size],
+    // Add gap for indicator chip parity
+    indicatorText ? "gap-4" : "",
     // Additional classes
     className,
   );
@@ -109,6 +125,9 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
         rel={rel}
       >
         {children}
+        {indicatorText ? (
+          <span className={indicatorClassLookup[variant]}>{indicatorText}</span>
+        ) : null}
       </a>
     );
   }
@@ -122,6 +141,9 @@ export const CallToActionButton: React.FC<CallToActionButtonProps> = ({
       aria-label={ariaLabel}
     >
       {children}
+      {indicatorText ? (
+        <span className={indicatorClassLookup[variant]}>{indicatorText}</span>
+      ) : null}
     </button>
   );
 };

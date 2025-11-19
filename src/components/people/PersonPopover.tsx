@@ -6,7 +6,7 @@ import { User, UserBlockRounded } from "@solar-icons/react-perf/LineDuotone";
 import type { LinkType } from "@/components/ui/IconButton";
 import LinkSection from "@/components/detail/LinkSection";
 
-interface PersonPopoverProps {
+export interface PersonPopoverProps {
   person: {
     id: string;
     name: string;
@@ -60,7 +60,7 @@ export function PersonPopover({
     ? `${person.honorific} ${person.name}`
     : person.name;
 
-  const handleClick = (
+  const handleNavigate = (
     event:
       | React.MouseEvent<HTMLButtonElement>
       | React.MouseEvent<HTMLAnchorElement>,
@@ -163,7 +163,7 @@ export function PersonPopover({
 
           <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-700 flex flex-wrap gap-3 text-xs justify-between">
             <button
-              onClick={handleClick}
+              onClick={handleNavigate}
               className="text-accent-one hover:text-accent-two transition-colors flex items-center gap-1 font-medium focus:outline-none"
             >
               <User className="w-3 h-3" />
