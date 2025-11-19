@@ -52,6 +52,7 @@ export const OgCard = ({
 }: OgImageProps) => {
   const fallbackInitial =
     avatarInitial || title?.charAt(0)?.toUpperCase() || "SC";
+  const truncatedTitle = truncateText(title, 80) ?? title;
   const truncatedDescription = truncateText(description, 80);
   const showDescription =
     Boolean(truncatedDescription) && listItems.length === 0;
@@ -115,9 +116,10 @@ export const OgCard = ({
                 letterSpacing: "-0.02em",
                 lineHeight: 1.1,
                 color: TEXT_PRIMARY,
+                wordBreak: "break-word",
               }}
             >
-              {title}
+              {truncatedTitle}
             </div>
             {showDescription ? (
               <div

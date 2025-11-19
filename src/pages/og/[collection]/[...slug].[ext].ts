@@ -99,7 +99,7 @@ let assetIndexPromise: Promise<AssetIndex> | null = null;
 const assetDataCache = new Map<string, string>();
 
 const BADGE_ICON_COLOR = "#FF9E00";
-const BADGE_ICON_SIZE = 260;
+const BADGE_ICON_SIZE = 200;
 
 const createBadgeIcon = (Icon: ComponentType<SVGProps<SVGSVGElement>>) => {
   const svg = renderToStaticMarkup(
@@ -115,7 +115,7 @@ const createBadgeIcon = (Icon: ComponentType<SVGProps<SVGSVGElement>>) => {
     width: BADGE_ICON_SIZE,
     height: BADGE_ICON_SIZE,
     alt: "",
-    style: { display: "block" },
+    style: { display: "block", width: "100%", height: "100%" },
   });
 };
 

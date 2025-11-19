@@ -78,22 +78,24 @@ export const HeroSection = ({
   fallbackInitial,
   badgeIcon,
 }: HeroSectionProps) => {
-  const showOverlayLogo = Boolean(heroImage?.src && logoImage?.src);
-  const showStandaloneBadge =
-    !heroImage?.src && !logoImage?.src && Boolean(badgeIcon);
-  const showGlyphBackground = !heroImage?.src;
-  const heroContainerHeight = heroImage?.src ? OG_HEIGHT : HERO_HEIGHT;
-  const baseStyle = heroImage
+  const hasHeroImage = Boolean(heroImage?.src);
+  const hasLogo = Boolean(logoImage?.src);
+  const showOverlayLogo = Boolean(hasHeroImage && hasLogo);
+  const showStandaloneBadge = !hasHeroImage && !hasLogo && Boolean(badgeIcon);
+  const showGlyphBackground = !hasHeroImage;
+  const baseStyle = hasHeroImage
     ? { backgroundColor: "transparent" }
     : {
         backgroundImage: HERO_GRADIENT,
         backgroundSize: "cover",
       };
+  const badgeTransform = "translate(-50%, -110%)"; // AGENT: DONT CHANGE THIS
+  const badgeSize = 240;
 
   return (
     <div
       style={{
-        height: heroContainerHeight,
+        height: OG_HEIGHT,
         position: "relative",
         display: "flex",
         alignItems: "center",
@@ -102,7 +104,7 @@ export const HeroSection = ({
       }}
     >
       {showGlyphBackground ? <GlyphPatternBackground /> : null}
-      {heroImage ? (
+      {hasHeroImage ? (
         <div
           style={{
             position: "absolute",
@@ -113,8 +115,8 @@ export const HeroSection = ({
           }}
         >
           {(() => {
-            const imgWidth = heroImage.width ?? HERO_WIDTH;
-            const imgHeight = heroImage.height ?? HERO_HEIGHT;
+            const imgWidth = heroImage!.width ?? HERO_WIDTH;
+            const imgHeight = heroImage!.height ?? HERO_HEIGHT;
             const imageRatio = imgWidth / imgHeight;
             const containerRatio = HERO_WIDTH / HERO_HEIGHT;
             let renderWidth = HERO_WIDTH;
@@ -128,8 +130,8 @@ export const HeroSection = ({
             }
             return (
               <img
-                src={heroImage.src}
-                alt={heroImage.alt ?? ""}
+                src={heroImage!.src}
+                alt={heroImage!.alt ?? ""}
                 style={{
                   position: "absolute",
                   left: "50%",
@@ -164,36 +166,36 @@ export const HeroSection = ({
             position: "absolute",
             top: "50%",
             left: "50%",
-            transform: "translate(-50%, -65%)",
+            transform: badgeTransform,
             zIndex: 2,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            width: badgeSize,
+            height: badgeSize,
           }}
         >
           {badgeIcon}
         </div>
       ) : null}
 
-      {logoImage?.src && !heroImage?.src ? (
+      {logoImage?.src && !showOverlayLogo ? (
         <div
           style={{
             position: "absolute",
             top: "50%",
             left: "50%",
-            transform: "translate(-50%, -70%)",
+            transform: badgeTransform,
             zIndex: 3,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "280px",
-            height: "280px",
           }}
         >
           {renderBadgeCircle({
             imageSrc: logoImage.src,
             fallbackInitial,
-            size: 240,
+            size: badgeSize,
             mode: logoMode,
           })}
         </div>
@@ -205,7 +207,7 @@ export const HeroSection = ({
             position: "absolute",
             top: "50%",
             left: "50%",
-            transform: "translate(-50%, -110%)",
+            transform: badgeTransform,
             zIndex: 3,
             display: "flex",
           }}
@@ -213,7 +215,7 @@ export const HeroSection = ({
           {renderBadgeCircle({
             imageSrc: logoImage?.src,
             fallbackInitial,
-            size: 220,
+            size: badgeSize,
             mode: logoMode,
           })}
         </div>
