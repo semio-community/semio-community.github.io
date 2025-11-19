@@ -5,7 +5,7 @@ import HeroHeader from "@/components/hero/HeroHeader";
 import { SubsectionGrid } from "@/components/sections/SubsectionGrid";
 import { PersonListElement } from "@/components/cards/PersonListElement";
 import { PersonCard } from "@/components/cards/PersonCard";
-import { PartnerCard } from "@/components/cards/PartnerCard";
+import { OrganizationCard } from "@/components/cards/OrganizationCard";
 import { UsersGroupTwoRounded } from "@solar-icons/react-perf/LineDuotone";
 
 interface PartnerSection {
@@ -149,9 +149,9 @@ export default function ContributorsPage({
               emptyMessage="Partner information coming soon."
             >
               {partners.map((partner) => (
-                <PartnerCard
+                <OrganizationCard
                   key={partner.id}
-                  partnerId={partner.id}
+                  organizationId={partner.id}
                   data={partner.data}
                   className="h-full"
                 />
@@ -185,9 +185,9 @@ export default function ContributorsPage({
               />
             ))}
             {donorOrganizations.map((org) => (
-              <PartnerCard
+              <OrganizationCard
                 key={org.id}
-                partnerId={org.id}
+                organizationId={org.id}
                 data={org.data}
                 className="h-full"
               />
@@ -204,9 +204,9 @@ export default function ContributorsPage({
             emptyMessage="Grant-making agencies coming soon."
           >
             {grantMakers.map((org) => (
-              <PartnerCard
+              <OrganizationCard
                 key={org.id}
-                partnerId={org.id}
+                organizationId={org.id}
                 data={org.data}
                 className="h-full"
               />

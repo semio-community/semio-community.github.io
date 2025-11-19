@@ -2,7 +2,7 @@
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
 import ContributorsPage from "@/react-pages/contributors/ContributorsPage";
-import { getAllPartners } from "@/data/partners";
+import { getAllOrganizations } from "@/data/organizations";
 import { getAllPeople } from "@/data/people";
 import { getCollection } from "astro:content";
 
@@ -12,7 +12,7 @@ const meta = {
     "People and organizations advancing human-centered robotics and AI together",
 };
 
-const allPartners = await getAllPartners();
+const allOrganizations = await getAllOrganizations();
 const allPeople = await getAllPeople();
 const organizations = await getCollection("organizations", ({ data }) =>
   import.meta.env.PROD ? data.draft !== true : true,
@@ -63,8 +63,8 @@ const partnerTypeInfo: Record<
 };
 const orderedPartnerTypes = ["industry", "nonprofit", "academic", "government"];
 
-const partnersByType: Record<string, typeof allPartners> = {};
-for (const partner of allPartners) {
+const partnersByType: Record<string, typeof allOrganizations> = {};
+for (const partner of allOrganizations) {
   if (!partnersByType[partner.data.type]) {
     partnersByType[partner.data.type] = [];
   }
@@ -73,7 +73,9 @@ for (const partner of allPartners) {
 
 const partnerSections = [
   ...orderedPartnerTypes,
-  ...Object.keys(partnersByType).filter((type) => !orderedPartnerTypes.includes(type)),
+  ...Object.keys(partnersByType).filter(
+    (type) => !orderedPartnerTypes.includes(type),
+  ),
 ].map((type) => ({
   type,
   info: partnerTypeInfo[type] ?? null,
@@ -98,20 +100,19 @@ const sponsorsUniqueCount = (() => {
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-6xl">
-                        
-            <ContributorsPage
-              meta={meta}
-              hideBoardMembers={HIDE_BOARD_MEMBERS}
-              boardMembers={boardMembers}
-              communityMembers={communityMembers}
-              partnerSections={partnerSections}
-              donorPeople={donorPeople}
-              donorOrganizations={donorOrganizations}
-              grantMakers={grantMakers}
-              donorsCount={donorsCount}
-              sponsorsUniqueCount={sponsorsUniqueCount}
-              orgNameById={orgNameById}
-            />
+      <ContributorsPage
+        meta={meta}
+        hideBoardMembers={HIDE_BOARD_MEMBERS}
+        boardMembers={boardMembers}
+        communityMembers={communityMembers}
+        partnerSections={partnerSections}
+        donorPeople={donorPeople}
+        donorOrganizations={donorOrganizations}
+        grantMakers={grantMakers}
+        donorsCount={donorsCount}
+        sponsorsUniqueCount={sponsorsUniqueCount}
+        orgNameById={orgNameById}
+      />
     </SiteShell>
   </body>
 </html>

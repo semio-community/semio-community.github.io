@@ -1,5 +1,5 @@
 // React components
-export { PartnerCard } from "./PartnerCard";
+export { OrganizationCard } from "./OrganizationCard";
 export { EventCard } from "./EventCard";
 export { HardwareCard } from "./HardwareCard";
 export { SoftwareCard } from "./SoftwareCard";
@@ -8,7 +8,7 @@ export { PersonCard } from "./PersonCard";
 export { ItemCard } from "./ItemCard";
 
 // Type exports
-export type { PartnerCardProps } from "./PartnerCard";
+export type { OrganizationCardProps } from "./OrganizationCard";
 export type { EventCardProps } from "./EventCard";
 export type { HardwareCardProps } from "./HardwareCard";
 export type { SoftwareCardProps } from "./SoftwareCard";

@@ -1,0 +1,15 @@
+
+> semio-community@1.0.0 dev
+> astro dev --port 4001
+
+18:33:00 [types] Generated 0ms
+18:33:00 [content] Syncing content
+18:33:00 [content] Astro config changed
+18:33:00 [content] Clearing content store
+18:33:00 [content] Synced content
+listen EPERM: operation not permitted 0.0.0.0:4001
+  Location:
+    /Users/schoen/Projects/semio-community.github.io/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:38758:14
+  Stack trace:
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at Server.listen (node:net:2102:7)

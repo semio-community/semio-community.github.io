@@ -2,14 +2,14 @@ import React from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
 
-export interface PartnerCardProps {
-  partnerId: string;
+export interface OrganizationCardProps {
+  organizationId: string;
   data: CollectionEntry<"organizations">["data"];
   className?: string;
 }
 
-export const PartnerCard: React.FC<PartnerCardProps> = ({
-  partnerId,
+export const OrganizationCard: React.FC<OrganizationCardProps> = ({
+  organizationId,
   data,
   className: _className,
 }) => {
@@ -21,9 +21,9 @@ export const PartnerCard: React.FC<PartnerCardProps> = ({
 
   return (
     <ItemCard
-      title={data.shortName || data.name || partnerId}
+      title={data.shortName || data.name || organizationId}
       description={data.description}
-      href={`/organizations/${partnerId}`}
+      href={`/organizations/${organizationId}`}
       type="organizations"
       image={data.images?.hero}
       imageAlt={data.name}

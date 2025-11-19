@@ -1,8 +1,8 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 
-type PartnerEntry = CollectionEntry<"organizations">;
+type OrganizationEntry = CollectionEntry<"organizations">;
 
-async function loadPartnerEntries(): Promise<PartnerEntry[]> {
+async function loadOrganizationEntries(): Promise<OrganizationEntry[]> {
   const organizations = await getCollection("organizations", ({ data }) =>
     import.meta.env.PROD ? data.draft !== true : true,
   );
@@ -23,38 +23,38 @@ async function loadPartnerEntries(): Promise<PartnerEntry[]> {
 }
 
 /** Get all partner organizations */
-export async function getAllPartners(): Promise<PartnerEntry[]> {
-  return loadPartnerEntries();
+export async function getAllOrganizations(): Promise<OrganizationEntry[]> {
+  return loadOrganizationEntries();
 }
 
 /** Get partners filtered by organization type */
-export async function getPartnersByType(
-  type: PartnerEntry["data"]["type"],
-): Promise<PartnerEntry[]> {
-  const partners = await loadPartnerEntries();
+export async function getOrganizationsByType(
+  type: OrganizationEntry["data"]["type"],
+): Promise<OrganizationEntry[]> {
+  const partners = await loadOrganizationEntries();
   return partners.filter((partner) => partner.data.type === type);
 }
 
 /** Get partners filtered by category */
-export async function getPartnersByCategory(
-  category: PartnerEntry["data"]["category"],
-): Promise<PartnerEntry[]> {
-  const partners = await loadPartnerEntries();
+export async function getOrganizationsByCategory(
+  category: OrganizationEntry["data"]["category"],
+): Promise<OrganizationEntry[]> {
+  const partners = await loadOrganizationEntries();
   return partners.filter((partner) => partner.data.category === category);
 }
 
 /** Get featured partners */
-export async function getFeaturedPartners(): Promise<PartnerEntry[]> {
-  const partners = await loadPartnerEntries();
+export async function getFeaturedOrganizations(): Promise<OrganizationEntry[]> {
+  const partners = await loadOrganizationEntries();
   return partners.filter((partner) => partner.data.featured);
 }
 
 /** Get partners by location */
-export async function getPartnersByLocation(location: {
+export async function getOrganizationsByLocation(location: {
   city?: string;
   country?: string;
-}): Promise<PartnerEntry[]> {
-  const partners = await loadPartnerEntries();
+}): Promise<OrganizationEntry[]> {
+  const partners = await loadOrganizationEntries();
 
   return partners.filter((partner) => {
     const partnerCity = partner.data.location.city.toLowerCase();
@@ -80,15 +80,15 @@ export async function getPartnersByLocation(location: {
 }
 
 /** Get unique partner types */
-export async function getUniquePartnerTypes(): Promise<string[]> {
-  const partners = await loadPartnerEntries();
+export async function getUniqueOrganizationTypes(): Promise<string[]> {
+  const partners = await loadOrganizationEntries();
   const types = partners.map((partner) => partner.data.type);
   return [...new Set(types)];
 }
 
 /** Get unique partner categories */
-export async function getUniquePartnerCategories(): Promise<string[]> {
-  const partners = await loadPartnerEntries();
+export async function getUniqueOrganizationCategories(): Promise<string[]> {
+  const partners = await loadOrganizationEntries();
   const categories = partners.map((partner) => partner.data.category);
   return [...new Set(categories)];
 }
@@ -97,9 +97,10 @@ export async function getUniquePartnerCategories(): Promise<string[]> {
 export async function getUniqueLocations(): Promise<
   Array<{ city: string; country: string }>
 > {
-  const partners = await loadPartnerEntries();
+  const partners = await loadOrganizationEntries();
   const locationStrings = partners.map(
-    (partner) => `${partner.data.location.city}|${partner.data.location.country}`,
+    (partner) =>
+      `${partner.data.location.city}|${partner.data.location.country}`,
   );
 
   const unique = [...new Set(locationStrings)]
@@ -120,42 +121,53 @@ export async function getUniqueLocations(): Promise<
 }
 
 /** Count partners by type */
-export async function getPartnerCountByType(): Promise<Record<string, number>> {
-  const partners = await loadPartnerEntries();
-  return partners.reduce((acc, partner) => {
-    acc[partner.data.type] = (acc[partner.data.type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+export async function getOrganizationCountByType(): Promise<
+  Record<string, number>
+> {
+  const partners = await loadOrganizationEntries();
+  return partners.reduce(
+    (acc, partner) => {
+      acc[partner.data.type] = (acc[partner.data.type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 }
 
 /** Count partners by category */
-export async function getPartnerCountByCategory(): Promise<
+export async function getOrganizationCountByCategory(): Promise<
   Record<string, number>
 > {
-  const partners = await loadPartnerEntries();
-  return partners.reduce((acc, partner) => {
-    acc[partner.data.category] = (acc[partner.data.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const partners = await loadOrganizationEntries();
+  return partners.reduce(
+    (acc, partner) => {
+      acc[partner.data.category] = (acc[partner.data.category] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 }
 
 /** Count partners by country */
-export async function getPartnerCountByCountry(): Promise<
+export async function getOrganizationCountByCountry(): Promise<
   Record<string, number>
 > {
-  const partners = await loadPartnerEntries();
-  return partners.reduce((acc, partner) => {
-    const country = partner.data.location.country;
-    acc[country] = (acc[country] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const partners = await loadOrganizationEntries();
+  return partners.reduce(
+    (acc, partner) => {
+      const country = partner.data.location.country;
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 }
 
 /** Search partners by query */
-export async function searchPartners(
+export async function searchOrganizations(
   query: string,
-): Promise<PartnerEntry[]> {
-  const partners = await loadPartnerEntries();
+): Promise<OrganizationEntry[]> {
+  const partners = await loadOrganizationEntries();
   const lowerQuery = query.toLowerCase();
 
   return partners.filter((partner) => {
@@ -174,43 +186,51 @@ export async function searchPartners(
 }
 
 /** Group partners by type */
-export function groupPartnersByType(
-  partners: PartnerEntry[],
-): Record<string, PartnerEntry[]> {
-  return partners.reduce((acc, partner) => {
-    if (!acc[partner.data.type]) {
-      acc[partner.data.type] = [];
-    }
-    acc[partner.data.type]!.push(partner);
-    return acc;
-  }, {} as Record<string, PartnerEntry[]>);
+export function groupOrganizationsByType(
+  partners: OrganizationEntry[],
+): Record<string, OrganizationEntry[]> {
+  return partners.reduce(
+    (acc, partner) => {
+      if (!acc[partner.data.type]) {
+        acc[partner.data.type] = [];
+      }
+      acc[partner.data.type]!.push(partner);
+      return acc;
+    },
+    {} as Record<string, OrganizationEntry[]>,
+  );
 }
 
 /** Group partners by country */
-export function groupPartnersByCountry(
-  partners: PartnerEntry[],
-): Record<string, PartnerEntry[]> {
-  return partners.reduce((acc, partner) => {
-    const country = partner.data.location.country;
-    if (!acc[country]) {
-      acc[country] = [];
-    }
-    acc[country]!.push(partner);
-    return acc;
-  }, {} as Record<string, PartnerEntry[]>);
+export function groupOrganizationsByCountry(
+  partners: OrganizationEntry[],
+): Record<string, OrganizationEntry[]> {
+  return partners.reduce(
+    (acc, partner) => {
+      const country = partner.data.location.country;
+      if (!acc[country]) {
+        acc[country] = [];
+      }
+      acc[country]!.push(partner);
+      return acc;
+    },
+    {} as Record<string, OrganizationEntry[]>,
+  );
 }
 
 /** Filter partners by multiple criteria */
-export async function filterPartners(criteria: {
+export async function filterOrganizations(criteria: {
   type?: string;
   category?: string;
   location?: { city?: string; country?: string };
   featuredOnly?: boolean;
-}): Promise<PartnerEntry[]> {
-  let partners = await loadPartnerEntries();
+}): Promise<OrganizationEntry[]> {
+  let partners = await loadOrganizationEntries();
 
   if (criteria.type) {
-    partners = partners.filter((partner) => partner.data.type === criteria.type);
+    partners = partners.filter(
+      (partner) => partner.data.type === criteria.type,
+    );
   }
 
   if (criteria.category) {
@@ -220,7 +240,7 @@ export async function filterPartners(criteria: {
   }
 
   if (criteria.location) {
-    partners = await getPartnersByLocation(criteria.location);
+    partners = await getOrganizationsByLocation(criteria.location);
   }
 
   if (criteria.featuredOnly) {
@@ -231,18 +251,18 @@ export async function filterPartners(criteria: {
 }
 
 /** Aggregate partner statistics */
-export async function getPartnershipStatistics(): Promise<{
+export async function getOrganizationshipStatistics(): Promise<{
   total: number;
   featured: number;
   byType: Record<string, number>;
   byCategory: Record<string, number>;
   byCountry: Record<string, number>;
 }> {
-  const partners = await loadPartnerEntries();
+  const partners = await loadOrganizationEntries();
   const [byType, byCategory, byCountry] = await Promise.all([
-    getPartnerCountByType(),
-    getPartnerCountByCategory(),
-    getPartnerCountByCountry(),
+    getOrganizationCountByType(),
+    getOrganizationCountByCategory(),
+    getOrganizationCountByCountry(),
   ]);
 
   return {

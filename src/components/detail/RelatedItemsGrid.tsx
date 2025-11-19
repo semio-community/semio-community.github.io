@@ -1,5 +1,5 @@
 import React from "react";
-import { PartnerCard } from "../cards/PartnerCard";
+import { OrganizationCard } from "../cards/OrganizationCard";
 import { EventCard } from "../cards/EventCard";
 import { HardwareCard } from "../cards/HardwareCard";
 import { SoftwareCard } from "../cards/SoftwareCard";
@@ -117,9 +117,9 @@ export const RelatedItemsGrid: React.FC<RelatedItemsGridProps> = ({
           switch (itemType) {
             case "partners":
               return (
-                <PartnerCard
+                <OrganizationCard
                   key={item.id}
-                  partnerId={item.id}
+                  organizationId={item.id}
                   data={item.data as any}
                 />
               );
