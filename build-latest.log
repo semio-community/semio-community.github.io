@@ -1,0 +1,413 @@
+
+> semio-community@1.0.0 build
+> astro build
+
+17:31:33 [content] Syncing content
+17:31:33 [content] Synced content
+17:31:33 [types] Generated 165ms
+17:31:33 [build] output: "static"
+17:31:33 [build] mode: "static"
+17:31:33 [build] directory: /Users/schoen/Projects/semio-community.github.io/dist/
+17:31:33 [build] Collecting build info...
+17:31:33 [build] ✓ Completed in 178ms.
+17:31:33 [build] Building static entrypoints...
+17:31:34 [WARN] [vite] "matchHostname", "matchPathname", "matchPort" and "matchProtocol" are imported from external module "@astrojs/internal-helpers/remote" but never used in "node_modules/astro/dist/assets/utils/remotePattern.js" and "node_modules/astro/dist/assets/services/service.js".
+17:31:35 [vite] ✓ built in 1.61s
+17:31:35 [build] ✓ Completed in 1.62s.
+
+ building client (vite) 
+17:31:35 [vite] transforming...
+17:31:36 [vite] ✓ 3112 modules transformed.
+17:31:36 [vite] rendering chunks...
+17:31:36 [vite] computing gzip size...
+17:31:36 [vite] dist/_astro/_slug_.BH1Hfz-G.css                  1.94 kB │ gzip:  0.60 kB
+17:31:36 [vite] dist/_astro/about.DYqfPc04.css                   2.65 kB │ gzip:  0.77 kB
+17:31:36 [vite] dist/_astro/detail.hUeKO4yy.js                   0.41 kB │ gzip:  0.26 kB │ map:   0.10 kB
+17:31:36 [vite] dist/_astro/jsx-runtime.D_zvdyIk.js              0.77 kB │ gzip:  0.49 kB │ map:   2.14 kB
+17:31:36 [vite] dist/_astro/LinkSection.5XIoBwqK.js              0.99 kB │ gzip:  0.63 kB │ map:   4.79 kB
+17:31:36 [vite] dist/_astro/page.D1uwR3nK.js                     2.28 kB │ gzip:  1.05 kB │ map:  10.48 kB
+17:31:36 [vite] dist/_astro/Document2.BkHlZhzP.js                2.33 kB │ gzip:  0.95 kB │ map:   3.81 kB
+17:31:36 [vite] dist/_astro/index.1ixxEbKp.js                    3.94 kB │ gzip:  1.55 kB │ map:  12.93 kB
+17:31:36 [vite] dist/_astro/site.config.DI-uy3KS.js              4.29 kB │ gzip:  1.31 kB │ map:  12.41 kB
+17:31:36 [vite] dist/_astro/RelatedItemsGrid.Da1yCr6-.js         4.53 kB │ gzip:  1.51 kB │ map:  17.17 kB
+17:31:36 [vite] dist/_astro/Avatar.D-PzSfb4.js                   6.09 kB │ gzip:  1.86 kB │ map:  14.94 kB
+17:31:36 [vite] dist/_astro/EventsSections.Qk6GHijJ.js           6.99 kB │ gzip:  2.61 kB │ map:  22.35 kB
+17:31:36 [vite] dist/_astro/index.DMVOjPfi.js                    8.41 kB │ gzip:  3.32 kB │ map:  29.53 kB
+17:31:36 [vite] dist/_astro/PersonPopover.BMtFbRmy.js            8.48 kB │ gzip:  3.08 kB │ map:  29.88 kB
+17:31:36 [vite] dist/_astro/EventCard.Cw2GxpRG.js               10.00 kB │ gzip:  3.82 kB │ map:  31.65 kB
+17:31:36 [vite] dist/_astro/ParallaxHexBackground.CjyyR-wb.js   11.14 kB │ gzip:  4.79 kB │ map:  62.74 kB
+17:31:36 [vite] dist/_astro/index.BjERgzgG.js                   12.73 kB │ gzip:  4.78 kB │ map:  58.68 kB
+17:31:36 [vite] dist/_astro/Combination.BYkHvBY3.js             16.58 kB │ gzip:  6.29 kB │ map:  94.58 kB
+17:31:36 [vite] dist/_astro/Header.BP_LY09N.js                  60.32 kB │ gzip: 17.12 kB │ map: 249.41 kB
+17:31:36 [vite] dist/_astro/links.BCzaSy-O.js                   73.20 kB │ gzip: 26.28 kB │ map: 254.93 kB
+17:31:36 [vite] dist/_astro/proxy.Bp9kra8b.js                  112.36 kB │ gzip: 36.99 kB │ map: 614.00 kB
+17:31:36 [vite] dist/_astro/client.CSUBimmv.js                 182.78 kB │ gzip: 57.64 kB │ map: 872.21 kB
+17:31:36 [vite] ✓ built in 1.31s
+
+ generating static routes 
+17:31:36 ▶ src/pages/404.astro
+17:31:36   └─ /404.html (+25ms) 
+17:31:36 ▶ src/pages/about.astro
+17:31:36   └─ /about/index.html (+8ms) 
+17:31:37 ▶ src/pages/contributors.astro
+17:31:37   └─ /contributors/index.html (+17ms) 
+17:31:37 ▶ src/pages/events.astro
+17:31:37   └─ /events/index.html (+19ms) 
+17:31:37 ▶ src/pages/events/[...slug].astro
+17:31:37   ├─ /events/aaai-2023-fss/index.html (+8ms) 
+17:31:37   ├─ /events/aaai-2023-sss/index.html (+5ms) 
+17:31:37   ├─ /events/aaai-2024-fss/index.html (+6ms) 
+17:31:37   ├─ /events/aaai-2025-fss/index.html (+6ms) 
+17:31:37   ├─ /events/advancing-hri-research-and-benchmarking-2023/index.html (+6ms) 
+17:31:37   ├─ /events/ces-2024/index.html (+4ms) 
+17:31:37   ├─ /events/actuate-2025/index.html (+5ms) 
+17:31:37   ├─ /events/chatbot-conference-2024/index.html (+4ms) 
+17:31:37   ├─ /events/emerging-test-methods-metrics-accessible-hri-2023/index.html (+4ms) 
+17:31:37   ├─ /events/dialogue-with-robots-2023/index.html (+5ms) 
+17:31:37   ├─ /events/hri-2023/index.html (+4ms) 
+17:31:37   ├─ /events/hri-2024-pioneers/index.html (+4ms) 
+17:31:37   ├─ /events/hri-2024/index.html (+5ms) 
+17:31:37   ├─ /events/hri-2025-industry-day/index.html (+3ms) 
+17:31:37   ├─ /events/hri-2025-pioneers/index.html (+3ms) 
+17:31:37   ├─ /events/hri-2025-quori-community-feedback/index.html (+5ms) 
+17:31:37   ├─ /events/hri-2025/index.html (+4ms) 
+17:31:37   ├─ /events/hri-2026-pioneers/index.html (+3ms) 
+17:31:37   ├─ /events/hri-2026/index.html (+5ms) 
+17:31:37   ├─ /events/hri-best-practices-2025/index.html (+4ms) 
+17:31:37   ├─ /events/hri-in-academia-and-industry-aaai-2023/index.html (+4ms) 
+17:31:37   ├─ /events/hri-in-academia-and-industry-roman-2023/index.html (+4ms) 
+17:31:37   ├─ /events/humanoids-summit-2024/index.html (+4ms) 
+17:31:37   ├─ /events/icra-2025/index.html (+4ms) 
+17:31:37   ├─ /events/humanoids-summit-2025/index.html (+5ms) 
+17:31:37   ├─ /events/icsr-ai-2024/index.html (+3ms) 
+17:31:37   ├─ /events/icsr-ai-2025/index.html (+3ms) 
+17:31:37   ├─ /events/quori-community-workshop-2025/index.html (+5ms) 
+17:31:37   ├─ /events/replication-studies-of-hri-research-2024/index.html (+4ms) 
+17:31:37   ├─ /events/ro-man-2024/index.html (+4ms) 
+17:31:37   ├─ /events/ros4sr-2024/index.html (+4ms) 
+17:31:37   ├─ /events/robot-design-competition-2024/index.html (+3ms) 
+17:31:37   ├─ /events/rss-2025/index.html (+3ms) 
+17:31:37   ├─ /events/sr-unboxed-2025/index.html (+5ms) 
+17:31:37   ├─ /events/tahri-2024/index.html (+4ms) 
+17:31:37   ├─ /events/unitree-g1-humanoid-training-2025/index.html (+3ms) 
+17:31:37   ├─ /events/ur-rad-2023/index.html (+5ms) 
+17:31:37   ├─ /events/ur-rad-2024/index.html (+4ms) 
+17:31:37   └─ /events/ur-rad-2025/index.html (+3ms) 
+17:31:37 ▶ src/pages/get-involved.astro
+17:31:37   └─ /get-involved/index.html (+3ms) 
+17:31:37 ▶ src/pages/hardware/[...slug].astro
+17:31:37   ├─ /hardware/quoriv1/index.html (+6ms) 
+17:31:37   ├─ /hardware/ommie/index.html (+4ms) 
+17:31:37   └─ /hardware/quoriv2/index.html (+7ms) 
+17:31:37 λ src/pages/og/[page].[ext].ts
+17:31:37   ├─ /og/home.png (+186ms) 
+17:31:37   ├─ /og/home.svg (+9ms) 
+17:31:37   ├─ /og/projects.png (+156ms) 
+17:31:37   ├─ /og/projects.svg (+6ms) 
+17:31:37   ├─ /og/services.png (+109ms) 
+17:31:37   ├─ /og/services.svg (+6ms) 
+17:31:37   ├─ /og/events.png (+104ms) 
+17:31:38   ├─ /og/events.svg (+5ms) 
+17:31:38   ├─ /og/contributors.png (+109ms) 
+17:31:38   ├─ /og/contributors.svg (+6ms) 
+17:31:38   ├─ /og/get-involved.png (+105ms) 
+17:31:38   ├─ /og/get-involved.svg (+5ms) 
+17:31:38   ├─ /og/about.png (+104ms) 
+17:31:38   └─ /og/about.svg (+4ms) 
+17:31:38 λ src/pages/og/[collection]/[...slug].[ext].ts
+17:31:38   ├─ /og/hardware/ommie.png (+185ms) 
+17:31:38   ├─ /og/hardware/ommie.svg (+9ms) 
+17:31:38   ├─ /og/hardware/quoriv2.png (+132ms) 
+17:31:38   ├─ /og/hardware/quoriv2.svg (+5ms) 
+17:31:38   ├─ /og/hardware/quoriv1.png (+166ms) 
+17:31:38   ├─ /og/hardware/quoriv1.svg (+7ms) 
+17:31:38   ├─ /og/software/arora.png (+153ms) 
+17:31:39   ├─ /og/software/arora.svg (+5ms) 
+17:31:39   ├─ /og/software/vizij.png (+116ms) 
+17:31:39   ├─ /og/software/vizij.svg (+4ms) 
+17:31:39   ├─ /og/research/peerbots-fellowship-1.png (+115ms) 
+17:31:39   ├─ /og/research/peerbots-fellowship-1.svg (+5ms) 
+17:31:39   ├─ /og/events/humanoids-summit-2025.png (+103ms) 
+17:31:39   ├─ /og/events/humanoids-summit-2025.svg (+6ms) 
+17:31:39   ├─ /og/events/hri-2026.png (+108ms) 
+17:31:39   ├─ /og/events/hri-2026.svg (+5ms) 
+17:31:39   ├─ /og/events/ur-rad-2025.png (+106ms) 
+17:31:39   ├─ /og/events/ur-rad-2025.svg (+8ms) 
+17:31:39   ├─ /og/events/hri-2025.png (+105ms) 
+17:31:39   ├─ /og/events/hri-2025.svg (+4ms) 
+17:31:39   ├─ /og/events/hri-2026-pioneers.png (+107ms) 
+17:31:39   ├─ /og/events/hri-2026-pioneers.svg (+6ms) 
+17:31:39   ├─ /og/events/aaai-2025-fss.png (+104ms) 
+17:31:40   ├─ /og/events/aaai-2025-fss.svg (+4ms) 
+17:31:40   ├─ /og/events/unitree-g1-humanoid-training-2025.png (+102ms) 
+17:31:40   ├─ /og/events/unitree-g1-humanoid-training-2025.svg (+5ms) 
+17:31:40   ├─ /og/events/actuate-2025.png (+104ms) 
+17:31:40   ├─ /og/events/actuate-2025.svg (+5ms) 
+17:31:40   ├─ /og/events/icsr-ai-2025.png (+100ms) 
+17:31:40   ├─ /og/events/icsr-ai-2025.svg (+5ms) 
+17:31:40   ├─ /og/events/sr-unboxed-2025.png (+98ms) 
+17:31:40   ├─ /og/events/sr-unboxed-2025.svg (+4ms) 
+17:31:40   ├─ /og/events/hri-best-practices-2025.png (+98ms) 
+17:31:40   ├─ /og/events/hri-best-practices-2025.svg (+5ms) 
+17:31:40   ├─ /og/events/rss-2025.png (+98ms) 
+17:31:40   ├─ /og/events/rss-2025.svg (+4ms) 
+17:31:40   ├─ /og/events/icra-2025.png (+100ms) 
+17:31:40   ├─ /og/events/icra-2025.svg (+5ms) 
+17:31:40   ├─ /og/events/quori-community-workshop-2025.png (+102ms) 
+17:31:40   ├─ /og/events/quori-community-workshop-2025.svg (+4ms) 
+17:31:40   ├─ /og/events/hri-2025-quori-community-feedback.png (+103ms) 
+17:31:40   ├─ /og/events/hri-2025-quori-community-feedback.svg (+5ms) 
+17:31:40   ├─ /og/events/hri-2025-industry-day.png (+102ms) 
+17:31:41   ├─ /og/events/hri-2025-industry-day.svg (+4ms) 
+17:31:41   ├─ /og/events/hri-2025-pioneers.png (+102ms) 
+17:31:41   ├─ /og/events/hri-2025-pioneers.svg (+5ms) 
+17:31:41   ├─ /og/events/humanoids-summit-2024.png (+106ms) 
+17:31:41   ├─ /og/events/humanoids-summit-2024.svg (+4ms) 
+17:31:41   ├─ /og/events/aaai-2024-fss.png (+110ms) 
+17:31:41   ├─ /og/events/aaai-2024-fss.svg (+5ms) 
+17:31:41   ├─ /og/events/ur-rad-2024.png (+108ms) 
+17:31:41   ├─ /og/events/ur-rad-2024.svg (+4ms) 
+17:31:41   ├─ /og/events/robot-design-competition-2024.png (+107ms) 
+17:31:41   ├─ /og/events/robot-design-competition-2024.svg (+5ms) 
+17:31:41   ├─ /og/events/ros4sr-2024.png (+103ms) 
+17:31:41   ├─ /og/events/ros4sr-2024.svg (+4ms) 
+17:31:41   ├─ /og/events/icsr-ai-2024.png (+103ms) 
+17:31:41   ├─ /og/events/icsr-ai-2024.svg (+5ms) 
+17:31:41   ├─ /og/events/chatbot-conference-2024.png (+101ms) 
+17:31:41   ├─ /og/events/chatbot-conference-2024.svg (+4ms) 
+17:31:41   ├─ /og/events/replication-studies-of-hri-research-2024.png (+99ms) 
+17:31:42   ├─ /og/events/replication-studies-of-hri-research-2024.svg (+5ms) 
+17:31:42   ├─ /og/events/ro-man-2024.png (+100ms) 
+17:31:42   ├─ /og/events/ro-man-2024.svg (+4ms) 
+17:31:42   ├─ /og/events/hri-2024-pioneers.png (+101ms) 
+17:31:42   ├─ /og/events/hri-2024-pioneers.svg (+6ms) 
+17:31:42   ├─ /og/events/hri-2024.png (+111ms) 
+17:31:42   ├─ /og/events/hri-2024.svg (+4ms) 
+17:31:42   ├─ /og/events/tahri-2024.png (+105ms) 
+17:31:42   ├─ /og/events/tahri-2024.svg (+4ms) 
+17:31:42   ├─ /og/events/ces-2024.png (+99ms) 
+17:31:42   ├─ /og/events/ces-2024.svg (+4ms) 
+17:31:42   ├─ /og/events/aaai-2023-fss.png (+103ms) 
+17:31:42   ├─ /og/events/aaai-2023-fss.svg (+4ms) 
+17:31:42   ├─ /og/events/ur-rad-2023.png (+104ms) 
+17:31:42   ├─ /og/events/ur-rad-2023.svg (+5ms) 
+17:31:42   ├─ /og/events/hri-in-academia-and-industry-roman-2023.png (+100ms) 
+17:31:42   ├─ /og/events/hri-in-academia-and-industry-roman-2023.svg (+4ms) 
+17:31:42   ├─ /og/events/dialogue-with-robots-2023.png (+100ms) 
+17:31:43   ├─ /og/events/dialogue-with-robots-2023.svg (+4ms) 
+17:31:43   ├─ /og/events/aaai-2023-sss.png (+105ms) 
+17:31:43   ├─ /og/events/aaai-2023-sss.svg (+4ms) 
+17:31:43   ├─ /og/events/hri-in-academia-and-industry-aaai-2023.png (+100ms) 
+17:31:43   ├─ /og/events/hri-in-academia-and-industry-aaai-2023.svg (+5ms) 
+17:31:43   ├─ /og/events/advancing-hri-research-and-benchmarking-2023.png (+101ms) 
+17:31:43   ├─ /og/events/advancing-hri-research-and-benchmarking-2023.svg (+4ms) 
+17:31:43   ├─ /og/events/emerging-test-methods-metrics-accessible-hri-2023.png (+101ms) 
+17:31:43   ├─ /og/events/emerging-test-methods-metrics-accessible-hri-2023.svg (+5ms) 
+17:31:43   ├─ /og/events/hri-2023.png (+101ms) 
+17:31:43   ├─ /og/events/hri-2023.svg (+4ms) 
+17:31:43   ├─ /og/organizations/semio-ai.png (+147ms) 
+17:31:43   ├─ /og/organizations/semio-ai.svg (+6ms) 
+17:31:43   ├─ /og/organizations/peerbots.png (+112ms) 
+17:31:43   ├─ /og/organizations/peerbots.svg (+4ms) 
+17:31:43   ├─ /og/organizations/ik-studio.png (+104ms) 
+17:31:43   ├─ /og/organizations/ik-studio.svg (+5ms) 
+17:31:43   ├─ /og/organizations/ologic-inc.png (+112ms) 
+17:31:44   ├─ /og/organizations/ologic-inc.svg (+4ms) 
+17:31:44   ├─ /og/organizations/oregon-state-university.png (+105ms) 
+17:31:44   ├─ /og/organizations/oregon-state-university.svg (+5ms) 
+17:31:44   ├─ /og/organizations/university-of-pennsylvania.png (+103ms) 
+17:31:44   ├─ /og/organizations/university-of-pennsylvania.svg (+4ms) 
+17:31:44   ├─ /og/organizations/university-of-southern-california.png (+100ms) 
+17:31:44   ├─ /og/organizations/university-of-southern-california.svg (+4ms) 
+17:31:44   ├─ /og/organizations/tufts-university.png (+100ms) 
+17:31:44   ├─ /og/organizations/tufts-university.svg (+3ms) 
+17:31:44   ├─ /og/organizations/yale-university.png (+99ms) 
+17:31:44   ├─ /og/organizations/yale-university.svg (+4ms) 
+17:31:44   ├─ /og/organizations/aila.png (+120ms) 
+17:31:44   ├─ /og/organizations/aila.svg (+3ms) 
+17:31:44   ├─ /og/organizations/george-mason-university.png (+98ms) 
+17:31:44   ├─ /og/organizations/george-mason-university.svg (+3ms) 
+17:31:44   ├─ /og/organizations/kipr.png (+112ms) 
+17:31:44   ├─ /og/organizations/kipr.svg (+4ms) 
+17:31:44   ├─ /og/organizations/nist.png (+109ms) 
+17:31:45   ├─ /og/organizations/nist.svg (+4ms) 
+17:31:45   ├─ /og/organizations/nsf.png (+110ms) 
+17:31:45   ├─ /og/organizations/nsf.svg (+3ms) 
+17:31:45   ├─ /og/organizations/palaio-logic.png (+103ms) 
+17:31:45   ├─ /og/organizations/palaio-logic.svg (+4ms) 
+17:31:45   ├─ /og/organizations/plover.png (+106ms) 
+17:31:45   ├─ /og/organizations/plover.svg (+3ms) 
+17:31:45   ├─ /og/people/andy-schoen.png (+180ms) 
+17:31:45   ├─ /og/people/andy-schoen.svg (+7ms) 
+17:31:45   ├─ /og/people/brian-scassellati.png (+107ms) 
+17:31:45   ├─ /og/people/brian-scassellati.svg (+4ms) 
+17:31:45   ├─ /og/people/bill-smart.png (+108ms) 
+17:31:45   ├─ /og/people/bill-smart.svg (+4ms) 
+17:31:45   ├─ /og/people/dylan-thomas-doyle.png (+122ms) 
+17:31:45   ├─ /og/people/dylan-thomas-doyle.svg (+6ms) 
+17:31:45   ├─ /og/people/kayla-matheus.png (+122ms) 
+17:31:45   ├─ /og/people/kayla-matheus.svg (+8ms) 
+17:31:46   ├─ /og/people/maja-mataric.png (+110ms) 
+17:31:46   ├─ /og/people/maja-mataric.svg (+4ms) 
+17:31:46   ├─ /og/people/chris-birmingham.png (+173ms) 
+17:31:46   ├─ /og/people/chris-birmingham.svg (+7ms) 
+17:31:46   ├─ /og/people/marlena-fraune.png (+106ms) 
+17:31:46   ├─ /og/people/marlena-fraune.svg (+4ms) 
+17:31:46   ├─ /og/people/ross-mead.png (+160ms) 
+17:31:46   ├─ /og/people/ross-mead.svg (+5ms) 
+17:31:46   ├─ /og/people/saad-elbeleidy.png (+120ms) 
+17:31:46   ├─ /og/people/saad-elbeleidy.svg (+4ms) 
+17:31:46   ├─ /og/people/simon-kim.png (+111ms) 
+17:31:46   ├─ /og/people/simon-kim.svg (+4ms) 
+17:31:46   ├─ /og/people/steve-goodgame.png (+109ms) 
+17:31:46   ├─ /og/people/steve-goodgame.svg (+4ms) 
+17:31:46   ├─ /og/people/todd-terrazas.png (+117ms) 
+17:31:47   ├─ /og/people/todd-terrazas.svg (+5ms) 
+17:31:47   ├─ /og/people/victor-paleologue.png (+110ms) 
+17:31:47   ├─ /og/people/victor-paleologue.svg (+4ms) 
+17:31:47   ├─ /og/people/xuesu-xiao.png (+114ms) 
+17:31:47   └─ /og/people/xuesu-xiao.svg (+5ms) 
+17:31:47 ▶ src/pages/organizations/[...slug].astro
+17:31:47   ├─ /organizations/george-mason-university/index.html (+14ms) 
+17:31:47   ├─ /organizations/aila/index.html (+4ms) 
+17:31:47   ├─ /organizations/ik-studio/index.html (+4ms) 
+17:31:47   ├─ /organizations/kipr/index.html (+4ms) 
+17:31:47   ├─ /organizations/nist/index.html (+3ms) 
+17:31:47   ├─ /organizations/nsf/index.html (+3ms) 
+17:31:47   ├─ /organizations/palaio-logic/index.html (+4ms) 
+17:31:47   ├─ /organizations/oregon-state-university/index.html (+3ms) 
+17:31:47   ├─ /organizations/ologic-inc/index.html (+4ms) 
+17:31:47   ├─ /organizations/peerbots/index.html (+3ms) 
+17:31:47   ├─ /organizations/plover/index.html (+5ms) 
+17:31:47   ├─ /organizations/semio-ai/index.html (+5ms) 
+17:31:47   ├─ /organizations/tufts-university/index.html (+2ms) 
+17:31:47   ├─ /organizations/university-of-southern-california/index.html (+4ms) 
+17:31:47   ├─ /organizations/university-of-pennsylvania/index.html (+4ms) 
+17:31:47   └─ /organizations/yale-university/index.html (+4ms) 
+17:31:47 ▶ src/pages/people/[...slug].astro
+17:31:47   ├─ /people/andy-schoen/index.html (+5ms) 
+17:31:47   ├─ /people/brian-scassellati/index.html (+4ms) 
+17:31:47   ├─ /people/bill-smart/index.html (+5ms) 
+17:31:47   ├─ /people/dylan-thomas-doyle/index.html (+3ms) 
+17:31:47   ├─ /people/kayla-matheus/index.html (+3ms) 
+17:31:47   ├─ /people/maja-mataric/index.html (+4ms) 
+17:31:47   ├─ /people/chris-birmingham/index.html (+5ms) 
+17:31:47   ├─ /people/marlena-fraune/index.html (+3ms) 
+17:31:47   ├─ /people/ross-mead/index.html (+4ms) 
+17:31:47   ├─ /people/saad-elbeleidy/index.html (+4ms) 
+17:31:47   ├─ /people/simon-kim/index.html (+5ms) 
+17:31:47   ├─ /people/steve-goodgame/index.html (+3ms) 
+17:31:47   ├─ /people/todd-terrazas/index.html (+3ms) 
+17:31:47   ├─ /people/victor-paleologue/index.html (+3ms) 
+17:31:47   └─ /people/xuesu-xiao/index.html (+4ms) 
+17:31:47 ▶ src/pages/projects.astro
+17:31:47   └─ /projects/index.html (+4ms) 
+17:31:47 ▶ src/pages/research/[...slug].astro
+17:31:47   └─ /research/peerbots-fellowship-1/index.html (+4ms) 
+17:31:47 ▶ src/pages/services.astro
+17:31:47   └─ /services/index.html (+4ms) 
+17:31:47 ▶ src/pages/software/[...slug].astro
+17:31:47   ├─ /software/arora/index.html (+7ms) 
+17:31:47   └─ /software/vizij/index.html (+11ms) 
+17:31:47 ▶ src/pages/index.astro
+17:31:47   └─ /index.html (+5ms) 
+17:31:47 ▶ /hardware
+17:31:47   └─ /hardware/index.html (+1ms) 
+17:31:47 ▶ /organization
+17:31:47   └─ /organization/index.html (+0ms) 
+17:31:47 ▶ /partners
+17:31:47   └─ /partners/index.html (+0ms) 
+17:31:47 ▶ /partners/[...slug]
+17:31:47   ├─ /partners/george-mason-university/index.html (+0ms) 
+17:31:47   ├─ /partners/aila/index.html (+0ms) 
+17:31:47   ├─ /partners/ik-studio/index.html (+0ms) 
+17:31:47   ├─ /partners/kipr/index.html (+0ms) 
+17:31:47   ├─ /partners/nist/index.html (+0ms) 
+17:31:47   ├─ /partners/nsf/index.html (+0ms) 
+17:31:47   ├─ /partners/palaio-logic/index.html (+0ms) 
+17:31:47   ├─ /partners/oregon-state-university/index.html (+0ms) 
+17:31:47   ├─ /partners/ologic-inc/index.html (+0ms) 
+17:31:47   ├─ /partners/peerbots/index.html (+0ms) 
+17:31:47   ├─ /partners/plover/index.html (+0ms) 
+17:31:47   ├─ /partners/semio-ai/index.html (+0ms) 
+17:31:47   ├─ /partners/tufts-university/index.html (+0ms) 
+17:31:47   ├─ /partners/university-of-southern-california/index.html (+0ms) 
+17:31:47   ├─ /partners/university-of-pennsylvania/index.html (+0ms) 
+17:31:47   └─ /partners/yale-university/index.html (+0ms) 
+17:31:47 ▶ /people
+17:31:47   └─ /people/index.html (+1ms) 
+17:31:47 ▶ /research
+17:31:47   └─ /research/index.html (+0ms) 
+17:31:47 ▶ /software
+17:31:47   └─ /software/index.html (+0ms) 
+17:31:47 ✓ Completed in 11.47s.
+
+17:31:48 [@astrojs/sitemap] `sitemap-index.xml` created at `dist`
+[32mastro-robots-txt:[0m `robots.txt` is created.
+
+[32mastro-webmanifest:[0m `manifest.webmanifest` is created.
+
+17:31:48 [build] 84 page(s) built in 14.69s
+17:31:48 [build] Complete!
+
+> semio-community@1.0.0 postbuild
+> pagefind --site dist
+
+
+Running Pagefind v1.3.0 (Extended)
+Running in verbose mode
+Running from: "/Users/schoen/Projects/semio-community.github.io"
+Source:       "dist"
+Output:       "dist/pagefind"
+
+[Walking source directory]
+Found 106 files matching **/*.html
+
+[Parsing files]
+Found a data-pagefind-body element on the site.
+↳ Ignoring pages without this tag.
+22 pages found without an <html> element. 
+Pages without an outer <html> element will not be processed by default. 
+If adding this element is not possible, use the root selector config to target a different root element.
+  * "/organization/" has no <html> element
+  * "/research/" has no <html> element
+  * "/hardware/" has no <html> element
+  * "/software/" has no <html> element
+  * "/partners/oregon-state-university/" has no <html> element
+  * "/partners/" has no <html> element
+  * "/partners/ologic-inc/" has no <html> element
+  * "/partners/george-mason-university/" has no <html> element
+  * "/partners/ik-studio/" has no <html> element
+  * "/partners/university-of-southern-california/" has no <html> element
+  * "/partners/aila/" has no <html> element
+  * "/partners/tufts-university/" has no <html> element
+  * "/partners/semio-ai/" has no <html> element
+  * "/partners/kipr/" has no <html> element
+  * "/partners/nsf/" has no <html> element
+  * "/partners/peerbots/" has no <html> element
+  * "/partners/plover/" has no <html> element
+  * "/partners/palaio-logic/" has no <html> element
+  * "/partners/nist/" has no <html> element
+  * "/partners/yale-university/" has no <html> element
+  * "/partners/university-of-pennsylvania/" has no <html> element
+  * "/people/" has no <html> element
+
+[Reading languages]
+Discovered 1 language: en
+  * en: 84 pages
+
+[Building search indexes]
+Language en: 
+  Indexed 84 pages
+  Indexed 1426 words
+  Indexed 0 filters
+  Indexed 0 sorts
+
+Total: 
+  Indexed 1 language
+  Indexed 84 pages
+  Indexed 1426 words
+  Indexed 0 filters
+  Indexed 0 sorts
+
+Finished in 0.099 seconds

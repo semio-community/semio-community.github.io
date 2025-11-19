@@ -165,7 +165,8 @@ function deriveOriginalFileName(src: string): string | null {
   const parts = base.split(".");
   if (parts.length >= 2) {
     const maybeHash = parts[parts.length - 1];
-    if (/^[a-f0-9]{8,}$/i.test(maybeHash ?? "")) {
+    const looksHashed = /^[a-z0-9_-]{6,}$/i.test(maybeHash ?? "");
+    if (looksHashed) {
       parts.pop();
       return `${parts.join(".")}.${ext}`;
     }
@@ -219,7 +220,8 @@ async function loadOgImageAsset(
     if (resolved) {
       try {
         return await readToDataUrl(resolved);
-      } catch {
+      } catch (error) {
+        console.warn("[og] failed to read asset", resolved, error);
         // fall through to indexed lookup
       }
     }
@@ -411,6 +413,7 @@ async function mapResearch(
   const typeLabel = entry.data.type
     ? entry.data.type.charAt(0).toUpperCase() + entry.data.type.slice(1)
     : undefined;
+  const logoImage = await loadOgImageAsset(entry.data.images?.logo, "research");
   return {
     eyebrow: entry.data.type || "Research",
     title: entry.data.title,
@@ -418,7 +421,7 @@ async function mapResearch(
     badgeIcon: createBadgeIcon(TestTube),
     avatarInitial: "R",
     heroImage: await loadOgImageAsset(entry.data.images?.hero, "research"),
-    logoImage: await loadOgImageAsset(entry.data.images?.logo, "research"),
+    logoImage,
     categoryLabel: [typeLabel, year].filter(Boolean).join(" • ") || undefined,
   };
 }
