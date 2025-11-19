@@ -94,6 +94,7 @@ const meta = {
   title: `${data.name} - Partner Organization`,
   description: data.description,
 };
+const ogImage = `/og/organizations/${entry.id}.png`;
 
 const typeLabels = {
   academic: "Academic Institution",
@@ -169,7 +170,11 @@ const categoryLabel = categoryLabels[data.category] || data.category;
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">

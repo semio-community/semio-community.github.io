@@ -57,6 +57,7 @@ const meta = {
   title: `${data.title} - Research Study`,
   description: data.description,
 };
+const ogImage = `/og/research/${entry.id}.png`;
 
 const badges: Array<{
   text: string;
@@ -227,212 +228,215 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
-                        
-            <BaseDetailLayout>
-              <Fragment slot="hero">
-                <DetailHero
-                  image={data.images?.hero}
-                  title={data.title}
-                  subtitle={authorsString}
-                  badges={badges}
-                  featuredState={data.featured ? "featured" : undefined}
-                  thumbnail={data.images?.logo}
-                  entityType="research"
+      <BaseDetailLayout>
+        <Fragment slot="hero">
+          <DetailHero
+            image={data.images?.hero}
+            title={data.title}
+            subtitle={authorsString}
+            badges={badges}
+            featuredState={data.featured ? "featured" : undefined}
+            thumbnail={data.images?.logo}
+            entityType="research"
+          />
+        </Fragment>
+
+        <Fragment slot="description">
+          <ContentSection title="SUMMARY" content={data.description} />
+          {
+            data.links && Object.keys(data.links).length > 0 && (
+              <div class="mt-6">
+                <LinkSection
+                  client:idle
+                  links={data.links}
+                  size="md"
+                  className="gap-1"
                 />
-              </Fragment>
-      
-              <Fragment slot="description">
-                <ContentSection title="SUMMARY" content={data.description} />
-                {
-                  data.links && Object.keys(data.links).length > 0 && (
-                    <div class="mt-6">
-                      <LinkSection
-                        client:idle
-                        links={data.links}
-                        size="md"
-                        className="gap-1"
+              </div>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="contributors">
+          {
+            validAuthors.length > 0 && (
+              <InfoCard title="CONTRIBUTORS">
+                <div class="flex flex-wrap gap-2">
+                  {validAuthors.map((author) => (
+                    <div class="flex items-center gap-1">
+                      <PersonPopover
+                        client:load
+                        personId={author.personId}
+                        person={author.person}
+                        role={author.affiliationSnapshot}
                       />
+                      {author.corresponding && (
+                        <span
+                          class="text-xs text-accent-one"
+                          title="Corresponding Author"
+                        >
+                          ✉
+                        </span>
+                      )}
+                      {author.equalContribution && (
+                        <span
+                          class="text-xs text-color-500"
+                          title="Equal Contribution"
+                        >
+                          *
+                        </span>
+                      )}
                     </div>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="contributors">
-                {
-                  validAuthors.length > 0 && (
-                    <InfoCard title="CONTRIBUTORS">
-                      <div class="flex flex-wrap gap-2">
-                        {validAuthors.map((author) => (
-                          <div class="flex items-center gap-1">
-                            <PersonPopover
-                              client:load
-                              personId={author.personId}
-                              person={author.person}
-                              role={author.affiliationSnapshot}
-                            />
-                            {author.corresponding && (
-                              <span
-                                class="text-xs text-accent-one"
-                                title="Corresponding Author"
-                              >
-                                ✉
-                              </span>
-                            )}
-                            {author.equalContribution && (
-                              <span
-                                class="text-xs text-color-500"
-                                title="Equal Contribution"
-                              >
-                                *
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </InfoCard>
-                  )
-                }
-      
-                {
-                  organizationRoleEntries.length > 0 && (
-                    <InfoCard title="ORGANIZATIONS">
-                      {organizationRoleEntries.map(([role, organizations]) => (
-                        <div class="mb-4 last:mb-0">
-                          <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                            {organizationRoleLabels[role]}
-                          </h4>
-                          <div class="flex flex-wrap gap-2">
-                            {organizations.map(({ organization, note }) => (
-                              <div class="flex items-center gap-2">
-                                <OrganizationChip
-                                  partnerId={organization.id}
-                                  partnerName={
-                                    organization.data.shortName ||
-                                    organization.data.name
-                                  }
-                                  logo={organization.data.images?.logo}
-                                  role={organizationRoleLabels[role]}
-                                />
-                                {note && (
-                                  <span class="text-xs text-color-500 dark:text-color-400 italic">
-                                    {note}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                  ))}
+                </div>
+              </InfoCard>
+            )
+          }
+
+          {
+            organizationRoleEntries.length > 0 && (
+              <InfoCard title="ORGANIZATIONS">
+                {organizationRoleEntries.map(([role, organizations]) => (
+                  <div class="mb-4 last:mb-0">
+                    <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+                      {organizationRoleLabels[role]}
+                    </h4>
+                    <div class="flex flex-wrap gap-2">
+                      {organizations.map(({ organization, note }) => (
+                        <div class="flex items-center gap-2">
+                          <OrganizationChip
+                            partnerId={organization.id}
+                            partnerName={
+                              organization.data.shortName ||
+                              organization.data.name
+                            }
+                            logo={organization.data.images?.logo}
+                            role={organizationRoleLabels[role]}
+                          />
+                          {note && (
+                            <span class="text-xs text-color-500 dark:text-color-400 italic">
+                              {note}
+                            </span>
+                          )}
                         </div>
                       ))}
-                    </InfoCard>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="metadata">
-                {
-                  publicationItems.length > 0 && (
-                    <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-                      <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                        DETAILS
-                      </h3>
-                      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                        {publicationItems.map((item) => (
-                          <div>
-                            <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
-                              {item.label}
-                            </span>
-                            <span class="text-accent-base">{item.value}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="tags">
-                {
-                  data.topics && data.topics.length > 0 && (
-                    <InfoCard title="RESEARCH TOPICS">
-                      <div class="flex flex-wrap gap-2">
-                        {data.topics.map((topic) => (
-                          <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
-                            {topic}
-                          </span>
-                        ))}
-                      </div>
-                    </InfoCard>
-                  )
-                }
-              </Fragment>
-      
-              <Fragment slot="related">
-                {
-                  validRelatedHardware.length > 0 && (
-                    <div class="mb-12">
-                      <h3 class="text-lg font-semibold mb-4">Related Hardware</h3>
-                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {validRelatedHardware.map((hw) => (
-                          <HardwareCard hardwareId={hw.id} data={hw.data} />
-                        ))}
-                      </div>
+                  </div>
+                ))}
+              </InfoCard>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="metadata">
+          {
+            publicationItems.length > 0 && (
+              <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+                <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                  DETAILS
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                  {publicationItems.map((item) => (
+                    <div>
+                      <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
+                        {item.label}
+                      </span>
+                      <span class="text-accent-base">{item.value}</span>
                     </div>
-                  )
+                  ))}
+                </div>
+              </div>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="tags">
+          {
+            data.topics && data.topics.length > 0 && (
+              <InfoCard title="RESEARCH TOPICS">
+                <div class="flex flex-wrap gap-2">
+                  {data.topics.map((topic) => (
+                    <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </InfoCard>
+            )
+          }
+        </Fragment>
+
+        <Fragment slot="related">
+          {
+            validRelatedHardware.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Related Hardware</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {validRelatedHardware.map((hw) => (
+                    <HardwareCard hardwareId={hw.id} data={hw.data} />
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          {
+            validRelatedSoftware.length > 0 && (
+              <div class="mb-12">
+                <h3 class="text-lg font-semibold mb-4">Related Software</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {validRelatedSoftware.map((sw) => (
+                    <SoftwareCard softwareId={sw.id} data={sw.data} />
+                  ))}
+                </div>
+              </div>
+            )
+          }
+
+          {
+            relatedResearch && relatedResearch.length > 0 && (
+              <RelatedItemsGrid
+                client:load
+                title="Related Research"
+                subtitle="Related papers, datasets, and benchmarks"
+                items={
+                  relatedResearch.map((relatedEntry) => {
+                    const yearLabel = getPublishYear(relatedEntry);
+                    const typeLabel =
+                      typeLabels[relatedEntry.data.type] ||
+                      relatedEntry.data.type;
+                    return {
+                      id: relatedEntry.id,
+                      data: {
+                        name: relatedEntry.data.title,
+                        title: relatedEntry.data.title,
+                        description: relatedEntry.data.description,
+                        type: relatedEntry.data.type,
+                        featured: relatedEntry.data.featured,
+                        images: relatedEntry.data.images,
+                        links: relatedEntry.data.links,
+                        shortDescription: [typeLabel, yearLabel]
+                          .filter(Boolean)
+                          .join(" • "),
+                      },
+                    };
+                  }) as any
                 }
-      
-                {
-                  validRelatedSoftware.length > 0 && (
-                    <div class="mb-12">
-                      <h3 class="text-lg font-semibold mb-4">Related Software</h3>
-                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {validRelatedSoftware.map((sw) => (
-                          <SoftwareCard softwareId={sw.id} data={sw.data} />
-                        ))}
-                      </div>
-                    </div>
-                  )
-                }
-      
-                {
-                  relatedResearch && relatedResearch.length > 0 && (
-                    <RelatedItemsGrid
-                      client:load
-                      title="Related Research"
-                      subtitle="Related papers, datasets, and benchmarks"
-                      items={
-                        relatedResearch.map((relatedEntry) => {
-                          const yearLabel = getPublishYear(relatedEntry);
-                          const typeLabel =
-                            typeLabels[relatedEntry.data.type] ||
-                            relatedEntry.data.type;
-                          return {
-                            id: relatedEntry.id,
-                            data: {
-                              name: relatedEntry.data.title,
-                              title: relatedEntry.data.title,
-                              description: relatedEntry.data.description,
-                              type: relatedEntry.data.type,
-                              featured: relatedEntry.data.featured,
-                              images: relatedEntry.data.images,
-                              links: relatedEntry.data.links,
-                              shortDescription: [typeLabel, yearLabel]
-                                .filter(Boolean)
-                                .join(" • "),
-                            },
-                          };
-                        }) as any
-                      }
-                      itemType="research"
-                      columns={3}
-                    />
-                  )
-                }
-              </Fragment>
-            </BaseDetailLayout>
+                itemType="research"
+                columns={3}
+              />
+            )
+          }
+        </Fragment>
+      </BaseDetailLayout>
     </SiteShell>
   </body>
 </html>

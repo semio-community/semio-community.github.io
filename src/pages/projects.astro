@@ -15,6 +15,7 @@ const meta = {
   description:
     "Explore community-driven robotics hardware platforms, open-source software tools, and reproducible research contributions advancing human-robot interaction",
 };
+const ogImage = "/og/projects.png";
 ---
 
 <html
@@ -22,17 +23,20 @@ const meta = {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground>
-                        
-            <ProjectsPage
-              meta={meta}
-              hardware={hardware}
-              software={software}
-              research={research}
-            />
+      <ProjectsPage
+        meta={meta}
+        hardware={hardware}
+        software={software}
+        research={research}
+      />
     </SiteShell>
   </body>
 </html>

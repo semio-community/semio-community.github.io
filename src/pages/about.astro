@@ -8,6 +8,7 @@ const meta = {
   description:
     "Learn about Semio Community's mission to advance human-centered robotics through open science and collaboration",
 };
+const ogImage = "/og/about.png";
 ---
 
 <html
@@ -15,7 +16,11 @@ const meta = {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell>

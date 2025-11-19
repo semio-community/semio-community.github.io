@@ -11,6 +11,7 @@ const meta = {
   description:
     "People and organizations advancing human-centered robotics and AI together",
 };
+const ogImage = "/og/contributors.png";
 
 const allOrganizations = await getAllOrganizations();
 const allPeople = await getAllPeople();
@@ -96,7 +97,11 @@ const sponsorsUniqueCount = (() => {
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-6xl">

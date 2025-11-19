@@ -10,6 +10,7 @@ const meta = {
   description:
     "Conferences, workshops, and training events for the human-robot interaction community",
 };
+const ogImage = "/og/events.png";
 
 const allEvents = await getAllEvents();
 ---
@@ -19,28 +20,31 @@ const allEvents = await getAllEvents();
   lang="en"
 >
   <head>
-    <BaseHead title={meta.title} description={meta.description} />
+    <BaseHead
+      title={meta.title}
+      description={meta.description}
+      ogImage={ogImage}
+    />
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground>
-                        
-            <EventsPage>
-              {
-                allEvents.length > 0 && (
-                  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0">
-                    <EventsSections
-                      client:load
-                      events={allEvents.map((event) => ({
-                        id: event.id,
-                        data: event.data,
-                      }))}
-                      initialFeaturedCount={6}
-                      initialPastCount={6}
-                    />
-                  </div>
-                )
-              }
-            </EventsPage>
+      <EventsPage>
+        {
+          allEvents.length > 0 && (
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-0">
+              <EventsSections
+                client:load
+                events={allEvents.map((event) => ({
+                  id: event.id,
+                  data: event.data,
+                }))}
+                initialFeaturedCount={6}
+                initialPastCount={6}
+              />
+            </div>
+          )
+        }
+      </EventsPage>
     </SiteShell>
   </body>
 </html>
