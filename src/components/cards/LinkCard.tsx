@@ -1,5 +1,5 @@
-import React from "react";
 import { clsx } from "clsx";
+import { cloneElement, isValidElement, type ReactNode } from "react";
 
 export type LinkCardVariant = "primary" | "secondary" | "tertiary" | "default";
 
@@ -28,13 +28,19 @@ export interface LinkCardProps {
    * Provide a fully-rendered icon node or render function.
    * If a node is provided, it should accept CSS color via currentColor.
    */
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   /**
    * Alternative to `icon`: a render function that receives the resolved color class
    * and returns a React node. Prefer this for icon libraries to ensure color/size control.
    */
-  iconRender?: (className: string) => React.ReactNode;
+  iconRender?: (className: string) => ReactNode;
 }
+
+type IconNodeProps = {
+  className?: string;
+  "aria-hidden"?: boolean;
+  focusable?: boolean;
+};
 
 function variantTextClass(variant: LinkCardVariant) {
   switch (variant) {
@@ -116,16 +122,13 @@ export default function LinkCard({
   const renderedIcon =
     typeof iconRender === "function"
       ? iconRender(iconColorClass)
-      : React.isValidElement(icon)
-        ? React.cloneElement(
-            icon as React.ReactElement<any>,
-            {
-              ...(icon as any).props,
-              className: clsx((icon as any).props?.className, iconColorClass),
-              "aria-hidden": true,
-              focusable: false,
-            } as any,
-          )
+      : isValidElement<IconNodeProps>(icon)
+        ? cloneElement(icon, {
+            ...icon.props,
+            className: clsx(icon.props?.className, iconColorClass),
+            "aria-hidden": true,
+            focusable: false,
+          })
         : null;
 
   return (
@@ -148,9 +151,9 @@ export default function LinkCard({
             borderClass,
           )}
         >
-          {extraLinks.map(({ label, href }, idx) => (
+          {extraLinks.map(({ label, href }) => (
             <a
-              key={`${href}-${idx}`}
+              key={`${href}-${label}`}
               className={clsx(
                 "rounded-md p-1 outline text-accent-base transition-colors flex-1",
                 extraLinkClass,

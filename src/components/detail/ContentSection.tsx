@@ -1,10 +1,10 @@
-import React from "react";
+import type { ReactNode } from "react";
 
 export interface ContentSectionProps {
   title: string;
   content?: string | null;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export default function ContentSection({
@@ -22,9 +22,7 @@ export default function ContentSection({
           {title}
         </h3>
         <div className="text-accent-base leading-relaxed">
-          {children ?? (
-            <p dangerouslySetInnerHTML={{ __html: content ?? "" }} />
-          )}
+          {children ?? <p>{content}</p>}
         </div>
       </div>
     </div>

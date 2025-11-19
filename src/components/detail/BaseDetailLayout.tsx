@@ -1,7 +1,7 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { clsx } from "clsx";
 
-type SectionContent = React.ReactNode | string | null | undefined;
+type SectionContent = ReactNode | string | null | undefined;
 
 export interface BaseDetailLayoutProps {
   className?: string;
@@ -41,10 +41,7 @@ export default function BaseDetailLayout({
   const paddingClass = hero ? "pt-16 md:pt-20 lg:pt-4" : "pt-20 lg:pt-4";
 
   const renderSection = (section?: SectionContent) => {
-    if (!section) return null;
-    if (typeof section === "string") {
-      return <div dangerouslySetInnerHTML={{ __html: section }} />;
-    }
+    if (section == null || section === "") return null;
     return <>{section}</>;
   };
 

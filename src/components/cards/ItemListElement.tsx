@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 
@@ -42,7 +42,7 @@ export interface ItemListElementProps {
  *
  * Visual styling is aligned with ItemCard: background, rounded corners, hover effects.
  */
-export const ItemListElement: React.FC<ItemListElementProps> = ({
+export const ItemListElement: FC<ItemListElementProps> = ({
   title,
   description,
   href,

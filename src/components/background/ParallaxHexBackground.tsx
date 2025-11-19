@@ -181,7 +181,9 @@ function generateGlyphs({
       const parallax = rndIn(rng, band.parallax[0], band.parallax[1]);
       const xVw = rndIn(rng, horizontalRangeVw.min, horizontalRangeVw.max);
       const yVh = rndIn(rng, -verticalSpanVh * 0.1, 100 + verticalSpanVh * 0.8); // spread above/below
-      const variant = variants[Math.floor(rng() * variants.length)]!;
+      const variantIndex =
+        Math.floor(rng() * variants.length) % variants.length;
+      const variant = variants[variantIndex] ?? "primary";
       const rotationDeg =
         variant === "primary" ? 0 : variant === "secondary" ? 120 : 240;
 

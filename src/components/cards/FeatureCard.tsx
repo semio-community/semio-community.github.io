@@ -1,11 +1,22 @@
-import React from "react";
 import { clsx } from "clsx";
+import {
+  cloneElement,
+  isValidElement,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 
 export type FeatureCardVariant =
   | "primary"
   | "secondary"
   | "tertiary"
   | "default";
+
+type IconRenderProps = {
+  className?: string;
+  "aria-hidden"?: boolean;
+  focusable?: boolean;
+};
 
 export interface FeatureCardProps {
   /**
@@ -27,21 +38,21 @@ export interface FeatureCardProps {
   /**
    * Optional children rendered at the end of the card (parity with Astro slot).
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
   /**
    * Provide a React icon component type (recommended when calling from .astro).
    * Example: iconComponent={Code2} (from @solar-icons/react-perf/LineDuotone)
    */
-  iconComponent?: React.ElementType<any>;
+  iconComponent?: ComponentType<IconRenderProps>;
   /**
    * Provide an icon as a React node. It should respect currentColor.
    */
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   /**
    * Alternative to `icon`: render function that receives a className
    * string and returns a React node (recommended for icon libraries).
    */
-  iconRender?: (className: string) => React.ReactNode;
+  iconRender?: (className: string) => ReactNode;
 }
 
 /**
@@ -82,25 +93,22 @@ export default function FeatureCard({
 
   const iconClassName = clsx("w-12 h-12 mx-auto mb-4", textClass);
 
-  const renderedIcon = iconComponent
-    ? React.createElement(iconComponent as any, {
-        className: iconClassName,
-        "aria-hidden": true,
-        focusable: false,
-      })
-    : typeof iconRender === "function"
-      ? iconRender(iconClassName)
-      : React.isValidElement(icon)
-        ? React.cloneElement(
-            icon as React.ReactElement<any>,
-            {
-              ...(icon as any).props,
-              className: clsx((icon as any).props?.className, iconClassName),
-              "aria-hidden": true,
-              focusable: false,
-            } as any,
-          )
-        : null;
+  let renderedIcon: ReactNode = null;
+  if (iconComponent) {
+    const IconComponent = iconComponent;
+    renderedIcon = (
+      <IconComponent className={iconClassName} aria-hidden focusable={false} />
+    );
+  } else if (typeof iconRender === "function") {
+    renderedIcon = iconRender(iconClassName);
+  } else if (isValidElement<IconRenderProps>(icon)) {
+    renderedIcon = cloneElement(icon, {
+      ...icon.props,
+      className: clsx(icon.props?.className, iconClassName),
+      "aria-hidden": true,
+      focusable: false,
+    });
+  }
 
   return (
     <div
