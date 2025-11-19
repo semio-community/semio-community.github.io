@@ -1,10 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { motion, useScroll, useSpring, useTransform } from "motion/react";
 
 /**
  * ParallaxHexBackground
@@ -265,19 +260,48 @@ function getFillColor(
   }
 }
 
+const MOBILE_UA_REGEX =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i;
+
+function detectMobileDevice(): boolean {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const ua = navigator.userAgent || navigator.vendor || "";
+  if (MOBILE_UA_REGEX.test(ua)) {
+    return true;
+  }
+
+  if ("maxTouchPoints" in navigator && navigator.maxTouchPoints > 1) {
+    return true;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function"
+  ) {
+    try {
+      if (window.matchMedia("(pointer: coarse)").matches) {
+        return true;
+      }
+    } catch {
+      // ignore matchMedia failures
+    }
+  }
+
+  return false;
+}
+
 function Glyph({
   spec,
-  scrollY,
   virtualWidth,
+  virtualHeight,
 }: {
   spec: GlyphSpec;
-  scrollY: ReturnType<typeof useScroll>["scrollY"];
   virtualWidth: number;
+  virtualHeight: number;
 }) {
-  // Foreground factor: 1 means move fully with content; 0 means static
-  const y = useTransform(scrollY, (v) => -v * spec.parallax);
-  const translate = useMotionTemplate`translateY(${y}px)`;
-
   // Near (parallax ~1) should be sharp; far (parallax small) slightly blurred.
   // Depth-based blur: numeric per glyph (constant with respect to scroll)
   const p = Math.max(0, Math.min(1, spec.parallax));
@@ -299,18 +323,18 @@ function Glyph({
   const extra = Math.max(0, virtualWidth / 16);
   const adjustedVw = spec.xVw >= baselineEdge ? spec.xVw + extra : spec.xVw;
   const leftPx = (adjustedVw / 100) * virtualWidth - margin;
+  const topPx = (spec.yVh / 100) * virtualHeight - margin;
 
   return (
     <div style={{ filter: blurFilter, WebkitFilter: blurFilter }}>
-      <motion.svg
+      <svg
         width={paddedSize}
         height={paddedSize}
         viewBox={`${-GLYPH_W / 2} ${-GLYPH_H / 2} ${GLYPH_W} ${GLYPH_H}`}
         style={{
           position: "absolute",
           left: `${leftPx}px`,
-          top: `calc(${spec.yVh}vh - ${margin}px)`,
-          transform: translate as unknown as string, // motion template -> style transform
+          top: `${topPx}px`,
           zIndex: spec.zIndex,
           opacity: 1,
           pointerEvents: "none",
@@ -319,7 +343,7 @@ function Glyph({
         }}
         aria-hidden="true"
       >
-        <motion.g
+        <g
           transform={`rotate(${spec.rotationDeg})`}
           style={{ filter: blurFilter, WebkitFilter: blurFilter }}
         >
@@ -333,8 +357,8 @@ function Glyph({
             vectorEffect="non-scaling-stroke"
             transform={`translate(${(-GLYPH_W / 2) * s}, ${(-GLYPH_H / 2) * s}) scale(${s})`}
           />
-        </motion.g>
-      </motion.svg>
+        </g>
+      </svg>
     </div>
   );
 }
@@ -349,49 +373,134 @@ export default function ParallaxHexBackground({
   className = "",
 }: ParallaxHexBackgroundProps) {
   const MIN_VIRTUAL_WIDTH = 768;
-  const [viewportWidth, setViewportWidth] = useState(() => {
-    if (typeof window === "undefined") return MIN_VIRTUAL_WIDTH;
-    return window.innerWidth;
-  });
+  const MIN_VIRTUAL_HEIGHT = 960;
+  const VIEWPORT_THRESHOLD = 24;
+  const getInitialViewport = () => {
+    if (typeof window === "undefined") {
+      return { width: MIN_VIRTUAL_WIDTH, height: MIN_VIRTUAL_HEIGHT };
+    }
+    return {
+      width: window.innerWidth,
+      height: Math.max(MIN_VIRTUAL_HEIGHT, window.innerHeight),
+    };
+  };
+  const [viewport, setViewport] = useState(getInitialViewport);
+  const [isMobileDevice, setIsMobileDevice] = useState(() =>
+    detectMobileDevice(),
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const handleResize = () => setViewportWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    let frame: number | null = null;
+    const handleResize = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const nextWidth = window.innerWidth;
+        const nextHeight = Math.max(MIN_VIRTUAL_HEIGHT, window.innerHeight);
+        setViewport((prev) => {
+          if (
+            Math.abs(prev.width - nextWidth) < VIEWPORT_THRESHOLD &&
+            Math.abs(prev.height - nextHeight) < VIEWPORT_THRESHOLD
+          ) {
+            return prev;
+          }
+          return { width: nextWidth, height: nextHeight };
+        });
+      });
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.visualViewport?.addEventListener("resize", handleResize);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
   }, []);
 
-  const virtualWidth = Math.max(MIN_VIRTUAL_WIDTH, viewportWidth);
+  useEffect(() => {
+    setIsMobileDevice(detectMobileDevice());
+  }, []);
+
+  const virtualWidth = Math.max(MIN_VIRTUAL_WIDTH, viewport.width);
+  const virtualHeight = Math.max(MIN_VIRTUAL_HEIGHT, viewport.height);
+  const isMobile = virtualWidth <= 768;
+  const effectiveCount = isMobile
+    ? Math.max(24, Math.round(count * 0.75))
+    : count;
 
   const glyphs = useMemo(
     () =>
       generateGlyphs({
-        count,
+        count: effectiveCount,
         seed: seed ?? new Date().toISOString().slice(0, 10),
         palette,
         verticalSpanVh,
         horizontalRangeVw,
         opacity,
       }).sort((a, b) => a.zIndex - b.zIndex), // ensure back-to-front rendering
-    [count, seed, palette, verticalSpanVh, horizontalRangeVw, opacity],
+    [effectiveCount, seed, palette, verticalSpanVh, horizontalRangeVw, opacity],
   );
+
+  const glyphBands = useMemo(() => {
+    const near: GlyphSpec[] = [];
+    const mid: GlyphSpec[] = [];
+    const far: GlyphSpec[] = [];
+    for (const glyph of glyphs) {
+      if (glyph.zIndex === 3) near.push(glyph);
+      else if (glyph.zIndex === 2) mid.push(glyph);
+      else far.push(glyph);
+    }
+    return { near, mid, far };
+  }, [glyphs]);
+
+  const nearParallax = 0.8;
+  const midParallax = 0.45;
+  const farParallax = 0.18;
 
   // Subscribe to page scroll once and pass motion value to children
   const { scrollY } = useScroll();
+  const smoothedScroll = useSpring(scrollY, {
+    stiffness: 250,
+    damping: 30,
+    mass: 0.2,
+  });
+  const scrollSource = isMobileDevice ? smoothedScroll : scrollY;
+  const nearY = useTransform(scrollSource, (v) => -v * nearParallax);
+  const midY = useTransform(scrollSource, (v) => -v * midParallax);
+  const farY = useTransform(scrollSource, (v) => -v * farParallax);
 
   return (
     <div
       className={`pointer-events-none fixed inset-0 ${className}`}
       aria-hidden="true"
     >
-      {glyphs.map((g) => (
-        <Glyph
-          key={g.id}
-          spec={g}
-          scrollY={scrollY}
-          virtualWidth={virtualWidth}
-        />
-      ))}
+      {[
+        { key: "near", mv: nearY, items: glyphBands.near },
+        { key: "mid", mv: midY, items: glyphBands.mid },
+        { key: "far", mv: farY, items: glyphBands.far },
+      ].map(({ key, mv, items }) =>
+        items.length ? (
+          <motion.div
+            key={key}
+            style={{
+              y: mv,
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none",
+            }}
+            aria-hidden="true"
+          >
+            {items.map((glyph) => (
+              <Glyph
+                key={glyph.id}
+                spec={glyph}
+                virtualWidth={virtualWidth}
+                virtualHeight={virtualHeight}
+              />
+            ))}
+          </motion.div>
+        ) : null,
+      )}
     </div>
   );
 }
