@@ -19,6 +19,7 @@ import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { OrganizationChip } from "@/components/ui/OrganizationChip";
 import LinkSection from "@/components/detail/LinkSection";
+import { resolveLogoAsset } from "@/utils/images";
 
 export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {
@@ -321,7 +322,9 @@ if (data.links?.mastodon) {
                             aff.organization?.data?.shortName ||
                             aff.organization?.data?.name
                           }
-                          logo={aff.organization?.data?.images?.logo}
+                          logo={resolveLogoAsset(
+                            aff.organization?.data?.images,
+                          )}
                           role={
                             aff.department
                               ? `${aff.role}, ${aff.department}`
@@ -346,7 +349,9 @@ if (data.links?.mastodon) {
                             aff.organization?.data?.shortName ||
                             aff.organization?.data?.name
                           }
-                          logo={aff.organization?.data?.images?.logo}
+                          logo={resolveLogoAsset(
+                            aff.organization?.data?.images,
+                          )}
                           role={
                             aff.department
                               ? `${aff.role}, ${aff.department}`

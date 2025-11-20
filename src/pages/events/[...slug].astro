@@ -12,7 +12,7 @@ import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import LinkSection from "@/components/detail/LinkSection";
 import { getAllEvents } from "@/data/events";
 import BasicChip from "@/components/ui/BasicChip";
-
+import { resolveLogoAsset } from "@/utils/images";
 import { getEventPreviewDescriptionText } from "@/utils/events";
 
 export async function getStaticPaths() {
@@ -261,7 +261,7 @@ const featuredState = data.featured
             subtitle={descriptionText}
             badges={badges}
             featuredState={featuredState}
-            logo={data.images?.logo}
+            logo={resolveLogoAsset(data.images)}
             entityType="event"
           />
         </Fragment>

@@ -167,6 +167,7 @@ const organizations = defineCollection({
         .object({
           logo: image().optional(),
           hero: image().optional(),
+          logoUrl: z.string().optional(),
           gallery: z.array(image()).optional(),
         })
         .optional(),
@@ -216,6 +217,7 @@ const hardware = defineCollection({
         .object({
           logo: image().optional(),
           hero: image().optional(),
+          logoUrl: z.string().optional(),
           gallery: z.array(image()).optional(),
         })
         .optional(),
@@ -260,6 +262,7 @@ const software = defineCollection({
         .object({
           logo: image().optional(),
           hero: image().optional(),
+          logoUrl: z.string().optional(),
           gallery: z.array(image()).optional(),
         })
         .optional(),

@@ -17,6 +17,7 @@ import { OrganizationChip } from "@/components/ui/OrganizationChip";
 import { HardwareCard } from "@/components/cards/HardwareCard";
 import { SoftwareCard } from "@/components/cards/SoftwareCard";
 import { serializePersonForPopover } from "@/utils/person";
+import { resolveLogoAsset } from "@/utils/images";
 
 export async function getStaticPaths() {
   const researchEntries = await getCollection("research", ({ data }) => {
@@ -244,7 +245,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
             subtitle={authorsString}
             badges={badges}
             featuredState={data.featured ? "featured" : undefined}
-            thumbnail={data.images?.logo}
+            thumbnail={resolveLogoAsset(data.images)}
             entityType="research"
           />
         </Fragment>
@@ -318,7 +319,7 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
                               organization.data.shortName ||
                               organization.data.name
                             }
-                            logo={organization.data.images?.logo}
+                            logo={resolveLogoAsset(organization.data.images)}
                             role={organizationRoleLabels[role]}
                           />
                           {note && (

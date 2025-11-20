@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
+import { resolveLogoAsset } from "@/utils/images";
 
 export interface SoftwareCardProps {
   softwareId: string;
@@ -16,6 +17,7 @@ export const SoftwareCard: FC<SoftwareCardProps> = ({
   const categoryLabel = data.category
     ? data.category.charAt(0).toUpperCase() + data.category.slice(1)
     : "";
+  const logoSource = resolveLogoAsset(data.images);
 
   return (
     <ItemCard
@@ -25,7 +27,7 @@ export const SoftwareCard: FC<SoftwareCardProps> = ({
       type="software"
       image={data.images?.hero}
       imageAlt={data.name}
-      logo={data.images?.logo}
+      logo={logoSource}
       status={data.status}
       category={categoryLabel}
       featuredState={data.featured ? "featured" : "not-featured"}

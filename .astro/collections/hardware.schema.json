@@ -182,6 +182,9 @@
             "hero": {
               "type": "string"
             },
+            "logoUrl": {
+              "type": "string"
+            },
             "gallery": {
               "type": "array",
               "items": {

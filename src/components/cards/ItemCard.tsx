@@ -5,6 +5,17 @@ import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 import { IconButton, type LinkType } from "@/components/ui/IconButton";
 import { linkPriority } from "@/data/links";
+import type { ImageLike } from "@/utils/images";
+
+// type ImageLike =
+//   | string
+//   | {
+//       src: string;
+//       width?: number;
+//       height?: number;
+//       format?: string;
+//       alt?: string;
+//     };
 
 export interface ItemCardProps {
   title: string;
@@ -12,18 +23,8 @@ export interface ItemCardProps {
   href: string;
   imageUrl?: string;
   imageAlt?: string;
-  image?: {
-    src: string;
-    width?: number;
-    height?: number;
-    format?: string;
-  };
-  logo?: {
-    src: string;
-    width?: number;
-    height?: number;
-    format?: string;
-  };
+  image?: ImageLike;
+  logo?: ImageLike;
   status?: string;
   statusLabel?: string;
   category?: string;
@@ -60,13 +61,28 @@ export const ItemCard: FC<ItemCardProps> = ({
   const statusColor = getStatusColor(status, "text");
 
   // Get the image source from various formats (never use logo as main image)
+  const resolveSrc = (value?: ImageLike) => {
+    if (!value) return null;
+    if (typeof value === "string") return value;
+    return value.src;
+  };
+
+  const resolveAlt = () => {
+    if (imageAlt) return imageAlt;
+    if (!image || typeof image === "string") return title;
+    if ("alt" in image && image.alt) return image.alt;
+    return title;
+  };
+
   const getImageSource = () => {
     if (imageUrl) return imageUrl;
-    if (image?.src) return image.src;
+    const fromImage = resolveSrc(image);
+    if (fromImage) return fromImage;
     return null;
   };
 
   const imageSrc = getImageSource();
+  const resolvedAlt = resolveAlt();
 
   // Map item type to avatar type
   const typeToAvatarType: Record<string, AvatarType> = {
@@ -108,7 +124,7 @@ export const ItemCard: FC<ItemCardProps> = ({
           <div className="aspect-video overflow-hidden bg-gradient-to-br from-special-lighter to-special relative">
             <img
               src={imageSrc}
-              alt={imageAlt || title}
+              alt={resolvedAlt}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
             {/* Show logo/avatar overlay when both hero and logo are present */}
