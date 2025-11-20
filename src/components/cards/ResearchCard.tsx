@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
+import { resolveLogoAsset } from "@/utils/images";
 
 export interface ResearchCardProps {
   researchId: string;
@@ -38,6 +39,8 @@ export const ResearchCard: FC<ResearchCardProps> = ({
   const demoLink = data.links?.demo || data.links?.video;
   const websiteLink = data.links?.website || data.links?.program;
 
+  const customLogo = resolveLogoAsset(data.images);
+
   return (
     <ItemCard
       title={data.title || researchId}
@@ -46,7 +49,7 @@ export const ResearchCard: FC<ResearchCardProps> = ({
       type="research"
       image={data.images?.hero}
       imageAlt={data.title}
-      logo={data.images?.logo}
+      logo={customLogo}
       category={category}
       featuredState={data.featured ? "featured" : "not-featured"}
       links={{

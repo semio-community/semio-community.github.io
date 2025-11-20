@@ -23,6 +23,7 @@ import {
   getCategoryLabel,
 } from "@/config/statusConfig";
 import { serializePersonForPopover } from "@/utils/person";
+import { resolveLogoAsset } from "@/utils/images";
 
 export async function getStaticPaths() {
   const hardware = await getCollection("hardware", ({ data }) => {
@@ -139,7 +140,7 @@ const specificationItems = data.specifications || {};
             badges={badges}
             featuredState={data.featured ? "featured" : undefined}
             entityType="hardware"
-            logo={data.images?.logo}
+            logo={resolveLogoAsset(data.images)}
           />
         </Fragment>
 
@@ -177,7 +178,7 @@ const specificationItems = data.specifications || {};
                             contributor.data?.shortName ||
                             contributor.data?.name
                           }
-                          logo={contributor.data?.images?.logo}
+                          logo={resolveLogoAsset(contributor.data?.images)}
                           role={contributor.role || "Contributing Organization"}
                         />
                       ))}

@@ -19,6 +19,7 @@ import { getRelatedSoftware } from "@/data/software";
 import { getPerson } from "@/data/people";
 import { getStatusLabel, getStatusColor } from "@/config/statusConfig";
 import { serializePersonForPopover } from "@/utils/person";
+import { resolveLogoAsset } from "@/utils/images";
 
 export async function getStaticPaths() {
   const software = await getCollection("software", ({ data }) => {
@@ -175,7 +176,7 @@ if (data.requirements) {
             badges={badges}
             featuredState={data.featured ? "featured" : undefined}
             entityType="software"
-            logo={data.images?.logo}
+            logo={resolveLogoAsset(data.images)}
           />
         </Fragment>
 
@@ -213,7 +214,7 @@ if (data.requirements) {
                             contributor.data?.shortName ||
                             contributor.data?.name
                           }
-                          logo={contributor.data?.images?.logo}
+                          logo={resolveLogoAsset(contributor.data?.images)}
                           role={contributor.role || "Contributing Organization"}
                         />
                       ))}

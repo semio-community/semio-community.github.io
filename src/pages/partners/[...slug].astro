@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import RedirectPage from "@/components/util/RedirectPage.astro";
+
+export async function getStaticPaths() {
+  const organizations = await getCollection("organizations", ({ data }) => {
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+
+  const partners = organizations.filter((entry) => entry.data.isPartner);
+
+  return partners.map((entry) => ({
+    params: { slug: entry.id },
+    props: {
+      target: `/organizations/${entry.id}`,
+      name: entry.data.name,
+    },
+  }));
+}
+
+interface Props {
+  target: string;
+  name: string;
+}
+
+const { target, name } = Astro.props as Props;
+---
+
+<RedirectPage
+  to={target}
+  title="Redirecting to Organization"
+  description={`Partner entries now live under organizations. Redirecting you to ${name}.`}
+/>

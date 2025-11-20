@@ -151,15 +151,6 @@ export default defineConfig({
     // port: 1234,
     host: true,
   },
-  redirects: {
-    "/people": "/contributors",
-    "/partners": "/contributors",
-    "/partners/[...slug]": "/organizations/[...slug]",
-    "/hardware": "/projects",
-    "/software": "/projects",
-    "/research": "/projects",
-    "/organization": "/contributors#partners",
-  },
 });
 
 function rawFonts(ext: string[]) {

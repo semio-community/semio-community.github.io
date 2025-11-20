@@ -5,6 +5,7 @@ import { getLocationString } from "@/utils/events";
 import { getFormattedDateRanges } from "@/utils/date";
 import { Calendar, MapPoint } from "@solar-icons/react-perf/LineDuotone";
 import type { FeaturedState } from "../ui/FeaturedStar";
+import { resolveLogoAsset } from "@/utils/images";
 
 export interface EventCardProps {
   eventId: string;
@@ -84,7 +85,7 @@ export const EventCard: FC<EventCardProps> = ({ eventId, data }) => {
       type="events"
       image={data.images?.hero}
       imageAlt={data.name}
-      logo={data.images?.logo}
+      logo={resolveLogoAsset(data.images)}
       status={status}
       category={category}
       featuredState={featuredState}

@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import type { CollectionEntry } from "astro:content";
 import { ItemCard } from "@/components/cards/ItemCard";
+import { resolveLogoAsset } from "@/utils/images";
 
 export interface OrganizationCardProps {
   organizationId: string;
@@ -18,6 +19,7 @@ export const OrganizationCard: FC<OrganizationCardProps> = ({
     : "";
 
   const showLogo = !data.images?.hero;
+  const logoSource = resolveLogoAsset(data.images);
 
   return (
     <ItemCard
@@ -27,7 +29,7 @@ export const OrganizationCard: FC<OrganizationCardProps> = ({
       type="organizations"
       image={data.images?.hero}
       imageAlt={data.name}
-      logo={showLogo ? data.images?.logo : undefined}
+      logo={showLogo ? logoSource : undefined}
       category={typeLabel}
       featuredState={data.featured ? "featured" : "not-featured"}
       links={{

@@ -193,6 +193,9 @@
             "hero": {
               "type": "string"
             },
+            "logoUrl": {
+              "type": "string"
+            },
             "gallery": {
               "type": "array",
               "items": {
@@ -334,7 +337,7 @@
               ]
             }
           ],
-          "default": "2025-11-19T18:19:27.780Z"
+          "default": "2025-11-20T04:47:52.838Z"
         },
         "$schema": {
           "type": "string"

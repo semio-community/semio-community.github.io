@@ -1,7 +1,7 @@
 import React from "react";
-import type { ImageMetadata } from "astro";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
+import type { ImageLike } from "@/utils/images";
 
 export interface DetailHeroBadge {
   text: string;
@@ -19,7 +19,7 @@ export interface DetailHeroBadge {
 }
 
 export interface DetailHeroProps {
-  image?: ImageMetadata | { src: string; alt?: string };
+  image?: ImageLike;
   title: string;
   subtitle?: string;
   badges?: DetailHeroBadge[];
@@ -29,9 +29,9 @@ export interface DetailHeroProps {
   showBadgesOnMobile?: boolean;
   mobileBadgeLimit?: number; // Max number of badges to show on mobile
   // Avatar/logo props
-  logo?: ImageMetadata | { src: string; alt?: string };
-  avatar?: ImageMetadata | { src: string; alt?: string };
-  thumbnail?: ImageMetadata | { src: string; alt?: string };
+  logo?: ImageLike;
+  avatar?: ImageLike;
+  thumbnail?: ImageLike;
   logoText?: string;
   entityType?:
     | "person"
@@ -95,9 +95,26 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
     return `${baseClasses} ${colorClasses[badge.color || "accent"]}`;
   };
 
-  const imageSrc = typeof image === "object" && "src" in image ? image.src : "";
-  const imageAlt =
-    typeof image === "object" && "alt" in image ? image.alt : title;
+  const extractSrc = (value?: ImageLike) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value.src;
+  };
+
+  const extractAlt = (value?: ImageLike, fallback?: string) => {
+    if (
+      value &&
+      typeof value === "object" &&
+      "alt" in value &&
+      value.alt !== undefined
+    ) {
+      return value.alt;
+    }
+    return fallback;
+  };
+
+  const imageSrc = extractSrc(image);
+  const imageAlt = extractAlt(image, title) ?? title;
 
   // Determine which avatar/logo to use
   const profileImage = avatar || logo || thumbnail;

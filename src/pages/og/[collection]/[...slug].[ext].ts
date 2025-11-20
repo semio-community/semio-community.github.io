@@ -26,6 +26,7 @@ import {
   getCategoryLabel,
   STATUS_COLORS,
 } from "@/config/statusConfig";
+import { resolveLogoAsset } from "@/utils/images";
 
 const intlShort = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -151,6 +152,11 @@ async function getAssetIndex(): Promise<AssetIndex> {
   }
   return assetIndexPromise;
 }
+
+const resolveContentLogo = (images?: {
+  logo?: ImageMetadata | string;
+  logoUrl?: string;
+}) => images?.logo ?? images?.logoUrl ?? null;
 
 function deriveOriginalFileName(src: string): string | null {
   const raw = src.split("/").pop();
@@ -396,7 +402,10 @@ async function mapSoftware(
     badgeIcon: createBadgeIcon(CodeSquare),
     avatarInitial: entry.data.name?.[0]?.toUpperCase() || "S",
     heroImage: await loadOgImageAsset(entry.data.images?.hero, "software"),
-    logoImage: await loadOgImageAsset(entry.data.images?.logo, "software"),
+    logoImage: await loadOgImageAsset(
+      resolveContentLogo(entry.data.images),
+      "software",
+    ),
     statusLabel: status,
     categoryLabel,
     statusTone: getStatusTone(entry.data.status),
@@ -413,7 +422,10 @@ async function mapResearch(
   const typeLabel = entry.data.type
     ? entry.data.type.charAt(0).toUpperCase() + entry.data.type.slice(1)
     : undefined;
-  const logoImage = await loadOgImageAsset(entry.data.images?.logo, "research");
+  const logoImage = await loadOgImageAsset(
+    resolveContentLogo(entry.data.images),
+    "research",
+  );
   return {
     eyebrow: entry.data.type || "Research",
     title: entry.data.title,
@@ -461,7 +473,10 @@ async function mapEvent(
     badgeIcon: createBadgeIcon(CalendarMark),
     avatarInitial: "E",
     heroImage: await loadOgImageAsset(entry.data.images?.hero, "events"),
-    logoImage: await loadOgImageAsset(entry.data.images?.logo, "events"),
+    logoImage: await loadOgImageAsset(
+      resolveContentLogo(entry.data.images),
+      "events",
+    ),
     statusLabel,
     statusTone,
     categoryLabel: entry.data.type,
@@ -495,7 +510,10 @@ async function mapOrganization(
     heroImage: await loadOgImageAsset(entry.data.images?.hero, "organizations"),
     logoImage:
       entry.data.images?.hero == null
-        ? await loadOgImageAsset(entry.data.images?.logo, "organizations")
+        ? await loadOgImageAsset(
+            resolveContentLogo(entry.data.images),
+            "organizations",
+          )
         : undefined,
     categoryLabel: focusLabel,
   };

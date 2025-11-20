@@ -20,6 +20,7 @@ import { getAllSoftware } from "@/data/software";
 import { PersonPopover } from "@/components/people/PersonPopover";
 import BasicChip from "@/components/ui/BasicChip";
 import { serializePersonForPopover } from "@/utils/person";
+import { resolveLogoAsset } from "@/utils/images";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
@@ -163,6 +164,8 @@ const categoryLabels = {
   outreach: "Outreach & Education",
 };
 const categoryLabel = categoryLabels[data.category] || data.category;
+const resolveLogo = (images?: { logo?: any; logoUrl?: string }) =>
+  images?.logo ?? images?.logoUrl;
 ---
 
 <html
@@ -188,7 +191,7 @@ const categoryLabel = categoryLabels[data.category] || data.category;
               : undefined}
             badges={badges}
             featuredState={data.featured ? "featured" : "not-featured"}
-            logo={data.images?.logo}
+            logo={resolveLogoAsset(data.images)}
             entityType="organization"
           />
         </Fragment>

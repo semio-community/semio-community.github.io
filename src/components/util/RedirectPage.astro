@@ -1,0 +1,47 @@
+---
+import BaseHead from "@/components/BaseHead.astro";
+import { siteConfig } from "@/site.config";
+
+interface Props {
+  to: string;
+  title?: string;
+  description?: string;
+  delay?: number;
+}
+
+const {
+  to,
+  title = "Redirecting…",
+  description = "You are being redirected. If nothing happens automatically, use the provided link.",
+  delay = 0,
+} = Astro.props as Props;
+
+const targetUrl = new URL(to, Astro.url).href;
+const refreshContent = `${delay};url=${targetUrl}`;
+---
+
+<!doctype html>
+<html lang={siteConfig.lang}>
+  <head>
+    <BaseHead title={title} description={description} />
+    <meta http-equiv="refresh" content={refreshContent} />
+    <link rel="canonical" href={targetUrl} />
+    <script is:inline>
+      {
+        `setTimeout(() => { window.location.replace(${JSON.stringify(targetUrl)}); }, ${delay} * 1000);`;
+      }
+    </script>
+  </head>
+  <body
+    class="min-h-screen flex items-center justify-center bg-surface text-accent-base"
+  >
+    <main class="text-center p-8 space-y-4">
+      <p class="text-lg">{description}</p>
+      <p>
+        <a class="text-accent-two underline font-semibold" href={targetUrl}>
+          Continue to {targetUrl}
+        </a>
+      </p>
+    </main>
+  </body>
+</html>
