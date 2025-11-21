@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion, useScroll, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 
 /**
  * ParallaxHexBackground
@@ -427,6 +433,7 @@ export default function ParallaxHexBackground({
   const effectiveCount = isMobile
     ? Math.max(24, Math.round(count * 0.75))
     : count;
+  const disableParallax = isMobileDevice;
 
   const glyphs = useMemo(
     () =>
@@ -464,7 +471,12 @@ export default function ParallaxHexBackground({
     damping: 30,
     mass: 0.2,
   });
-  const scrollSource = isMobileDevice ? smoothedScroll : scrollY;
+  const staticScroll = useMotionValue(0);
+  const scrollSource = disableParallax
+    ? staticScroll
+    : isMobileDevice
+      ? smoothedScroll
+      : scrollY;
   const nearY = useTransform(scrollSource, (v) => -v * nearParallax);
   const midY = useTransform(scrollSource, (v) => -v * midParallax);
   const farY = useTransform(scrollSource, (v) => -v * farParallax);
@@ -483,7 +495,7 @@ export default function ParallaxHexBackground({
           <motion.div
             key={key}
             style={{
-              y: mv,
+              y: disableParallax ? 0 : mv,
               position: "absolute",
               inset: 0,
               pointerEvents: "none",
