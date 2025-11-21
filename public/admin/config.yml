@@ -1,0 +1,39 @@
+backend:
+  name: github
+  repo: semio-community/semio-community.github.io
+media_folder: "src/assets/images" # Location where files will be stored in the repo
+public_folder: "public/assets/images" # The src attribute for uploaded media
+show_preview_links: true
+collections:
+  - name: "people" # Used in routes, e.g., /admin/collections/blog
+    label: "People" # Used in the UI
+    identifier_field: "id"
+    extension: "mdx"
+    format: "frontmatter"
+    folder: "/src/content/people" # The path to the folder where the documents are stored
+    create: true # Allow users to create new documents in this collection
+    fields: # The fields for each document, usually in frontmatter
+      - {label: "Body", name: "body", widget: "markdown" }
+      - {label: "Slug", name: "id", widget: "string"}
+      - {label: "Name", name: "name", widget: "string"}
+      - {label: "Honorary Prefix", name: "honorific", widget: "string"}
+      - {label: "Job Title", name: "title", widget: "string"}
+      - {label: "Short Bio", name: "bio", widget: "string"}
+      - {label: "Contributor?", name: "isContributor", widget: "boolean"}
+      - {label: "Profile Photo", name: "avatar", widget: "image"}
+      - {label: "Cover Photo", name: "hero", widget: "image"}
+      - label: "Affiliations"
+        name: "affiliations"
+        widget: "list"
+        fields: 
+        - {label: "Organization ID", name: "organizationId", widget: "string"}
+        - {label: "Role", name: "role", widget: "string"}
+      - {label: "Expertise", name: "expertise", widget: "list", field: {label: "Expertise Area", name: "area", widget: "string"}}
+      - label: "Links"
+        name: "links"
+        widget: "object"
+        fields: 
+        - {label: "Email", name: "email", widget: "string"}
+        - {label: "Github Username", name: "github", widget: "string"}
+        - {label: "Website URL", name: "website", widget: "string"}
+      - {label: "Featured?", name: "featured", widget: "boolean"}
