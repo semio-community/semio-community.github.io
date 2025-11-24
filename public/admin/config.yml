@@ -1,39 +1,83 @@
 backend:
   name: github
   repo: semio-community/semio-community.github.io
+publish_mode: "editorial_workflow"
+site_url: "https://semio.community"
+display_url: "https://semio.community"
 media_folder: "src/assets/images" # Location where files will be stored in the repo
 public_folder: "public/assets/images" # The src attribute for uploaded media
 show_preview_links: true
 collections:
-  - name: "people" # Used in routes, e.g., /admin/collections/blog
-    label: "People" # Used in the UI
-    identifier_field: "id"
+  - name: "events"
+    label: "Events" # Used in the UI
+    label_singular: "Event"
+    identifier_field: "name"
     extension: "mdx"
     format: "frontmatter"
-    folder: "/src/content/people" # The path to the folder where the documents are stored
-    create: true # Allow users to create new documents in this collection
-    fields: # The fields for each document, usually in frontmatter
+    folder: "src/content/events"
+    preview_path: "events/{{slug}}"
+    slug: "{{name}}"
+    create: true
+    fields:
       - {label: "Body", name: "body", widget: "markdown" }
-      - {label: "Slug", name: "id", widget: "string"}
       - {label: "Name", name: "name", widget: "string"}
-      - {label: "Honorary Prefix", name: "honorific", widget: "string"}
-      - {label: "Job Title", name: "title", widget: "string"}
-      - {label: "Short Bio", name: "bio", widget: "string"}
-      - {label: "Contributor?", name: "isContributor", widget: "boolean"}
-      - {label: "Profile Photo", name: "avatar", widget: "image"}
-      - {label: "Cover Photo", name: "hero", widget: "image"}
-      - label: "Affiliations"
-        name: "affiliations"
-        widget: "list"
+      - {label: "Display Name", name: "displayName", widget: "string"}
+      - {label: "Description", name: "description", widget: "text"}
+      - {label: "Type", name: "type", widget: "string"}
+      - {label: "Start Date", name: "startDate", widget: "datetime"}
+      - {label: "End Date", name: "endDate", widget: "datetime"}
+      - label: "Location"
+        name: "location"
+        widget: "object"
         fields: 
-        - {label: "Organization ID", name: "organizationId", widget: "string"}
-        - {label: "Role", name: "role", widget: "string"}
-      - {label: "Expertise", name: "expertise", widget: "list", field: {label: "Expertise Area", name: "area", widget: "string"}}
+        - {label: "City", name: "city", widget: "string"}
+        - {label: "Country", name: "country", widget: "string"}
+      - {label: "Roles", name: "roles", widget: "list", field: {label: "Role", name: "role", widget: "string"}}
+      - {label: "Topics", name: "topics", widget: "list", field: {label: "Topic Area", name: "area", widget: "string"}}
+      - label: "Images"
+        name: "images"
+        widget: "object"
+        fields: 
+        - {label: "Logo", name: "logo", widget: "image"}
       - label: "Links"
         name: "links"
         widget: "object"
         fields: 
-        - {label: "Email", name: "email", widget: "string"}
-        - {label: "Github Username", name: "github", widget: "string"}
         - {label: "Website URL", name: "website", widget: "string"}
-      - {label: "Featured?", name: "featured", widget: "boolean"}
+  - name: "people" # Used in routes, e.g., /admin/collections/blog
+    label: "People" # Used in the UI
+    label_singular: "Person"
+    identifier_field: "name"
+    extension: "mdx"
+    format: "frontmatter"
+    folder: "/src/content/people" # The path to the folder where the documents are stored
+    preview_path: "people/{{slug}}"
+    slug: "{{id}}"
+    create: true # Allow users to create new documents in this collection
+    fields: # The fields for each document, usually in frontmatter
+      - {label: "Body", name: "body", widget: "markdown", required: false}
+      - {label: "Slug", name: "id", widget: "string"}
+      - {label: "Name", name: "name", widget: "string"}
+      - {label: "Honorary Prefix", name: "honorific", widget: "string", default: "", required: false}
+      - {label: "Job Title", name: "title", widget: "string"}
+      - {label: "Short Bio", name: "bio", widget: "string"}
+      - {label: "Contributor?", name: "isContributor", widget: "boolean", default: false}
+      - {label: "Profile Photo", name: "avatar", widget: "image", required: false}
+      - {label: "Cover Photo", name: "hero", widget: "image", required: false}
+      - label: "Affiliations"
+        name: "affiliations"
+        widget: "list"
+        required: false
+        fields: 
+        - {label: "Organization ID", name: "organizationId", widget: "string", required: false}
+        - {label: "Role", name: "role", widget: "string" , required: false}
+      - {label: "Expertise", name: "expertise", widget: "list", required: false, field: {label: "Expertise Area", name: "area", widget: "string"}}
+      - label: "Links"
+        name: "links"
+        widget: "object"
+        required: false
+        fields: 
+        - {label: "Email", name: "email", widget: "string", required: false}
+        - {label: "Github Username", name: "github", widget: "string", required: false}
+        - {label: "Website URL", name: "website", widget: "string", required: false}
+      - {label: "Featured?", name: "featured", widget: "boolean", default: false}
