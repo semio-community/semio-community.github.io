@@ -94,7 +94,6 @@ export default function Header({
       id="main-header"
       className="fixed left-0 right-0 z-50 lg:sticky top-0 h-[72px] w-full bg-surface/80 backdrop-blur-xl lg:bg-surface/85 lg:backdrop-blur-lg border-b border-accent-base/10 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.07)] dark:shadow-[0_2px_8px_-3px_rgba(0,0,0,0.3)]"
     >
-      <script src="https://unpkg.com/decap-cms@^3.1.2/dist/decap-cms.js"></script>
       <div className="md:hidden absolute top-0 left-1/2 -ml-[50vw] w-screen min-h-screen pointer-events-none blur-2xl">
         <div className="absolute top-[-90%] right-[25%] w-[75%] h-full bg-gradient-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-40 dark:opacity-5" />
         <div className="absolute top-[-90%] left-[25%] w-[75%] h-full bg-gradient-to-b from-amber-400 via-teal-400 to-transparent rounded-full opacity-40 dark:opacity-5" />
