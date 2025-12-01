@@ -1,0 +1,22 @@
+---
+import BaseHead from "@/components/BaseHead.astro";
+// import "@/styles/global.css";
+
+const configUrl = "/admin/config.yml";
+const previewBundle = "/admin/preview.bundle.js";
+---
+
+<!doctype html>
+<html
+  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang="en"
+>
+  <head>
+    <BaseHead title="Content Manager" description="Decap CMS Admin" />
+    <meta name="robots" content="noindex" />
+    <link href={configUrl} type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <script type="module" src={previewBundle}></script>
+  </body>
+</html>

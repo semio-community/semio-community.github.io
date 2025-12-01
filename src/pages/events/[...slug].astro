@@ -14,6 +14,7 @@ import { getAllEvents } from "@/data/events";
 import BasicChip from "@/components/ui/BasicChip";
 import { resolveLogoAsset } from "@/utils/images";
 import { getEventPreviewDescriptionText } from "@/utils/events";
+import { parseDateLocal } from "@/utils/date";
 
 export async function getStaticPaths() {
   const events = await getCollection("events", ({ data }) => {
@@ -38,13 +39,13 @@ async function getRelatedEvents(
 
   // Filter out the current event and past events (unless current is also past)
   const currentDate = new Date();
-  const isCurrentPast = new Date(event.data.endDate) < currentDate;
+  const isCurrentPast = parseDateLocal(event.data.endDate) < currentDate;
 
   const otherEvents = allEvents.filter((e) => {
     if (e.id === event.id) return false;
     // If current event is past, include all; otherwise prefer upcoming
     if (!isCurrentPast) {
-      const eventDate = new Date(e.data.startDate);
+      const eventDate = parseDateLocal(e.data.startDate);
       if (eventDate < currentDate) return false;
     }
     return true;
@@ -80,8 +81,8 @@ async function getRelatedEvents(
 
     // Temporal proximity (within 3 months) gets points
     const timeDiff = Math.abs(
-      new Date(e.data.startDate).getTime() -
-        new Date(event.data.startDate).getTime(),
+      parseDateLocal(e.data.startDate).getTime() -
+        parseDateLocal(event.data.startDate).getTime(),
     );
     const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
     if (monthsDiff <= 3) score += 3 - Math.floor(monthsDiff);
@@ -108,8 +109,8 @@ const ogImage = `/og/events/${entry.id}.png`;
 
 // Determine event status
 const currentDate = new Date();
-const startDate = new Date(data.startDate);
-const endDate = new Date(data.endDate);
+const startDate = parseDateLocal(data.startDate);
+const endDate = parseDateLocal(data.endDate);
 let eventStatus = "upcoming";
 if (currentDate > endDate) {
   eventStatus = "past";

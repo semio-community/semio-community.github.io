@@ -69,9 +69,14 @@ Visit `http://localhost:4321` to view the site.
 ### Available Commands
 
 | Command                | Action                                           |
-|:--------------------- |:------------------------------------------------ |
-| `npm run dev`         | Start development server at `localhost:4321`    |
-| `npm run build`       | Build production site to `./dist/`              |
+|:----------------------|:--------------------------------------------------|
+| `npm run dev`         | Start site + CMS preview dev servers together    |
+| `npm run dev:site`    | Start only the Astro dev server                  |
+| `npm run dev:cms`     | Start only the Decap CMS preview dev server      |
+| `npm run build`       | Build Decap bundle/config, Astro site, and search index |
+| `npm run build:site`  | Build only the Astro site to `./dist/`           |
+| `npm run build:cms`   | Regenerate Decap config and preview bundle       |
+| `npm run build:search`| Generate Pagefind search index                   |
 | `npm run preview`     | Preview production build locally                |
 | `npm run format`      | Format code with Biome and Prettier            |
 | `npm run format:code` | Format code files                              |
@@ -79,10 +84,21 @@ Visit `http://localhost:4321` to view the site.
 | `npm run lint`        | Run Biome linter                               |
 | `npm run check`       | Run Astro type checking                        |
 | `npm run verify:drafts` | Verify draft content status                  |
+| `npm run cms:config`  | Regenerate Decap CMS config from `src/content.config.ts` |
+| `npm run cms:preview` | Build Decap CMS preview bundle/styles (outputs to `public/admin`, all gitignored) |
 
-### Post-Build
+### Build Pipeline
 
-After building, Pagefind automatically indexes the site for search functionality.
+`npm run build` runs, in order:
+1) `build:cms` (Decap config + preview bundle into `public/admin/`)
+2) `build:site` (Astro to `dist/`)
+3) `build:search` (Pagefind index)
+
+### CMS / Admin Regeneration
+
+- Run `npm run build` after changing content schemas or preview components/styles to refresh `public/admin/config.yml` and rebuild the Decap preview bundle (`preview.bundle.js` / `preview.css`).
+- `npm run cms:config` rewrites `public/admin/config.yml` from the Astro content schemas.
+- `npm run cms:preview` rebuilds the Decap preview assets (Tailwind v4 + Vite).
 
 ## ⚙️ Configuration
 

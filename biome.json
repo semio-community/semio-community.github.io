@@ -1,7 +1,11 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
-    "ignore": [".astro/**"]
+    "ignore": [
+      ".astro/**",
+      "public/admin/preview.bundle.js",
+      "public/admin/preview.bundle.js.map"
+    ]
   },
   "formatter": {
     "indentStyle": "tab",

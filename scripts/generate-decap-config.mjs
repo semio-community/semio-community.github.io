@@ -14,7 +14,10 @@ import YAML from "yaml";
 const root = process.cwd();
 const contentConfigPath = path.join(root, "src/content.config.ts");
 const baseConfigPath = path.join(root, "public/admin/config.yml");
-const outputPath = path.join(root, "public/admin/config.generated.yml");
+const outputGeneratedPath = path.join(
+  root,
+  "public/admin/config.generated.yml",
+);
 
 const sourceText = fs.readFileSync(contentConfigPath, "utf8");
 const sourceFile = ts.createSourceFile(
@@ -450,11 +453,19 @@ const { collections: _ignoredCollections, ...baseSettings } = baseConfig || {};
 const outputConfig = { ...baseSettings, collections: decapCollections };
 
 fs.writeFileSync(
-  outputPath,
+  outputGeneratedPath,
   YAML.stringify(outputConfig, { lineWidth: 0 }),
   "utf8",
 );
 
 console.log(
-  `Generated Decap config with ${decapCollections.length} collections at ${outputPath}`,
+  `Generated Decap config with ${decapCollections.length} collections at ${outputGeneratedPath}`,
 );
+
+// Also write to the live config.yml so the CMS uses the latest mapping.
+fs.writeFileSync(
+  baseConfigPath,
+  YAML.stringify(outputConfig, { lineWidth: 0 }),
+  "utf8",
+);
+console.log(`Wrote updated config.yml at ${baseConfigPath}`);

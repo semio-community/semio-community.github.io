@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "../assets/fonts/Gilroy.css";
 
+@source "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
+
 @theme {
   /* Content paths */
   --content: "./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}";

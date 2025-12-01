@@ -1,41 +1,50 @@
-import { getFormattedDateRanges } from "./date";
+import { getFormattedDateRanges, parseDateLocal } from "./date";
 
 interface PartialEvent {
-    description?: string;
-    startDate: Date;
-    endDate?: Date;
-    location?: {
-      city?: string;
-      country?: string;
-      online?: boolean;
-    }
+  description?: string;
+  startDate: Date | string;
+  endDate?: Date | string;
+  location?: {
+    city?: string;
+    country?: string;
+    online?: boolean;
+  };
 }
 
 export function getEventPreviewDescriptionText(event: PartialEvent): string {
   const locationString = getLocationString(event.location);
-  
-    // Format date string
-    const dateString = getFormattedDateRanges(event.startDate!, event.endDate);
-  
-    const description = getDescription(dateString, event.description, locationString)
 
-    return description
+  const start = parseDateLocal(event.startDate);
+  const end = parseDateLocal(event.endDate ?? event.startDate);
+
+  const dateString = getFormattedDateRanges(start, end);
+
+  return getDescription(dateString, event.description, locationString);
 }
 
-export function getLocationString(location?: {city?: string, country?: string, online?: boolean}): string | undefined {
+export function getLocationString(location?: {
+  city?: string;
+  country?: string;
+  online?: boolean;
+}): string | undefined {
   if (!location) return undefined;
-  if (location.city && location.country) return `${location.city}, ${location.country}`;
+  if (location.city && location.country)
+    return `${location.city}, ${location.country}`;
   if (location.country) return location.country;
   if (location.online) return "Online";
   return undefined;
 }
 
-function getDescription(dateString: string, descriptionString?: string, locationString?: string): string {
+function getDescription(
+  dateString: string,
+  descriptionString?: string,
+  locationString?: string,
+): string {
   if (locationString) {
-    return `${dateString} • ${locationString}`
+    return `${dateString} • ${locationString}`;
   } else if (descriptionString) {
-    return `${dateString} • ${descriptionString}`
+    return `${dateString} • ${descriptionString}`;
   } else {
-    return dateString
+    return dateString;
   }
 }

@@ -35,11 +35,8 @@ jobs:
           rm -rf node_modules package-lock.json
           npm install
 
-      - name: Build site
+      - name: Build site + admin + search
         run: npm run build
-
-      - name: Generate search index
-        run: npm run postbuild
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

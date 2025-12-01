@@ -2,7 +2,7 @@ import { useMemo, type FC } from "react";
 import type { ImageMetadata } from "astro";
 import { ItemCard } from "@/components/cards/ItemCard";
 import { getLocationString } from "@/utils/events";
-import { getFormattedDateRanges } from "@/utils/date";
+import { getFormattedDateRanges, parseDateLocal } from "@/utils/date";
 import { Calendar, MapPoint } from "@solar-icons/react-perf/LineDuotone";
 import type { FeaturedState } from "../ui/FeaturedStar";
 import { resolveLogoAsset } from "@/utils/images";
@@ -13,8 +13,8 @@ export interface EventCardProps {
     name?: string;
     displayName?: string;
     description?: string;
-    startDate: Date;
-    endDate?: Date;
+    startDate: Date | string;
+    endDate?: Date | string;
     type: string;
     images?: {
       logo?: ImageMetadata | { src: string; width?: number; height?: number };
@@ -40,8 +40,8 @@ export interface EventCardProps {
 export const EventCard: FC<EventCardProps> = ({ eventId, data }) => {
   // Determine status based on dates
   const now = new Date();
-  const startDate = new Date(data.startDate);
-  const endDate = data.endDate ? new Date(data.endDate) : startDate;
+  const startDate = parseDateLocal(data.startDate);
+  const endDate = data.endDate ? parseDateLocal(data.endDate) : startDate;
 
   let status = "upcoming";
   if (now >= startDate && now <= endDate) {
@@ -55,7 +55,7 @@ export const EventCard: FC<EventCardProps> = ({ eventId, data }) => {
 
   const locationString = getLocationString(data.location);
 
-  const dateString = getFormattedDateRanges(data.startDate, data.endDate);
+  const dateString = getFormattedDateRanges(startDate, endDate);
 
   const featuredState: FeaturedState = useMemo(() => {
     if (status === "past" && data.featured) return "previously-featured";

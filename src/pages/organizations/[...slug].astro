@@ -2,25 +2,12 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import {
-  BaseDetailLayout,
-  DetailHero,
-  ContentSection,
-  InfoCard,
-} from "@/components/detail";
-import LinkSection from "@/components/detail/LinkSection";
-import { ResearchCard } from "@/components/cards/ResearchCard";
-import { HardwareCard } from "@/components/cards/HardwareCard";
-import { SoftwareCard } from "@/components/cards/SoftwareCard";
-import { OrganizationCard } from "@/components/cards/OrganizationCard";
 import { getAllOrganizations } from "@/data/organizations";
 import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { PersonPopover } from "@/components/people/PersonPopover";
-import BasicChip from "@/components/ui/BasicChip";
 import { serializePersonForPopover } from "@/utils/person";
-import { resolveLogoAsset } from "@/utils/images";
+import { OrganizationDetail } from "@/components/detail/views/OrganizationDetail";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
@@ -97,45 +84,6 @@ const meta = {
 };
 const ogImage = `/og/organizations/${entry.id}.png`;
 
-const typeLabels = {
-  academic: "Academic Institution",
-  industry: "Industry Partner",
-  nonprofit: "Non-Profit Organization",
-  government: "Government Agency",
-  community: "Community Organization",
-};
-
-const badges = [
-  {
-    text: typeLabels[data.type] || data.type,
-    color: "blue" as const,
-    variant: "outline" as const,
-  },
-];
-
-const contactItems: Array<{ label: string; value: string; link?: string }> = [];
-if (data.links?.email) {
-  contactItems.push({
-    label: "Email",
-    value: data.links.email,
-    link: `mailto:${data.links.email}`,
-  });
-}
-if (data.links?.phone) {
-  contactItems.push({
-    label: "Phone",
-    value: data.links.phone,
-    link: `tel:${data.links.phone}`,
-  });
-}
-if (data.links?.scheduling) {
-  contactItems.push({
-    label: "Scheduling",
-    value: data.links.scheduling,
-    link: data.links.scheduling,
-  });
-}
-
 const affiliatedPeople = await getPeopleByOrganization(entry.id);
 const keyContacts = affiliatedPeople.slice(0, 6).map((personEntry) => {
   const affiliation = personEntry.data.affiliations?.find(
@@ -155,17 +103,6 @@ const keyContacts = affiliatedPeople.slice(0, 6).map((personEntry) => {
       : undefined,
   };
 });
-
-const categoryLabels = {
-  research: "Research Collaboration",
-  development: "Development Partner",
-  funding: "Funding Partner",
-  infrastructure: "Infrastructure Support",
-  outreach: "Outreach & Education",
-};
-const categoryLabel = categoryLabels[data.category] || data.category;
-const resolveLogo = (images?: { logo?: any; logoUrl?: string }) =>
-  images?.logo ?? images?.logoUrl;
 ---
 
 <html
@@ -181,234 +118,12 @@ const resolveLogo = (images?: { logo?: any; logoUrl?: string }) =>
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
-      <BaseDetailLayout>
-        <Fragment slot="hero">
-          <DetailHero
-            image={data.images?.hero}
-            title={data.shortName ? data.shortName : data.name}
-            subtitle={data.shortName && data.shortName !== data.name
-              ? data.name
-              : undefined}
-            badges={badges}
-            featuredState={data.featured ? "featured" : "not-featured"}
-            logo={resolveLogoAsset(data.images)}
-            entityType="organization"
-          />
-        </Fragment>
-
-        <Fragment slot="links">
-          <div class="space-y-4">
-            {
-              data.links && Object.keys(data.links).length > 0 && (
-                <LinkSection
-                  client:idle
-                  links={data.links}
-                  size="md"
-                  className="gap-1"
-                />
-              )
-            }
-            {
-              contactItems.length > 0 && (
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  {contactItems.map((item) => (
-                    <div class="flex items-center gap-2">
-                      <span class="text-color-600 dark:text-color-400">
-                        {item.label}:
-                      </span>
-                      {item.link ? (
-                        <a
-                          href={item.link}
-                          class="text-accent-one hover:text-accent-two transition-colors"
-                        >
-                          {item.value}
-                        </a>
-                      ) : (
-                        <span class="text-accent-base">{item.value}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )
-            }
-          </div>
-        </Fragment>
-
-        <Fragment slot="metadata">
-          <div class="partnership-details mb-8">
-            <div
-              class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6"
-            >
-              <h3
-                class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider"
-              >
-                PARTNERSHIP DETAILS
-              </h3>
-              <div class="flex flex-wrap gap-2 mb-4">
-                <BasicChip text={categoryLabel} variant="primary" />
-                <BasicChip
-                  text={typeLabels[data.type] || data.type}
-                  variant="default"
-                />
-              </div>
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span
-                    class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-                  >
-                    Location
-                  </span>
-                  <span class="text-accent-base">
-                    {data.location.city}, {data.location.country}
-                  </span>
-                </div>
-                <div>
-                  <span
-                    class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-                  >
-                    Partner Type
-                  </span>
-                  <span class="text-accent-base">{typeLabels[data.type]}</span>
-                </div>
-                <div>
-                  <span
-                    class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1"
-                  >
-                    Category
-                  </span>
-                  <span class="text-accent-base"
-                    >{categoryLabels[data.category]}</span
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </Fragment>
-
-        <Fragment slot="contributors">
-          {
-            keyContacts.length > 0 ? (
-              <InfoCard title="KEY PEOPLE">
-                <div class="flex flex-wrap gap-2">
-                  {keyContacts.map((contact) => (
-                    <PersonPopover
-                      client:load
-                      personId={contact.personId}
-                      person={contact.person}
-                      role={
-                        contact.role
-                          ? contact.department
-                            ? `${contact.role}, ${contact.department}`
-                            : contact.role
-                          : undefined
-                      }
-                      currentAffiliation={contact.currentAffiliation}
-                    />
-                  ))}
-                </div>
-              </InfoCard>
-            ) : null
-          }
-        </Fragment>
-
-        <Fragment slot="tags">
-          {
-            data.collaborationSummary ? (
-              <div class="collaboration-summary mb-8">
-                <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-                  <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                    COLLABORATION SUMMARY
-                  </h3>
-                  <p class="text-sm text-accent-base leading-relaxed">
-                    {data.collaborationSummary}
-                  </p>
-                </div>
-              </div>
-            ) : null
-          }
-        </Fragment>
-
-        <Fragment slot="description">
-          <ContentSection title="ABOUT" content={data.description} />
-        </Fragment>
-
-        <Fragment slot="related">
-          {
-            (relatedContent.research.length > 0 ||
-              relatedContent.hardware.length > 0 ||
-              relatedContent.software.length > 0 ||
-              relatedOrganizations.length > 0) && (
-              <div class="space-y-12">
-                {(relatedContent.research.length > 0 ||
-                  relatedContent.hardware.length > 0 ||
-                  relatedContent.software.length > 0) && (
-                  <div>
-                    <h2 class="text-2xl font-bold mb-2">
-                      Partner Contributions
-                    </h2>
-                    <p class="text-color-600 dark:text-color-400 mb-8">
-                      Research, projects, and events involving{" "}
-                      {data.shortName || data.name}
-                    </p>
-                    {relatedContent.research.length > 0 && (
-                      <div class="mb-12">
-                        <h3 class="text-lg font-semibold mb-4">Research</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {relatedContent.research.map((item) => (
-                            <ResearchCard
-                              researchId={item.id}
-                              data={item.data}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {relatedContent.hardware.length > 0 && (
-                      <div class="mb-12">
-                        <h3 class="text-lg font-semibold mb-4">Hardware</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {relatedContent.hardware.map((hw) => (
-                            <HardwareCard hardwareId={hw.id} data={hw.data} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {relatedContent.software.length > 0 && (
-                      <div class="mb-12">
-                        <h3 class="text-lg font-semibold mb-4">Software</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {relatedContent.software.map((sw) => (
-                            <SoftwareCard softwareId={sw.id} data={sw.data} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {relatedOrganizations.length > 0 && (
-                  <div>
-                    <h2 class="text-2xl font-bold mb-2">
-                      Related Organizations
-                    </h2>
-                    <p class="text-color-600 dark:text-color-400 mb-8">
-                      Organizations with similar focus areas
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {relatedOrganizations.map((partner) => (
-                        <OrganizationCard
-                          organizationId={partner.id}
-                          data={partner.data}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          }
-        </Fragment>
-      </BaseDetailLayout>
+      <OrganizationDetail
+        data={data}
+        relatedContent={relatedContent}
+        relatedOrganizations={relatedOrganizations}
+        keyContacts={keyContacts}
+      />
     </SiteShell>
   </body>
 </html>
