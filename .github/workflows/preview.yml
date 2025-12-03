@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         if: github.event.action != 'closed'
-        run: npm install
+        run: npm ci
 
       - name: Debug PR Preview Path
         if: github.event.action != 'closed'
