@@ -56,12 +56,12 @@ const relationHints = {
   },
 };
 
-const IMAGE_BUILD_ROOT = "/src/assets/images";
-const IMAGE_SOURCE_ROOT = "src/assets/images";
+const IMAGE_BUILD_ROOT = "@/assets/images";
+const IMAGE_SOURCE_ROOT = "/src/assets/images";
 
 const DEFAULT_IMAGE_CTX = {
-  mediaFolder: IMAGE_SOURCE_ROOT,
-  publicFolder: IMAGE_BUILD_ROOT,
+  mediaFolder: `${IMAGE_SOURCE_ROOT}`,
+  publicFolder: `${IMAGE_BUILD_ROOT}`,
 };
 
 function imageBucketFor(fieldName) {

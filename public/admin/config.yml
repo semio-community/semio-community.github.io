@@ -1,11 +1,12 @@
+local_backend: true
 backend:
   name: github
   repo: semio-community/semio-community.github.io
 publish_mode: editorial_workflow
 site_url: https://semio.community
 display_url: https://semio.community
-media_folder: src/assets/images
-public_folder: /src/assets/images
+media_folder: /src/assets/images
+public_folder: "@/assets/images"
 show_preview_links: true
 use_relative_media_paths: true
 collections:
@@ -209,14 +210,14 @@ collections:
             name: avatar
             widget: image
             required: false
-            media_folder: src/assets/images/avatars
-            public_folder: /src/assets/images/avatars
+            media_folder: /src/assets/images/avatars
+            public_folder: "@/assets/images/avatars"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
       - label: Board Member
         name: boardMember
         widget: boolean
@@ -296,14 +297,14 @@ collections:
             name: logo
             widget: image
             required: false
-            media_folder: src/assets/images/logos
-            public_folder: /src/assets/images/logos
+            media_folder: /src/assets/images/logos
+            public_folder: "@/assets/images/logos"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
           - label: Logo Url
             name: logoUrl
             widget: string
@@ -316,8 +317,8 @@ collections:
               label: Item
               name: item
               widget: image
-              media_folder: src/assets/images/galleries
-              public_folder: /src/assets/images/galleries
+              media_folder: /src/assets/images/galleries
+              public_folder: "@/assets/images/galleries"
       - label: Links
         name: links
         widget: object
@@ -672,14 +673,14 @@ collections:
             name: logo
             widget: image
             required: false
-            media_folder: src/assets/images/logos
-            public_folder: /src/assets/images/logos
+            media_folder: /src/assets/images/logos
+            public_folder: "@/assets/images/logos"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
           - label: Logo Url
             name: logoUrl
             widget: string
@@ -692,8 +693,8 @@ collections:
               label: Item
               name: item
               widget: image
-              media_folder: src/assets/images/galleries
-              public_folder: /src/assets/images/galleries
+              media_folder: /src/assets/images/galleries
+              public_folder: "@/assets/images/galleries"
       - label: Contributors
         name: contributors
         widget: list
@@ -938,14 +939,14 @@ collections:
             name: logo
             widget: image
             required: false
-            media_folder: src/assets/images/logos
-            public_folder: /src/assets/images/logos
+            media_folder: /src/assets/images/logos
+            public_folder: "@/assets/images/logos"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
           - label: Logo Url
             name: logoUrl
             widget: string
@@ -958,8 +959,8 @@ collections:
               label: Item
               name: item
               widget: image
-              media_folder: src/assets/images/galleries
-              public_folder: /src/assets/images/galleries
+              media_folder: /src/assets/images/galleries
+              public_folder: "@/assets/images/galleries"
       - label: Contributors
         name: contributors
         widget: list
@@ -1243,14 +1244,14 @@ collections:
             name: logo
             widget: image
             required: false
-            media_folder: src/assets/images/logos
-            public_folder: /src/assets/images/logos
+            media_folder: /src/assets/images/logos
+            public_folder: "@/assets/images/logos"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
           - label: Gallery
             name: gallery
             widget: list
@@ -1259,8 +1260,8 @@ collections:
               label: Item
               name: item
               widget: image
-              media_folder: src/assets/images/galleries
-              public_folder: /src/assets/images/galleries
+              media_folder: /src/assets/images/galleries
+              public_folder: "@/assets/images/galleries"
       - label: Featured
         name: featured
         widget: boolean
@@ -1359,14 +1360,14 @@ collections:
             name: logo
             widget: image
             required: false
-            media_folder: src/assets/images/logos
-            public_folder: /src/assets/images/logos
+            media_folder: /src/assets/images/logos
+            public_folder: "@/assets/images/logos"
           - label: Hero
             name: hero
             widget: image
             required: false
-            media_folder: src/assets/images/heroes
-            public_folder: /src/assets/images/heroes
+            media_folder: /src/assets/images/heroes
+            public_folder: "@/assets/images/heroes"
           - label: Gallery
             name: gallery
             widget: list
@@ -1375,8 +1376,8 @@ collections:
               label: Item
               name: item
               widget: image
-              media_folder: src/assets/images/galleries
-              public_folder: /src/assets/images/galleries
+              media_folder: /src/assets/images/galleries
+              public_folder: "@/assets/images/galleries"
       - label: Links
         name: links
         widget: object

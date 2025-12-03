@@ -60,7 +60,7 @@ function copyImagesPlugin() {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), copyImagesPlugin()],
+  plugins: [react(), tailwindcss()],
   base: "/admin/",
   build: {
     outDir: "public/admin",
