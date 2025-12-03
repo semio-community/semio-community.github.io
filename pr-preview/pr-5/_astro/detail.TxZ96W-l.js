@@ -1,0 +1,2 @@
+import"./jsx-runtime.D_zvdyIk.js";import"./index.BdSgv7Tv.js";import{RelatedItemsGrid as s}from"./RelatedItemsGrid.C_R2Na0l.js";import"./EventCard.CL1OeBU1.js";import"./site.config.yi_9Jjn-.js";import"./index.CjSrtr71.js";import"./index.BH4_NjwE.js";import"./links.DpyB0fy3.js";import"./Avatar.M7PYyH_t.js";import"./Document2.D8zIYDIo.js";export{s as RelatedItemsGrid};
+//# sourceMappingURL=detail.TxZ96W-l.js.map
