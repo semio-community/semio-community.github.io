@@ -47,10 +47,6 @@ jobs:
           echo "Building with PR_PREVIEW_PATH: $PR_PREVIEW_PATH"
           npm run build
 
-      - name: Generate search index
-        if: github.event.action != 'closed'
-        run: npm run postbuild
-
       - name: Deploy PR Preview
         uses: rossjrw/pr-preview-action@v1
         with:
