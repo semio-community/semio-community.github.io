@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
@@ -8,6 +9,7 @@ import robotsTxt from "astro-robots-txt";
 import webmanifest from "astro-webmanifest";
 import { defineConfig, envField } from "astro/config";
 import { siteConfig } from "./src/site.config";
+import type { PluginOption } from "vite";
 
 // Remark plugins
 import remarkDirective from "remark-directive"; /* handle ::: directives as nodes */
@@ -126,7 +128,11 @@ export default defineConfig({
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
     },
-    plugins: [rawFonts([".ttf", "otf", ".woff"]), tailwindcss()],
+    plugins: [
+      rawFonts([".ttf", "otf", ".woff"]),
+      tailwindcss(),
+      serveSrcImagesDev(),
+    ],
   },
   env: {
     schema: {
@@ -165,6 +171,93 @@ function rawFonts(ext: string[]) {
           map: null,
         };
       }
+    },
+  };
+}
+
+function serveSrcImagesDev(): PluginOption {
+  const contentTypeFor = (filePath: string) => {
+    const ext = path.extname(filePath).toLowerCase();
+    switch (ext) {
+      case ".jpg":
+      case ".jpeg":
+        return "image/jpeg";
+      case ".png":
+        return "image/png";
+      case ".svg":
+        return "image/svg+xml";
+      case ".webp":
+        return "image/webp";
+      default:
+        return "application/octet-stream";
+    }
+  };
+
+  const rewriteLegacy = (url: string) => {
+    let p = url;
+    if (p.startsWith("/@/")) {
+      p = p.replace(/^\/@/, "/src");
+    }
+    // Map old collection-based buckets to use-based buckets.
+    if (p.startsWith("/src/assets/images/people/")) {
+      const file = path.posix.basename(p).toLowerCase();
+      const bucket = file.includes("hero") ? "heroes" : "avatars";
+      return p.replace(
+        "/src/assets/images/people/",
+        `/src/assets/images/${bucket}/`,
+      );
+    }
+    if (p.startsWith("/src/assets/images/organizations/")) {
+      const file = path.posix.basename(p).toLowerCase();
+      const bucket = file.includes("hero") ? "heroes" : "logos";
+      return p.replace(
+        "/src/assets/images/organizations/",
+        `/src/assets/images/${bucket}/`,
+      );
+    }
+    if (p.startsWith("/src/assets/images/events/")) {
+      return p.replace(
+        "/src/assets/images/events/",
+        "/src/assets/images/logos/",
+      );
+    }
+    if (p.startsWith("/src/assets/images/hardware/")) {
+      const file = path.posix.basename(p).toLowerCase();
+      const bucket = file.includes("hero") ? "heroes" : "logos";
+      return p.replace(
+        "/src/assets/images/hardware/",
+        `/src/assets/images/${bucket}/`,
+      );
+    }
+    if (p.startsWith("/src/assets/images/software/")) {
+      const file = path.posix.basename(p).toLowerCase();
+      const bucket =
+        file.includes("hero") || file.includes("cover") ? "heroes" : "logos";
+      return p.replace(
+        "/src/assets/images/software/",
+        `/src/assets/images/${bucket}/`,
+      );
+    }
+    return p;
+  };
+
+  return {
+    name: "serve-src-images-dev",
+    apply: "serve" as const,
+    configureServer(server: any) {
+      server.middlewares.use((req: any, res: any, next: any) => {
+        const rawUrl = (req.url || "").split("?")[0] || "";
+        const normalized = rewriteLegacy(rawUrl);
+        if (!normalized.startsWith("/src/assets/images/")) return next();
+        const filePath = path.resolve(normalized.slice(1)); // strip leading slash
+        if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+          res.statusCode = 404;
+          res.end();
+          return;
+        }
+        res.setHeader("Content-Type", contentTypeFor(filePath));
+        fs.createReadStream(filePath).pipe(res);
+      });
     },
   };
 }

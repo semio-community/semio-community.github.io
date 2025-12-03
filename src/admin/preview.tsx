@@ -89,10 +89,60 @@ function safeData(entry: any) {
 
 function toAssetUrl(getAsset: PreviewProps["getAsset"], value?: string) {
   if (!value) return undefined;
+  const rewriteLegacyPath = (p: string) => {
+    if (p.includes("/assets/images/people/")) {
+      return p.replace("/assets/images/people/", "/assets/images/avatars/");
+    }
+    if (p.includes("/assets/images/organizations/")) {
+      const file = p.split("/").pop() || "";
+      if (file.toLowerCase().includes("hero")) {
+        return p.replace(
+          "/assets/images/organizations/",
+          "/assets/images/heroes/",
+        );
+      }
+      return p.replace(
+        "/assets/images/organizations/",
+        "/assets/images/logos/",
+      );
+    }
+    if (p.includes("/assets/images/events/")) {
+      return p.replace("/assets/images/events/", "/assets/images/logos/");
+    }
+    if (p.includes("/assets/images/hardware/")) {
+      const file = p.split("/").pop() || "";
+      if (file.toLowerCase().includes("hero")) {
+        return p.replace("/assets/images/hardware/", "/assets/images/heroes/");
+      }
+    }
+    if (p.includes("/assets/images/software/")) {
+      const file = p.split("/").pop() || "";
+      if (file.toLowerCase().includes("hero")) {
+        return p.replace("/assets/images/software/", "/assets/images/heroes/");
+      }
+      if (
+        file.toLowerCase().includes("icon") ||
+        file.toLowerCase().includes("logo")
+      ) {
+        return p.replace("/assets/images/software/", "/assets/images/logos/");
+      }
+    }
+    return p;
+  };
+
   // Rewrite Vite-style alias to a path the preview iframe can serve.
-  const normalized = value.startsWith("@/")
-    ? value.replace(/^@\//, "/src/")
-    : value;
+  const normalized = rewriteLegacyPath(
+    value.startsWith("@/") ? value.replace(/^@\//, "/src/") : value,
+  );
+
+  // For source assets, serve /@fs in dev and the copied /admin/src/assets/ in build.
+  if (normalized.startsWith("/src/assets/")) {
+    if (import.meta.env.DEV && typeof __CMS_ROOT__ === "string") {
+      return `/@fs${__CMS_ROOT__}${normalized}`;
+    }
+    return `/admin${normalized}`;
+  }
+
   try {
     const asset = getAsset(normalized);
     const url = asset ? asset.toString() : normalized;

@@ -56,6 +56,43 @@ const relationHints = {
   },
 };
 
+const IMAGE_BUILD_ROOT = "/src/assets/images";
+const IMAGE_SOURCE_ROOT = "src/assets/images";
+
+const DEFAULT_IMAGE_CTX = {
+  mediaFolder: IMAGE_SOURCE_ROOT,
+  publicFolder: IMAGE_BUILD_ROOT,
+};
+
+function imageBucketFor(fieldName) {
+  const key = fieldName.toLowerCase();
+  if (key.includes("avatar")) {
+    return {
+      mediaFolder: `${IMAGE_SOURCE_ROOT}/avatars`,
+      publicFolder: `${IMAGE_BUILD_ROOT}/avatars`,
+    };
+  }
+  if (key.includes("hero")) {
+    return {
+      mediaFolder: `${IMAGE_SOURCE_ROOT}/heroes`,
+      publicFolder: `${IMAGE_BUILD_ROOT}/heroes`,
+    };
+  }
+  if (key.includes("logo") || key.includes("icon")) {
+    return {
+      mediaFolder: `${IMAGE_SOURCE_ROOT}/logos`,
+      publicFolder: `${IMAGE_BUILD_ROOT}/logos`,
+    };
+  }
+  if (key.includes("gallery")) {
+    return {
+      mediaFolder: `${IMAGE_SOURCE_ROOT}/galleries`,
+      publicFolder: `${IMAGE_BUILD_ROOT}/galleries`,
+    };
+  }
+  return null;
+}
+
 /**
  * Utility: unwrap parentheses and type assertions.
  */
@@ -213,6 +250,8 @@ function parseZodExpression(rawExpr) {
 function toDecapField(name, node, ctx) {
   const requiredFlag = node.optional ? false : undefined;
   const label = labelFromName(name);
+  const bucketCtx = imageBucketFor(name);
+  const effectiveCtx = bucketCtx || ctx || DEFAULT_IMAGE_CTX;
 
   // Do not turn primary ids into relations; those should stay free-form.
   if (node.kind === "relation" && name === "id") {
@@ -246,8 +285,8 @@ function toDecapField(name, node, ctx) {
         name,
         widget: "image",
         required: requiredFlag,
-        media_folder: ctx?.mediaFolder,
-        public_folder: ctx?.publicFolder,
+        media_folder: effectiveCtx?.mediaFolder,
+        public_folder: effectiveCtx?.publicFolder,
       };
     case "enum":
       return {
@@ -266,7 +305,7 @@ function toDecapField(name, node, ctx) {
           widget: "list",
           required: requiredFlag,
           fields: item.fields.map((entry) =>
-            toDecapField(entry.name, entry.node, ctx),
+            toDecapField(entry.name, entry.node, effectiveCtx),
           ),
         };
       }
@@ -285,7 +324,7 @@ function toDecapField(name, node, ctx) {
         name,
         widget: "list",
         required: requiredFlag,
-        field: toDecapField("item", item, ctx),
+        field: toDecapField("item", item, effectiveCtx),
       };
     }
     case "object":
@@ -295,7 +334,7 @@ function toDecapField(name, node, ctx) {
         widget: "object",
         required: requiredFlag,
         fields: node.fields.map((entry) =>
-          toDecapField(entry.name, entry.node, ctx),
+          toDecapField(entry.name, entry.node, effectiveCtx),
         ),
       };
     case "union": {
@@ -438,8 +477,6 @@ const decapCollections = collections.map((collection) => {
     collection.fields.find((f) => f.name === "id")?.name ||
     collection.fields.find((f) => f.name === "name")?.name ||
     "slug";
-  const mediaFolder = `/src/assets/images/${collection.name}`;
-  const publicFolder = `@/assets/images/${collection.name}`;
 
   return {
     name: collection.name,
@@ -452,10 +489,7 @@ const decapCollections = collections.map((collection) => {
     slug: `{{${idField}}}`,
     create: true,
     fields: collection.fields.map((entry) =>
-      toDecapField(entry.name, entry.node, {
-        mediaFolder,
-        publicFolder,
-      }),
+      toDecapField(entry.name, entry.node, DEFAULT_IMAGE_CTX),
     ),
   };
 });
@@ -464,8 +498,8 @@ const decapCollections = collections.map((collection) => {
 const { collections: _ignoredCollections, ...baseSettings } = baseConfig || {};
 const outputConfig = {
   ...baseSettings,
-  media_folder: "/src/assets/images",
-  public_folder: "@/assets/images",
+  media_folder: IMAGE_SOURCE_ROOT,
+  public_folder: IMAGE_BUILD_ROOT,
   collections: decapCollections,
 };
 
