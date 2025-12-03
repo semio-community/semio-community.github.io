@@ -1,21 +1,19 @@
 import React from "react";
 import CMS from "decap-cms-app";
-import BaseDetailLayout from "@/components/detail/BaseDetailLayout";
-import ContentSection from "@/components/detail/ContentSection";
-import ChipsList from "@/components/detail/ChipsList";
-import {
-  DetailHero,
-  type DetailHeroBadge,
-} from "@/components/detail/DetailHero";
-import FeaturesList from "@/components/detail/FeaturesList";
-import InfoCard from "@/components/detail/InfoCard";
-import LinkSection from "@/components/detail/LinkSection";
+import { type DetailHeroBadge } from "@/components/detail/DetailHero";
 import {
   PersonDetail,
   type AffiliationDisplay,
 } from "@/components/detail/views/PersonDetail";
 import { EventDetail } from "@/components/detail/views/EventDetail";
 import { OrganizationDetail } from "@/components/detail/views/OrganizationDetail";
+import { HardwareDetail } from "@/components/detail/views/HardwareDetail";
+import { SoftwareDetail } from "@/components/detail/views/SoftwareDetail";
+import {
+  ResearchDetail,
+  type ResearchAuthor,
+  type ResearchOrganizationLink,
+} from "@/components/detail/views/ResearchDetail";
 import Footer from "@/components/layout/Footer";
 import previewStyles from "@/styles/global.css?inline";
 declare const __CMS_ROOT__: string;
@@ -90,43 +88,9 @@ function safeData(entry: any) {
 function toAssetUrl(getAsset: PreviewProps["getAsset"], value?: string) {
   if (!value) return undefined;
   const rewriteLegacyPath = (p: string) => {
-    if (p.includes("/assets/images/people/")) {
-      return p.replace("/assets/images/people/", "/assets/images/avatars/");
-    }
-    if (p.includes("/assets/images/organizations/")) {
-      const file = p.split("/").pop() || "";
-      if (file.toLowerCase().includes("hero")) {
-        return p.replace(
-          "/assets/images/organizations/",
-          "/assets/images/heroes/",
-        );
-      }
-      return p.replace(
-        "/assets/images/organizations/",
-        "/assets/images/logos/",
-      );
-    }
-    if (p.includes("/assets/images/events/")) {
-      return p.replace("/assets/images/events/", "/assets/images/logos/");
-    }
-    if (p.includes("/assets/images/hardware/")) {
-      const file = p.split("/").pop() || "";
-      if (file.toLowerCase().includes("hero")) {
-        return p.replace("/assets/images/hardware/", "/assets/images/heroes/");
-      }
-    }
-    if (p.includes("/assets/images/software/")) {
-      const file = p.split("/").pop() || "";
-      if (file.toLowerCase().includes("hero")) {
-        return p.replace("/assets/images/software/", "/assets/images/heroes/");
-      }
-      if (
-        file.toLowerCase().includes("icon") ||
-        file.toLowerCase().includes("logo")
-      ) {
-        return p.replace("/assets/images/software/", "/assets/images/logos/");
-      }
-    }
+    if (p.startsWith("@/")) return p.replace(/^@\//, "/src/");
+    if (p.startsWith("/assets/"))
+      return p.replace(/^\/assets\//, "/src/assets/");
     return p;
   };
 
@@ -273,6 +237,7 @@ const OrganizationPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   }
   const data = safeData(entry);
   const logo = toAssetUrl(getAsset, data?.images?.logo);
+  const logoUrl = toAssetUrl(getAsset, data?.images?.logoUrl);
   const hero = toAssetUrl(getAsset, data?.images?.hero);
   const gallery =
     data?.images?.gallery?.map((img: string) => toAssetUrl(getAsset, img)) ||
@@ -280,7 +245,7 @@ const OrganizationPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
 
   const normalizedData = {
     ...data,
-    images: { ...data.images, logo, hero, gallery },
+    images: { ...(data.images || {}), logo, logoUrl, hero, gallery },
   };
 
   return (
@@ -305,70 +270,30 @@ const HardwarePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
     return <LoadingPreview />;
   }
   const data = safeData(entry);
+  console.log("hardware data", data);
   const logo = toAssetUrl(getAsset, data?.images?.logo);
   const hero = toAssetUrl(getAsset, data?.images?.hero);
   const gallery = ((data?.images?.gallery || []) as string[])
     .map((img) => toAssetUrl(getAsset, img))
     .filter(Boolean) as string[];
-  const features = data?.features || [];
-  const topics = data?.topics || [];
+
+  const normalizedData = {
+    ...data,
+    images: {
+      ...data?.images,
+      logo,
+      hero,
+      gallery,
+    },
+  };
 
   return (
     <DetailPreviewShell>
-      <BaseDetailLayout
-        hero={
-          <DetailHero
-            title={data?.name || "Hardware"}
-            subtitle={data?.category}
-            image={hero}
-            logo={logo}
-            entityType="hardware"
-            logoText={data?.name}
-            badges={
-              [
-                data?.status
-                  ? { text: data.status, color: "gray" as const }
-                  : null,
-              ].filter(Boolean) as DetailHeroBadge[]
-            }
-          />
-        }
-        description={
-          data?.description || data?.shortDescription ? (
-            <ContentSection
-              title="DESCRIPTION"
-              content={data?.description || data?.shortDescription}
-            />
-          ) : null
-        }
-        features={
-          features.length > 0 ? (
-            <FeaturesList title="KEY FEATURES" features={features} />
-          ) : null
-        }
-        tags={
-          topics.length > 0 ? (
-            <ChipsList title="TOPICS" items={topics} variant="primary" />
-          ) : null
-        }
-        related={
-          gallery.length > 0 ? (
-            <InfoCard title="GALLERY">
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {gallery.map((img, idx) =>
-                  img ? (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={data?.name || "Hardware"}
-                      className="rounded-lg border border-accent-one/20"
-                    />
-                  ) : null,
-                )}
-              </div>
-            </InfoCard>
-          ) : null
-        }
+      <HardwareDetail
+        data={normalizedData}
+        organizationContributors={[]}
+        peopleContributors={[]}
+        relatedHardware={[]}
       />
     </DetailPreviewShell>
   );
@@ -381,128 +306,101 @@ const SoftwarePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   const data = safeData(entry);
   const logo = toAssetUrl(getAsset, data?.images?.logo);
   const hero = toAssetUrl(getAsset, data?.images?.hero);
-  const features = data?.features || [];
-  const topics = data?.topics || [];
-  const languages = data?.language || [];
-  const platforms = data?.platform || [];
+  const gallery = ((data?.images?.gallery || []) as string[])
+    .map((img) => toAssetUrl(getAsset, img))
+    .filter(Boolean) as string[];
+
+  const normalizedData = {
+    ...data,
+    images: {
+      ...data?.images,
+      logo,
+      hero,
+      gallery,
+    },
+  };
 
   return (
     <DetailPreviewShell>
-      <BaseDetailLayout
-        hero={
-          <DetailHero
-            title={data?.name || "Software"}
-            subtitle={data?.category}
-            image={hero}
-            logo={logo}
-            entityType="software"
-            logoText={data?.name}
-            badges={
-              [
-                data?.status
-                  ? { text: data.status, color: "gray" as const }
-                  : null,
-              ].filter(Boolean) as DetailHeroBadge[]
-            }
-          />
-        }
-        description={
-          data?.description || data?.shortDescription ? (
-            <ContentSection
-              title="DESCRIPTION"
-              content={data?.description || data?.shortDescription}
-            />
-          ) : null
-        }
-        metadata={
-          (languages.length > 0 || platforms.length > 0) && (
-            <ChipsList
-              title="TECHNOLOGIES"
-              groups={[
-                ...(languages.length > 0
-                  ? [
-                      {
-                        title: "LANGUAGES",
-                        items: languages,
-                        variant: "primary" as const,
-                      },
-                    ]
-                  : []),
-                ...(platforms.length > 0
-                  ? [
-                      {
-                        title: "PLATFORMS",
-                        items: platforms,
-                        variant: "secondary" as const,
-                      },
-                    ]
-                  : []),
-              ]}
-            />
-          )
-        }
-        features={
-          features.length > 0 ? (
-            <FeaturesList title="KEY FEATURES" features={features} />
-          ) : null
-        }
-        tags={
-          topics.length > 0 ? (
-            <ChipsList title="TOPICS" items={topics} variant="primary" />
-          ) : null
-        }
+      <SoftwareDetail
+        data={normalizedData}
+        organizationContributors={[]}
+        peopleContributors={[]}
+        relatedSoftware={[]}
       />
     </DetailPreviewShell>
   );
 };
 
-const ResearchPreview: React.FC<PreviewProps> = ({ entry }) => {
+const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   if (!entry || !entry.get) {
     return <LoadingPreview />;
   }
   const data = safeData(entry);
-  const topics = data?.topics || [];
-  const hasLinks = data?.links && Object.keys(data.links || {}).length > 0;
-  const badges =
-    data?.publishDate && String(data.publishDate)
-      ? [
-          {
-            text: String(data.publishDate).slice(0, 10),
-            color: "gray" as const,
-            variant: "outline" as const,
-          },
-        ]
-      : [];
+  const hero = toAssetUrl(getAsset, data?.images?.hero);
+
+  const normalizedData = {
+    ...data,
+    images: {
+      ...data?.images,
+      hero,
+    },
+  };
+
+  const authors: ResearchAuthor[] = (data?.contributors || []).map(
+    (contributor: any, idx: number) => ({
+      order: contributor?.order ?? idx,
+      personId: contributor?.personId || `contributor-${idx + 1}`,
+      person: {
+        id: contributor?.personId || `contributor-${idx + 1}`,
+        name: contributor?.personId || `Contributor ${idx + 1}`,
+        pronouns: contributor?.pronouns,
+        title: contributor?.affiliationSnapshot,
+        bio: "",
+        expertise: [],
+        affiliations: [],
+        links: {},
+        images: {},
+      },
+      affiliationSnapshot: contributor?.affiliationSnapshot,
+      corresponding: contributor?.corresponding,
+      equalContribution: contributor?.equalContribution,
+    }),
+  );
+
+  const organizationLinks: ResearchOrganizationLink[] = (
+    data?.organizations || []
+  ).map((org: any) => ({
+    role: org?.role || "lead",
+    note: org?.note,
+    organization: {
+      id: org?.organizationId || "organization",
+      data: {
+        name: org?.organizationId || "Organization",
+        shortName: org?.organizationId || "Organization",
+        images: {},
+      },
+    } as any,
+  }));
+
+  const authorsSubtitle =
+    authors.length > 0
+      ? authors
+          .sort((a, b) => a.order - b.order)
+          .map((a) => a.person?.name || a.personId)
+          .join(", ")
+      : undefined;
 
   return (
     <DetailPreviewShell>
-      <BaseDetailLayout
-        hero={
-          <DetailHero
-            title={data?.title || "Research"}
-            subtitle={data?.type}
-            entityType="research"
-            logoText={data?.title}
-            badges={badges}
-          />
-        }
-        description={
-          data?.description || hasLinks ? (
-            <>
-              <ContentSection title="SUMMARY" content={data?.description} />
-              {hasLinks ? (
-                <div className="mt-6">
-                  <LinkSection links={data.links} size="md" className="gap-1" />
-                </div>
-              ) : null}
-            </>
-          ) : null
-        }
-        tags={
-          topics.length > 0 ? (
-            <ChipsList title="TOPICS" items={topics} variant="primary" />
-          ) : null
-        }
+      <ResearchDetail
+        data={normalizedData}
+        authors={authors}
+        authorsSubtitle={authorsSubtitle}
+        organizationLinks={organizationLinks}
+        relatedHardware={[]}
+        relatedSoftware={[]}
+        relatedResearch={[]}
       />
     </DetailPreviewShell>
   );

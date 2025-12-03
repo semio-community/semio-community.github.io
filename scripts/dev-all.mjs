@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 const commands = [
   { name: "site", cmd: "npm", args: ["run", "dev:site"] },
   { name: "cms", cmd: "npm", args: ["run", "dev:cms"] },
+  { name: "cms-proxy", cmd: "npm", args: ["run", "dev:cms:proxy"] },
 ];
 
 const procs = commands.map(({ name, cmd, args }) => {
