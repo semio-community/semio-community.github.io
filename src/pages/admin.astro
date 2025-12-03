@@ -1,7 +1,11 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
-const configUrl = "/admin/config.yml";
-const previewBundle = "/admin/preview.bundle.js";
+
+// Build URLs that respect the deployed base path (e.g., PR previews)
+const base = import.meta.env.BASE_URL || "/";
+const basePath = base.endsWith("/") ? base : `${base}/`;
+const configUrl = `${basePath}admin/config.yml`;
+const previewBundle = `${basePath}admin/preview.bundle.js`;
 ---
 
 <!doctype html>
