@@ -2,24 +2,10 @@
 import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import {
-  BaseDetailLayout,
-  DetailHero,
-  ContentSection,
-  InfoCard,
-} from "@/components/detail";
-import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { ResearchCard } from "@/components/cards/ResearchCard";
-import { HardwareCard } from "@/components/cards/HardwareCard";
-import { SoftwareCard } from "@/components/cards/SoftwareCard";
-import { EventCard } from "@/components/cards/EventCard";
 import { getPeopleByExpertise, getPeopleByOrganization } from "@/data/people";
 import { getAllResearch } from "@/data/research";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { OrganizationChip } from "@/components/ui/OrganizationChip";
-import LinkSection from "@/components/detail/LinkSection";
-import { resolveLogoAsset } from "@/utils/images";
 import { PersonDetail } from "@/components/detail/views/PersonDetail";
 
 export async function getStaticPaths() {
