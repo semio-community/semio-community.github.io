@@ -30,19 +30,19 @@ jobs:
           node-version: 20
           cache: "npm"
 
-      - name: Install dependencies
+      - name: Clean install dependencies
         run: |
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules
+          rm -f package-lock.json
+          npm cache clean --force
           npm install
-
       - name: Build site + admin + search
         run: npm run build
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: ./dist/
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          keep_files: true
