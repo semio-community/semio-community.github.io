@@ -2,8 +2,9 @@ local_backend: true
 backend:
   name: github
   repo: semio-community/semio-community.github.io
-  branch: main # Branch to update
-  base_url: https://site-cms-oauth.vercel.app/
+  branch: main
+  base_url: https://site-cms-oauth.vercel.app
+  auth_endpoint: /auth
 publish_mode: editorial_workflow
 site_url: https://semio.community
 display_url: https://semio.community
