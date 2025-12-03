@@ -79,6 +79,7 @@ export default function Header({
   softwareItems,
   researchItems,
 }: HeaderProps) {
+  const urlPrefix = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
   const handleThemeToggle = useCallback(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
@@ -130,7 +131,7 @@ export default function Header({
             softwareItems={softwareItems}
             researchItems={researchItems}
             menuSections={menuSections}
-            urlPrefix=""
+            urlPrefix={urlPrefix}
           />
         </nav>
 
@@ -252,7 +253,7 @@ export default function Header({
           <SearchApp
             menuLinks={menuLinks}
             currentPath={currentPath}
-            urlPrefix=""
+            urlPrefix={urlPrefix}
             menuSections={menuSections}
           />
         </div>

@@ -1,8 +1,11 @@
 import path from "node:path";
 import { defineConfig } from "vite";
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
+import tailwindcss from "@tailwindcss/vite";
+
+const previewBase = process.env.PR_PREVIEW_PATH || "/";
+const adminBase = path.posix.join(previewBase, "admin/");
 
 function copyImagesPlugin() {
   const srcDir = path.resolve("src/assets/images");
@@ -61,7 +64,7 @@ function copyImagesPlugin() {
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/admin/",
+  base: adminBase,
   build: {
     outDir: "public/admin",
     emptyOutDir: false,
