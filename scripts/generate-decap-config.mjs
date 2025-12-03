@@ -210,7 +210,7 @@ function parseZodExpression(rawExpr) {
 /**
  * Convert parsed nodes into Decap field definitions.
  */
-function toDecapField(name, node) {
+function toDecapField(name, node, ctx) {
   const requiredFlag = node.optional ? false : undefined;
   const label = labelFromName(name);
 
@@ -241,7 +241,14 @@ function toDecapField(name, node) {
     case "date":
       return { label, name, widget: "datetime", required: requiredFlag };
     case "image":
-      return { label, name, widget: "image", required: requiredFlag };
+      return {
+        label,
+        name,
+        widget: "image",
+        required: requiredFlag,
+        media_folder: ctx?.mediaFolder,
+        public_folder: ctx?.publicFolder,
+      };
     case "enum":
       return {
         label,
@@ -259,7 +266,7 @@ function toDecapField(name, node) {
           widget: "list",
           required: requiredFlag,
           fields: item.fields.map((entry) =>
-            toDecapField(entry.name, entry.node),
+            toDecapField(entry.name, entry.node, ctx),
           ),
         };
       }
@@ -278,7 +285,7 @@ function toDecapField(name, node) {
         name,
         widget: "list",
         required: requiredFlag,
-        field: toDecapField("item", item),
+        field: toDecapField("item", item, ctx),
       };
     }
     case "object":
@@ -288,7 +295,7 @@ function toDecapField(name, node) {
         widget: "object",
         required: requiredFlag,
         fields: node.fields.map((entry) =>
-          toDecapField(entry.name, entry.node),
+          toDecapField(entry.name, entry.node, ctx),
         ),
       };
     case "union": {
@@ -431,6 +438,8 @@ const decapCollections = collections.map((collection) => {
     collection.fields.find((f) => f.name === "id")?.name ||
     collection.fields.find((f) => f.name === "name")?.name ||
     "slug";
+  const mediaFolder = `/src/assets/images/${collection.name}`;
+  const publicFolder = `@/assets/images/${collection.name}`;
 
   return {
     name: collection.name,
@@ -443,14 +452,22 @@ const decapCollections = collections.map((collection) => {
     slug: `{{${idField}}}`,
     create: true,
     fields: collection.fields.map((entry) =>
-      toDecapField(entry.name, entry.node),
+      toDecapField(entry.name, entry.node, {
+        mediaFolder,
+        publicFolder,
+      }),
     ),
   };
 });
 
 // Preserve any top-level settings from the base config, replacing only collections.
 const { collections: _ignoredCollections, ...baseSettings } = baseConfig || {};
-const outputConfig = { ...baseSettings, collections: decapCollections };
+const outputConfig = {
+  ...baseSettings,
+  media_folder: "/src/assets/images",
+  public_folder: "@/assets/images",
+  collections: decapCollections,
+};
 
 fs.writeFileSync(
   outputGeneratedPath,
