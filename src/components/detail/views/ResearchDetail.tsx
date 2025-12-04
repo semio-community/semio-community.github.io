@@ -6,8 +6,11 @@ import ContentSection from "@/components/detail/ContentSection";
 import InfoCard from "@/components/detail/InfoCard";
 import LinkSection from "@/components/detail/LinkSection";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { PersonPopover } from "@/components/people/PersonPopover";
-import { OrganizationChip } from "@/components/ui/OrganizationChip";
+import {
+  PersonListElement,
+  type PersonListElementProps,
+} from "@/components/cards/PersonListElement";
+import { OrganizationListElement } from "@/components/cards/OrganizationListElement";
 import { HardwareCard } from "@/components/cards/HardwareCard";
 import { SoftwareCard } from "@/components/cards/SoftwareCard";
 import { resolveLogoAsset } from "@/utils/images";
@@ -16,7 +19,7 @@ type ResearchData = CollectionEntry<"research">["data"];
 
 export type ResearchAuthor = {
   personId: string;
-  person: Parameters<typeof PersonPopover>[0]["person"];
+  person: PersonListElementProps["data"] | null;
   order: number;
   affiliationSnapshot?: string;
   corresponding?: boolean;
@@ -233,33 +236,36 @@ export function ResearchDetail({
         <>
           {validAuthors.length > 0 && (
             <InfoCard title="CONTRIBUTORS">
-              <div className="flex flex-wrap gap-2">
+              <div className="space-y-2">
                 {validAuthors.map((author) => (
                   <div
                     key={`${author.personId}-${author.order}`}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-2"
                   >
-                    <PersonPopover
+                    <PersonListElement
                       personId={author.personId}
-                      person={author.person}
-                      role={author.affiliationSnapshot}
+                      data={author.person as any}
+                      affiliationLabel={author.affiliationSnapshot}
+                      className="flex-1"
                     />
-                    {author.corresponding && (
-                      <span
-                        className="text-xs text-accent-one"
-                        title="Corresponding Author"
-                      >
-                        ✉
-                      </span>
-                    )}
-                    {author.equalContribution && (
-                      <span
-                        className="text-xs text-color-500"
-                        title="Equal Contribution"
-                      >
-                        *
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1 shrink-0 text-xs">
+                      {author.corresponding && (
+                        <span
+                          className="text-accent-one"
+                          title="Corresponding Author"
+                        >
+                          ✉
+                        </span>
+                      )}
+                      {author.equalContribution && (
+                        <span
+                          className="text-color-500"
+                          title="Equal Contribution"
+                        >
+                          *
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -269,30 +275,26 @@ export function ResearchDetail({
           {organizationRoleEntries.length > 0 && (
             <InfoCard title="ORGANIZATIONS">
               {organizationRoleEntries.map(([role, organizations]) => (
-                <div key={role} className="mb-4 last:mb-0">
+                <div key={role} className="mb-4 last:mb-0 space-y-2">
                   <h4 className="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
                     {ORGANIZATION_ROLE_LABELS[role]}
                   </h4>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="space-y-2">
                     {organizations.map(({ organization, note }) => (
                       <div
                         key={organization.id}
-                        className="flex items-center gap-2"
+                        className="flex items-start gap-2"
                       >
-                        <OrganizationChip
-                          partnerId={organization.id}
-                          partnerName={
-                            organization.data.shortName ||
-                            organization.data.name
+                        <OrganizationListElement
+                          organizationId={organization.id}
+                          data={organization.data}
+                          roleLabel={
+                            note
+                              ? `${ORGANIZATION_ROLE_LABELS[role]} • ${note}`
+                              : ORGANIZATION_ROLE_LABELS[role]
                           }
-                          logo={resolveLogoAsset(organization.data.images)}
-                          role={ORGANIZATION_ROLE_LABELS[role]}
+                          className="flex-1"
                         />
-                        {note && (
-                          <span className="text-xs text-color-500 dark:text-color-400 italic">
-                            {note}
-                          </span>
-                        )}
                       </div>
                     ))}
                   </div>
@@ -304,7 +306,7 @@ export function ResearchDetail({
       }
       metadata={
         publicationItems.length > 0 ? (
-          <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+          <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
             <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
               DETAILS
             </h3>

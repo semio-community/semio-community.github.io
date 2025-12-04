@@ -141,7 +141,7 @@ These components are retained for backward compatibility but should not be used 
 
 ### Card Styling
 ```css
-bg-gradient-to-br from-surface-lighter to-surface 
+bg-linear-to-br from-surface-lighter to-surface 
 rounded-xl border border-accent-one/20 p-6
 ```
 

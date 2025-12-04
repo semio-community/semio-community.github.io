@@ -6,16 +6,7 @@ import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 import { IconButton, type LinkType } from "@/components/ui/IconButton";
 import { linkPriority } from "@/data/links";
 import type { ImageLike } from "@/utils/images";
-
-// type ImageLike =
-//   | string
-//   | {
-//       src: string;
-//       width?: number;
-//       height?: number;
-//       format?: string;
-//       alt?: string;
-//     };
+import { isExternalUrl, url as buildUrl } from "@/utils/url";
 
 export interface ItemCardProps {
   title: string;
@@ -83,6 +74,9 @@ export const ItemCard: FC<ItemCardProps> = ({
 
   const imageSrc = getImageSource();
   const resolvedAlt = resolveAlt();
+  const resolvedHref = isExternalUrl(href)
+    ? href
+    : buildUrl(href, import.meta.env.BASE_URL);
 
   // Map item type to avatar type
   const typeToAvatarType: Record<string, AvatarType> = {
@@ -115,13 +109,13 @@ export const ItemCard: FC<ItemCardProps> = ({
 
   return (
     <a
-      href={href}
+      href={resolvedHref}
       className="group flex flex-col bg-special-lighter rounded-lg hover:shadow-lg transition-all hover:scale-105 no-underline h-full overflow-hidden backdrop-blur-lg"
     >
       {/* Image section */}
       {imageSrc ? (
         <div className="mb-4">
-          <div className="aspect-video overflow-hidden bg-gradient-to-br from-special-lighter to-special relative">
+          <div className="aspect-video overflow-hidden bg-linear-to-br from-special-lighter to-special relative">
             <img
               src={imageSrc}
               alt={resolvedAlt}
@@ -144,7 +138,7 @@ export const ItemCard: FC<ItemCardProps> = ({
       ) : (
         /* Avatar fallback when no image */
         <div className="mb-4">
-          <div className="aspect-video overflow-hidden bg-gradient-to-br from-special-lighter to-special flex items-center justify-center relative">
+          <div className="aspect-video overflow-hidden bg-linear-to-br from-special-lighter to-special flex items-center justify-center relative">
             <Avatar
               src={logo}
               name={type === "people" ? title : undefined}
@@ -166,18 +160,18 @@ export const ItemCard: FC<ItemCardProps> = ({
 
         {/* Description */}
         {showDescription && (
-          <p className="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2 min-h-[2.5rem]">
+          <p className="text-sm text-color-600 dark:text-color-400 mb-3 line-clamp-2 min-h-10">
             {description}
           </p>
         )}
 
         {/* ListItems */}
         {showListItems && (
-          <div className="text-sm text-color-600 dark:text-color-400 mb-3 min-h-[2.5rem]">
+          <div className="text-sm text-color-600 dark:text-color-400 mb-3 min-h-10">
             {listItems.slice(0, 2).map((listItem) => (
               <div key={listItem.text} className="flex items-start gap-2">
                 {listItem.icon ?? (
-                  <SettingsMinimalistic className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+                  <SettingsMinimalistic className="text-accent-two mt-0.5 w-4 h-4 shrink-0" />
                 )}
                 <span className="text-sm text-accent-base">
                   {listItem.text}

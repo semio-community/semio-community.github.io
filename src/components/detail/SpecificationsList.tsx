@@ -12,7 +12,7 @@ export interface SpecificationItem {
 
 export interface SpecificationsListProps {
   title: string;
-  items: SpecificationItem[] | Record<string, any>;
+  items: SpecificationItem[] | Record<string, string | string[]>;
   defaultItemIcon?: string;
   className?: string;
 }
@@ -47,7 +47,7 @@ export default function SpecificationsList({
             <div key={item.label} className="flex items-start gap-3">
               <Icon
                 name={item.icon || defaultItemIcon}
-                className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+                className="text-accent-two mt-0.5 w-4 h-4 shrink-0"
               />
               <div className="flex-1">
                 <div className="text-xs font-medium text-accent-two mb-0.5">
@@ -58,9 +58,7 @@ export default function SpecificationsList({
                     <a
                       href={item.link}
                       target={item.external ? "_blank" : undefined}
-                      rel={
-                        item.external ? "noopener noreferrer" : undefined
-                      }
+                      rel={item.external ? "noopener noreferrer" : undefined}
                       className="text-accent-one hover:text-accent-two transition-colors inline-flex items-center gap-1"
                     >
                       {item.value}

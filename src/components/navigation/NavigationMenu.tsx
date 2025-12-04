@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { CallToActionButton } from "../ui/CallToActionButton";
 import { getStatusColor } from "@/config/statusConfig";
 import { navIconMap } from "@/components/navigation/navIcons";
+import { url as buildUrl } from "@/utils/url";
 
 // Simplified type for serialized data
 type HardwareItem = {
@@ -50,20 +51,8 @@ interface NavigationMenuProps {
 }
 
 // Helper function to construct URLs
-const makeUrl = (path: string, prefix: string = "") => {
-  // Handle absolute paths
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
-  }
-  // Ensure path starts with /
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const normalizedPrefix = prefix
-    ? prefix.endsWith("/") && prefix !== "/" // keep root slash intact
-      ? prefix.slice(0, -1)
-      : prefix
-    : "";
-  return `${normalizedPrefix}${normalizedPath}`;
-};
+const makeUrl = (path: string, prefix: string = "") =>
+  buildUrl(path, prefix || import.meta.env.BASE_URL);
 
 const dropdownIconMap = navIconMap;
 
@@ -90,13 +79,6 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
     if (!s.startsWith("/")) s = `/${s}`;
     if (s !== "/" && s.endsWith("/")) s = s.slice(0, -1);
     return s;
-  };
-
-  const isActive = (current: string, linkPath: string) => {
-    const cur = normalize(current);
-    const base = normalize(linkPath);
-    if (base === "/") return cur === "/";
-    return cur === base || cur.startsWith(`${base}/`);
   };
 
   // Determine a single active header link via longest prefix match
@@ -205,7 +187,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                       href={url(link.path)}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent-base/10 transition-colors mb-3 group/link"
                     >
-                      <div className="w-10 h-10 rounded-lg bg-accent-base/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-accent-base/10 flex items-center justify-center shrink-0">
                         {(() => {
                           const IconComponent = dropdownIconMap[link.path];
                           if (IconComponent) {
@@ -280,7 +262,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                                 >
                                   <div
                                     className={clsx(
-                                      "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
+                                      "w-2 h-2 rounded-full mt-1.5 shrink-0",
                                       getStatusColor(item.status, "bullet"),
                                     )}
                                   ></div>
@@ -314,7 +296,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
                                 >
                                   <div
                                     className={clsx(
-                                      "w-2 h-2 rounded-full mt-1.5 flex-shrink-0",
+                                      "w-2 h-2 rounded-full mt-1.5 shrink-0",
                                       getStatusColor(item.status, "bullet"),
                                     )}
                                   ></div>
@@ -378,7 +360,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
         <NavigationMenu.Indicator className="hidden" />
       </NavigationMenu.List>
 
-      <NavigationMenu.Viewport className="absolute top-full left-0 right-0 mt-[10px] flex justify-center data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut h-[var(--radix-navigation-menu-viewport-height)] w-full origin-[top_center] overflow-hidden transition-[width,_height] duration-300 sm:w-[var(--radix-navigation-menu-viewport-width)]" />
+      <NavigationMenu.Viewport className="absolute top-full left-0 right-0 mt-2.5 flex justify-center data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut h-(--radix-navigation-menu-viewport-height) w-full origin-[top_center] overflow-hidden transition-[width,height] duration-300 sm:w-(--radix-navigation-menu-viewport-width)" />
     </NavigationMenu.Root>
   );
 };

@@ -174,7 +174,11 @@ export async function GET(context: APIContext) {
   }
   const withIcon: OgImageProps = { ...ogConfig, badgeIcon: getBadgeIcon(page) };
   const { body, contentType } = await renderOgImage(getFormat(ext), withIcon);
-  return new Response(body, {
+  const responseBody =
+    typeof body === "string"
+      ? body
+      : new Blob([Buffer.from(body)], { type: contentType });
+  return new Response(responseBody, {
     headers: {
       "Content-Type": contentType,
       "Cache-Control": "public, max-age=31536000, immutable",

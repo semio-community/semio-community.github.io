@@ -65,13 +65,13 @@ const roundedClasses = {
 
 // Type-specific gradient backgrounds
 const typeGradients: Record<AvatarType, string> = {
-  person: "bg-gradient-to-br from-accent-one/20 to-accent-two/20",
-  organization: "bg-gradient-to-br from-special-lighter to-special-light",
-  hardware: "bg-gradient-to-br from-blue-500/20 to-blue-600/20",
-  software: "bg-gradient-to-br from-green-500/20 to-green-600/20",
-  research: "bg-gradient-to-br from-purple-500/20 to-purple-600/20",
-  event: "bg-gradient-to-br from-orange-500/20 to-orange-600/20",
-  document: "bg-gradient-to-br from-gray-500/20 to-gray-600/20",
+  person: "bg-linear-to-br from-accent-one/20 to-accent-two/20",
+  organization: "bg-linear-to-br from-special-lighter to-special-light",
+  hardware: "bg-linear-to-br from-blue-500/20 to-blue-600/20",
+  software: "bg-linear-to-br from-green-500/20 to-green-600/20",
+  research: "bg-linear-to-br from-purple-500/20 to-purple-600/20",
+  event: "bg-linear-to-br from-orange-500/20 to-orange-600/20",
+  document: "bg-linear-to-br from-gray-500/20 to-gray-600/20",
 };
 
 // Icon components for different types

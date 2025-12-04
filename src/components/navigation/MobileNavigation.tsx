@@ -6,6 +6,7 @@ import { CallToActionButton } from "../ui/CallToActionButton";
 import { NavIconButton } from "./NavIconButton";
 import { useSearch } from "@/components/search";
 import { navIconMap } from "@/components/navigation/navIcons";
+import { url as buildUrl } from "@/utils/url";
 
 interface MobileNavigationProps {
   menuLinks: Array<{
@@ -27,15 +28,8 @@ interface MobileNavigationProps {
 }
 
 // Helper function to construct URLs
-const makeUrl = (path: string, prefix: string = "") => {
-  // Handle absolute paths
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
-  }
-  // Ensure path starts with /
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${prefix}${normalizedPath}`;
-};
+const makeUrl = (path: string, prefix: string = "") =>
+  buildUrl(path, prefix || import.meta.env.BASE_URL);
 
 // Hamburger menu icon
 const HamburgerIcon: React.FC = () => (

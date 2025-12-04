@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { clsx } from "clsx";
 
 export interface InfoCardProps {
@@ -15,7 +15,7 @@ export default function InfoCard({
   return (
     <div
       className={clsx(
-        "info-card bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6 backdrop-blur-lg",
+        "info-card bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6 backdrop-blur-lg",
         className,
       )}
     >

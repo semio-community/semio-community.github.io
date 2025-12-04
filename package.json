@@ -10,7 +10,7 @@
     "build": "npm run build:cms && npm run build:site && npm run build:search",
     "build:site": "astro build",
     "build:search": "pagefind --site dist",
-    "build:cms": "npm run cms:config && npm run cms:preview",
+    "build:cms": "npm run cms:config && npm run cms:copy-assets && npm run cms:preview",
     "preview": "astro preview",
     "lint": "biome lint .",
     "format": "npm run format:code && npm run format:imports",
@@ -19,6 +19,7 @@
     "check": "astro check",
     "verify:drafts": "node test/verify-drafts.mjs",
     "cms:preview": "vite build --config vite.cms.config.mjs",
+    "cms:copy-assets": "node scripts/copy-admin-assets.mjs",
     "cms:config": "node scripts/generate-decap-config.mjs"
   },
   "dependencies": {

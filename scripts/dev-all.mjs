@@ -21,6 +21,8 @@ const procs = commands.map(({ name, cmd, args }) => {
 });
 
 process.on("SIGINT", () => {
-  procs.forEach((child) => child.kill("SIGINT"));
+  for (const child of procs) {
+    child.kill("SIGINT");
+  }
   process.exit();
 });

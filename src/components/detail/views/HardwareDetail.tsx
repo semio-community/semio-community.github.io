@@ -4,13 +4,16 @@ import BaseDetailLayout from "@/components/detail/BaseDetailLayout";
 import { DetailHero } from "@/components/detail/DetailHero";
 import ContentSection from "@/components/detail/ContentSection";
 import LinkSection from "@/components/detail/LinkSection";
+import InfoCard from "@/components/detail/InfoCard";
 import SpecificationsList from "@/components/detail/SpecificationsList";
 import FeaturesList from "@/components/detail/FeaturesList";
 import ChipsList from "@/components/detail/ChipsList";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { OrganizationChip } from "@/components/ui/OrganizationChip";
-import { PersonPopover } from "@/components/people/PersonPopover";
-import BasicChip from "@/components/ui/BasicChip";
+import { OrganizationListElement } from "@/components/cards/OrganizationListElement";
+import {
+  PersonListElement,
+  type PersonListElementProps,
+} from "@/components/cards/PersonListElement";
 import {
   getCategoryLabel,
   getStatusColor,
@@ -29,7 +32,7 @@ export type HardwareOrganizationContributor = {
 
 export type HardwarePersonContributor = {
   personId: string;
-  person: Parameters<typeof PersonPopover>[0]["person"];
+  person: PersonListElementProps["data"];
   role?: string;
   currentAffiliation?: {
     organizationId: string;
@@ -99,63 +102,52 @@ export function HardwareDetail({
       }
       contributors={
         hasContributors ? (
-          <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6 backdrop-blur-lg">
-            {organizationContributors.length > 0 && (
-              <div className="organizations mb-6">
-                <h3 className="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
-                  ORGANIZATIONS
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {organizationContributors.map((contributor) => (
-                    <OrganizationChip
-                      key={contributor.organizationId}
-                      partnerId={contributor.organizationId}
-                      partnerName={
-                        contributor.data?.shortName ||
-                        contributor.data?.name ||
-                        contributor.organizationId
-                      }
-                      logo={resolveLogoAsset(contributor.data?.images)}
-                      role={contributor.role || "Contributing Organization"}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {peopleContributors.length > 0 && (
-              <div className="people-contributors">
-                <h3 className="text-xs font-semibold mb-3 text-color-600 dark:text-color-400 uppercase tracking-wider">
-                  CONTRIBUTORS
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {peopleContributors
-                    .filter((contributor) => contributor.person)
+          <div className="space-y-4">
+            {organizationContributors.filter((c) => c.data).length > 0 && (
+              <InfoCard title="ORGANIZATIONS">
+                <div className="space-y-2">
+                  {organizationContributors
+                    .filter((contributor) => contributor.data)
                     .map((contributor) => (
-                      <PersonPopover
-                        key={contributor.personId}
-                        personId={contributor.personId}
-                        person={contributor.person}
-                        role={contributor.role}
-                        currentAffiliation={contributor.currentAffiliation}
+                      <OrganizationListElement
+                        key={contributor.organizationId}
+                        organizationId={contributor.organizationId}
+                        data={contributor.data}
+                        roleLabel={
+                          contributor.role ||
+                          (contributor.primary
+                            ? "Lead Organization"
+                            : "Contributing Organization")
+                        }
+                        className="w-full"
                       />
                     ))}
                 </div>
-              </div>
+              </InfoCard>
             )}
 
-            {(categoryLabel || topics.length > 0) && (
-              <div className="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-2">
-                {categoryLabel && (
-                  <BasicChip text={categoryLabel} variant="tertiary" />
-                )}
-                {topics.map((topic) => (
-                  <BasicChip key={topic} text={topic} variant="default" />
-                ))}
-              </div>
+            {peopleContributors.filter((c) => c.person).length > 0 && (
+              <InfoCard title="CONTRIBUTORS">
+                <div className="space-y-2">
+                  {peopleContributors
+                    .filter((contributor) => contributor.person)
+                    .map((contributor) => (
+                      <PersonListElement
+                        key={contributor.personId}
+                        personId={contributor.personId}
+                        data={contributor.person as any}
+                        affiliationLabel={
+                          contributor.role ||
+                          contributor.currentAffiliation?.partnerName
+                        }
+                        className="w-full"
+                      />
+                    ))}
+                </div>
+              </InfoCard>
             )}
 
-            <div className="mt-6 pt-4 border-t border-accent-one/10 flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
+            <div className="flex flex-wrap gap-6 text-xs text-color-600 dark:text-color-400">
               {primaryOrganization && (
                 <div className="flex items-center gap-2">
                   <span className="font-semibold">Lead:</span>
@@ -182,6 +174,12 @@ export function HardwareDetail({
                     {peopleContributors.length}{" "}
                     {peopleContributors.length === 1 ? "person" : "people"}
                   </span>
+                </div>
+              )}
+              {categoryLabel && (
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold">Category:</span>
+                  <span>{categoryLabel}</span>
                 </div>
               )}
             </div>

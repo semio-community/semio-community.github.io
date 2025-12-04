@@ -9,7 +9,10 @@ import { ResearchCard } from "@/components/cards/ResearchCard";
 import { HardwareCard } from "@/components/cards/HardwareCard";
 import { SoftwareCard } from "@/components/cards/SoftwareCard";
 import { OrganizationCard } from "@/components/cards/OrganizationCard";
-import { PersonPopover } from "@/components/people/PersonPopover";
+import {
+  PersonListElement,
+  type PersonListElementProps,
+} from "@/components/cards/PersonListElement";
 import BasicChip from "@/components/ui/BasicChip";
 import { resolveLogoAsset } from "@/utils/images";
 
@@ -17,7 +20,7 @@ type OrganizationData = CollectionEntry<"organizations">["data"];
 
 export type KeyContact = {
   personId: string;
-  person: Parameters<typeof PersonPopover>[0]["person"];
+  person: PersonListElementProps["data"];
   role?: string;
   department?: string;
   currentAffiliation?: {
@@ -106,7 +109,9 @@ export function OrganizationDetail({
           image={data.images?.hero}
           title={data.shortName ? data.shortName : data.name}
           subtitle={
-            data.shortName && data.shortName !== data.name ? data.name : undefined
+            data.shortName && data.shortName !== data.name
+              ? data.name
+              : undefined
           }
           badges={badges}
           featuredState={data.featured ? "featured" : "not-featured"}
@@ -144,7 +149,7 @@ export function OrganizationDetail({
       }
       metadata={
         <div className="partnership-details mb-8">
-          <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+          <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
             <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
               PARTNERSHIP DETAILS
             </h3>
@@ -190,22 +195,27 @@ export function OrganizationDetail({
       contributors={
         keyContacts.length > 0 ? (
           <InfoCard title="KEY PEOPLE">
-            <div className="flex flex-wrap gap-2">
-              {keyContacts.map((contact) => (
-                <PersonPopover
-                  key={contact.personId}
-                  personId={contact.personId}
-                  person={contact.person}
-                  role={
-                    contact.role
-                      ? contact.department
-                        ? `${contact.role}, ${contact.department}`
-                        : contact.role
-                      : undefined
-                  }
-                  currentAffiliation={contact.currentAffiliation}
-                />
-              ))}
+            <div className="space-y-2">
+              {keyContacts.map((contact) => {
+                const personData =
+                  contact.person || ({ name: contact.personId } as any);
+                return (
+                  <PersonListElement
+                    key={contact.personId}
+                    personId={contact.personId}
+                    data={personData}
+                    affiliationLabel={
+                      contact.role
+                        ? contact.department
+                          ? `${contact.role}, ${contact.department}`
+                          : contact.role
+                        : contact.department ||
+                          contact.currentAffiliation?.partnerName
+                    }
+                    className="w-full"
+                  />
+                );
+              })}
             </div>
           </InfoCard>
         ) : null
@@ -213,7 +223,7 @@ export function OrganizationDetail({
       tags={
         data.collaborationSummary ? (
           <div className="collaboration-summary mb-8">
-            <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+            <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
               <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
                 COLLABORATION SUMMARY
               </h3>
@@ -232,7 +242,9 @@ export function OrganizationDetail({
               relatedContent?.hardware?.length ||
               relatedContent?.software?.length) && (
               <div>
-                <h2 className="text-2xl font-bold mb-2">Partner Contributions</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  Partner Contributions
+                </h2>
                 <p className="text-color-600 dark:text-color-400 mb-8">
                   Research, projects, and events involving{" "}
                   {data.shortName || data.name}
@@ -242,7 +254,11 @@ export function OrganizationDetail({
                     <h3 className="text-lg font-semibold mb-4">Research</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {relatedContent?.research?.map((item) => (
-                        <ResearchCard key={item.id} researchId={item.id} data={item.data} />
+                        <ResearchCard
+                          key={item.id}
+                          researchId={item.id}
+                          data={item.data}
+                        />
                       ))}
                     </div>
                   </div>
@@ -252,7 +268,11 @@ export function OrganizationDetail({
                     <h3 className="text-lg font-semibold mb-4">Hardware</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {relatedContent?.hardware?.map((hw) => (
-                        <HardwareCard key={hw.id} hardwareId={hw.id} data={hw.data} />
+                        <HardwareCard
+                          key={hw.id}
+                          hardwareId={hw.id}
+                          data={hw.data}
+                        />
                       ))}
                     </div>
                   </div>
@@ -262,7 +282,11 @@ export function OrganizationDetail({
                     <h3 className="text-lg font-semibold mb-4">Software</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {relatedContent?.software?.map((sw) => (
-                        <SoftwareCard key={sw.id} softwareId={sw.id} data={sw.data} />
+                        <SoftwareCard
+                          key={sw.id}
+                          softwareId={sw.id}
+                          data={sw.data}
+                        />
                       ))}
                     </div>
                   </div>
@@ -272,7 +296,9 @@ export function OrganizationDetail({
 
             {relatedOrganizations.length > 0 && (
               <div>
-                <h2 className="text-2xl font-bold mb-2">Related Organizations</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  Related Organizations
+                </h2>
                 <p className="text-color-600 dark:text-color-400 mb-8">
                   Organizations with similar focus areas
                 </p>
