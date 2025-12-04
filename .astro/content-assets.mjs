@@ -1,4 +1,5 @@
 
+import __ASTRO_IMAGE_IMPORT_1nJllY from "/src/assets/images/avatars/bill-smart.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fbill-smart.mdx";
 import __ASTRO_IMAGE_IMPORT_Zzf20T from "/src/assets/images/avatars/andy-schoen.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fandy-schoen.mdx";
 import __ASTRO_IMAGE_IMPORT_12bOqw from "/src/assets/images/heroes/semio-hero.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fandy-schoen.mdx";
 import __ASTRO_IMAGE_IMPORT_1nJllY from "/src/assets/images/avatars/bill-smart.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fbill-smart.mdx";
@@ -27,10 +28,10 @@ import __ASTRO_IMAGE_IMPORT_ZmOYPm from "/src/assets/images/logos/aaai.png?astro
 import __ASTRO_IMAGE_IMPORT_ZU42vk from "/src/assets/images/logos/aaai.png?astroContentImageFlag=&importer=src%2Fcontent%2Fevents%2Faaai-2024-fss.mdx";
 import __ASTRO_IMAGE_IMPORT_21A51z from "/src/assets/images/logos/aaai.png?astroContentImageFlag=&importer=src%2Fcontent%2Fevents%2Faaai-2025-fss.mdx";
 import __ASTRO_IMAGE_IMPORT_Z2hqGKz from "/src/assets/images/avatars/marlena-fraune.jpeg?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fmarlena-fraune.mdx";
-import __ASTRO_IMAGE_IMPORT_28w731 from "/src/assets/images/avatars/ross-mead.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fross-mead.mdx";
-import __ASTRO_IMAGE_IMPORT_1h34A5 from "/src/assets/images/heroes/semio-hero.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fross-mead.mdx";
 import __ASTRO_IMAGE_IMPORT_1ENUQp from "/src/assets/images/avatars/saad-elbeleidy.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fsaad-elbeleidy.mdx";
 import __ASTRO_IMAGE_IMPORT_Z24SaSn from "/src/assets/images/heroes/peerbots-hero.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fsaad-elbeleidy.mdx";
+import __ASTRO_IMAGE_IMPORT_28w731 from "/src/assets/images/avatars/ross-mead.jpg?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fross-mead.mdx";
+import __ASTRO_IMAGE_IMPORT_1h34A5 from "/src/assets/images/heroes/semio-hero.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fross-mead.mdx";
 import __ASTRO_IMAGE_IMPORT_M3oYe from "/src/assets/images/avatars/simon-kim.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fsimon-kim.mdx";
 import __ASTRO_IMAGE_IMPORT_185494 from "/src/assets/images/avatars/steve-goodgame.png?astroContentImageFlag=&importer=src%2Fcontent%2Fpeople%2Fsteve-goodgame.mdx";
 import __ASTRO_IMAGE_IMPORT_iTY3v from "/src/assets/images/logos/logo.png?astroContentImageFlag=&importer=src%2Fcontent%2Forganizations%2Fsemio-ai.mdx";
