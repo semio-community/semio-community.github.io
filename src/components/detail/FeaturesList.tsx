@@ -25,7 +25,7 @@ export default function FeaturesList({
             <div key={feature} className="flex items-start gap-2">
               <Icon
                 name={featureIcon}
-                className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0"
+                className="text-accent-two mt-0.5 w-4 h-4 shrink-0"
               />
               <span className="text-sm text-accent-base">{feature}</span>
             </div>

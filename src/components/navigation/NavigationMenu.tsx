@@ -360,7 +360,7 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
         <NavigationMenu.Indicator className="hidden" />
       </NavigationMenu.List>
 
-      <NavigationMenu.Viewport className="absolute top-full left-0 right-0 mt-[10px] flex justify-center data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut h-[var(--radix-navigation-menu-viewport-height)] w-full origin-[top_center] overflow-hidden transition-[width,_height] duration-300 sm:w-[var(--radix-navigation-menu-viewport-width)]" />
+      <NavigationMenu.Viewport className="absolute top-full left-0 right-0 mt-2.5 flex justify-center data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut h-(--radix-navigation-menu-viewport-height) w-full origin-[top_center] overflow-hidden transition-[width,height] duration-300 sm:w-(--radix-navigation-menu-viewport-width)" />
     </NavigationMenu.Root>
   );
 };

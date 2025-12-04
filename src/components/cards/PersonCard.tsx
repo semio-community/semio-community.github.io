@@ -15,10 +15,6 @@ export const PersonCard: FC<PersonCardProps> = ({
 }) => {
   const fullName = data.name || personId;
 
-  const currentAffiliation =
-    data.affiliations?.find((aff) => aff.isPrimary) ??
-    data.affiliations?.find((aff) => !aff.endDate);
-
   const description =
     data.bio ||
     (data.expertise && data.expertise.length > 0
