@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import CMS from "decap-cms-app";
 import { type DetailHeroBadge } from "@/components/detail/DetailHero";
 import {
@@ -70,17 +70,31 @@ const LoadingPreview = () => (
   </DetailPreviewShell>
 );
 
-type PreviewProps = {
-  entry: any;
-  widgetFor: (field: string) => React.ReactNode;
-  getAsset: (path: string) => any;
+type PreviewEntry = {
+  get: (key: string) => unknown;
+  getIn: (path: Array<string | number>) => unknown;
 };
 
-function safeData(entry: any) {
+type PreviewAsset =
+  | {
+      toString: () => string;
+    }
+  | string;
+
+type PreviewProps = {
+  entry: PreviewEntry;
+  widgetFor: (field: string) => React.ReactNode;
+  getAsset: (path: string) => PreviewAsset | undefined;
+};
+
+type PreviewData = Record<string, any>;
+
+function safeData(entry: PreviewEntry | undefined): PreviewData {
   if (entry?.getIn) {
     const val = entry.getIn(["data"]);
-    if (val?.toJS) return val.toJS();
-    return val ?? {};
+    const maybeVal = val as { toJS?: () => unknown } | undefined;
+    if (maybeVal?.toJS) return maybeVal.toJS() as PreviewData;
+    return (val as PreviewData) ?? {};
   }
   return {};
 }
@@ -181,14 +195,16 @@ const PeoplePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   return (
     <DetailPreviewShell>
       <PersonDetail
-        data={{
-          ...data,
-          images: {
-            ...data.images,
-            avatar: images.avatar,
-            hero: images.hero,
-          },
-        }}
+        data={
+          {
+            ...data,
+            images: {
+              ...data.images,
+              avatar: images.avatar,
+              hero: images.hero,
+            },
+          } as any
+        }
         fullName={name || "Person"}
         badges={badges}
         links={links}
@@ -226,7 +242,7 @@ const EventPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
 
   return (
     <DetailPreviewShell>
-      <EventDetail data={normalizedData} relatedEvents={[]} />
+      <EventDetail data={normalizedData as any} relatedEvents={[]} />
     </DetailPreviewShell>
   );
 };
@@ -251,7 +267,7 @@ const OrganizationPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   return (
     <DetailPreviewShell>
       <OrganizationDetail
-        data={normalizedData}
+        data={normalizedData as any}
         relatedContent={{
           research: [],
           hardware: [],
@@ -290,7 +306,7 @@ const HardwarePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   return (
     <DetailPreviewShell>
       <HardwareDetail
-        data={normalizedData}
+        data={normalizedData as any}
         organizationContributors={[]}
         peopleContributors={[]}
         relatedHardware={[]}
@@ -323,7 +339,7 @@ const SoftwarePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   return (
     <DetailPreviewShell>
       <SoftwareDetail
-        data={normalizedData}
+        data={normalizedData as any}
         organizationContributors={[]}
         peopleContributors={[]}
         relatedSoftware={[]}
@@ -348,7 +364,7 @@ const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   };
 
   const authors: ResearchAuthor[] = (data?.contributors || []).map(
-    (contributor: any, idx: number) => ({
+    (contributor: Record<string, unknown>, idx: number) => ({
       order: contributor?.order ?? idx,
       personId: contributor?.personId || `contributor-${idx + 1}`,
       person: {
@@ -370,7 +386,7 @@ const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
 
   const organizationLinks: ResearchOrganizationLink[] = (
     data?.organizations || []
-  ).map((org: any) => ({
+  ).map((org: Record<string, unknown>) => ({
     role: org?.role || "lead",
     note: org?.note,
     organization: {
@@ -380,7 +396,7 @@ const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
         shortName: org?.organizationId || "Organization",
         images: {},
       },
-    } as any,
+    } as unknown as ResearchOrganizationLink["organization"],
   }));
 
   const authorsSubtitle =
@@ -394,7 +410,7 @@ const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
   return (
     <DetailPreviewShell>
       <ResearchDetail
-        data={normalizedData}
+        data={normalizedData as any}
         authors={authors}
         authorsSubtitle={authorsSubtitle}
         organizationLinks={organizationLinks}

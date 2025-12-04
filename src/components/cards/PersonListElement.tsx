@@ -4,7 +4,23 @@ import { ItemListElement } from "@/components/cards/ItemListElement";
 
 export interface PersonListElementProps {
   personId: string;
-  data: CollectionEntry<"people">["data"];
+  data:
+    | CollectionEntry<"people">["data"]
+    | {
+        name: string;
+        honorific?: string;
+        title?: string;
+        featured?: boolean;
+        affiliations?: Array<{
+          organizationId: string;
+          role?: string;
+          department?: string;
+          startDate?: Date | string;
+          endDate?: Date | string | null;
+          isPrimary?: boolean;
+        }>;
+        images?: CollectionEntry<"people">["data"]["images"];
+      };
   affiliationLabel?: string;
   className?: string;
 }

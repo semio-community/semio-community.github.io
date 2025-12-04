@@ -8,16 +8,6 @@ import { linkPriority } from "@/data/links";
 import type { ImageLike } from "@/utils/images";
 import { isExternalUrl, url as buildUrl } from "@/utils/url";
 
-// type ImageLike =
-//   | string
-//   | {
-//       src: string;
-//       width?: number;
-//       height?: number;
-//       format?: string;
-//       alt?: string;
-//     };
-
 export interface ItemCardProps {
   title: string;
   description?: string;

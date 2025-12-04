@@ -71,13 +71,13 @@ export const EventCard: FC<EventCardProps> = ({ eventId, data }) => {
         {
           text: dateString,
           icon: (
-            <Calendar className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+            <Calendar className="text-accent-two mt-0.5 w-4 h-4 shrink-0" />
           ),
         },
         {
           text: locationString ?? "Unknown Location",
           icon: (
-            <MapPoint className="text-accent-two mt-0.5 w-4 h-4 flex-shrink-0" />
+            <MapPoint className="text-accent-two mt-0.5 w-4 h-4 shrink-0" />
           ),
         },
       ]}
