@@ -54,7 +54,7 @@ const DetailPreviewShell: React.FC<{
     <div className="relative m-auto flex min-h-screen w-full flex-1 max-w-6xl">
       <div className="relative m-auto w-full max-w-5xl grow">
         <div className="m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8">
-          <main className={`relative flex-grow ${mainClassName ?? ""}`}>
+          <main className={`relative grow ${mainClassName ?? ""}`}>
             {children}
           </main>
           <Footer />
