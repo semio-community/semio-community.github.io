@@ -151,7 +151,7 @@ export function PersonDetail({
       }
       description={
         bio ? (
-          <ContentSection title="BIOGRAPHY" content={bio ?? undefined} />
+          <ContentSection title="BIOGRAPHY" content={bio} />
         ) : null
       }
       related={
