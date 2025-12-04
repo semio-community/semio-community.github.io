@@ -99,32 +99,32 @@ function toAssetUrl(getAsset: PreviewProps["getAsset"], value?: string) {
     value.startsWith("@/") ? value.replace(/^@\//, "/src/") : value,
   );
 
-  // For source assets, serve /@fs in dev and the copied /admin/src/assets/ in build.
-  if (normalized.startsWith("/src/assets/")) {
-    if (import.meta.env.DEV && typeof __CMS_ROOT__ === "string") {
-      return `/@fs${__CMS_ROOT__}${normalized}`;
+  const assetUrl = (() => {
+    try {
+      const asset = getAsset(normalized);
+      if (!asset) return undefined;
+      if (typeof asset === "string") return asset;
+      if (typeof asset.toString === "function") return asset.toString();
+      return undefined;
+    } catch {
+      return undefined;
     }
-    return `/admin${normalized}`;
+  })();
+  if (assetUrl) {
+    return assetUrl;
   }
 
-  try {
-    const asset = getAsset(normalized);
-    const url = asset ? asset.toString() : normalized;
-    if (
-      url &&
-      !url.startsWith("/@fs") &&
-      normalized.startsWith("/src/") &&
-      typeof __CMS_ROOT__ === "string"
-    ) {
+  // For source assets, serve /@fs in dev and the copied /admin/src/assets/ in build.
+  if (normalized.startsWith("/src/") && typeof __CMS_ROOT__ === "string") {
+    if (import.meta.env.DEV) {
       return `/@fs${__CMS_ROOT__}${normalized}`;
     }
-    return url;
-  } catch (err) {
-    if (normalized.startsWith("/src/") && typeof __CMS_ROOT__ === "string") {
-      return `/@fs${__CMS_ROOT__}${normalized}`;
+    if (normalized.startsWith("/src/assets/")) {
+      return `/admin${normalized}`;
     }
-    return normalized;
   }
+
+  return normalized;
 }
 
 const PeoplePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
