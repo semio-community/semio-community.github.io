@@ -2,22 +2,15 @@
 import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import {
-  BaseDetailLayout,
-  DetailHero,
-  ContentSection,
-  InfoCard,
-} from "@/components/detail";
-import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import LinkSection from "@/components/detail/LinkSection";
 import { getRelatedResearch as fetchRelatedResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
-import { PersonPopover } from "@/components/people/PersonPopover";
-import { OrganizationChip } from "@/components/ui/OrganizationChip";
-import { HardwareCard } from "@/components/cards/HardwareCard";
-import { SoftwareCard } from "@/components/cards/SoftwareCard";
 import { serializePersonForPopover } from "@/utils/person";
-import { resolveLogoAsset } from "@/utils/images";
+import {
+  ResearchDetail,
+  type OrganizationRole,
+  type ResearchAuthor,
+  type ResearchOrganizationLink,
+} from "@/components/detail/views/ResearchDetail";
 
 export async function getStaticPaths() {
   const researchEntries = await getCollection("research", ({ data }) => {
@@ -33,23 +26,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { data } = entry;
 
-function getPublishYear(researchEntry: CollectionEntry<"research">) {
-  const date = researchEntry.data.publishDate
-    ? new Date(researchEntry.data.publishDate)
-    : undefined;
-  if (date && !Number.isNaN(date.getTime())) {
-    return date.getFullYear();
-  }
-  const year = (researchEntry.data as { year?: number }).year;
-  return typeof year === "number" ? year : undefined;
-}
-
 const relatedResearch = await fetchRelatedResearch(entry, 3);
-
-const publishDate = data.publishDate ? new Date(data.publishDate) : undefined;
-const displayYear = getPublishYear(entry);
-const legacyVenue = (data as { venue?: string }).venue;
-const legacyCitations = (data as { citations?: number }).citations;
 
 const authors = data.contributors ?? [];
 const authorsString = await getFormattedAuthors(authors);
@@ -60,44 +37,7 @@ const meta = {
 };
 const ogImage = `/og/research/${entry.id}.png`;
 
-const badges: Array<{
-  text: string;
-  color: "blue" | "gray" | "accent";
-  variant: "solid" | "outline";
-}> = [];
-
-const typeLabels = {
-  study: "Study",
-  paper: "Research Paper",
-  thesis: "Thesis",
-  report: "Technical Report",
-  preprint: "Preprint",
-  dataset: "Dataset",
-  benchmark: "Benchmark",
-};
-badges.push({
-  text: typeLabels[data.type] || data.type,
-  color: "blue" as const,
-  variant: "solid" as const,
-});
-
-if (displayYear) {
-  badges.push({
-    text: displayYear.toString(),
-    color: "gray" as const,
-    variant: "outline" as const,
-  });
-}
-
-if (data.featured) {
-  badges.push({
-    text: "Featured",
-    color: "accent" as const,
-    variant: "solid" as const,
-  });
-}
-
-const authorsWithData = await Promise.all(
+const authorsWithData: ResearchAuthor[] = await Promise.all(
   authors.map(async (contributor) => {
     const personEntry = await getPerson(contributor.personId);
     return {
@@ -107,67 +47,17 @@ const authorsWithData = await Promise.all(
   }),
 );
 
-authorsWithData.sort((a, b) => a.order - b.order);
-
-const validAuthors = authorsWithData.filter((a) => a.person);
-
-const publicationItems: Array<{ label: string; value: string }> = [];
-
-if (legacyVenue) {
-  publicationItems.push({
-    label: "Venue",
-    value: legacyVenue,
-  });
-}
-
-if (displayYear) {
-  publicationItems.push({
-    label: "Year",
-    value: displayYear.toString(),
-  });
-}
-
-if (publishDate) {
-  publicationItems.push({
-    label: "Published",
-    value: publishDate.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    }),
-  });
-} else {
-  publicationItems.push({
-    label: "Status",
-    value: "Ongoing",
-  });
-}
-
-if (legacyCitations && legacyCitations > 0) {
-  publicationItems.push({
-    label: "Citations",
-    value: legacyCitations.toString(),
-  });
-}
-
-type OrganizationRole = "lead" | "affiliated" | "funding" | "collaborator";
-
-const organizationRoleLabels: Record<OrganizationRole, string> = {
-  lead: "Lead Organization",
-  affiliated: "Affiliated Organization",
-  funding: "Funding Organization",
-  collaborator: "Collaborating Organization",
-};
-
-const organizationLinks: Array<{
-  role: OrganizationRole;
-  note?: string;
-  organization: CollectionEntry<"organizations">;
-}> = [];
+const validRoles: OrganizationRole[] = [
+  "lead",
+  "affiliated",
+  "funding",
+  "collaborator",
+];
+const organizationLinks: ResearchOrganizationLink[] = [];
 
 for (const orgLink of data.organizations ?? []) {
   const role = orgLink.role as OrganizationRole;
-  if (!organizationRoleLabels[role]) continue;
+  if (!role || !validRoles.includes(role)) continue;
   const organization = await getEntry("organizations", orgLink.organizationId);
   if (!organization) continue;
   organizationLinks.push({
@@ -177,41 +67,12 @@ for (const orgLink of data.organizations ?? []) {
   });
 }
 
-const organizationsByRole: Record<
-  OrganizationRole,
-  Array<{ organization: CollectionEntry<"organizations">; note?: string }>
-> = {
-  lead: [],
-  affiliated: [],
-  funding: [],
-  collaborator: [],
-};
-
-for (const item of organizationLinks) {
-  organizationsByRole[item.role].push({
-    organization: item.organization,
-    note: item.note,
-  });
-}
-
-const organizationRoleEntries = (
-  Object.entries(organizationsByRole) as Array<
-    [
-      OrganizationRole,
-      Array<{ organization: CollectionEntry<"organizations">; note?: string }>,
-    ]
-  >
-).filter(([, list]) => list.length > 0);
-
 // Get related hardware
 const relatedHardwareItems = data.relatedHardware
   ? await Promise.all(
       data.relatedHardware.map((id) => getEntry("hardware", id)),
     )
   : [];
-const validRelatedHardware = relatedHardwareItems.filter(
-  (item): item is CollectionEntry<"hardware"> => Boolean(item),
-);
 
 // Get related software
 const relatedSoftwareItems = data.relatedSoftware
@@ -219,6 +80,11 @@ const relatedSoftwareItems = data.relatedSoftware
       data.relatedSoftware.map((id) => getEntry("software", id)),
     )
   : [];
+
+const validRelatedHardware = relatedHardwareItems.filter(
+  (item): item is CollectionEntry<"hardware"> => Boolean(item),
+);
+
 const validRelatedSoftware = relatedSoftwareItems.filter(
   (item): item is CollectionEntry<"software"> => Boolean(item),
 );
@@ -237,207 +103,15 @@ const validRelatedSoftware = relatedSoftwareItems.filter(
   </head>
   <body class="relative min-h-screen w-full bg-surface">
     <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
-      <BaseDetailLayout>
-        <Fragment slot="hero">
-          <DetailHero
-            image={data.images?.hero}
-            title={data.title}
-            subtitle={authorsString}
-            badges={badges}
-            featuredState={data.featured ? "featured" : undefined}
-            thumbnail={resolveLogoAsset(data.images)}
-            entityType="research"
-          />
-        </Fragment>
-
-        <Fragment slot="description">
-          <ContentSection title="SUMMARY" content={data.description} />
-          {
-            data.links && Object.keys(data.links).length > 0 && (
-              <div class="mt-6">
-                <LinkSection
-                  client:idle
-                  links={data.links}
-                  size="md"
-                  className="gap-1"
-                />
-              </div>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="contributors">
-          {
-            validAuthors.length > 0 && (
-              <InfoCard title="CONTRIBUTORS">
-                <div class="flex flex-wrap gap-2">
-                  {validAuthors.map((author) => (
-                    <div class="flex items-center gap-1">
-                      <PersonPopover
-                        client:load
-                        personId={author.personId}
-                        person={author.person}
-                        role={author.affiliationSnapshot}
-                      />
-                      {author.corresponding && (
-                        <span
-                          class="text-xs text-accent-one"
-                          title="Corresponding Author"
-                        >
-                          ✉
-                        </span>
-                      )}
-                      {author.equalContribution && (
-                        <span
-                          class="text-xs text-color-500"
-                          title="Equal Contribution"
-                        >
-                          *
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </InfoCard>
-            )
-          }
-
-          {
-            organizationRoleEntries.length > 0 && (
-              <InfoCard title="ORGANIZATIONS">
-                {organizationRoleEntries.map(([role, organizations]) => (
-                  <div class="mb-4 last:mb-0">
-                    <h4 class="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
-                      {organizationRoleLabels[role]}
-                    </h4>
-                    <div class="flex flex-wrap gap-2">
-                      {organizations.map(({ organization, note }) => (
-                        <div class="flex items-center gap-2">
-                          <OrganizationChip
-                            partnerId={organization.id}
-                            partnerName={
-                              organization.data.shortName ||
-                              organization.data.name
-                            }
-                            logo={resolveLogoAsset(organization.data.images)}
-                            role={organizationRoleLabels[role]}
-                          />
-                          {note && (
-                            <span class="text-xs text-color-500 dark:text-color-400 italic">
-                              {note}
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </InfoCard>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="metadata">
-          {
-            publicationItems.length > 0 && (
-              <div class="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-                <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                  DETAILS
-                </h3>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                  {publicationItems.map((item) => (
-                    <div>
-                      <span class="text-xs text-color-600 dark:text-color-400 font-semibold block mb-1">
-                        {item.label}
-                      </span>
-                      <span class="text-accent-base">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="tags">
-          {
-            data.topics && data.topics.length > 0 && (
-              <InfoCard title="RESEARCH TOPICS">
-                <div class="flex flex-wrap gap-2">
-                  {data.topics.map((topic) => (
-                    <span class="px-3 py-1.5 bg-accent-one/10 rounded-lg text-sm text-accent-base">
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </InfoCard>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="related">
-          {
-            validRelatedHardware.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Related Hardware</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {validRelatedHardware.map((hw) => (
-                    <HardwareCard hardwareId={hw.id} data={hw.data} />
-                  ))}
-                </div>
-              </div>
-            )
-          }
-
-          {
-            validRelatedSoftware.length > 0 && (
-              <div class="mb-12">
-                <h3 class="text-lg font-semibold mb-4">Related Software</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {validRelatedSoftware.map((sw) => (
-                    <SoftwareCard softwareId={sw.id} data={sw.data} />
-                  ))}
-                </div>
-              </div>
-            )
-          }
-
-          {
-            relatedResearch && relatedResearch.length > 0 && (
-              <RelatedItemsGrid
-                client:load
-                title="Related Research"
-                subtitle="Related papers, datasets, and benchmarks"
-                items={
-                  relatedResearch.map((relatedEntry) => {
-                    const yearLabel = getPublishYear(relatedEntry);
-                    const typeLabel =
-                      typeLabels[relatedEntry.data.type] ||
-                      relatedEntry.data.type;
-                    return {
-                      id: relatedEntry.id,
-                      data: {
-                        name: relatedEntry.data.title,
-                        title: relatedEntry.data.title,
-                        description: relatedEntry.data.description,
-                        type: relatedEntry.data.type,
-                        featured: relatedEntry.data.featured,
-                        images: relatedEntry.data.images,
-                        links: relatedEntry.data.links,
-                        shortDescription: [typeLabel, yearLabel]
-                          .filter(Boolean)
-                          .join(" • "),
-                      },
-                    };
-                  }) as any
-                }
-                itemType="research"
-                columns={3}
-              />
-            )
-          }
-        </Fragment>
-      </BaseDetailLayout>
+      <ResearchDetail
+        data={data}
+        authors={authorsWithData}
+        authorsSubtitle={authorsString}
+        organizationLinks={organizationLinks}
+        relatedHardware={validRelatedHardware}
+        relatedSoftware={validRelatedSoftware}
+        relatedResearch={relatedResearch}
+      />
     </SiteShell>
   </body>
 </html>

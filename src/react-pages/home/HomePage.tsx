@@ -5,6 +5,7 @@ import ProgramsSection from "@/react-pages/home/sections/ProgramsSection";
 import PartnersSection from "@/react-pages/home/sections/PartnersSection";
 import ConnectSection from "@/react-pages/home/sections/ConnectSection";
 import { CallToActionButton } from "@/components/ui/CallToActionButton";
+import { url } from "@/utils/url";
 
 export interface HomePageProps {
   projectCount: number;
@@ -58,8 +59,8 @@ export default function HomePage({
             title: "Research",
             description: "Reproducible scientific research and studies",
             links: [
-              { label: "Projects", href: "/projects#research" },
-              { label: "Services", href: "/services#research" },
+              { label: "Projects", href: url("/projects#research") },
+              { label: "Services", href: url("/services#research") },
             ],
           },
         ]}
@@ -71,7 +72,11 @@ export default function HomePage({
           incorporated into the design, development, or deployment of an HRI
           system.
         </p>
-        <CallToActionButton href="/events" size="large" variant="default">
+        <CallToActionButton
+          href={url("/events")}
+          size="large"
+          variant="default"
+        >
           Upcoming Events
         </CallToActionButton>
       </ProgramsSection>

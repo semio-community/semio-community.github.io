@@ -57,7 +57,12 @@ const makeUrl = (path: string, prefix: string = "") => {
   }
   // Ensure path starts with /
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${prefix}${normalizedPath}`;
+  const normalizedPrefix = prefix
+    ? prefix.endsWith("/") && prefix !== "/" // keep root slash intact
+      ? prefix.slice(0, -1)
+      : prefix
+    : "";
+  return `${normalizedPrefix}${normalizedPath}`;
 };
 
 const dropdownIconMap = navIconMap;

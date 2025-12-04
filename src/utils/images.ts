@@ -9,10 +9,22 @@ export type ImageLike =
   | string
   | undefined;
 
+const normalizeImagePath = (value: string) => {
+  if (!value) return value;
+  let next = value;
+  if (next.startsWith("@/")) {
+    next = next.replace(/^@\//, "/src/");
+  }
+  if (next.startsWith("/assets/")) {
+    next = `/src${next}`;
+  }
+  return next;
+};
+
 export const resolveImageLike = (image?: ImageLike) => {
   if (!image) return undefined;
-  if (typeof image === "string") return image;
-  return image.src;
+  if (typeof image === "string") return normalizeImagePath(image);
+  return normalizeImagePath(image.src);
 };
 
 export type LogoContainer =
@@ -29,5 +41,5 @@ export const resolveLogoAsset = (images?: LogoContainer): ImageLike => {
   const source =
     (images as { logo?: ImageLike })?.logo ??
     (images as { logoUrl?: string })?.logoUrl;
-  return source;
+  return resolveImageLike(source);
 };

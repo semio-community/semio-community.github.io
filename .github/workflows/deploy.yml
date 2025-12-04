@@ -36,7 +36,6 @@ jobs:
           rm -f package-lock.json
           npm cache clean --force
           npm install
-
       - name: Build site + admin + search
         run: npm run build
 

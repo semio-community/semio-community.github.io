@@ -14,7 +14,9 @@ function parseDate(val: string | Date): Date {
     }
     return new Date(val);
   }
-  return new Date(val);
+
+  // If already a Date, normalize using UTC parts to avoid off-by-one issues
+  return new Date(val.getUTCFullYear(), val.getUTCMonth(), val.getUTCDate());
 }
 
 // Shared schemas for cross-collection references
