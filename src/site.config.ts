@@ -32,33 +32,33 @@ export const menuLinks: {
 }[] = [
   {
     path: "/",
-    title: "Home",
+    title: "Showcase",
     inHeader: false,
   },
-  {
-    path: "/projects/",
-    title: "Projects",
-    inHeader: true,
-  },
-  {
-    path: "/services/",
-    title: "Services",
-    inHeader: true,
-  },
+  // {
+  //   path: "/projects/",
+  //   title: "Projects",
+  //   inHeader: true,
+  // },
+  // {
+  //   path: "/services/",
+  //   title: "Services",
+  //   inHeader: true,
+  // },
   {
     path: "/events/",
     title: "Events",
     inHeader: true,
   },
-  {
-    path: "/contributors/",
-    title: "Contributors",
-    inHeader: true,
-  },
-  {
-    path: "/get-involved/",
-    title: "Get Involved",
-    inHeader: true,
-    callToAction: true,
-  },
+  // {
+  //   path: "/contributors/",
+  //   title: "Contributors",
+  //   inHeader: true,
+  // },
+  // {
+  //   path: "/get-involved/",
+  //   title: "Get Involved",
+  //   inHeader: true,
+  //   callToAction: true,
+  // },
 ];
