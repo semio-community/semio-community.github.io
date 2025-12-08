@@ -1,20 +1,15 @@
 import type { FC } from "react";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
+import type { ImageLike } from "@/utils/images";
+import { isExternalUrl, url as buildUrl } from "@/utils/url";
 
 export interface ItemListElementProps {
   title: string;
   description?: string;
   href: string;
   // Use the same shape as ItemCard's logo/image props
-  logo?:
-    | {
-        src: string;
-        width?: number;
-        height?: number;
-        format?: string;
-      }
-    | undefined;
+  logo?: ImageLike;
   imageAlt?: string;
   featuredState?: FeaturedState;
   type?:
@@ -65,14 +60,15 @@ export const ItemListElement: FC<ItemListElementProps> = ({
     events: "event",
   };
   const avatarType = typeToAvatarType[type] || "organization";
+  const resolvedHref = isExternalUrl(href) ? href : buildUrl(href);
 
   return (
     <a
-      href={href}
+      href={resolvedHref}
       className={`group flex items-center gap-3 sm:gap-4 bg-special-lighter rounded-lg hover:shadow-lg transition-[colors,transform] w-full overflow-hidden no-underline px-3 sm:px-4 py-2.5 scale-100 hover:scale-[1.02] backdrop-blur-lg ${className}`}
     >
       {/* Avatar / Logo */}
-      <div className="flex-shrink-0">
+      <div className="shrink-0">
         <Avatar
           src={logo}
           alt={imageAlt || title}
@@ -100,7 +96,7 @@ export const ItemListElement: FC<ItemListElementProps> = ({
       </div>
 
       {/* Right-side indicators */}
-      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+      <div className="flex items-center gap-2 shrink-0 ml-2">
         {meta && (
           <span className="text-xs text-color-600 dark:text-color-400 hidden sm:inline-block">
             {meta}

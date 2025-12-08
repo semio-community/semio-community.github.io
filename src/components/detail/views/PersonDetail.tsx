@@ -8,13 +8,12 @@ import {
 import ContentSection from "@/components/detail/ContentSection";
 import InfoCard from "@/components/detail/InfoCard";
 import LinkSection from "@/components/detail/LinkSection";
-import { OrganizationChip } from "@/components/ui/OrganizationChip";
 import { ResearchCard } from "@/components/cards/ResearchCard";
 import { HardwareCard } from "@/components/cards/HardwareCard";
 import { SoftwareCard } from "@/components/cards/SoftwareCard";
 import { EventCard } from "@/components/cards/EventCard";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { resolveLogoAsset } from "@/utils/images";
+import { OrganizationListElement } from "@/components/cards/OrganizationListElement";
 
 type PersonData = CollectionEntry<"people">["data"];
 
@@ -22,6 +21,7 @@ export type AffiliationDisplay = {
   organizationId: string;
   organizationName?: string;
   organizationImages?: PersonData["images"];
+  organizationData?: CollectionEntry<"organizations">["data"];
   role?: string;
   department?: string;
 };
@@ -86,22 +86,31 @@ export function PersonDetail({
         (currentAffiliations.length > 0 || pastAffiliations.length > 0) && (
           <InfoCard title="AFFILIATIONS">
             {currentAffiliations.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+              <div className="mb-4 space-y-2">
+                <h4 className="text-xs font-medium text-color-600 dark:text-color-400">
                   Current
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="space-y-2">
                   {currentAffiliations.map((aff, idx) => (
-                    <OrganizationChip
-                      key={idx}
-                      partnerId={aff.organizationId}
-                      partnerName={aff.organizationName || aff.organizationId}
-                      logo={resolveLogoAsset(aff.organizationImages)}
-                      role={
+                    <OrganizationListElement
+                      key={`${aff.organizationId}-current-${idx}`}
+                      organizationId={aff.organizationId}
+                      data={
+                        aff.organizationData ??
+                        (aff.organizationName || aff.organizationImages
+                          ? ({
+                              name: aff.organizationName || aff.organizationId,
+                              shortName: aff.organizationName,
+                              images: aff.organizationImages,
+                            } as any)
+                          : undefined)
+                      }
+                      roleLabel={
                         aff.department
                           ? `${aff.role || "Role"}, ${aff.department}`
                           : aff.role
                       }
+                      className="w-full"
                     />
                   ))}
                 </div>
@@ -109,22 +118,31 @@ export function PersonDetail({
             )}
 
             {pastAffiliations.length > 0 && (
-              <div>
-                <h4 className="text-xs font-medium mb-2 text-color-600 dark:text-color-400">
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-color-600 dark:text-color-400">
                   Past
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="space-y-2">
                   {pastAffiliations.map((aff, idx) => (
-                    <OrganizationChip
-                      key={idx}
-                      partnerId={aff.organizationId}
-                      partnerName={aff.organizationName || aff.organizationId}
-                      logo={resolveLogoAsset(aff.organizationImages)}
-                      role={
+                    <OrganizationListElement
+                      key={`${aff.organizationId}-past-${idx}`}
+                      organizationId={aff.organizationId}
+                      data={
+                        aff.organizationData ??
+                        (aff.organizationName || aff.organizationImages
+                          ? ({
+                              name: aff.organizationName || aff.organizationId,
+                              shortName: aff.organizationName,
+                              images: aff.organizationImages,
+                            } as any)
+                          : undefined)
+                      }
+                      roleLabel={
                         aff.department
                           ? `${aff.role || "Role"}, ${aff.department}`
                           : aff.role
                       }
+                      className="w-full"
                     />
                   ))}
                 </div>
@@ -150,9 +168,7 @@ export function PersonDetail({
         ) : null
       }
       description={
-        bio ? (
-          <ContentSection title="BIOGRAPHY" content={bio} />
-        ) : null
+        bio ? <ContentSection title="BIOGRAPHY" content={bio} /> : null
       }
       related={
         hasRelated ? (

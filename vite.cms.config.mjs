@@ -19,7 +19,7 @@ export default defineConfig({
       output: {
         entryFileNames: "preview.bundle.js",
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+          if (assetInfo.name?.endsWith(".css")) {
             return "preview.css";
           }
           return "assets/[name][extname]";

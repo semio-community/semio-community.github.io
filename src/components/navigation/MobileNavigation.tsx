@@ -6,6 +6,7 @@ import { CallToActionButton } from "../ui/CallToActionButton";
 import { NavIconButton } from "./NavIconButton";
 import { useSearch } from "@/components/search";
 import { navIconMap } from "@/components/navigation/navIcons";
+import { url as buildUrl } from "@/utils/url";
 
 interface MobileNavigationProps {
   menuLinks: Array<{
@@ -27,15 +28,8 @@ interface MobileNavigationProps {
 }
 
 // Helper function to construct URLs
-const makeUrl = (path: string, prefix: string = "") => {
-  // Handle absolute paths
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
-  }
-  // Ensure path starts with /
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${prefix}${normalizedPath}`;
-};
+const makeUrl = (path: string, prefix: string = "") =>
+  buildUrl(path, prefix || import.meta.env.BASE_URL);
 
 // Hamburger menu icon
 const HamburgerIcon: React.FC = () => (
@@ -181,8 +175,8 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
               >
                 {/* Background decoration */}
                 <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-[-40%] right-[-20%] w-[60%] h-[60%] bg-gradient-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
-                  <div className="absolute bottom-[-40%] left-[-20%] w-[60%] h-[60%] bg-gradient-to-t from-teal-400 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
+                  <div className="absolute top-[-40%] right-[-20%] w-[60%] h-[60%] bg-linear-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
+                  <div className="absolute bottom-[-40%] left-[-20%] w-[60%] h-[60%] bg-linear-to-t from-teal-400 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
                 </div>
 
                 <div className="relative flex h-full flex-col">

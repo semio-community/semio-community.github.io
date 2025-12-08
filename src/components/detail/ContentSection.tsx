@@ -17,7 +17,7 @@ export default function ContentSection({
 
   return (
     <div className={`content-section mb-8 ${className ?? ""}`}>
-      <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6 backdrop-blur-lg">
+      <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6 backdrop-blur-lg">
         <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
           {title}
         </h3>

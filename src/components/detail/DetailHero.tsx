@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { FeaturedStar, type FeaturedState } from "@/components/ui/FeaturedStar";
 import { Avatar, type AvatarType } from "@/components/ui/Avatar";
 import type { ImageLike } from "@/utils/images";
@@ -134,7 +134,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
     <div
       className={`relative mb-8 -mx-4 md:-mx-8 rounded-none md:rounded-xl overflow-hidden ${className}`}
     >
-      <div className="aspect-[4/3] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden relative">
+      <div className="aspect-4/3 sm:aspect-video md:aspect-21/9 overflow-hidden relative">
         {image ? (
           <>
             {/* Image background */}
@@ -146,16 +146,16 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
 
             {/* Overlay gradient for images */}
             {overlayGradient && (
-              <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/60 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-surface/95 via-surface/60 to-transparent" />
             )}
           </>
         ) : (
           <>
             {/* Gradient fallback background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-special-lighter via-special-light to-special" />
+            <div className="absolute inset-0 bg-linear-to-br from-special-lighter via-special-light to-special" />
 
             {/* Overlay for text readability on gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-surface/95 via-surface/60 to-surface/20" />
+            <div className="absolute inset-0 bg-linear-to-t from-surface/95 via-surface/60 to-surface/20" />
           </>
         )}
 
@@ -164,7 +164,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
           <div className="max-w-7xl mx-auto flex items-end gap-2 sm:gap-4 md:gap-6">
             {/* Avatar/Logo - responsive sizing */}
             {(profileImage || !image) && (
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <Avatar
                   src={profileImage}
                   alt={title}
@@ -172,7 +172,7 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                   type={avatarType}
                   size="2xl"
                   rounded="full"
-                  className="!w-14 !h-14 sm:!w-20 sm:!h-20 md:!w-24 md:!h-24 lg:!w-32 lg:!h-32"
+                  className="w-14! h-14! sm:w-20! sm:h-20! md:w-24! md:h-24! lg:w-32! lg:h-32!"
                 />
               </div>
             )}
@@ -203,14 +203,17 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                         state={featuredState}
                         size="md"
                         glow
-                        className="flex-shrink-0 inline-block"
+                        className="shrink-0 inline-block"
                       />
                     )}
                     {badges
                       .sort((a, b) => (b.priority || 0) - (a.priority || 0))
                       .slice(0, mobileBadgeLimit)
-                      .map((badge, index) => (
-                        <span key={index} className={getBadgeClasses(badge)}>
+                      .map((badge) => (
+                        <span
+                          key={`${badge.text}-${badge.priority ?? ""}`}
+                          className={getBadgeClasses(badge)}
+                        >
                           {badge.text}
                         </span>
                       ))}
@@ -229,11 +232,14 @@ export const DetailHero: React.FC<DetailHeroProps> = ({
                         state={featuredState}
                         size="lg"
                         glow
-                        className="flex-shrink-0 inline-block"
+                        className="shrink-0 inline-block"
                       />
                     )}
-                    {badges.map((badge, index) => (
-                      <span key={index} className={getBadgeClasses(badge)}>
+                    {badges.map((badge) => (
+                      <span
+                        key={`${badge.text}-${badge.priority ?? ""}`}
+                        className={getBadgeClasses(badge)}
+                      >
                         {badge.text}
                       </span>
                     ))}

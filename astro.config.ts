@@ -130,7 +130,7 @@ export default defineConfig({
     },
     plugins: [
       rawFonts([".ttf", "otf", ".woff"]),
-      tailwindcss(),
+      tailwindcss() as any,
       serveSrcImagesDev(),
     ],
   },
@@ -244,8 +244,8 @@ function serveSrcImagesDev(): PluginOption {
   return {
     name: "serve-src-images-dev",
     apply: "serve" as const,
-    configureServer(server: any) {
-      server.middlewares.use((req: any, res: any, next: any) => {
+    configureServer(server: import("vite").ViteDevServer) {
+      server.middlewares.use((req, res, next) => {
         const rawUrl = (req.url || "").split("?")[0] || "";
         const normalized = rewriteLegacy(rawUrl);
         if (!normalized.startsWith("/src/assets/images/")) return next();

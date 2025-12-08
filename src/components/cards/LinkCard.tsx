@@ -146,10 +146,7 @@ export default function LinkCard({
 
       {extraLinks.length > 0 ? (
         <div
-          className={clsx(
-            "flex w-full gap-3 mt-3 pt-3 border-t-1",
-            borderClass,
-          )}
+          className={clsx("flex w-full gap-3 mt-3 pt-3 border-t", borderClass)}
         >
           {extraLinks.map(({ label, href }) => (
             <a

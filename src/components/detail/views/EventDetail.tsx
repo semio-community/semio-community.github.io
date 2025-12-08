@@ -218,7 +218,7 @@ export function EventDetail({
       }
       contributors={
         roleEntries.length > 0 && (
-          <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+          <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
             <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
               SEMIO COMMUNITY ROLES
             </h3>
@@ -236,7 +236,7 @@ export function EventDetail({
       }
       tags={
         data.topics && data.topics.length > 0 ? (
-          <div className="bg-gradient-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+          <div className="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
             <h3 className="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
               TOPICS
             </h3>
