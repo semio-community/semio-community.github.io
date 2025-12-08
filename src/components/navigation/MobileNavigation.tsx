@@ -175,8 +175,8 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
               >
                 {/* Background decoration */}
                 <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-[-40%] right-[-20%] w-[60%] h-[60%] bg-gradient-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
-                  <div className="absolute bottom-[-40%] left-[-20%] w-[60%] h-[60%] bg-gradient-to-t from-teal-400 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
+                  <div className="absolute top-[-40%] right-[-20%] w-[60%] h-[60%] bg-linear-to-b from-orange-500 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
+                  <div className="absolute bottom-[-40%] left-[-20%] w-[60%] h-[60%] bg-linear-to-t from-teal-400 via-amber-400 to-transparent rounded-full opacity-20 dark:opacity-10 blur-3xl" />
                 </div>
 
                 <div className="relative flex h-full flex-col">
