@@ -37,7 +37,7 @@ const allEvents = await getAllEvents();
                 events={allEvents.map((event) => ({
                   id: event.id,
                   data: event.data,
-                }))}
+                })).filter((event) => !event.data.draft)}
                 initialFeaturedCount={6}
                 initialPastCount={6}
               />
