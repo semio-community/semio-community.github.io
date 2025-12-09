@@ -1,5 +1,5 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import { type CollectionEntry, getCollection, render } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
 import {
@@ -29,6 +29,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { data } = entry;
+const { Content } = await render(entry);
 
 // Get related events (by type or topics)
 async function getRelatedEvents(
@@ -42,6 +43,7 @@ async function getRelatedEvents(
   const isCurrentPast = parseDateLocal(event.data.endDate) < currentDate;
 
   const otherEvents = allEvents.filter((e) => {
+    if (e.data.draft) return false;
     if (e.id === event.id) return false;
     // If current event is past, include all; otherwise prefer upcoming
     if (!isCurrentPast) {
@@ -311,6 +313,19 @@ const featuredState = data.featured
                 </div>
               </div>
             )
+          }
+        </Fragment>
+
+        <Fragment slot="default">
+          {
+              <div class="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
+                <h2 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
+                  Details
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                  <Content />
+                </div>
+              </div>
           }
         </Fragment>
 
