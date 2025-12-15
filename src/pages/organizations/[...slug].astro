@@ -6,8 +6,10 @@ import { getAllOrganizations } from "@/data/organizations";
 import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { serializePersonForPopover } from "@/utils/person";
-import { OrganizationDetail } from "@/components/detail/views/OrganizationDetail";
+import {
+  OrganizationDetail,
+  type KeyContact,
+} from "@/components/detail/views/OrganizationDetail";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
@@ -85,24 +87,26 @@ const meta = {
 const ogImage = `/og/organizations/${entry.id}.png`;
 
 const affiliatedPeople = await getPeopleByOrganization(entry.id);
-const keyContacts = affiliatedPeople.slice(0, 6).map((personEntry) => {
-  const affiliation = personEntry.data.affiliations?.find(
-    (aff) => aff.organizationId === entry.id,
-  );
-  return {
-    personId: personEntry.id,
-    person: serializePersonForPopover(personEntry),
-    role: affiliation?.role,
-    department: affiliation?.department,
-    currentAffiliation: affiliation
-      ? {
-          organizationId: entry.id,
-          partnerName: data.shortName || data.name,
-          role: affiliation.role,
-        }
-      : undefined,
-  };
-});
+const keyContacts: KeyContact[] = affiliatedPeople
+  .slice(0, 6)
+  .map((personEntry) => {
+    const affiliation = personEntry.data.affiliations?.find(
+      (aff) => aff.organizationId === entry.id,
+    );
+    return {
+      personId: personEntry.id,
+      person: personEntry.data,
+      role: affiliation?.role,
+      department: affiliation?.department,
+      currentAffiliation: affiliation
+        ? {
+            organizationId: entry.id,
+            partnerName: data.shortName || data.name,
+            role: affiliation.role,
+          }
+        : undefined,
+    };
+  });
 ---
 
 <html
