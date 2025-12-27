@@ -63,7 +63,7 @@ export default function ConnectSection({
   ariaLabel,
   className,
   gridClassName,
-  donateHref = "https://donate.stripe.com/cNiaEX4ZE07R8Wj8Yva7C00",
+  donateHref = "https://donate.semio.community/b/cNiaEX4ZE07R8Wj8Yva7C00",
   volunteerHref = "https://forms.gle/5iiaThSsGUMzXWsu6",
   mailingListHref = "https://forms.gle/5iiaThSsGUMzXWsu6",
   donateText = "Make a Donation",
