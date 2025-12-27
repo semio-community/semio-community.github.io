@@ -86,7 +86,7 @@ export default function GetInvolvedPage() {
 
             <div className="text-center">
               <CallToActionButton
-                href="https://donate.stripe.com/cNiaEX4ZE07R8Wj8Yva7C00"
+                href="https://donate.semio.community/b/cNiaEX4ZE07R8Wj8Yva7C00"
                 size="large"
               >
                 Donate Now
