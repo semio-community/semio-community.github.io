@@ -48,7 +48,7 @@ export default function GetInvolvedPage() {
         subtitle="Your donations enable us to advance open science in robotics"
       >
         <div className="max-w-5xl mx-auto">
-          <div className="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20 mb-8 backdrop-blur-lg">
+          <div className="bg-linear-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20 mb-8 backdrop-blur-lg">
             <h3 className="text-2xl font-semibold mb-4 text-center text-accent-base">
               Why Your Support Matters
             </h3>
@@ -133,13 +133,13 @@ export default function GetInvolvedPage() {
         variant="secondary"
       >
         <div className="max-w-5xl mx-auto">
-          <div className="bg-gradient-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20 backdrop-blur-lg">
+          <div className="bg-linear-to-r from-accent-one/10 to-accent-two/10 rounded-lg p-8 border border-accent-two/20 backdrop-blur-lg">
             <h3 className="text-xl font-semibold mb-6 text-center text-accent-base">
               Volunteer Benefits
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-accent-one flex-shrink-0 mt-2" />
+                <CheckCircle className="w-5 h-5 text-accent-one shrink-0 mt-2" />
                 <div>
                   <h4 className="font-semibold mb-1">Professional Network</h4>
                   <p className="text-sm text-color-600 dark:text-color-400">
@@ -149,7 +149,7 @@ export default function GetInvolvedPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-accent-one flex-shrink-0 mt-2" />
+                <CheckCircle className="w-5 h-5 text-accent-one shrink-0 mt-2" />
                 <div>
                   <h4 className="font-semibold mb-1">Skill Development</h4>
                   <p className="text-sm text-color-600 dark:text-color-400">
@@ -159,7 +159,7 @@ export default function GetInvolvedPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-accent-one flex-shrink-0 mt-2" />
+                <CheckCircle className="w-5 h-5 text-accent-one shrink-0 mt-2" />
                 <div>
                   <h4 className="font-semibold mb-1">Recognition</h4>
                   <p className="text-sm text-color-600 dark:text-color-400">
@@ -168,7 +168,7 @@ export default function GetInvolvedPage() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-accent-one flex-shrink-0 mt-2" />
+                <CheckCircle className="w-5 h-5 text-accent-one shrink-0 mt-2" />
                 <div>
                   <h4 className="font-semibold mb-1">Flexible Commitment</h4>
                   <p className="text-sm text-color-600 dark:text-color-400">
@@ -207,25 +207,25 @@ export default function GetInvolvedPage() {
                 </h3>
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
-                    <Letter className="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5" />
+                    <Letter className="w-5 h-5 text-accent-three shrink-0 mt-0.5" />
                     <span className="text-sm">
                       Regular newsletter with community updates
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CalendarMark className="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5" />
+                    <CalendarMark className="w-5 h-5 text-accent-three shrink-0 mt-0.5" />
                     <span className="text-sm">
                       Early announcements for events and workshops
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <TestTube className="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5" />
+                    <TestTube className="w-5 h-5 text-accent-three shrink-0 mt-0.5" />
                     <span className="text-sm">
                       Research highlights and findings
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <UsersGroupTwoRounded className="w-5 h-5 text-accent-three flex-shrink-0 mt-0.5" />
+                    <UsersGroupTwoRounded className="w-5 h-5 text-accent-three shrink-0 mt-0.5" />
                     <span className="text-sm">
                       Volunteer and collaboration opportunities
                     </span>
