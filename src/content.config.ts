@@ -96,6 +96,27 @@ const contributorSchema = z.discriminatedUnion("type", [
     .merge(baseContributorSchema),
 ]);
 
+const imagePolicySchema = z.object({
+  heroInCard: z.boolean().default(true),
+  heroInDetail: z.boolean().default(true),
+  logoOrAvatarInCard: z.boolean().default(true),
+  logoOrAvatarInDetail: z.boolean().default(true),
+  logoOrAvatarOnHeroInCard: z.boolean().default(true),
+  logoOrAvatarOnHeroInDetail: z.boolean().default(true),
+  logoOrAvatarBackdropInCard: z.boolean().default(false),
+  logoOrAvatarBackdropInDetail: z.boolean().default(false),
+  logoOrAvatarBackdropInList: z.boolean().default(false),
+  showFallbackIcon: z.boolean().default(true),
+});
+
+const eventOrganizationSchema = z
+  .object({
+    organizationId: organizationIdSchema,
+    role: z.string().optional(),
+    note: z.string().optional(),
+  })
+  .merge(temporalMetadataSchema);
+
 // Proposed People Collection
 const people = defineCollection({
   loader: glob({ base: "./src/content/people", pattern: "**/*.{md,mdx}" }),
@@ -127,6 +148,7 @@ const people = defineCollection({
           hero: image().optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       boardMember: z.boolean().default(false),
       isContributor: z.boolean().default(false),
       isDonor: z.boolean().default(false),
@@ -173,6 +195,7 @@ const organizations = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       links: linksSchema.optional(),
       location: z.object({
         city: z.string(),
@@ -223,6 +246,7 @@ const hardware = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
@@ -268,6 +292,7 @@ const software = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
@@ -329,6 +354,7 @@ const research = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
       publishDate: z.string().or(z.date()).transform(parseDate).optional(),
@@ -388,10 +414,12 @@ const events = defineCollection({
           gallery: z.array(image()).optional(),
         })
         .optional(),
+      imagePolicy: imagePolicySchema.optional().default({}),
       links: linksSchema.optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
       topics: z.array(z.string()),
+      organizations: z.array(eventOrganizationSchema).optional(),
     }),
 });
 
