@@ -1,21 +1,20 @@
 ---
-import { type CollectionEntry, getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
 import { getAllOrganizations } from "@/data/organizations";
 import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import {
-  OrganizationDetail,
-  type KeyContact,
-} from "@/components/detail/views/OrganizationDetail";
+import { OrganizationDetail, type KeyContact } from "@/components/detail/views/OrganizationDetail";
+import { isDraftVisible } from "@/utils/drafts";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
 export async function getStaticPaths() {
   const organizations = await getCollection("organizations", ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
+    return isDraftVisible(data.draft);
   });
   const partners = organizations.filter((org) => org.data.isPartner);
   return partners.map((entry) => ({
@@ -106,8 +105,7 @@ const keyContacts: KeyContact[] = affiliatedPeople
           }
         : undefined,
     };
-  });
----
+  });---
 
 <html
   class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
