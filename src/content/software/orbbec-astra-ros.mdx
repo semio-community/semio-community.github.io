@@ -1,0 +1,78 @@
+---
+id: "orbbec-astra-ros"
+name: "Orbbec Astra ROS Driver"
+description: >-
+  An open-source, ROS-compatible driver and tooling stack that unlocks the full
+  RGB+D feature set of Orbbec's Astra sensor—publishing synchronized color,
+  infrared, depth, point cloud, colorized body mask, skeleton-tracking, and
+  hand-tracking streams for research and production robots.
+shortDescription: "ROS driver exposing every Astra RGB+D stream in one module."
+category: "library"
+status: "deprecated"
+license: "Apache-2.0"
+language:
+  - "C++"
+  - "Python"
+platform:
+  - "ROS 1"
+  - "Linux"
+requirements:
+  runtime:
+    - "ROS Noetic or Melodic"
+  hardware:
+    - "Orbbec Astra RGB+D camera"
+  dependencies:
+    - "Orbbec Astra SDK"
+    - "OpenNI2"
+features:
+  - "Simultaneous publication of RGB, IR, depth, and registered PointCloud2 topics."
+  - "Colorized body-mask stream aligned with depth data for segmentation."
+  - "Skeleton- and hand-tracking pipelines leveraging Orbbec middleware."
+  - "Dynamic reconfigure hooks for exposure, gain, and depth presets."
+  - "Calibration utilities for TF alignment and extrinsic refinement."
+  - "Launch files and demos for rapid integration on Quori and other robots."
+topics:
+  - "3D Vision"
+  - "Perception"
+  - "Depth Cameras"
+  - "ROS"
+links:
+  github: "https://github.com/semio-ai/astra_ros"
+  documentation: "https://github.com/semio-ai/astra_ros#readme"
+  website: "https://www.orbbec.com"
+images:
+  logo: "/src/assets/images/logos/orbbec.png"
+contributors:
+  - type: "organization"
+    organizationId: "semio-ai"
+    role: "Lead Developer"
+    primary: true
+  - type: "organization"
+    organizationId: "orbbec"
+    role: "Hardware Partner"
+featured: false
+---
+
+## Overview
+
+Semio partnered with Orbbec to create a ROS driver that exposes every Astra
+sensor modality through a single, well-documented module. The package supports
+out-of-the-box streaming of synchronized RGB, infrared, depth, point cloud, and
+segmentation data, plus higher-level skeleton and hand tracking outputs that
+enable expressive HRI use cases.
+
+## Official Orbbec Support
+
+Following deployments on Quori and other Semio-affiliated platforms, the module
+was adopted as Orbbec's official ROS package for Astra-class devices. The repo
+now anchors the shared maintenance pipeline, ensuring upstream SDK updates and
+community pull requests quickly reach production robots.
+
+## Integration Highlights
+
+- Drop-in launch files for Semio's demonstrations, with parameter presets for
+  labs and public showcases.
+- Utilities that colorize depth frames, align masks with TF trees, and capture
+  calibration snapshots for reproducible experiments.
+- Extensive topic documentation so researchers can subscribe only to the streams
+  they need while keeping the rest available for future behaviors.
