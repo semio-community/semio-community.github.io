@@ -40,6 +40,7 @@
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@semio-community/site-core": "file:../semio-site-core",
     "@shikijs/transformers": "^1.25.1",
     "@solar-icons/react-perf": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",

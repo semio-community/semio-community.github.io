@@ -160,13 +160,13 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 
 | ID | Workstream | Status | Task | Dependencies | Acceptance Check |
 |---|---|---|---|---|---|
-| T001 | WS1 | todo | Create package skeleton in `semio-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
-| T002 | WS1 | todo | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
+| T001 | WS1 | done | Create package skeleton in `semio-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
+| T002 | WS1 | in_progress | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
 | T004 | WS1 | todo | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
-| T005 | WS2 | todo | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
+| T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
 | T006 | WS2 | todo | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
-| T007 | WS3 | todo | Define site-visibility field contract and docs | none | Contract approved and committed |
+| T007 | WS3 | in_progress | Define site-visibility field contract and docs | none | Contract approved and committed |
 | T008 | WS3 | todo | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
 | T010 | WS4 | todo | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
@@ -179,7 +179,27 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
 | T018 | WS5 | todo | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
-| T020 | WS3 | todo | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
+| T020 | WS3 | in_progress | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
+
+## Progress Snapshot
+
+Completed since migration kickoff:
+
+- Created working package skeleton in `semio-site-core` with typed exports, build/check scripts, and GitHub Packages publish config.
+- Created working package skeleton in `semio-content-schema` with initial shared site-visibility contracts and validation helpers.
+- Created initial structure in `semio-content-hub` including draft visibility contract and sync model docs.
+
+Current active focus:
+
+- Begin extracting the first shared module slice (`navigation` and `layout`) into `semio-site-core`.
+- Replace duplicated schema entry points in site repos with `semio-content-schema` imports.
+
+Latest integration notes:
+
+- Introduced shared navigation/layout contracts in `semio-site-core` and exported them from the package entrypoint.
+- Updated `semio-community` to consume shared navigation types from `@semio-community/site-core` in `src/site.config.ts`.
+- Added local workspace dependency wiring in `semio-community` (`file:../semio-site-core`) to validate package-consumption flow before publishing.
+- Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
 
 ## Sequencing Plan
 
@@ -308,6 +328,8 @@ Verification requirements:
 |---|---|---|---|
 | 2026-02-19 | Create three shared repos (`semio-site-core`, `semio-content-schema`, `semio-content-hub`) | Separate code reuse, schema governance, and content ownership concerns | team |
 | 2026-02-19 | Start migration branch from `semio-community` | Use semio as lead integration path before propagating to quori/vizij | team |
+| 2026-02-20 | Use GitHub Packages for shared code/schema distribution (`site-core`, `content-schema`) | Enables versioned dependency updates and Actions-driven synchronization across orgs | team |
+| 2026-02-20 | Keep high-customization site features local (for example Quori configurator) | Preserves site autonomy while shared core handles reusable concerns | team |
 
 ## Immediate Next Actions
 
