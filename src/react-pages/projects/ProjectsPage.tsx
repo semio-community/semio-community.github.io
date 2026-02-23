@@ -110,6 +110,7 @@ export default function ProjectsPage({ projectsPayload }: ProjectsPageProps) {
       <HeroHeader
         fullBleed
         fullBleedClassName="relative mb-8 sm:mb-12"
+        showGlyphField={false}
         icon={<TestTube className="w-16 h-16 text-accent-two" />}
         title={meta.title}
         description={meta.description}
