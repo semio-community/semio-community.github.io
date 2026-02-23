@@ -114,7 +114,7 @@ export default function SiteLayout({
           {/* Main container */}
           <div id="container" className={containerClass}>
             <div className={contentGridClass}>
-              <main id="main" className="relative flex-grow" data-pagefind-body>
+              <main id="main" className="relative grow" data-pagefind-body>
                 {children}
               </main>
 
