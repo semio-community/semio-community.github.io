@@ -163,10 +163,10 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T001 | WS1 | done | Create package skeleton in `semio-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
 | T002 | WS1 | in_progress | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
-| T004 | WS1 | todo | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
+| T004 | WS1 | in_progress | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
 | T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
 | T006 | WS2 | todo | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
-| T007 | WS3 | in_progress | Define site-visibility field contract and docs | none | Contract approved and committed |
+| T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
 | T008 | WS3 | todo | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
 | T010 | WS4 | todo | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
@@ -179,7 +179,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
 | T018 | WS5 | todo | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
-| T020 | WS3 | in_progress | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
+| T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
 
 ## Progress Snapshot
 
@@ -204,6 +204,8 @@ Latest integration notes:
 - Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `semio-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
 - Extracted reusable `SiteLayout` class-composition helpers into `semio-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `semio-site-core` and switched `semio-community` `navIcons` to consume it.
+- Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `semio-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
+- Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
 
 ## Sequencing Plan
 
