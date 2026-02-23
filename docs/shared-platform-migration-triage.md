@@ -200,6 +200,7 @@ Latest integration notes:
 - Updated `semio-community` to consume shared navigation types from `@semio-community/site-core` in `src/site.config.ts`.
 - Added local workspace dependency wiring in `semio-community` (`file:../semio-site-core`) to validate package-consumption flow before publishing.
 - Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
+- Extracted reusable navigation runtime helpers into `semio-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
 
 ## Sequencing Plan
 

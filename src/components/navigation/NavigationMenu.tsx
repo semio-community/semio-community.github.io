@@ -8,6 +8,7 @@ import {
   getNavHighlightClasses,
 } from "@/components/navigation/navVariant";
 import { url as buildUrl } from "@/utils/url";
+import { getActiveHeaderPath } from "@semio-community/site-core";
 import type {
   FeaturedSection,
   LinkSection,
@@ -55,39 +56,12 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   const getFieldValue = (value: string | number | undefined) =>
     value === undefined ? "" : String(value);
 
-  // Robust path normalization and active detection
-  const normalize = (p: string | undefined) => {
-    if (!p) return "/";
-    const withoutQuery = p.split("?")[0]!.split("#")[0]!;
-    let s = withoutQuery;
-    if (!s.startsWith("/")) s = `/${s}`;
-    if (s !== "/" && s.endsWith("/")) s = s.slice(0, -1);
-    return s;
-  };
-
-  // Determine a single active header link via longest prefix match
-  const activeHeaderPath = (() => {
-    const cur = normalize(currentPath);
-    let bestPath = "";
-    let bestLen = -1;
-    for (const link of menuLinks.filter((l) => l.inHeader)) {
-      const base = normalize(link.path);
-      const matches =
-        (base === "/" && cur === "/") ||
-        (base !== "/" && (cur === base || cur.startsWith(`${base}/`)));
-      if (matches && base.length > bestLen) {
-        bestPath = link.path;
-        bestLen = base.length;
-      }
-    }
-    return bestPath;
-  })();
+  // Determine a single active header link via longest prefix match.
+  const activeHeaderPath = getActiveHeaderPath(menuLinks, currentPath);
 
   // Fallback if no menu links
   if (!menuLinks || menuLinks.length === 0) {
-    return (
-      <div className={navHighlight.text}>Loading navigation...</div>
-    );
+    return <div className={navHighlight.text}>Loading navigation...</div>;
   }
 
   return (
