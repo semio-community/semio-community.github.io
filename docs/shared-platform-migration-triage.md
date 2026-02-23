@@ -165,7 +165,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
 | T004 | WS1 | in_progress | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
 | T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
-| T006 | WS2 | todo | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
+| T006 | WS2 | in_progress | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
 | T008 | WS3 | in_progress | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
@@ -211,6 +211,7 @@ Latest integration notes:
 - Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `semio-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
+- Moved the Decap CMS config generator implementation into `semio-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
 - Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
 
