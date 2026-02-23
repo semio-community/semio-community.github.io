@@ -1,5 +1,10 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import {
+  SITE_KEYS,
+  assertValidSiteOverrides,
+  assertValidVisibility,
+} from "@semio-community/content-schema";
 
 function removeDupsAndLowerCase(array: string[]) {
   return [...new Set(array.map((str) => str.toLowerCase()))];
@@ -73,6 +78,42 @@ const linksSchema = z.object({
 });
 
 const contributorRoleSchema = z.string().min(1);
+
+const siteKeySchema = z.enum(SITE_KEYS);
+
+const siteVisibilitySchema = z
+  .object({
+    sites: z.array(siteKeySchema).min(1),
+  })
+  .superRefine((value, ctx) => {
+    try {
+      assertValidVisibility(value);
+    } catch (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          error instanceof Error ? error.message : "Invalid site visibility.",
+      });
+    }
+  });
+
+const siteOverridePatchSchema = z.record(z.string(), z.unknown());
+
+const siteOverridesSchema = z
+  .record(siteKeySchema, siteOverridePatchSchema)
+  .superRefine((value, ctx) => {
+    try {
+      assertValidSiteOverrides(value);
+    } catch (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Invalid site override keys.",
+      });
+    }
+  });
 
 const baseContributorSchema = z
   .object({
@@ -213,6 +254,8 @@ const organizations = defineCollection({
       }),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      visibility: siteVisibilitySchema.optional(),
+      overrides: siteOverridesSchema.optional(),
       order: z.number().default(999),
     }),
 });
@@ -306,6 +349,8 @@ const software = defineCollection({
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      visibility: siteVisibilitySchema.optional(),
+      overrides: siteOverridesSchema.optional(),
       publishDate: z
         .string()
         .or(z.date())
@@ -394,11 +439,7 @@ const events = defineCollection({
         .or(z.date())
         .transform(parseDate)
         .optional(),
-      notificationDate: z
-        .string()
-        .or(z.date())
-        .transform(parseDate)
-        .optional(),
+      notificationDate: z.string().or(z.date()).transform(parseDate).optional(),
       location: z.object({
         venue: z.string().optional(),
         city: z.string(),

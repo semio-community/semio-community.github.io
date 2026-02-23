@@ -167,7 +167,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
 | T006 | WS2 | todo | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
-| T008 | WS3 | todo | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
+| T008 | WS3 | in_progress | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
 | T010 | WS4 | todo | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
 | T011 | WS4 | todo | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
@@ -205,7 +205,10 @@ Latest integration notes:
 - Extracted reusable `SiteLayout` class-composition helpers into `semio-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `semio-site-core` and switched `semio-community` `navIcons` to consume it.
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `semio-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
+- Extracted shared draft-visibility helpers into `semio-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
+- Wired `semio-community` content schema to consume `@semio-community/content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
+- Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
 
 ## Sequencing Plan
 
