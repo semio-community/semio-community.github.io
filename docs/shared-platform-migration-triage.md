@@ -214,6 +214,7 @@ Latest integration notes:
 - Moved the Decap CMS config generator implementation into `semio-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
 - Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
+- Added `semio-community` content-hub sync adapter script (`scripts/sync-content-hub-organizations.mjs`) to pull `semio`-visible organizations from `semio-content-hub` and apply sparse `overrides.semio` patches into site-local content files as a migration bridge.
 
 ## Sequencing Plan
 
