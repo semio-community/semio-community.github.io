@@ -114,7 +114,7 @@ export default function SiteLayout({
                 noPaddingTop ? "" : "pt-[72px] lg:pt-4"
               }`}
             >
-              <main id="main" className="relative flex-grow" data-pagefind-body>
+              <main id="main" className="relative grow" data-pagefind-body>
                 {children}
               </main>
 
