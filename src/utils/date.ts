@@ -1,3 +1,4 @@
+import { parseDateLocal } from "@semio-community/site-core";
 import type { CollectionEntry } from "astro:content";
 import { siteConfig } from "@/site.config";
 
@@ -147,31 +148,7 @@ export function getFormattedDate(
   return formatDateWithParts(date, locale, formatOptions);
 }
 
-/**
- * Parse a date-only value (YYYY-MM-DD) as a local calendar date to avoid
- * timezone shifts. Falls back to the native Date constructor if the string
- * is not in date-only form.
- */
-export function parseDateLocal(value?: string | number | Date | null): Date {
-  if (value instanceof Date) {
-    return new Date(
-      value.getUTCFullYear(),
-      value.getUTCMonth(),
-      value.getUTCDate(),
-    );
-  }
-  if (value === undefined || value === null) return new Date(NaN);
-  if (typeof value === "number") return new Date(value);
-
-  const stringValue = String(value);
-  const isoMatch = stringValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (isoMatch) {
-    const [, year, month, day] = isoMatch;
-    return new Date(Number(year), Number(month) - 1, Number(day));
-  }
-
-  return new Date(stringValue);
-}
+export { parseDateLocal };
 
 export function collectionDateSort<T extends CollectionEntry<any>>(
   a: T & { data: { publishDate: Date } },

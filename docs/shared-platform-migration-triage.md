@@ -206,9 +206,11 @@ Latest integration notes:
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `semio-site-core` and switched `semio-community` `navIcons` to consume it.
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `semio-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
 - Extracted shared draft-visibility helpers into `semio-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
+- Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `semio-site-core` and switched `semio-community` date/event utility modules to consume them.
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
+- Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
 
 ## Sequencing Plan
 

@@ -1,3 +1,4 @@
+import { getEventPreviewDescription, getLocationString } from "@semio-community/site-core";
 import { getFormattedDateRanges, parseDateLocal } from "./date";
 
 interface PartialEvent {
@@ -19,32 +20,7 @@ export function getEventPreviewDescriptionText(event: PartialEvent): string {
 
   const dateString = getFormattedDateRanges(start, end);
 
-  return getDescription(dateString, event.description, locationString);
+  return getEventPreviewDescription(dateString, event.description, locationString);
 }
 
-export function getLocationString(location?: {
-  city?: string;
-  country?: string;
-  online?: boolean;
-}): string | undefined {
-  if (!location) return undefined;
-  if (location.city && location.country)
-    return `${location.city}, ${location.country}`;
-  if (location.country) return location.country;
-  if (location.online) return "Online";
-  return undefined;
-}
-
-function getDescription(
-  dateString: string,
-  descriptionString?: string,
-  locationString?: string,
-): string {
-  if (locationString) {
-    return `${dateString} • ${locationString}`;
-  } else if (descriptionString) {
-    return `${dateString} • ${descriptionString}`;
-  } else {
-    return dateString;
-  }
-}
+export { getLocationString };
