@@ -8,24 +8,18 @@ import {
   getNavHighlightClasses,
 } from "@/components/navigation/navVariant";
 import { url as buildUrl } from "@/utils/url";
-import { getActiveHeaderPath } from "@semio-community/site-core";
-import type {
-  FeaturedSection,
-  LinkSection,
-  NavCollections,
-  Section,
-} from "@/site.config";
+import {
+  getActiveHeaderPath,
+  getFeaturedSections,
+  getFieldValue,
+  getLinkSections,
+  type MenuLink,
+} from "@semio-community/site-core";
+import type { NavCollections } from "@/site.config";
 
 interface NavigationMenuProps {
   currentPath: string;
-  menuLinks: Array<{
-    path: string;
-    title: string;
-    inHeader: boolean;
-    callToAction?: boolean;
-    dropdownSubtitle?: string;
-    sections?: Section[];
-  }>;
+  menuLinks: MenuLink[];
   navCollections: NavCollections;
   urlPrefix: string;
 }
@@ -45,16 +39,6 @@ export const NavigationMenuComponent: React.FC<NavigationMenuProps> = ({
   const url = (path: string) => makeUrl(path, urlPrefix);
   const navHighlight = getNavHighlightClasses();
   const ctaVariant = getNavCtaVariant();
-  const getLinkSections = (sections?: Section[]) =>
-    (sections ?? []).filter(
-      (section): section is LinkSection => section.kind === "link",
-    );
-  const getFeaturedSections = (sections?: Section[]) =>
-    (sections ?? []).filter(
-      (section): section is FeaturedSection => section.kind === "featured",
-    );
-  const getFieldValue = (value: string | number | undefined) =>
-    value === undefined ? "" : String(value);
 
   // Determine a single active header link via longest prefix match.
   const activeHeaderPath = getActiveHeaderPath(menuLinks, currentPath);

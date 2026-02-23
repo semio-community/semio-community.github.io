@@ -201,6 +201,7 @@ Latest integration notes:
 - Added local workspace dependency wiring in `semio-community` (`file:../semio-site-core`) to validate package-consumption flow before publishing.
 - Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
 - Extracted reusable navigation runtime helpers into `semio-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
+- Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `semio-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
 
 ## Sequencing Plan
 
