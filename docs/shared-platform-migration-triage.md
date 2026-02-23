@@ -207,6 +207,7 @@ Latest integration notes:
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `semio-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
 - Extracted shared draft-visibility helpers into `semio-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
 - Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `semio-site-core` and switched `semio-community` date/event utility modules to consume them.
+- Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `semio-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
