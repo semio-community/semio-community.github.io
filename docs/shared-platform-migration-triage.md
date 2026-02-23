@@ -203,6 +203,7 @@ Latest integration notes:
 - Extracted reusable navigation runtime helpers into `semio-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
 - Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `semio-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
 - Extracted reusable `SiteLayout` class-composition helpers into `semio-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
+- Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `semio-site-core` and switched `semio-community` `navIcons` to consume it.
 
 ## Sequencing Plan
 
