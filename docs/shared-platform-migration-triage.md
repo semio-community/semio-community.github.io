@@ -168,7 +168,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T006 | WS2 | done | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
 | T008 | WS3 | in_progress | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
-| T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
+| T009 | WS3 | in_progress | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
 | T010 | WS4 | todo | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
 | T011 | WS4 | todo | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
 | T012 | WS4 | todo | Wire quori site to shared packages + content hub | T010 | `npm run build` passes and platform pages still work |
@@ -218,6 +218,8 @@ Latest integration notes:
 - Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
 - Added `semio-community` content-hub sync adapter script (`scripts/sync-content-hub-organizations.mjs`) to pull `semio`-visible organizations from `semio-content-hub` and apply sparse `overrides.semio` patches into site-local content files as a migration bridge.
 - Standardized site/domain inclusion across all three site repos using first-class `sites` frontmatter in all collections (separate from `draft`) and updated collection filtering to enforce `siteKey` visibility consistently.
+- Imported unified events collection into `semio-content-hub/content/events` (45 entries with computed `sites` visibility from semio/quori/vizij presence).
+- Added `semio-community` events sync adapter (`scripts/sync-content-hub-events.mjs`) and wired package scripts to pull only `semio`-visible events from the hub while pruning non-visible local copies.
 
 ## Sequencing Plan
 
