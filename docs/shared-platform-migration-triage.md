@@ -193,7 +193,7 @@ Current active focus:
 
 - Continue utility/module extraction in `semio-site-core` (WS1/T004) while keeping semio build parity.
 - Continue schema contract consolidation in `semio-content-schema` (WS2/T005).
-- Prepare semio adapter wiring to consume `semio-content-hub` organizations data (WS3/T008 -> WS4/T010 path).
+- Begin WS5 operationalization: versioning/release workflow, cross-repo smoke CI, and automated update PR flows.
 
 Latest integration notes:
 
