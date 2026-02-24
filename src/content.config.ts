@@ -205,6 +205,7 @@ const people = defineCollection({
       isDonor: z.boolean().default(false),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
     }),
 });
 
@@ -254,6 +255,7 @@ const organizations = defineCollection({
       }),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
       visibility: siteVisibilitySchema.optional(),
       overrides: siteOverridesSchema.optional(),
       order: z.number().default(999),
@@ -303,6 +305,7 @@ const hardware = defineCollection({
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
     }),
 });
 
@@ -349,6 +352,7 @@ const software = defineCollection({
       contributors: z.array(contributorSchema).optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
       visibility: siteVisibilitySchema.optional(),
       overrides: siteOverridesSchema.optional(),
       publishDate: z
@@ -412,6 +416,7 @@ const research = defineCollection({
       imagePolicy: imagePolicySchema.optional().default({}),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
       publishDate: z.string().or(z.date()).transform(parseDate).optional(),
     }),
 });
@@ -480,6 +485,7 @@ const events = defineCollection({
       links: linksSchema.optional(),
       featured: z.boolean().default(false),
       draft: z.boolean().optional(),
+      sites: z.array(siteKeySchema).min(1).optional(),
       topics: z.array(z.string()),
       organizations: z.array(eventOrganizationSchema).optional(),
     }),

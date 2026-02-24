@@ -165,7 +165,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
 | T004 | WS1 | in_progress | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
 | T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
-| T006 | WS2 | in_progress | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
+| T006 | WS2 | done | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
 | T008 | WS3 | in_progress | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | todo | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
@@ -192,7 +192,7 @@ Completed since migration kickoff:
 Current active focus:
 
 - Continue utility/module extraction in `semio-site-core` (WS1/T004) while keeping semio build parity.
-- Start schema generator consolidation in `semio-content-schema` (WS2/T006).
+- Continue schema contract consolidation in `semio-content-schema` (WS2/T005).
 - Prepare semio adapter wiring to consume `semio-content-hub` organizations data (WS3/T008 -> WS4/T010 path).
 
 Latest integration notes:
@@ -212,9 +212,12 @@ Latest integration notes:
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
 - Moved the Decap CMS config generator implementation into `semio-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
+- Updated `quori-robot.github.io` and `vizij-ai.github.io` Decap generator scripts to the same thin-wrapper pattern against `@semio-community/content-schema`.
+- Added local workspace dependency wiring to both `quori-robot.github.io` and `vizij-ai.github.io` (`file:../semio-content-schema`) and validated `npm run cms:config` + `npm run build:site` in both repos.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
 - Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
 - Added `semio-community` content-hub sync adapter script (`scripts/sync-content-hub-organizations.mjs`) to pull `semio`-visible organizations from `semio-content-hub` and apply sparse `overrides.semio` patches into site-local content files as a migration bridge.
+- Standardized site/domain inclusion across all three site repos using first-class `sites` frontmatter in all collections (separate from `draft`) and updated collection filtering to enforce `siteKey` visibility consistently.
 
 ## Sequencing Plan
 

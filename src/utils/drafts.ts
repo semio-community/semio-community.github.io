@@ -3,6 +3,10 @@ import {
   shouldShowDrafts as resolveDraftFlag,
 } from "@semio-community/site-core";
 
+type SiteKey = "semio" | "quori" | "vizij";
+
+const SITE_KEY: SiteKey = "semio";
+
 export function shouldShowDrafts(): boolean {
   return resolveDraftFlag({
     isProd: import.meta.env.PROD,
@@ -14,6 +18,13 @@ export function shouldShowDrafts(): boolean {
   });
 }
 
-export function isDraftVisible(draft?: boolean): boolean {
+export function isDraftVisible(
+  draft?: boolean,
+  sites?: readonly SiteKey[],
+): boolean {
+  if (sites && sites.length > 0 && !sites.includes(SITE_KEY)) {
+    return false;
+  }
+
   return resolveDraftVisibility(draft, shouldShowDrafts());
 }
