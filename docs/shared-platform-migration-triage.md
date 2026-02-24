@@ -167,11 +167,11 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
 | T006 | WS2 | done | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
-| T008 | WS3 | in_progress | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
+| T008 | WS3 | done | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | done | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
-| T010 | WS4 | in_progress | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
-| T011 | WS4 | todo | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
-| T012 | WS4 | todo | Wire quori site to shared packages + content hub | T010 | `npm run build` passes and platform pages still work |
+| T010 | WS4 | done | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
+| T011 | WS4 | done | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
+| T012 | WS4 | done | Wire quori site to shared packages + content hub | T010 | `npm run build` passes and platform pages still work |
 | T013 | WS5 | todo | Define semver and release workflow for shared repos | T010 | Release checklist merged |
 | T014 | WS5 | todo | Add cross-repo smoke CI matrix | T013 | CI green on sample PR |
 | T015 | WS5 | todo | Write "add a new site" playbook | T010,T013 | Dry-run with template repo succeeds |
@@ -223,6 +223,8 @@ Latest integration notes:
 - Imported remaining shared collections into `semio-content-hub` with computed `sites` visibility (`people` 25, `software` 3, `hardware` 6, `research` 11).
 - Added semio sync bridge for remaining collections (`scripts/sync-content-hub-collections.mjs`) and package scripts to sync/prune `people`, `software`, `hardware`, and `research` from the hub.
 - Verified semio build parity after organizations/events + remaining collection sync bridges (`npm run build:site` passes on migration branch).
+- Added hub sync bridge script to `vizij-ai.github.io` and `quori-robot.github.io` (`scripts/sync-content-hub.mjs`) to sync/prune all migrated collections (`organizations`, `events`, `people`, `software`, `hardware`, `research`) from `semio-content-hub`.
+- Added `content:sync:hub` npm script in vizij/quori and validated with `npm run content:sync:hub` + `npm run build:site` in both repos.
 
 ## Sequencing Plan
 
