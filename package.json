@@ -23,9 +23,13 @@
     "cms:preview": "vite build --config vite.cms.config.mjs",
     "cms:copy-assets": "node scripts/copy-admin-assets.mjs",
     "cms:config": "node scripts/generate-decap-config.mjs",
+    "content:import:collections-hub": "node scripts/import-content-hub-collections.mjs",
     "content:import:events-hub": "node scripts/import-content-hub-events.mjs",
+    "content:import:all-hub": "npm run content:import:events-hub && npm run content:import:collections-hub",
+    "content:sync:collections": "node scripts/sync-content-hub-collections.mjs",
     "content:sync:organizations": "node scripts/sync-content-hub-organizations.mjs",
-    "content:sync:events": "node scripts/sync-content-hub-events.mjs"
+    "content:sync:events": "node scripts/sync-content-hub-events.mjs",
+    "content:sync:all": "npm run content:sync:organizations && npm run content:sync:events && npm run content:sync:collections"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.10",
