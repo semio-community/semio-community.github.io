@@ -173,7 +173,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T011 | WS4 | done | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
 | T012 | WS4 | done | Wire quori site to shared packages + content hub | T010 | `npm run build` passes and platform pages still work |
 | T013 | WS5 | todo | Define semver and release workflow for shared repos | T010 | Release checklist merged |
-| T014 | WS5 | todo | Add cross-repo smoke CI matrix | T013 | CI green on sample PR |
+| T014 | WS5 | in_progress | Add cross-repo smoke CI matrix | T013 | CI green on sample PR |
 | T015 | WS5 | todo | Write "add a new site" playbook | T010,T013 | Dry-run with template repo succeeds |
 | T016 | WS5 | todo | Publish `semio-site-core` and `semio-content-schema` to GitHub Packages | T013 | Tagged release is installable from all 3 site repos |
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
@@ -225,6 +225,7 @@ Latest integration notes:
 - Verified semio build parity after organizations/events + remaining collection sync bridges (`npm run build:site` passes on migration branch).
 - Added hub sync bridge script to `vizij-ai.github.io` and `quori-robot.github.io` (`scripts/sync-content-hub.mjs`) to sync/prune all migrated collections (`organizations`, `events`, `people`, `software`, `hardware`, `research`) from `semio-content-hub`.
 - Added `content:sync:hub` npm script in vizij/quori and validated with `npm run content:sync:hub` + `npm run build:site` in both repos.
+- Added initial smoke CI workflows in all three site repos (`.github/workflows/smoke.yml`) to run install + CMS config generation + site build checks on PRs/pushes.
 
 ## Sequencing Plan
 
