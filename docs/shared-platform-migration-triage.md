@@ -177,7 +177,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T015 | WS5 | todo | Write "add a new site" playbook | T010,T013 | Dry-run with template repo succeeds |
 | T016 | WS5 | todo | Publish `@semio/ecosystem-site-core` and `@semio/ecosystem-content-schema` to npm | T013 | Tagged release is installable from all 3 site repos |
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
-| T018 | WS5 | todo | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
+| T018 | WS5 | in_progress | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
 
@@ -226,6 +226,8 @@ Latest integration notes:
 - Added hub sync bridge script to `vizij-ai.github.io` and `quori-robot.github.io` (`scripts/sync-content-hub.mjs`) to sync/prune all migrated collections (`organizations`, `events`, `people`, `software`, `hardware`, `research`) from `semio-content-hub`.
 - Added `content:sync:hub` npm script in vizij/quori and validated with `npm run content:sync:hub` + `npm run build:site` in both repos.
 - Added initial smoke CI workflows in all three site repos (`.github/workflows/smoke.yml`) to run install + CMS config generation + site build checks on PRs/pushes.
+- Extended site smoke CI workflows with manual branch-safe hub-sync testing controls (`enable_hub_sync`, `hub_repo`, `hub_ref`, optional dirty-tree check) so migration can be validated on branches before cutover.
+- Added `semio-content-hub` fanout workflow (`.github/workflows/sync-site-prs.yml`) with dry-run default and branch-targeted PR mode for semio/quori/vizij sync validation.
 
 ## Sequencing Plan
 
