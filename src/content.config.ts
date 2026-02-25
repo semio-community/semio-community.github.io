@@ -4,7 +4,7 @@ import {
   SITE_KEYS,
   assertValidSiteOverrides,
   assertValidVisibility,
-} from "@semio-community/content-schema";
+} from "@semio/ecosystem-content-schema";
 
 function removeDupsAndLowerCase(array: string[]) {
   return [...new Set(array.map((str) => str.toLowerCase()))];

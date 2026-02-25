@@ -6,7 +6,7 @@ import {
   type NavCtaVariant,
   type NavHighlightClasses,
   type NavHighlightVariant,
-} from "@semio-community/site-core";
+} from "@semio/ecosystem-site-core";
 
 export const resolveNavHighlightVariant = (
   override?: NavHighlightVariant,

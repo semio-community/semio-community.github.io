@@ -1,4 +1,4 @@
-import { parseDateLocal } from "@semio-community/site-core";
+import { parseDateLocal } from "@semio/ecosystem-site-core";
 import type { CollectionEntry } from "astro:content";
 import { siteConfig } from "@/site.config";
 

@@ -6,7 +6,7 @@ import type {
   NavCollectionKey,
   NavCollections,
   Section as CoreSection,
-} from "@semio-community/site-core";
+} from "@semio/ecosystem-site-core";
 
 export const siteConfig: SiteConfig = {
   // Used as both a meta property (src/components/BaseHead.astro L:31 + L:49) & the generated satori png (src/pages/og-image/[slug].png.ts)
