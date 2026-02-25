@@ -5,7 +5,15 @@ import path from "node:path";
 import YAML from "yaml";
 
 const root = process.cwd();
-const hubRoot = path.join(root, "../semio-content-hub/content");
+function resolveHubContentRoot() {
+  const candidates = [
+    path.join(root, "../ecosystem-content-hub/content"),
+    path.join(root, "../semio-content-hub/content"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+const hubRoot = resolveHubContentRoot();
 const collectionKeys = ["people", "software", "hardware", "research"];
 const sourceRoots = {
   semio: path.join(root, "src/content"),
@@ -46,13 +54,22 @@ function getContentFiles(directory) {
 
 let totalImported = 0;
 
+if (!hubRoot) {
+  console.error(
+    `Content hub folder not found. Checked ../ecosystem-content-hub/content and ../semio-content-hub/content from ${root}.`,
+  );
+  process.exit(1);
+}
+
 for (const collectionKey of collectionKeys) {
   const hubDir = path.join(hubRoot, collectionKey);
   fs.mkdirSync(hubDir, { recursive: true });
 
   const fileNames = new Set();
   for (const sourceRoot of Object.values(sourceRoots)) {
-    for (const fileName of getContentFiles(path.join(sourceRoot, collectionKey))) {
+    for (const fileName of getContentFiles(
+      path.join(sourceRoot, collectionKey),
+    )) {
       fileNames.add(fileName);
     }
   }
@@ -65,7 +82,8 @@ for (const collectionKey of collectionKeys) {
     if (availableSites.length === 0) continue;
 
     const canonicalSite =
-      availableSites.find((siteKey) => siteKey === "semio") || availableSites[0];
+      availableSites.find((siteKey) => siteKey === "semio") ||
+      availableSites[0];
     const canonicalPath = path.join(
       sourceRoots[canonicalSite],
       collectionKey,
@@ -82,7 +100,11 @@ for (const collectionKey of collectionKeys) {
     delete mergedData.overrides;
 
     const targetPath = path.join(hubDir, fileName);
-    fs.writeFileSync(targetPath, stringifyFrontmatter(mergedData, body), "utf8");
+    fs.writeFileSync(
+      targetPath,
+      stringifyFrontmatter(mergedData, body),
+      "utf8",
+    );
     written.add(fileName);
     totalImported += 1;
   }

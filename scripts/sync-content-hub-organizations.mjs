@@ -5,7 +5,18 @@ import path from "node:path";
 import YAML from "yaml";
 
 const root = process.cwd();
-const sourceDir = path.join(root, "../semio-content-hub/content/organizations");
+function resolveHubContentRoot() {
+  const candidates = [
+    path.join(root, "../ecosystem-content-hub/content"),
+    path.join(root, "../semio-content-hub/content"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+const hubContentRoot = resolveHubContentRoot();
+const sourceDir = hubContentRoot
+  ? path.join(hubContentRoot, "organizations")
+  : "";
 const targetDir = path.join(root, "src/content/organizations");
 const siteKey = "semio";
 
@@ -30,7 +41,9 @@ function stringifyFrontmatter(data, body) {
 }
 
 if (!fs.existsSync(sourceDir)) {
-  console.error(`Content hub organizations folder not found: ${sourceDir}`);
+  console.error(
+    `Content hub organizations folder not found. Checked ../ecosystem-content-hub/content and ../semio-content-hub/content from ${root}.`,
+  );
   process.exit(1);
 }
 

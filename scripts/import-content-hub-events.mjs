@@ -5,7 +5,16 @@ import path from "node:path";
 import YAML from "yaml";
 
 const root = process.cwd();
-const hubEventsDir = path.join(root, "../semio-content-hub/content/events");
+function resolveHubContentRoot() {
+  const candidates = [
+    path.join(root, "../ecosystem-content-hub/content"),
+    path.join(root, "../semio-content-hub/content"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+const hubContentRoot = resolveHubContentRoot();
+const hubEventsDir = hubContentRoot ? path.join(hubContentRoot, "events") : "";
 const siteSourceDirs = {
   semio: path.join(root, "src/content/events"),
   quori: path.join(root, "../quori-robot.github.io/src/content/events"),
@@ -36,6 +45,13 @@ function stringifyFrontmatter(data, body) {
 function readIfExists(filePath) {
   if (!fs.existsSync(filePath)) return undefined;
   return fs.readFileSync(filePath, "utf8");
+}
+
+if (!hubContentRoot) {
+  console.error(
+    `Content hub folder not found. Checked ../ecosystem-content-hub/content and ../semio-content-hub/content from ${root}.`,
+  );
+  process.exit(1);
 }
 
 if (!fs.existsSync(hubEventsDir)) {
@@ -92,6 +108,4 @@ for (const existingName of fs.readdirSync(hubEventsDir)) {
   fs.unlinkSync(path.join(hubEventsDir, existingName));
 }
 
-console.log(
-  `Imported ${written.size} event entries into semio-content-hub/content/events.`,
-);
+console.log(`Imported ${written.size} event entries into ${hubEventsDir}.`);
