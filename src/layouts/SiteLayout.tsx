@@ -3,7 +3,7 @@ import ParallaxHexBackground from "@/components/background/ParallaxHexBackground
 import {
   getSiteLayoutContainerClass,
   getSiteLayoutContentGridClass,
-} from "@semio/ecosystem-site-core";
+} from "@semio-community/ecosystem-site-core";
 
 /**
  * BaseLayout.tsx

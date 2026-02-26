@@ -6,7 +6,7 @@ import {
   UserPlusRounded,
   Document2,
 } from "@solar-icons/react-perf/LineDuotone";
-import { mapSlugKeysToRouteKeys } from "@semio/ecosystem-site-core";
+import { mapSlugKeysToRouteKeys } from "@semio-community/ecosystem-site-core";
 import type { ComponentType, SVGProps } from "react";
 
 export type NavigationIcon = ComponentType<SVGProps<SVGSVGElement>>;

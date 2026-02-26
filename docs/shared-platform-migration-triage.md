@@ -68,7 +68,7 @@ Working branch for this plan and migration start:
 ### Sync and Build Strategy
 
 - Shared logic and schema are consumed as versioned dependencies, not submodules.
-- `semio-site-core` and `semio-content-schema` are published to npm under the `@semio` scope.
+- `semio-site-core` and `semio-content-schema` are published to GitHub Packages under the `@semio-community` scope.
 - Site repos receive dependency update PRs (scheduled or dispatch-triggered); merge triggers existing Pages builds.
 - `semio-content-hub` is the content source-of-truth and is synced into site repos through automated PR workflows (or later as versioned snapshots).
 - Deterministic builds are required; deploy and preview workflows should both use lockfile-based installs (`npm ci`).
@@ -175,7 +175,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T013 | WS5 | todo | Define semver and release workflow for shared repos | T010 | Release checklist merged |
 | T014 | WS5 | in_progress | Add cross-repo smoke CI matrix | T013 | CI green on sample PR |
 | T015 | WS5 | todo | Write "add a new site" playbook | T010,T013 | Dry-run with template repo succeeds |
-| T016 | WS5 | todo | Publish `@semio/ecosystem-site-core` and `@semio/ecosystem-content-schema` to npm | T013 | Tagged release is installable from all 3 site repos |
+| T016 | WS5 | todo | Publish `@semio-community/ecosystem-site-core` and `@semio-community/ecosystem-content-schema` to GitHub Packages | T013 | Tagged release is installable from all 3 site repos |
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
 | T018 | WS5 | in_progress | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
@@ -198,7 +198,7 @@ Current active focus:
 Latest integration notes:
 
 - Introduced shared navigation/layout contracts in `semio-site-core` and exported them from the package entrypoint.
-- Updated `semio-community` to consume shared navigation types from `@semio/ecosystem-site-core` in `src/site.config.ts`.
+- Updated `semio-community` to consume shared navigation types from `@semio-community/ecosystem-site-core` in `src/site.config.ts`.
 - Added local workspace dependency wiring in `semio-community` (`file:../semio-site-core`) to validate package-consumption flow before publishing.
 - Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
 - Extracted reusable navigation runtime helpers into `semio-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
@@ -210,9 +210,9 @@ Latest integration notes:
 - Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `semio-site-core` and switched `semio-community` date/event utility modules to consume them.
 - Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `semio-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
 - Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
-- Wired `semio-community` content schema to consume `@semio/ecosystem-content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
+- Wired `semio-community` content schema to consume `@semio-community/ecosystem-content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
 - Moved the Decap CMS config generator implementation into `semio-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
-- Updated `quori-robot.github.io` and `vizij-ai.github.io` Decap generator scripts to the same thin-wrapper pattern against `@semio/ecosystem-content-schema`.
+- Updated `quori-robot.github.io` and `vizij-ai.github.io` Decap generator scripts to the same thin-wrapper pattern against `@semio-community/ecosystem-content-schema`.
 - Added local workspace dependency wiring to both `quori-robot.github.io` and `vizij-ai.github.io` (`file:../semio-content-schema`) and validated `npm run cms:config` + `npm run build:site` in both repos.
 - Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
 - Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
@@ -356,9 +356,9 @@ Verification requirements:
 |---|---|---|---|
 | 2026-02-19 | Create three shared repos (`semio-site-core`, `semio-content-schema`, `semio-content-hub`) | Separate code reuse, schema governance, and content ownership concerns | team |
 | 2026-02-19 | Start migration branch from `semio-community` | Use semio as lead integration path before propagating to quori/vizij | team |
-| 2026-02-20 | Use npm package distribution for shared code/schema under `@semio` scope (`@semio/ecosystem-site-core`, `@semio/ecosystem-content-schema`) | Enables versioned dependency updates and Actions-driven synchronization across orgs with stable package naming | team |
+| 2026-02-20 | Use npm package distribution for shared code/schema under `@semio-community` scope (`@semio-community/ecosystem-site-core`, `@semio-community/ecosystem-content-schema`) | Enables versioned dependency updates and Actions-driven synchronization across orgs with stable package naming | team |
 | 2026-02-20 | Keep high-customization site features local (for example Quori configurator) | Preserves site autonomy while shared core handles reusable concerns | team |
-| 2026-02-25 | Adopt descriptive shared package names under `@semio` (`ecosystem-site-core`, `ecosystem-content-schema`) | Avoids generic naming collisions and keeps room for future product/site package families | team |
+| 2026-02-25 | Adopt descriptive shared package names under `@semio-community` (`ecosystem-site-core`, `ecosystem-content-schema`) | Avoids generic naming collisions and keeps room for future product/site package families | team |
 
 ## Immediate Next Actions
 

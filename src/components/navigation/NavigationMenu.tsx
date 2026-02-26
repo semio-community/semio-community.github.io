@@ -14,7 +14,7 @@ import {
   getFieldValue,
   getLinkSections,
   type MenuLink,
-} from "@semio/ecosystem-site-core";
+} from "@semio-community/ecosystem-site-core";
 import type { NavCollections } from "@/site.config";
 
 interface NavigationMenuProps {

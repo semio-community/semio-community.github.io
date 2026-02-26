@@ -1,4 +1,4 @@
-import { isExternalUrl, resolveBaseUrl } from "@semio/ecosystem-site-core";
+import { isExternalUrl, resolveBaseUrl } from "@semio-community/ecosystem-site-core";
 
 /**
  * Utility functions for handling URLs with base path support

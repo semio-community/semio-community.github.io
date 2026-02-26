@@ -1,7 +1,7 @@
 import {
   isDraftVisible as resolveDraftVisibility,
   shouldShowDrafts as resolveDraftFlag,
-} from "@semio/ecosystem-site-core";
+} from "@semio-community/ecosystem-site-core";
 
 type SiteKey = "semio" | "quori" | "vizij";
 

@@ -1,4 +1,4 @@
-import { getEventPreviewDescription, getLocationString } from "@semio/ecosystem-site-core";
+import { getEventPreviewDescription, getLocationString } from "@semio-community/ecosystem-site-core";
 import { getFormattedDateRanges, parseDateLocal } from "./date";
 
 interface PartialEvent {

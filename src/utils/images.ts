@@ -6,7 +6,7 @@ import {
   resolveLogoAsset as resolveLogoAssetShared,
   type ImagePolicy,
   type LogoContainer,
-} from "@semio/ecosystem-site-core";
+} from "@semio-community/ecosystem-site-core";
 import type { ImageMetadata } from "astro";
 
 export type ImageLike =
