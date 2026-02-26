@@ -22,7 +22,14 @@
     "render:modules": "node scripts/render-configurator-modules.mjs",
     "cms:preview": "vite build --config vite.cms.config.mjs",
     "cms:copy-assets": "node scripts/copy-admin-assets.mjs",
-    "cms:config": "node scripts/generate-decap-config.mjs"
+    "cms:config": "node scripts/generate-decap-config.mjs",
+    "content:import:collections-hub": "node scripts/import-content-hub-collections.mjs",
+    "content:import:events-hub": "node scripts/import-content-hub-events.mjs",
+    "content:import:all-hub": "npm run content:import:events-hub && npm run content:import:collections-hub",
+    "content:sync:collections": "node scripts/sync-content-hub-collections.mjs",
+    "content:sync:organizations": "node scripts/sync-content-hub-organizations.mjs",
+    "content:sync:events": "node scripts/sync-content-hub-events.mjs",
+    "content:sync:all": "npm run content:sync:organizations && npm run content:sync:events && npm run content:sync:collections"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.10",
@@ -40,6 +47,8 @@
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@semio-community/ecosystem-content-schema": "^0.3.2",
+    "@semio-community/ecosystem-site-core": "^0.3.2",
     "@shikijs/transformers": "^1.25.1",
     "@solar-icons/react-perf": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",

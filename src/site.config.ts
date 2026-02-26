@@ -1,4 +1,12 @@
 import type { SiteConfig } from "@/types";
+import type {
+  FeaturedSection as CoreFeaturedSection,
+  LinkSection as CoreLinkSection,
+  MenuLink,
+  NavCollectionKey,
+  NavCollections,
+  Section as CoreSection,
+} from "@semio-community/ecosystem-site-core";
 
 export const siteConfig: SiteConfig = {
   // Used as both a meta property (src/components/BaseHead.astro L:31 + L:49) & the generated satori png (src/pages/og-image/[slug].png.ts)
@@ -27,53 +35,13 @@ export const siteConfig: SiteConfig = {
   },
 };
 
-export interface LinkSection {
-  kind: "link";
-  title: string;
-  href: string;
-}
-
-export interface FeaturedSection {
-  kind: "featured";
-  title: string;
-  collection:
-    | "organizations"
-    | "events"
-    | "software"
-    | "research"
-    | "hardware"
-    | "people";
-  items: string[];
-  fields: {
-    title: string;
-    subtitle?: string;
-  };
-}
-
-export type Section = LinkSection | FeaturedSection;
-export type NavCollectionKey = FeaturedSection["collection"];
-export type NavCollections = Partial<
-  Record<
-    NavCollectionKey,
-    Record<
-      string,
-      {
-        id: string;
-        fields: Record<string, string | number | undefined>;
-      }
-    >
-  >
->;
+export type LinkSection = CoreLinkSection;
+export type FeaturedSection = CoreFeaturedSection;
+export type Section = CoreSection;
+export type { NavCollectionKey, NavCollections };
 
 // Used to generate links in both the Header & Footer.
-export const menuLinks: {
-  path: string;
-  title: string;
-  inHeader: boolean;
-  callToAction?: boolean;
-  dropdownSubtitle?: string;
-  sections?: Section[];
-}[] = [
+export const menuLinks: MenuLink[] = [
   {
     path: "/",
     title: "Home",
