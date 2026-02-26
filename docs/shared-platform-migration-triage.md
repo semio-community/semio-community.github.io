@@ -359,10 +359,13 @@ Verification requirements:
 | 2026-02-20 | Use npm package distribution for shared code/schema under `@semio-community` scope (`@semio-community/ecosystem-site-core`, `@semio-community/ecosystem-content-schema`) | Enables versioned dependency updates and Actions-driven synchronization across orgs with stable package naming | team |
 | 2026-02-20 | Keep high-customization site features local (for example Quori configurator) | Preserves site autonomy while shared core handles reusable concerns | team |
 | 2026-02-25 | Adopt descriptive shared package names under `@semio-community` (`ecosystem-site-core`, `ecosystem-content-schema`) | Avoids generic naming collisions and keeps room for future product/site package families | team |
+| 2026-02-26 | Standardize a shared `renderMarkdown` content flag across all collections in shared schema | Supports per-entry body rendering behavior by site/page without collection-specific schema drift | team |
+| 2026-02-26 | Start UI extraction by moving base detail primitives into `ecosystem-site-core` and wiring semio as the first consumer | Establishes the shared detail-page foundation before broader nav/button/component extraction | team |
+| 2026-02-26 | Keep `ecosystem-site-core` and `ecosystem-content-schema` on aligned release versions | Simplifies dependency management, rollout coordination, and cross-repo CI expectations | team |
 
 ## Immediate Next Actions
 
-1. Confirm repository names and whether any should be merged.
-2. Confirm package distribution approach for cross-org consumption.
-3. Approve Phase 1 extraction scope (exact module list).
-4. Open initial task issues from T001-T020.
+1. Publish `@semio-community/ecosystem-site-core@0.3.1` and `@semio-community/ecosystem-content-schema@0.3.1`.
+2. Update migration branches in `semio-community`, `quori-robot`, and `vizij-ai` to consume those versions.
+3. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
+4. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
