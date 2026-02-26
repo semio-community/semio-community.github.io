@@ -1,5 +1,9 @@
-import React, { useMemo } from "react";
-import { clsx } from "clsx";
+import React from "react";
+import {
+  DetailLinkSection as CoreLinkSection,
+  type DetailLinkSectionProps as CoreLinkSectionProps,
+  type BuildLinksArgs,
+} from "@semio-community/ecosystem-site-core";
 import {
   IconButton,
   type IconButtonSize,
@@ -8,41 +12,31 @@ import {
 import { linkPriority, normalizeLinkHref } from "@/data/links";
 
 export interface LinkSectionProps {
-  // Map of link type to value (URL, handle, email, etc.)
   links?: Partial<Record<LinkType, string>>;
-  // Optional: include only these link types
   allowed?: LinkType[];
-  // Optional: max number of buttons to show (defaults to all)
   max?: number;
-  // Icon size for each button
   size?: IconButtonSize;
-  // Extra classes for the container
   className?: string;
-  // Force IconButton rendering type
   as?: "button" | "link";
-  // Prevent parent navigation when clicking buttons
   stopPropagation?: boolean;
-  // Force external behavior (otherwise detected automatically)
   external?: boolean;
 }
 
-type LinkEntry = { type: LinkType; href: string };
-
-function buildPrioritizedLinks(
-  links?: Partial<Record<LinkType, string>>,
-  allowed?: LinkType[],
-  max?: number,
-): LinkEntry[] {
+function buildPrioritizedLinks({
+  links,
+  allowed,
+  max,
+}: BuildLinksArgs) {
   if (!links) return [];
 
   const seen = new Set<string>();
-  const items: LinkEntry[] = [];
+  const items: Array<{ type: string; href: string }> = [];
 
-  const pushIfValid = (type: LinkType, raw?: string) => {
+  const pushIfValid = (type: string, raw?: string) => {
     if (!raw) return;
     if (allowed && !allowed.includes(type)) return;
 
-    const href = normalizeLinkHref(type, raw);
+    const href = normalizeLinkHref(type as LinkType, raw);
     const key = `${type}:${href}`;
     if (seen.has(key)) return;
 
@@ -50,30 +44,19 @@ function buildPrioritizedLinks(
     items.push({ type, href });
   };
 
-  // First pass: known link types in configured priority,
-  // then reverse so we render increasing priority from left to right.
   linkPriority.forEach((t) => {
-    pushIfValid(t, links[t]);
+    pushIfValid(t, (links as Record<string, string>)[t]);
   });
 
-  // Second pass: any extra/unknown keys not covered by linkPriority
-  // (append these after the prioritized set).
   Object.entries(links).forEach(([rawType, raw]) => {
-    const t = rawType as LinkType;
-    if (linkPriority.includes(t)) return; // already handled
-    pushIfValid(t, raw || undefined);
+    if (linkPriority.includes(rawType as LinkType)) return;
+    pushIfValid(rawType, raw || undefined);
   });
 
-  const ordered = items.reverse(); // increasing priority left -> right
+  const ordered = items.reverse();
   return typeof max === "number" && max > 0 ? ordered.slice(0, max) : ordered;
 }
 
-/**
- * LinkSection
- * Renders a single-row list of circular IconButtons, ordered from
- * lower to higher priority (left to right). When overflow occurs,
- * it scrolls horizontally.
- */
 export const LinkSection: React.FC<LinkSectionProps> = ({
   links,
   allowed,
@@ -84,33 +67,31 @@ export const LinkSection: React.FC<LinkSectionProps> = ({
   stopPropagation,
   external,
 }) => {
-  const buttons = useMemo(
-    () => buildPrioritizedLinks(links, allowed, max),
-    [links, allowed, max],
-  );
+  const normalizedLinks = links as unknown as Record<string, string> | undefined;
 
-  if (!buttons.length) return null;
+  const props: CoreLinkSectionProps = {
+    links: normalizedLinks,
+    allowed: allowed as string[] | undefined,
+    max,
+    size,
+    className,
+    as,
+    stopPropagation,
+    external,
+    buildLinks: buildPrioritizedLinks,
+    renderButton: ({ type, href, size: btnSize, as: btnAs, external: btnExternal, stopPropagation: btnStop }) => (
+      <IconButton
+        type={type as LinkType}
+        href={href}
+        size={(btnSize as IconButtonSize) || size}
+        as={(btnAs as "button" | "link") || as}
+        external={btnExternal}
+        stopPropagation={btnStop}
+      />
+    ),
+  };
 
-  return (
-    <div
-      className={clsx(
-        "flex items-center justify-end gap-1 flex-nowrap overflow-x-auto",
-        className,
-      )}
-    >
-      {buttons.map(({ type, href }) => (
-        <IconButton
-          key={`${type}-${href}`}
-          type={type}
-          href={href}
-          size={size}
-          as={as}
-          external={external}
-          stopPropagation={stopPropagation}
-        />
-      ))}
-    </div>
-  );
+  return <CoreLinkSection {...props} />;
 };
 
 export default LinkSection;

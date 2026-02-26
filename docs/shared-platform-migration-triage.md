@@ -365,7 +365,7 @@ Verification requirements:
 
 ## Immediate Next Actions
 
-1. Publish `@semio-community/ecosystem-site-core@0.3.1` and `@semio-community/ecosystem-content-schema@0.3.1`.
+1. Publish `@semio-community/ecosystem-site-core@0.3.2` and `@semio-community/ecosystem-content-schema@0.3.2`.
 2. Update migration branches in `semio-community`, `quori-robot`, and `vizij-ai` to consume those versions.
 3. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
 4. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
