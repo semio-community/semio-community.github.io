@@ -1,0 +1,26 @@
+{
+  "name": "Semio Community",
+  "icons": [
+    {
+      "src": "icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "description": "Semio Community is a 501(c)(3) nonprofit organization facilitating community-driven robotics hardware, software, and research to foster repeatable, reproducible, and replicable science and reusable systems within human-robot interaction (HRI).",
+  "lang": "en-US",
+  "start_url": "/",
+  "theme_color": "#2bbc8a",
+  "background_color": "#1d1f21",
+  "display": "standalone"
+}
