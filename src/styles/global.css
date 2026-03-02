@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../assets/fonts/Gilroy.css";
+@import "@semio-community/ecosystem-site-core/styles.css";
 
 @source "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
 
@@ -194,6 +195,7 @@
     background-clip: text;
   }
 }
+
 
 @font-face {
   font-family: "SFProRounded";

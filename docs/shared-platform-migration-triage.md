@@ -180,6 +180,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T018 | WS5 | in_progress | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
+| T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
 
 ## Progress Snapshot
 
@@ -228,6 +229,9 @@ Latest integration notes:
 - Added initial smoke CI workflows in all three site repos (`.github/workflows/smoke.yml`) to run install + CMS config generation + site build checks on PRs/pushes.
 - Extended site smoke CI workflows with manual branch-safe hub-sync testing controls (`enable_hub_sync`, `hub_repo`, `hub_ref`, optional dirty-tree check) so migration can be validated on branches before cutover.
 - Added `semio-content-hub` fanout workflow (`.github/workflows/sync-site-prs.yml`) with dry-run default and branch-targeted PR mode for semio/quori/vizij sync validation.
+- Temporary bridge for extracted detail components: semio branch adds Tailwind `@source` scans for `@semio-community/ecosystem-site-core` and local fallback utilities to prevent missing hero/link styles during migration; replace with shared exported stylesheet in T021.
+- Started T021 implementation: added shared style artifact in `ecosystem-site-core` (`styles/base.css` via package `styles.css`) and switched semio global CSS to import shared package styles while removing local `node_modules` Tailwind scan/fallback utility block.
+- Began moving detail/header/link styling to semantic shared classes in `ecosystem-site-core` (theme-variable-driven CSS layer + component class hooks) to avoid utility-class drift during future extractions.
 
 ## Sequencing Plan
 
@@ -350,6 +354,9 @@ Verification requirements:
 5. CMS mismatch with new architecture.
 - Mitigation: keep CMS choice decoupled; content hub contract should remain CMS-agnostic.
 
+6. Tailwind class drift when shared component classes are not visible to site-local scanning.
+- Mitigation: publish shared component styles from `ecosystem-site-core` and import them explicitly in site roots; treat `node_modules` scan/fallback utility patches as temporary migration-only bridge.
+
 ## Decision Log
 
 | Date | Decision | Rationale | Owner |
@@ -369,3 +376,4 @@ Verification requirements:
 2. Update migration branches in `semio-community`, `quori-robot`, and `vizij-ai` to consume those versions.
 3. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
 4. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
+5. Implement T021: ship/import shared core stylesheet so site repos can remove `node_modules` Tailwind scan and local fallback utility patches.
