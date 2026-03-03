@@ -17,9 +17,9 @@ Target sites in current scope:
 
 New shared repos scaffolded in `~/Projects`:
 
-- `/Users/schoen/Projects/semio-site-core`
-- `/Users/schoen/Projects/semio-content-schema`
-- `/Users/schoen/Projects/semio-content-hub`
+- `/Users/schoen/Projects/ecosystem-site-core`
+- `/Users/schoen/Projects/ecosystem-content-schema`
+- `/Users/schoen/Projects/ecosystem-content-hub`
 
 Working branch for this plan and migration start:
 
@@ -43,15 +43,15 @@ Working branch for this plan and migration start:
 
 ### Repositories
 
-1. `semio-site-core`
+1. `ecosystem-site-core`
 - Shared components, layouts, route helpers, OG components, plugins, and reusable data utilities.
 - Exports consumed by each site repo.
 
-2. `semio-content-schema`
+2. `ecosystem-content-schema`
 - Canonical content collection schemas and schema-derived tooling contracts.
 - Hosts config generation logic used by site-local CMS adapter layer.
 
-3. `semio-content-hub`
+3. `ecosystem-content-hub`
 - Canonical MD/MDX content and media metadata.
 - Per-entry site visibility fields (for example `sites: ["semio", "quori"]`).
 
@@ -68,9 +68,9 @@ Working branch for this plan and migration start:
 ### Sync and Build Strategy
 
 - Shared logic and schema are consumed as versioned dependencies, not submodules.
-- `semio-site-core` and `semio-content-schema` are published to GitHub Packages under the `@semio-community` scope.
+- `ecosystem-site-core` and `ecosystem-content-schema` are published to GitHub Packages under the `@semio-community` scope.
 - Site repos receive dependency update PRs (scheduled or dispatch-triggered); merge triggers existing Pages builds.
-- `semio-content-hub` is the content source-of-truth and is synced into site repos through automated PR workflows (or later as versioned snapshots).
+- `ecosystem-content-hub` is the content source-of-truth and is synced into site repos through automated PR workflows (or later as versioned snapshots).
 - Deterministic builds are required; deploy and preview workflows should both use lockfile-based installs (`npm ci`).
 
 ### Site Repo Boundaries (What Stays Local)
@@ -92,7 +92,7 @@ Expected to move out to shared repos:
 
 ## Workstreams
 
-### WS1 - Platform Extraction (`semio-site-core`)
+### WS1 - Platform Extraction (`ecosystem-site-core`)
 
 Deliverables:
 - Shared package scaffold with build/test and typed exports.
@@ -107,7 +107,7 @@ Exit criteria:
 - `semio-community` builds with shared package for selected modules.
 - `vizij-ai` and `quori-robot` compile against same package version.
 
-### WS2 - Schema and Tooling Consolidation (`semio-content-schema`)
+### WS2 - Schema and Tooling Consolidation (`ecosystem-content-schema`)
 
 Deliverables:
 - Canonical `content.config` model exported as reusable module/helpers.
@@ -118,7 +118,7 @@ Exit criteria:
 - All site repos import schema/tooling from one package.
 - No schema drift between sites.
 
-### WS3 - Central Content Hub (`semio-content-hub`)
+### WS3 - Central Content Hub (`ecosystem-content-hub`)
 
 Deliverables:
 - Unified folder structure for collections and media references.
@@ -160,14 +160,14 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 
 | ID | Workstream | Status | Task | Dependencies | Acceptance Check |
 |---|---|---|---|---|---|
-| T001 | WS1 | done | Create package skeleton in `semio-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
+| T001 | WS1 | done | Create package skeleton in `ecosystem-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
 | T002 | WS1 | in_progress | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
 | T004 | WS1 | in_progress | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
-| T005 | WS2 | in_progress | Move canonical schema contracts into `semio-content-schema` | none | All 3 sites consume same schema package version |
-| T006 | WS2 | done | Move CMS config generation logic to `semio-content-schema` | T005 | Generated output matches current config for baseline site |
+| T005 | WS2 | in_progress | Move canonical schema contracts into `ecosystem-content-schema` | none | All 3 sites consume same schema package version |
+| T006 | WS2 | done | Move CMS config generation logic to `ecosystem-content-schema` | T005 | Generated output matches current config for baseline site |
 | T007 | WS3 | done | Define site-visibility field contract and docs | none | Contract approved and committed |
-| T008 | WS3 | done | Import organizations collection into `semio-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
+| T008 | WS3 | done | Import organizations collection into `ecosystem-content-hub` with visibility metadata | T007 | All sites resolve organizations from hub |
 | T009 | WS3 | done | Import people/events/software/hardware/research collections | T008 | Filtered content parity checks pass |
 | T010 | WS4 | done | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
 | T011 | WS4 | done | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
@@ -186,52 +186,53 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 
 Completed since migration kickoff:
 
-- Created working package skeleton in `semio-site-core` with typed exports, build/check scripts, and publish config.
-- Created working package skeleton in `semio-content-schema` with initial shared site-visibility contracts and validation helpers.
-- Created initial structure in `semio-content-hub` including draft visibility contract and sync model docs.
+- Created working package skeleton in `ecosystem-site-core` with typed exports, build/check scripts, and publish config.
+- Created working package skeleton in `ecosystem-content-schema` with initial shared site-visibility contracts and validation helpers.
+- Created initial structure in `ecosystem-content-hub` including draft visibility contract and sync model docs.
 
 Current active focus:
 
-- Continue utility/module extraction in `semio-site-core` (WS1/T004) while keeping semio build parity.
-- Continue schema contract consolidation in `semio-content-schema` (WS2/T005).
+- Continue utility/module extraction in `ecosystem-site-core` (WS1/T004) while keeping semio build parity.
+- Continue schema contract consolidation in `ecosystem-content-schema` (WS2/T005).
 - Begin WS5 operationalization: versioning/release workflow, cross-repo smoke CI, and automated update PR flows.
 
 Latest integration notes:
 
-- Introduced shared navigation/layout contracts in `semio-site-core` and exported them from the package entrypoint.
+- Introduced shared navigation/layout contracts in `ecosystem-site-core` and exported them from the package entrypoint.
 - Updated `semio-community` to consume shared navigation types from `@semio-community/ecosystem-site-core` in `src/site.config.ts`.
-- Added local workspace dependency wiring in `semio-community` (`file:../semio-site-core`) to validate package-consumption flow before publishing.
+- Added local workspace dependency wiring in `semio-community` (`file:../ecosystem-site-core`) to validate package-consumption flow before publishing.
 - Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
-- Extracted reusable navigation runtime helpers into `semio-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
-- Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `semio-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
-- Extracted reusable `SiteLayout` class-composition helpers into `semio-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
-- Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `semio-site-core` and switched `semio-community` `navIcons` to consume it.
-- Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `semio-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
-- Extracted shared draft-visibility helpers into `semio-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
-- Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `semio-site-core` and switched `semio-community` date/event utility modules to consume them.
-- Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `semio-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
-- Expanded `semio-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `semio-content-hub` visibility/sync docs to the shared contract.
+- Extracted reusable navigation runtime helpers into `ecosystem-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
+- Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `ecosystem-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
+- Extracted reusable `SiteLayout` class-composition helpers into `ecosystem-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
+- Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `ecosystem-site-core` and switched `semio-community` `navIcons` to consume it.
+- Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `ecosystem-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
+- Extracted shared draft-visibility helpers into `ecosystem-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
+- Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `ecosystem-site-core` and switched `semio-community` date/event utility modules to consume them.
+- Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `ecosystem-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
+- Expanded `ecosystem-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `ecosystem-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/ecosystem-content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
-- Moved the Decap CMS config generator implementation into `semio-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
+- Moved the Decap CMS config generator implementation into `ecosystem-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
 - Updated `quori-robot.github.io` and `vizij-ai.github.io` Decap generator scripts to the same thin-wrapper pattern against `@semio-community/ecosystem-content-schema`.
-- Added local workspace dependency wiring to both `quori-robot.github.io` and `vizij-ai.github.io` (`file:../semio-content-schema`) and validated `npm run cms:config` + `npm run build:site` in both repos.
-- Started WS3 organizations migration scaffold in `semio-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
-- Performed first bulk organizations import into `semio-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
-- Added `semio-community` content-hub sync adapter script (`scripts/sync-content-hub-organizations.mjs`) to pull `semio`-visible organizations from `semio-content-hub` and apply sparse `overrides.semio` patches into site-local content files as a migration bridge.
+- Added local workspace dependency wiring to both `quori-robot.github.io` and `vizij-ai.github.io` (`file:../ecosystem-content-schema`) and validated `npm run cms:config` + `npm run build:site` in both repos.
+- Started WS3 organizations migration scaffold in `ecosystem-content-hub` with `content/organizations/` plus initial `orbbec.mdx` entry carrying `sites` and `overrides` metadata.
+- Performed first bulk organizations import into `ecosystem-content-hub/content/organizations` from current site repos with computed per-entry `sites` visibility metadata.
+- Added `semio-community` content-hub sync adapter script (`scripts/sync-content-hub-organizations.mjs`) to pull `semio`-visible organizations from `ecosystem-content-hub` and apply sparse `overrides.semio` patches into site-local content files as a migration bridge.
 - Standardized site/domain inclusion across all three site repos using first-class `sites` frontmatter in all collections (separate from `draft`) and updated collection filtering to enforce `siteKey` visibility consistently.
-- Imported unified events collection into `semio-content-hub/content/events` (45 entries with computed `sites` visibility from semio/quori/vizij presence).
+- Imported unified events collection into `ecosystem-content-hub/content/events` (45 entries with computed `sites` visibility from semio/quori/vizij presence).
 - Added `semio-community` events sync adapter (`scripts/sync-content-hub-events.mjs`) and wired package scripts to pull only `semio`-visible events from the hub while pruning non-visible local copies.
-- Imported remaining shared collections into `semio-content-hub` with computed `sites` visibility (`people` 25, `software` 3, `hardware` 6, `research` 11).
+- Imported remaining shared collections into `ecosystem-content-hub` with computed `sites` visibility (`people` 25, `software` 3, `hardware` 6, `research` 11).
 - Added semio sync bridge for remaining collections (`scripts/sync-content-hub-collections.mjs`) and package scripts to sync/prune `people`, `software`, `hardware`, and `research` from the hub.
 - Verified semio build parity after organizations/events + remaining collection sync bridges (`npm run build:site` passes on migration branch).
-- Added hub sync bridge script to `vizij-ai.github.io` and `quori-robot.github.io` (`scripts/sync-content-hub.mjs`) to sync/prune all migrated collections (`organizations`, `events`, `people`, `software`, `hardware`, `research`) from `semio-content-hub`.
+- Added hub sync bridge script to `vizij-ai.github.io` and `quori-robot.github.io` (`scripts/sync-content-hub.mjs`) to sync/prune all migrated collections (`organizations`, `events`, `people`, `software`, `hardware`, `research`) from `ecosystem-content-hub`.
 - Added `content:sync:hub` npm script in vizij/quori and validated with `npm run content:sync:hub` + `npm run build:site` in both repos.
 - Added initial smoke CI workflows in all three site repos (`.github/workflows/smoke.yml`) to run install + CMS config generation + site build checks on PRs/pushes.
 - Extended site smoke CI workflows with manual branch-safe hub-sync testing controls (`enable_hub_sync`, `hub_repo`, `hub_ref`, optional dirty-tree check) so migration can be validated on branches before cutover.
-- Added `semio-content-hub` fanout workflow (`.github/workflows/sync-site-prs.yml`) with dry-run default and branch-targeted PR mode for semio/quori/vizij sync validation.
+- Added `ecosystem-content-hub` fanout workflow (`.github/workflows/sync-site-prs.yml`) with dry-run default and branch-targeted PR mode for semio/quori/vizij sync validation.
 - Temporary bridge for extracted detail components: semio branch adds Tailwind `@source` scans for `@semio-community/ecosystem-site-core` and local fallback utilities to prevent missing hero/link styles during migration; replace with shared exported stylesheet in T021.
 - Started T021 implementation: added shared style artifact in `ecosystem-site-core` (`styles/base.css` via package `styles.css`) and switched semio global CSS to import shared package styles while removing local `node_modules` Tailwind scan/fallback utility block.
 - Began moving detail/header/link styling to semantic shared classes in `ecosystem-site-core` (theme-variable-driven CSS layer + component class hooks) to avoid utility-class drift during future extractions.
+- Bumped migration branches to `@semio-community/ecosystem-site-core@0.3.4` (semio site) and `@semio-community/ecosystem-content-schema@0.3.2` (all three sites); refreshed package-locks after install.
 
 ## Sequencing Plan
 
@@ -262,7 +263,7 @@ Phase 5 - Stabilize and scale
 ## Content Customization Model
 
 Core principle:
-- Content is authored once in `semio-content-hub` and filtered/overridden per site.
+- Content is authored once in `ecosystem-content-hub` and filtered/overridden per site.
 
 Entry-level visibility:
 - Each content entry includes a visibility field, for example `sites: ["semio", "quori"]`.
@@ -280,7 +281,7 @@ Recommended override shape (illustrative):
 How teams customize individual sites after migration:
 
 1. Global update for all sites:
-- Edit canonical entry in `semio-content-hub`.
+- Edit canonical entry in `ecosystem-content-hub`.
 - Sync workflow opens PRs in site repos; merged PR rebuilds/deploys that site.
 
 2. Site-limited visibility:
@@ -361,7 +362,7 @@ Verification requirements:
 
 | Date | Decision | Rationale | Owner |
 |---|---|---|---|
-| 2026-02-19 | Create three shared repos (`semio-site-core`, `semio-content-schema`, `semio-content-hub`) | Separate code reuse, schema governance, and content ownership concerns | team |
+| 2026-02-19 | Create three shared repos (`ecosystem-site-core`, `ecosystem-content-schema`, `ecosystem-content-hub`) | Separate code reuse, schema governance, and content ownership concerns | team |
 | 2026-02-19 | Start migration branch from `semio-community` | Use semio as lead integration path before propagating to quori/vizij | team |
 | 2026-02-20 | Use npm package distribution for shared code/schema under `@semio-community` scope (`@semio-community/ecosystem-site-core`, `@semio-community/ecosystem-content-schema`) | Enables versioned dependency updates and Actions-driven synchronization across orgs with stable package naming | team |
 | 2026-02-20 | Keep high-customization site features local (for example Quori configurator) | Preserves site autonomy while shared core handles reusable concerns | team |
@@ -372,8 +373,7 @@ Verification requirements:
 
 ## Immediate Next Actions
 
-1. Publish `@semio-community/ecosystem-site-core@0.3.2` and `@semio-community/ecosystem-content-schema@0.3.2`.
-2. Update migration branches in `semio-community`, `quori-robot`, and `vizij-ai` to consume those versions.
-3. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
-4. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
-5. Implement T021: ship/import shared core stylesheet so site repos can remove `node_modules` Tailwind scan and local fallback utility patches.
+1. Verify semio/quori/vizij migration branches build against `@semio-community/ecosystem-site-core@0.3.4` + `@semio-community/ecosystem-content-schema@0.3.2` via local runs and smoke CI.
+2. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
+3. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
+4. Implement T021: ship/import shared core stylesheet so site repos can remove `node_modules` Tailwind scan and local fallback utility patches.
