@@ -248,6 +248,7 @@ Latest integration notes:
 - Extracted shared draft-visibility helpers into `ecosystem-site-core` and switched `semio-community` `src/utils/drafts.ts` to consume them through a local adapter.
 - Extracted shared date/event primitives (`parseDateLocal`, `getLocationString`, event preview composition helper) into `ecosystem-site-core` and switched `semio-community` date/event utility modules to consume them.
 - Extracted shared image utility primitives (`resolveImagePolicy`, image path normalization/resolution, card/detail image-policy resolvers) into `ecosystem-site-core` and switched `semio-community` `src/utils/images.ts` to a thin adapter preserving Astro `ImageMetadata` typing.
+- Header/mobile style regression note (applies going forward): in Tailwind v4 site roots, `@source` paths for shared package scans must be correct relative to `src/styles/global.css` (for example `../../node_modules/@semio-community/ecosystem-site-core/dist/**/*.{js,mjs,cjs}`), and each site must import `@semio-community/ecosystem-site-core/styles.css`; incorrect source paths silently drop shared utility classes and break header/nav alignment.
 - Expanded `ecosystem-content-schema` site-visibility contracts (`SITE_KEYS`, `SiteScopedEntry`, override validation, merge helper) and aligned `ecosystem-content-hub` visibility/sync docs to the shared contract.
 - Wired `semio-community` content schema to consume `@semio-community/ecosystem-content-schema` (`SITE_KEYS`, visibility/override validators) and added optional `visibility`/`overrides` fields to organizations/software collection schemas.
 - Moved the Decap CMS config generator implementation into `ecosystem-content-schema` and converted `semio-community` `scripts/generate-decap-config.mjs` into a thin wrapper that calls the shared generator.
@@ -412,6 +413,7 @@ Verification requirements:
 | 2026-02-26 | Start UI extraction by moving base detail primitives into `ecosystem-site-core` and wiring semio as the first consumer | Establishes the shared detail-page foundation before broader nav/button/component extraction | team |
 | 2026-02-26 | Keep `ecosystem-site-core` and `ecosystem-content-schema` on aligned release versions | Simplifies dependency management, rollout coordination, and cross-repo CI expectations | team |
 | 2026-03-02 | Default component strategy: move most reusable React/UI surfaces to `ecosystem-site-core`, keep only explicit site-local exceptions in site repos | Reduces long-term duplication and maintenance load across semio/quori/vizij while preserving product-specific feature autonomy | team |
+| 2026-03-03 | Standardize Tailwind v4 shared-package wiring in site roots (correct relative `@source` scan + shared stylesheet import) | Prevents silent class omission from shared runtime components (header/nav/mobile drawer) and avoids cross-site visual regressions | team |
 
 ## Immediate Next Actions
 
