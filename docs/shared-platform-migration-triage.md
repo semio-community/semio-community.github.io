@@ -184,7 +184,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
 | T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
 | T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
-| T023 | WS1 | todo | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
+| T023 | WS1 | in_progress | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
 | T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
@@ -238,6 +238,7 @@ Latest integration notes:
 - Verified `semio-community` static build succeeds after the contract extraction/wiring changes.
 - Extracted reusable navigation runtime helpers into `ecosystem-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
 - Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `ecosystem-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
+- Updated `quori-robot` and `vizij-ai` navigation surfaces (`NavigationMenu`, `navVariant`, `navIcons`) to consume shared `ecosystem-site-core` contracts/helpers (`MenuLink` + active-header helpers + nav-style resolution + route-key icon mapping), reducing duplicated navigation logic ahead of full runtime component extraction.
 - Extracted reusable `SiteLayout` class-composition helpers into `ecosystem-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `ecosystem-site-core` and switched `semio-community` `navIcons` to consume it.
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `ecosystem-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
