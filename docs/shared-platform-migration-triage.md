@@ -239,6 +239,7 @@ Latest integration notes:
 - Extracted reusable navigation runtime helpers into `ecosystem-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
 - Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `ecosystem-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
 - Updated `quori-robot` and `vizij-ai` navigation surfaces (`NavigationMenu`, `navVariant`, `navIcons`) to consume shared `ecosystem-site-core` contracts/helpers (`MenuLink` + active-header helpers + nav-style resolution + route-key icon mapping), reducing duplicated navigation logic ahead of full runtime component extraction.
+- Extracted shared navigation runtime components into `ecosystem-site-core` (`NavigationMenu`, `MobileNavigation`, `NavIconButton`) plus shared navigation-menu stylesheet export; pending next package release and site-repo integration pass.
 - Extracted reusable `SiteLayout` class-composition helpers into `ecosystem-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `ecosystem-site-core` and switched `semio-community` `navIcons` to consume it.
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `ecosystem-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
