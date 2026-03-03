@@ -85,6 +85,7 @@ Expected to remain in each site repo:
 
 Expected to move out to shared repos:
 
+- Most reusable React components and UI elements across sites (target: majority of `src/components` and common `src/react-pages` shells).
 - Shared UI primitives and cross-site component systems.
 - Shared layouts and OG rendering modules.
 - Shared data/query helpers and schema contracts.
@@ -101,6 +102,7 @@ Deliverables:
   - `src/layouts` shared subset
   - `src/og` shared subset
   - `src/plugins` shared subset
+- Majority of shared React components and UI surfaces moved into `ecosystem-site-core` with site extension points for local-only features.
 - Site repos consuming package with minimal local shims.
 
 Exit criteria:
@@ -172,15 +174,47 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T010 | WS4 | done | Wire semio site to shared packages + content hub | T002,T006,T008 | `npm run build` passes |
 | T011 | WS4 | done | Wire vizij site to shared packages + content hub | T010 | `npm run build` passes |
 | T012 | WS4 | done | Wire quori site to shared packages + content hub | T010 | `npm run build` passes and platform pages still work |
-| T013 | WS5 | todo | Define semver and release workflow for shared repos | T010 | Release checklist merged |
+| T013 | WS5 | in_progress | Define semver and release workflow for shared repos | T010 | Release checklist merged |
 | T014 | WS5 | in_progress | Add cross-repo smoke CI matrix | T013 | CI green on sample PR |
 | T015 | WS5 | todo | Write "add a new site" playbook | T010,T013 | Dry-run with template repo succeeds |
-| T016 | WS5 | todo | Publish `@semio-community/ecosystem-site-core` and `@semio-community/ecosystem-content-schema` to GitHub Packages | T013 | Tagged release is installable from all 3 site repos |
+| T016 | WS5 | done | Publish `@semio-community/ecosystem-site-core` and `@semio-community/ecosystem-content-schema` to GitHub Packages | T013 | Tagged release is installable from all 3 site repos |
 | T017 | WS5 | todo | Add site-repo Actions to open automated dependency bump PRs for shared packages | T016 | Bump PR auto-opens after package release |
 | T018 | WS5 | in_progress | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
-| T019 | WS5 | todo | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
+| T019 | WS5 | in_progress | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
 | T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
+| T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
+| T023 | WS1 | todo | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
+| T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
+| T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
+| T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
+
+## WS1 Component Inventory (Shared UI Generalization)
+
+Goal:
+- Default to moving reusable React components and UI elements into `ecosystem-site-core`; keep only truly site-specific components in site repos.
+
+Already centralized in `ecosystem-site-core`:
+- Detail primitives and shared detail layout pieces (`BaseDetailLayout`, `DetailHero`, `ContentSection`, `InfoCard`, `FeaturesList`, `ChipsList`, `SpecificationsList`, `LinkSection`).
+- Shared helper/contracts modules (navigation, layout, drafts, date/event utilities, URL/images helpers, route mapping).
+- Shared style entry (`styles.css` + `styles/base.css`) used by migrated detail surfaces.
+
+Shared-eligible components still local (to be moved):
+
+| Area | Current Local Paths | Target | Status |
+|---|---|---|---|
+| Navigation + layout runtime | `src/components/layout/*`, `src/components/navigation/*` in semio/quori/vizij | `ecosystem-site-core` with site config/slot APIs | in_progress |
+| Core cards + list elements | `src/components/cards/*` in semio/quori/vizij | `ecosystem-site-core` shared card package | todo |
+| Shared UI primitives | `src/components/ui/{IconButton,Avatar,Tooltip,BasicChip,OrganizationChip,CallToActionButton,FeaturedStar,Icon}.tsx` across sites | `ecosystem-site-core` UI primitives | todo |
+| Search surfaces | `src/components/search/*` across sites | `ecosystem-site-core` search module | todo |
+| Shared section blocks | `src/components/sections/*` + common `react-pages/home/sections/*` patterns | `ecosystem-site-core` section/layout module | todo |
+| Shared page shells | `src/react-pages/{home,events,projects,contributors,services,get-involved,about}` across sites | `ecosystem-site-core` page-shell APIs | todo |
+| Background + hero patterns | `src/components/background/ParallaxHexBackground.tsx`, `src/components/hero/HeroHeader.tsx` across sites | `ecosystem-site-core` visual foundations | todo |
+
+Explicit site-local exceptions (stay local unless reused by >=2 sites):
+- Quori-only product/platform surfaces: `quori-robot.github.io/src/react-pages/platform/**`, `quori-robot.github.io/src/components/ui/configurator3d/**`, and related 3D model/configurator modules.
+- Vizij-only showcase/demo runtime surfaces: `vizij-ai.github.io/src/react-pages/showcase/**`, `vizij-ai.github.io/src/components/demos/**`, and vizij runtime orchestration adapters.
+- Any future site-specific feature with hard domain coupling and no multi-site reuse requirement.
 
 ## Progress Snapshot
 
@@ -192,9 +226,9 @@ Completed since migration kickoff:
 
 Current active focus:
 
-- Continue utility/module extraction in `ecosystem-site-core` (WS1/T004) while keeping semio build parity.
-- Continue schema contract consolidation in `ecosystem-content-schema` (WS2/T005).
-- Begin WS5 operationalization: versioning/release workflow, cross-repo smoke CI, and automated update PR flows.
+- Continue WS1 component generalization in `ecosystem-site-core` with explicit inventory-driven extraction (T022-T026).
+- Keep migration branches aligned with `main` hotfixes while preserving shared-package migration progress.
+- Continue WS5 operationalization: release/version governance, cross-repo smoke CI parity, and automated update PR flows.
 
 Latest integration notes:
 
@@ -233,6 +267,9 @@ Latest integration notes:
 - Started T021 implementation: added shared style artifact in `ecosystem-site-core` (`styles/base.css` via package `styles.css`) and switched semio global CSS to import shared package styles while removing local `node_modules` Tailwind scan/fallback utility block.
 - Began moving detail/header/link styling to semantic shared classes in `ecosystem-site-core` (theme-variable-driven CSS layer + component class hooks) to avoid utility-class drift during future extractions.
 - Bumped migration branches to `@semio-community/ecosystem-site-core@0.3.4` (semio site) and `@semio-community/ecosystem-content-schema@0.3.2` (all three sites); refreshed package-locks after install.
+- Added CI/package-access hotfix branches for non-migration stability (`deploy-preview` / deploy / smoke) so unrelated PRs can continue while migration remains in flight.
+- Added Vizij content visibility hotfix to keep only `hri-2026-tutorial` visible on event routes in production-facing branches.
+- Added WS1 component inventory with explicit shared-eligible component buckets and documented site-local exception boundaries (Quori configurator, Vizij showcase/demo runtime).
 
 ## Sequencing Plan
 
@@ -370,10 +407,12 @@ Verification requirements:
 | 2026-02-26 | Standardize a shared `renderMarkdown` content flag across all collections in shared schema | Supports per-entry body rendering behavior by site/page without collection-specific schema drift | team |
 | 2026-02-26 | Start UI extraction by moving base detail primitives into `ecosystem-site-core` and wiring semio as the first consumer | Establishes the shared detail-page foundation before broader nav/button/component extraction | team |
 | 2026-02-26 | Keep `ecosystem-site-core` and `ecosystem-content-schema` on aligned release versions | Simplifies dependency management, rollout coordination, and cross-repo CI expectations | team |
+| 2026-03-02 | Default component strategy: move most reusable React/UI surfaces to `ecosystem-site-core`, keep only explicit site-local exceptions in site repos | Reduces long-term duplication and maintenance load across semio/quori/vizij while preserving product-specific feature autonomy | team |
 
 ## Immediate Next Actions
 
-1. Verify semio/quori/vizij migration branches build against `@semio-community/ecosystem-site-core@0.3.4` + `@semio-community/ecosystem-content-schema@0.3.2` via local runs and smoke CI.
-2. Continue WS1 extraction: shared `DetailHero`, `FeaturesList`, `SpecificationsList`, `LinkSection`, and nav primitives.
-3. Add shared detail page renderer API in `ecosystem-site-core` that honors `renderMarkdown` across collections.
-4. Implement T021: ship/import shared core stylesheet so site repos can remove `node_modules` Tailwind scan and local fallback utility patches.
+1. Push and reconcile migration branches (semio/quori/vizij) with latest `main` hotfix commits, then re-run smoke CI on each migration PR.
+2. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
+3. Execute T023 and T024 (navigation/layout runtime + shared UI/card/search/section extraction) using the WS1 inventory as the source of truth.
+4. Execute T025 (shared page-shell APIs) and T026 (site-local exception contract) so new features default to `ecosystem-site-core`.
+5. Complete WS5 follow-through: dependency bump automation (T017) and deterministic CI/deploy parity closure (T019).
