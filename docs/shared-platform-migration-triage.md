@@ -163,7 +163,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | ID | Workstream | Status | Task | Dependencies | Acceptance Check |
 |---|---|---|---|---|---|
 | T001 | WS1 | done | Create package skeleton in `ecosystem-site-core` (exports, TS config, build) | none | Package imports in semio site compile |
-| T002 | WS1 | in_progress | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
+| T002 | WS1 | done | Extract shared `src/components/navigation` and `src/components/layout` | T001 | Header/navigation renders on all sites |
 | T003 | WS1 | todo | Extract shared OG renderer/components | T001 | OG endpoints compile and render |
 | T004 | WS1 | in_progress | Extract shared plugins and utility modules | T001 | Astro build passes with plugin imports |
 | T005 | WS2 | in_progress | Move canonical schema contracts into `ecosystem-content-schema` | none | All 3 sites consume same schema package version |
@@ -184,7 +184,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
 | T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
 | T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
-| T023 | WS1 | in_progress | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
+| T023 | WS1 | done | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
 | T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
@@ -203,7 +203,7 @@ Shared-eligible components still local (to be moved):
 
 | Area | Current Local Paths | Target | Status |
 |---|---|---|---|
-| Navigation + layout runtime | `src/components/layout/*`, `src/components/navigation/*` in semio/quori/vizij | `ecosystem-site-core` with site config/slot APIs | in_progress |
+| Navigation + layout runtime | `src/components/layout/*`, `src/components/navigation/*` in semio/quori/vizij | `ecosystem-site-core` with site config/slot APIs | done (site-local adapters only) |
 | Core cards + list elements | `src/components/cards/*` in semio/quori/vizij | `ecosystem-site-core` shared card package | todo |
 | Shared UI primitives | `src/components/ui/{IconButton,Avatar,Tooltip,BasicChip,OrganizationChip,CallToActionButton,FeaturedStar,Icon}.tsx` across sites | `ecosystem-site-core` UI primitives | todo |
 | Search surfaces | `src/components/search/*` across sites | `ecosystem-site-core` search module | todo |
@@ -226,7 +226,7 @@ Completed since migration kickoff:
 
 Current active focus:
 
-- Continue WS1 component generalization in `ecosystem-site-core` with explicit inventory-driven extraction (T022-T026).
+- Continue WS1 component generalization in `ecosystem-site-core` with explicit inventory-driven extraction (next: T024/T025 card + page-shell migration).
 - Keep migration branches aligned with `main` hotfixes while preserving shared-package migration progress.
 - Continue WS5 operationalization: release/version governance, cross-repo smoke CI parity, and automated update PR flows.
 
@@ -239,8 +239,9 @@ Latest integration notes:
 - Extracted reusable navigation runtime helpers into `ecosystem-site-core` (`nav-style` + active-header path resolution) and switched `semio-community` navigation to consume those shared implementations.
 - Extracted reusable navigation menu section helpers (`getLinkSections`, `getFeaturedSections`, `getFieldValue`) into `ecosystem-site-core` and switched `NavigationMenu` to consume shared helpers and shared `MenuLink` typing.
 - Updated `quori-robot` and `vizij-ai` navigation surfaces (`NavigationMenu`, `navVariant`, `navIcons`) to consume shared `ecosystem-site-core` contracts/helpers (`MenuLink` + active-header helpers + nav-style resolution + route-key icon mapping), reducing duplicated navigation logic ahead of full runtime component extraction.
-- Extracted shared navigation runtime components into `ecosystem-site-core` (`NavigationMenu`, `MobileNavigation`, `NavIconButton`) plus shared navigation-menu stylesheet export; pending next package release and site-repo integration pass.
+- Extracted shared navigation runtime components into `ecosystem-site-core` (`NavigationMenu`, `MobileNavigation`, `NavIconButton`) plus shared navigation-menu stylesheet export.
 - Published `@semio-community/ecosystem-site-core@0.3.5` and switched all three site migration branches to consume shared runtime navigation components (`NavigationMenu`, `MobileNavigation`, `NavIconButton`) through local adapters; `npm run cms:config && npm run build:site` passes in semio/quori/vizij after integration.
+- Published `@semio-community/ecosystem-site-core@0.3.6` with shared layout runtime components (`Header`, `Footer`, `SkipLink`) and switched semio/quori/vizij migration branches to shared layout adapters; `npm run cms:config && npm run build:site` passes in all three repos after install update.
 - Extracted reusable `SiteLayout` class-composition helpers into `ecosystem-site-core` and switched `semio-community` `SiteLayout` to consume shared layout helper functions.
 - Extracted shared route-key mapping helper (`mapSlugKeysToRouteKeys`) into `ecosystem-site-core` and switched `semio-community` `navIcons` to consume it.
 - Extracted base URL helper utilities (`resolveBaseUrl`, `isExternalUrl`) into `ecosystem-site-core` and switched `semio-community` `src/utils/url.ts` to consume them.
@@ -414,8 +415,8 @@ Verification requirements:
 
 ## Immediate Next Actions
 
-1. Push and reconcile migration branches (semio/quori/vizij) with latest `main` hotfix commits, then re-run smoke CI on each migration PR.
+1. Open/update migration PRs for semio/quori/vizij with `@semio-community/ecosystem-site-core@0.3.6` and run smoke CI on each branch.
 2. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
-3. Execute T023 and T024 (navigation/layout runtime + shared UI/card/search/section extraction) using the WS1 inventory as the source of truth.
+3. Execute T024 (shared UI/card/search/section extraction) using the WS1 inventory as the source of truth.
 4. Execute T025 (shared page-shell APIs) and T026 (site-local exception contract) so new features default to `ecosystem-site-core`.
 5. Complete WS5 follow-through: dependency bump automation (T017) and deterministic CI/deploy parity closure (T019).
