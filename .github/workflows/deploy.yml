@@ -37,6 +37,10 @@ jobs:
         run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify shared Tailwind wiring
+        run: npm run verify:shared-tailwind
+
       - name: Build site + admin + search
         run: npm run build
 
