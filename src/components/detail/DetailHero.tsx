@@ -1,6 +1,7 @@
 import type React from "react";
 import {
   DetailHero as CoreDetailHero,
+  type DetailHeroBadge as CoreDetailHeroBadge,
   type DetailHeroProps as CoreDetailHeroProps,
   type DetailHeroAvatarRenderProps,
   type DetailHeroFeaturedRenderProps,
@@ -12,6 +13,7 @@ export type DetailHeroProps = Omit<
   CoreDetailHeroProps,
   "renderAvatar" | "renderFeaturedStar"
 >;
+export type DetailHeroBadge = CoreDetailHeroBadge;
 
 function renderAvatar(props: DetailHeroAvatarRenderProps) {
   const avatarTypeMap: Record<string, AvatarType> = {
