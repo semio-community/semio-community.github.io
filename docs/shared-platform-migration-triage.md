@@ -189,7 +189,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
 | T027 | WS1 | in_progress | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
-| T028 | WS5 | todo | Add cross-repo typecheck gate (`npx tsc --noEmit`) to smoke/deploy workflows and document local verification fallback when `astro check` is memory-bound | T014,T019 | PR CI fails on type drift before build/deploy; local checklist includes deterministic type gate |
+| T028 | WS5 | done | Add cross-repo typecheck gate (`npx tsc --noEmit`) to smoke/deploy workflows and document local verification fallback when `astro check` is memory-bound | T014,T019 | PR CI fails on type drift before build/deploy; local checklist includes deterministic type gate |
 
 ## WS1 Component Inventory (Shared UI Generalization)
 
@@ -278,7 +278,8 @@ Latest integration notes:
 - Added Vizij content visibility hotfix to keep only `hri-2026-tutorial` visible on event routes in production-facing branches.
 - Added WS1 component inventory with explicit shared-eligible component buckets and documented site-local exception boundaries (Quori configurator, Vizij showcase/demo runtime).
 - Added shared person view-model mapper contracts in `ecosystem-site-core` (`person-view-models`) covering popover/list transforms plus organization key-contact and research-author mappings.
-- Switched organization/research detail routes in semio/quori/vizij to centralized person-mapper utilities (`src/utils/person.ts`) as a transition step before direct package-level mapper consumption after release.
+- Switched organization/research detail routes in semio/quori/vizij to centralized person-mapper utilities (`src/utils/person.ts`) as a transition step; utilities now use compatibility shims that call shared package mappers when available and fallback locally otherwise.
+- Added explicit typecheck gates (`npx tsc --noEmit --pretty false`) to smoke/preview/deploy workflows across semio/quori/vizij.
 
 ## Sequencing Plan
 
