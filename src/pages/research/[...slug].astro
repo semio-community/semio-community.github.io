@@ -5,6 +5,7 @@ import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
 import { getRelatedResearch as fetchRelatedResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
+import { serializeResearchAuthor } from "@/utils/person";
 import {
   ResearchDetail,
   type OrganizationRole,
@@ -24,7 +25,7 @@ export async function getStaticPaths() {
   }));
 }
 
-const { entry } = Astro.props;
+const { entry } = Astro.props as { entry: CollectionEntry<"research"> };
 const { data } = entry;
 
 const relatedResearch = await fetchRelatedResearch(entry, 3);
@@ -41,10 +42,7 @@ const ogImage = `/og/research/${entry.id}.png`;
 const authorsWithData: ResearchAuthor[] = await Promise.all(
   authors.map(async (contributor) => {
     const personEntry = await getPerson(contributor.personId);
-    return {
-      ...contributor,
-      person: personEntry?.data ?? null,
-    };
+    return serializeResearchAuthor(contributor, personEntry);
   }),
 );
 

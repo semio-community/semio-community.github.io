@@ -277,6 +277,8 @@ Latest integration notes:
 - Added CI/package-access hotfix branches for non-migration stability (`deploy-preview` / deploy / smoke) so unrelated PRs can continue while migration remains in flight.
 - Added Vizij content visibility hotfix to keep only `hri-2026-tutorial` visible on event routes in production-facing branches.
 - Added WS1 component inventory with explicit shared-eligible component buckets and documented site-local exception boundaries (Quori configurator, Vizij showcase/demo runtime).
+- Added shared person view-model mapper contracts in `ecosystem-site-core` (`person-view-models`) covering popover/list transforms plus organization key-contact and research-author mappings.
+- Switched organization/research detail routes in semio/quori/vizij to centralized person-mapper utilities (`src/utils/person.ts`) as a transition step before direct package-level mapper consumption after release.
 
 ## Sequencing Plan
 
