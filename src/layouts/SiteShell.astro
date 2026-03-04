@@ -75,7 +75,20 @@ const navCollections: NavCollections = {};
 for (const [collection, ids] of idsByCollection) {
   if (ids.size === 0) continue;
   const entries = await getCollection(collection, ({ data }) =>
-    isDraftVisible((data as { draft?: boolean; sites?: readonly ("semio" | "quori" | "vizij")[] }).draft, (data as { draft?: boolean; sites?: readonly ("semio" | "quori" | "vizij")[] }).sites),
+    isDraftVisible(
+      (
+        data as {
+          draft?: boolean;
+          sites?: readonly ("semio" | "quori" | "vizij")[];
+        }
+      ).draft,
+      (
+        data as {
+          draft?: boolean;
+          sites?: readonly ("semio" | "quori" | "vizij")[];
+        }
+      ).sites,
+    ),
   );
   const fields = fieldsByCollection.get(collection) ?? new Set();
   const collectionMap: Record<
@@ -128,7 +141,7 @@ for (const [collection, ids] of idsByCollection) {
       class={`relative m-auto max-w-4xl grow w-full min-w-0 ${containerClassName || ""}`}
     >
       <div
-        class={`m-auto grid grid-cols-1 min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 w-full min-w-0 ${noPaddingTop ? "" : "pt-[72px] lg:pt-4"}`}
+        class={`m-auto grid grid-cols-1 min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 w-full min-w-0 ${noPaddingTop ? "" : "pt-[72px]"}`}
       >
         <main id="main" class="relative grow" data-pagefind-body>
           <slot />
