@@ -25,6 +25,11 @@ export interface Props {
   backgroundClassName?: string;
 }
 
+type VisibilityData = {
+  draft?: boolean;
+  sites?: readonly ("semio" | "quori" | "vizij")[];
+};
+
 const {
   noPaddingTop = false,
   showBackground = true,
@@ -36,7 +41,7 @@ const {
   backgroundPalette,
   backgroundOpacity,
   backgroundClassName,
-} = Astro.props;
+} = Astro.props as Props;
 
 const coerceFieldValue = (value: unknown): string | number | undefined => {
   if (typeof value === "string" || typeof value === "number") return value;
@@ -57,39 +62,39 @@ const fieldsByCollection = new Map<
 >();
 
 for (const section of featuredSections) {
-  if (!idsByCollection.has(section.collection)) {
-    idsByCollection.set(section.collection, new Set());
-  }
-  if (!fieldsByCollection.has(section.collection)) {
-    fieldsByCollection.set(section.collection, new Set());
-  }
-
-  const ids = idsByCollection.get(section.collection)!;
-  const fields = fieldsByCollection.get(section.collection)!;
+  const ids =
+    idsByCollection.get(section.collection) ??
+    idsByCollection.set(section.collection, new Set()).get(section.collection)!;
+  const fields =
+    fieldsByCollection.get(section.collection) ??
+    fieldsByCollection
+      .set(section.collection, new Set())
+      .get(section.collection)!;
   for (const itemId of section.items) ids.add(itemId);
   fields.add(section.fields.title);
   if (section.fields.subtitle) fields.add(section.fields.subtitle);
 }
 
+const getVisibility = (data: unknown): VisibilityData => {
+  if (!data || typeof data !== "object") return {};
+  const record = data as Record<string, unknown>;
+  const draft = typeof record.draft === "boolean" ? record.draft : undefined;
+  const sites = Array.isArray(record.sites)
+    ? (record.sites.filter(
+        (site): site is "semio" | "quori" | "vizij" =>
+          site === "semio" || site === "quori" || site === "vizij",
+      ) as VisibilityData["sites"])
+    : undefined;
+  return { draft, sites };
+};
+
 const navCollections: NavCollections = {};
 for (const [collection, ids] of idsByCollection) {
   if (ids.size === 0) continue;
-  const entries = await getCollection(collection, ({ data }) =>
-    isDraftVisible(
-      (
-        data as {
-          draft?: boolean;
-          sites?: readonly ("semio" | "quori" | "vizij")[];
-        }
-      ).draft,
-      (
-        data as {
-          draft?: boolean;
-          sites?: readonly ("semio" | "quori" | "vizij")[];
-        }
-      ).sites,
-    ),
-  );
+  const entries = await getCollection(collection, ({ data }) => {
+    const visibility = getVisibility(data);
+    return isDraftVisible(visibility.draft, visibility.sites);
+  });
   const fields = fieldsByCollection.get(collection) ?? new Set();
   const collectionMap: Record<
     string,

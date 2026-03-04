@@ -39,7 +39,7 @@ export default function Header({ currentPath, navCollections }: HeaderProps) {
               <use href={url("brand.svg#brand")}></use>
             </svg>
           </div>
-          <strong className="max-[320px]:hidden lowercase text-base hidden lg:block z-10 mb-0.5 ms-2 lg:text-base xl:text-xl hover:opacity-90 whitespace-nowrap">
+          <strong className="max-[320px]:hidden lowercase text-base hidden lg:block z-10 mb-0.5 ms-2 lg:text-base xl:text-xl hover:opacity-90 whitespace-nowrap text-foreground">
             {siteConfig.title}
           </strong>
         </>
