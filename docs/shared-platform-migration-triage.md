@@ -188,6 +188,8 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
+| T027 | WS1 | in_progress | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
+| T028 | WS5 | todo | Add cross-repo typecheck gate (`npx tsc --noEmit`) to smoke/deploy workflows and document local verification fallback when `astro check` is memory-bound | T014,T019 | PR CI fails on type drift before build/deploy; local checklist includes deterministic type gate |
 
 ## WS1 Component Inventory (Shared UI Generalization)
 
@@ -400,6 +402,9 @@ Verification requirements:
 6. Tailwind class drift when shared component classes are not visible to site-local scanning.
 - Mitigation: publish shared component styles from `ecosystem-site-core` and import them explicitly in site roots; treat `node_modules` scan/fallback utility patches as temporary migration-only bridge.
 
+7. Cross-view shape drift from local ad-hoc serializers (for example popover shape reused where list/detail shape is required).
+- Mitigation: centralize typed view-model mappers in `ecosystem-site-core`; keep component prop contracts strict and ban `any` bridges in mapper boundaries.
+
 ## Decision Log
 
 | Date | Decision | Rationale | Owner |
@@ -414,11 +419,12 @@ Verification requirements:
 | 2026-02-26 | Keep `ecosystem-site-core` and `ecosystem-content-schema` on aligned release versions | Simplifies dependency management, rollout coordination, and cross-repo CI expectations | team |
 | 2026-03-02 | Default component strategy: move most reusable React/UI surfaces to `ecosystem-site-core`, keep only explicit site-local exceptions in site repos | Reduces long-term duplication and maintenance load across semio/quori/vizij while preserving product-specific feature autonomy | team |
 | 2026-03-03 | Standardize Tailwind v4 shared-package wiring in site roots (correct relative `@source` scan + shared stylesheet import) | Prevents silent class omission from shared runtime components (header/nav/mobile drawer) and avoids cross-site visual regressions | team |
+| 2026-03-04 | Formalize shared typed view-model mappers in `ecosystem-site-core` for card/detail/popover boundaries | Prevents cross-view data-shape drift and removes duplicated per-site serializer logic | team |
 
 ## Immediate Next Actions
 
-1. Open/update migration PRs for semio/quori/vizij with `@semio-community/ecosystem-site-core@0.3.6` and run smoke CI on each branch.
-2. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
-3. Execute T024 (shared UI/card/search/section extraction) using the WS1 inventory as the source of truth.
-4. Execute T025 (shared page-shell APIs) and T026 (site-local exception contract) so new features default to `ecosystem-site-core`.
-5. Complete WS5 follow-through: dependency bump automation (T017) and deterministic CI/deploy parity closure (T019).
+1. Execute T027 next: introduce shared typed view-model mappers in `ecosystem-site-core` and replace local ad-hoc serializers in semio/quori/vizij detail/card routes.
+2. Open/update migration PRs for semio/quori/vizij with current shared package versions and run smoke CI on each branch.
+3. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
+4. Execute T024/T025/T026 (shared UI + page-shell extraction and site-local exception contract) with mapper boundaries as part of the shared API.
+5. Complete WS5 follow-through: dependency bump automation (T017), deterministic CI/deploy parity closure (T019), and typecheck gate rollout (T028).
