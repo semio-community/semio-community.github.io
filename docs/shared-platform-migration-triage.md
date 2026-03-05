@@ -188,7 +188,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
-| T027 | WS1 | in_progress | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
+| T027 | WS1 | done | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
 | T028 | WS5 | done | Add cross-repo typecheck gate (`npx tsc --noEmit`) to smoke/deploy workflows and document local verification fallback when `astro check` is memory-bound | T014,T019 | PR CI fails on type drift before build/deploy; local checklist includes deterministic type gate |
 
 ## WS1 Component Inventory (Shared UI Generalization)
@@ -278,8 +278,11 @@ Latest integration notes:
 - Added Vizij content visibility hotfix to keep only `hri-2026-tutorial` visible on event routes in production-facing branches.
 - Added WS1 component inventory with explicit shared-eligible component buckets and documented site-local exception boundaries (Quori configurator, Vizij showcase/demo runtime).
 - Added shared person view-model mapper contracts in `ecosystem-site-core` (`person-view-models`) covering popover/list transforms plus organization key-contact and research-author mappings.
-- Switched organization/research detail routes in semio/quori/vizij to centralized person-mapper utilities (`src/utils/person.ts`) as a transition step; utilities now use compatibility shims that call shared package mappers when available and fallback locally otherwise.
+- Replaced `src/utils/person.ts` shim layer with direct typed imports of `toOrganizationKeyContact` and `toResearchAuthor` from `@semio-community/ecosystem-site-core` in organization/research detail routes across semio/quori/vizij; shim files deleted.
 - Added explicit typecheck gates (`npx tsc --noEmit --pretty false`) to smoke/preview/deploy workflows across semio/quori/vizij.
+- Added `.npmrc` with `@semio-community:registry=https://npm.pkg.github.com` to all three site repos; plain `npm install` now works without extra flags for local dev.
+- Added `site-core:build/link/unlink` scripts to semio and quori (vizij already had them); all three sites now have consistent local dev workflow for active ecosystem-site-core extraction.
+- Added `@semio-community/ecosystem-site-core` dependency to vizij-ai (was missing despite source imports); lockfile updated.
 
 ## Sequencing Plan
 
@@ -426,8 +429,7 @@ Verification requirements:
 
 ## Immediate Next Actions
 
-1. Execute T027 next: introduce shared typed view-model mappers in `ecosystem-site-core` and replace local ad-hoc serializers in semio/quori/vizij detail/card routes.
-2. Open/update migration PRs for semio/quori/vizij with current shared package versions and run smoke CI on each branch.
-3. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
-4. Execute T024/T025/T026 (shared UI + page-shell extraction and site-local exception contract) with mapper boundaries as part of the shared API.
-5. Complete WS5 follow-through: dependency bump automation (T017), deterministic CI/deploy parity closure (T019), and typecheck gate rollout (T028).
+1. Open/update migration PRs for semio/quori/vizij with current shared package versions and run smoke CI on each branch.
+2. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
+3. Execute T024/T025/T026 (shared UI + page-shell extraction and site-local exception contract) with mapper boundaries as part of the shared API.
+4. Complete WS5 follow-through: dependency bump automation (T017), deterministic CI/deploy parity closure (T019), and typecheck gate rollout (T028).
