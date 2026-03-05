@@ -30,7 +30,10 @@
     "content:sync:collections": "node scripts/sync-content-hub-collections.mjs",
     "content:sync:organizations": "node scripts/sync-content-hub-organizations.mjs",
     "content:sync:events": "node scripts/sync-content-hub-events.mjs",
-    "content:sync:all": "npm run content:sync:organizations && npm run content:sync:events && npm run content:sync:collections"
+    "content:sync:all": "npm run content:sync:organizations && npm run content:sync:events && npm run content:sync:collections",
+    "site-core:build": "npm --prefix ../ecosystem-site-core run build",
+    "site-core:link": "npm --prefix ../ecosystem-site-core run build && npm --prefix ../ecosystem-site-core link && npm link @semio-community/ecosystem-site-core",
+    "site-core:unlink": "npm unlink @semio-community/ecosystem-site-core && npm install"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.10",
