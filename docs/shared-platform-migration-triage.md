@@ -185,7 +185,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
 | T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
 | T023 | WS1 | done | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
-| T024 | WS1 | todo | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
+| T024 | WS1 | done | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
 | T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
 | T027 | WS1 | done | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
@@ -206,8 +206,8 @@ Shared-eligible components still local (to be moved):
 | Area | Current Local Paths | Target | Status |
 |---|---|---|---|
 | Navigation + layout runtime | `src/components/layout/*`, `src/components/navigation/*` in semio/quori/vizij | `ecosystem-site-core` with site config/slot APIs | done (site-local adapters only) |
-| Core cards + list elements | `src/components/cards/*` in semio/quori/vizij | `ecosystem-site-core` shared card package | todo |
-| Shared UI primitives | `src/components/ui/{IconButton,Avatar,Tooltip,BasicChip,OrganizationChip,CallToActionButton,FeaturedStar,Icon}.tsx` across sites | `ecosystem-site-core` UI primitives | todo |
+| Core cards + list elements | `src/components/cards/*` in semio/quori/vizij | `ecosystem-site-core` shared card package | done |
+| Shared UI primitives | `src/components/ui/{IconButton,Avatar,Tooltip,BasicChip,OrganizationChip,CallToActionButton,FeaturedStar,Icon}.tsx` across sites | `ecosystem-site-core` UI primitives | done |
 | Search surfaces | `src/components/search/*` across sites | `ecosystem-site-core` search module | todo |
 | Shared section blocks | `src/components/sections/*` + common `react-pages/home/sections/*` patterns | `ecosystem-site-core` section/layout module | todo |
 | Shared page shells | `src/react-pages/{home,events,projects,contributors,services,get-involved,about}` across sites | `ecosystem-site-core` page-shell APIs | todo |
