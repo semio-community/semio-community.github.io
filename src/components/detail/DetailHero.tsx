@@ -6,8 +6,11 @@ import {
   type DetailHeroAvatarRenderProps,
   type DetailHeroFeaturedRenderProps,
 } from "@semio-community/ecosystem-site-core";
-import { FeaturedStar } from "@/components/ui/FeaturedStar";
-import { Avatar, type AvatarType } from "@/components/ui/Avatar";
+import {
+  FeaturedStar,
+  Avatar,
+  type AvatarType,
+} from "@semio-community/ecosystem-site-core";
 
 export type DetailHeroProps = Omit<
   CoreDetailHeroProps,

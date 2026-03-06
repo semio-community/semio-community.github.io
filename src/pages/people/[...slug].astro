@@ -9,6 +9,7 @@ import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { PersonDetail } from "@/components/detail/views/PersonDetail";
 import { isDraftVisible } from "@/utils/drafts";
+import { toOrganizationCardData } from "@/utils/card-mappers";
 
 export async function getStaticPaths() {
   const people = await getCollection("people", ({ data }) => {
@@ -291,7 +292,7 @@ if (data.links?.mastodon) {
           organizationName:
             aff.organization?.data?.shortName || aff.organization?.data?.name,
           organizationImages: aff.organization?.data?.images,
-          organizationData: aff.organization?.data,
+          organizationData: aff.organization?.data ? toOrganizationCardData(aff.organization.data) : undefined,
           role: aff.role,
           department: aff.department,
         }))}
@@ -300,7 +301,7 @@ if (data.links?.mastodon) {
           organizationName:
             aff.organization?.data?.shortName || aff.organization?.data?.name,
           organizationImages: aff.organization?.data?.images,
-          organizationData: aff.organization?.data,
+          organizationData: aff.organization?.data ? toOrganizationCardData(aff.organization.data) : undefined,
           role: aff.role,
           department: aff.department,
         }))}

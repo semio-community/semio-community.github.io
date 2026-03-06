@@ -8,8 +8,9 @@ import {
   IconButton,
   type IconButtonSize,
   type LinkType,
-} from "@/components/ui/IconButton";
-import { linkPriority, normalizeLinkHref } from "@/data/links";
+  linkPriority,
+  normalizeLinkHref,
+} from "@semio-community/ecosystem-site-core";
 
 export interface LinkSectionProps {
   links?: Partial<Record<LinkType, string>>;

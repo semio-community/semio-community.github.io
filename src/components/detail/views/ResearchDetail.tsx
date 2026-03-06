@@ -9,11 +9,12 @@ import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
 import {
   PersonListElement,
   type PersonListElementProps,
-} from "@/components/cards/PersonListElement";
-import { OrganizationListElement } from "@/components/cards/OrganizationListElement";
-import { HardwareCard } from "@/components/cards/HardwareCard";
-import { SoftwareCard } from "@/components/cards/SoftwareCard";
+  OrganizationListElement,
+  HardwareCard,
+  SoftwareCard,
+} from "@semio-community/ecosystem-site-core";
 import { resolveDetailImagePolicy, resolveLogoAsset } from "@/utils/images";
+import { toOrganizationCardData } from "@/utils/card-mappers";
 
 type ResearchData = CollectionEntry<"research">["data"];
 
@@ -295,7 +296,7 @@ export function ResearchDetail({
                       >
                         <OrganizationListElement
                           organizationId={organization.id}
-                          data={organization.data}
+                          data={toOrganizationCardData(organization.data)}
                           roleLabel={
                             note
                               ? `${ORGANIZATION_ROLE_LABELS[role]} • ${note}`

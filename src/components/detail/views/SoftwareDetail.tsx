@@ -9,12 +9,14 @@ import SpecificationsList from "@/components/detail/SpecificationsList";
 import FeaturesList from "@/components/detail/FeaturesList";
 import ChipsList from "@/components/detail/ChipsList";
 import { RelatedItemsGrid } from "@/components/detail/RelatedItemsGrid";
-import { OrganizationListElement } from "@/components/cards/OrganizationListElement";
 import {
+  OrganizationListElement,
   PersonListElement,
   type PersonListElementProps,
-} from "@/components/cards/PersonListElement";
-import { getStatusColor, getStatusLabel } from "@/config/statusConfig";
+  type OrganizationCardData,
+  getStatusColor,
+  getStatusLabel,
+} from "@semio-community/ecosystem-site-core";
 import { resolveDetailImagePolicy, resolveLogoAsset } from "@/utils/images";
 
 type SoftwareData = CollectionEntry<"software">["data"];
@@ -23,7 +25,7 @@ export type SoftwareOrganizationContributor = {
   organizationId: string;
   role?: string;
   primary?: boolean;
-  data?: CollectionEntry<"organizations">["data"];
+  data?: OrganizationCardData;
 };
 
 export type SoftwarePersonContributor = {
