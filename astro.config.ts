@@ -125,6 +125,12 @@ export default defineConfig({
     build: {
       sourcemap: true, // Source maps generation
     },
+    ssr: {
+      // Process ecosystem-site-core through Vite's transform pipeline during SSR so that
+      // JSON imports (e.g. @iconify-json/*) are handled by Vite rather than Node.js ESM,
+      // which requires `with { type: "json" }` for bare JSON imports.
+      noExternal: ["@semio-community/ecosystem-site-core"],
+    },
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
     },
