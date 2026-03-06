@@ -182,7 +182,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T018 | WS5 | in_progress | Add content-hub sync workflow that opens site PRs on content changes | T009 | Site repo receives content sync PR with parity checks |
 | T019 | WS5 | in_progress | Standardize install strategy to lockfile-based CI (`npm ci`) for deploy and preview | T014 | Deploy and preview workflows are deterministic |
 | T020 | WS3 | done | Define per-entry visibility and override contract (`sites`, optional per-site patch fields) | T007 | Contract documented with examples and validation rules |
-| T021 | WS1 | in_progress | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
+| T021 | WS1 | done | Move shared detail/header utility styles into `ecosystem-site-core` exported stylesheet and remove site-local fallback utility patches | T004 | Site repos no longer require `@source` scanning of `node_modules` for shared detail component classes |
 | T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
 | T023 | WS1 | done | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
 | T024 | WS1 | done | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
