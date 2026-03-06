@@ -7,7 +7,7 @@ import { getPeopleByExpertise, getPeopleByOrganization } from "@/data/people";
 import { getAllResearch } from "@/data/research";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { PersonDetail } from "@/components/detail/views/PersonDetail";
+import { PersonDetail } from "@semio-community/ecosystem-site-core";
 import { isDraftVisible } from "@/utils/drafts";
 import { toOrganizationCardData } from "@/utils/card-mappers";
 
@@ -284,9 +284,6 @@ if (data.links?.mastodon) {
         data={data}
         fullName={fullName}
         badges={badges}
-        links={data.links}
-        bio={data.bio}
-        expertise={data.expertise || []}
         currentAffiliations={currentAffiliations.map((aff) => ({
           organizationId: aff.organizationId,
           organizationName:

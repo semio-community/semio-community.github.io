@@ -8,7 +8,7 @@ import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
 import { toOrganizationKeyContact } from "@semio-community/ecosystem-site-core";
-import { OrganizationDetail, type KeyContact } from "@/components/detail/views/OrganizationDetail";
+import { OrganizationDetail, type DetailKeyContact } from "@semio-community/ecosystem-site-core";
 import { isDraftVisible } from "@/utils/drafts";
 
 type PartnerEntry = CollectionEntry<"organizations">;
@@ -87,7 +87,7 @@ const meta = {
 const ogImage = `/og/organizations/${entry.id}.png`;
 
 const affiliatedPeople = await getPeopleByOrganization(entry.id);
-const keyContacts: KeyContact[] = affiliatedPeople
+const keyContacts: DetailKeyContact[] = affiliatedPeople
   .slice(0, 6)
   .map((personEntry) =>
     toOrganizationKeyContact({
