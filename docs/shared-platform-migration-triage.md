@@ -186,8 +186,9 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | T022 | WS1 | in_progress | Track shared-vs-site-specific component inventory across semio/quori/vizij | T002 | Inventory table exists and is updated each extraction cycle |
 | T023 | WS1 | done | Extract shared navigation/layout runtime components (`Header`, `Footer`, `NavigationMenu`, `MobileNavigation`) into `ecosystem-site-core` | T002,T022 | All three sites import shared navigation/layout components |
 | T024 | WS1 | done | Extract shared UI/card/search/section components to `ecosystem-site-core` | T023 | Shared components consumed from package; local copies removed |
-| T029 | WS1 | todo | Replace type-specific card wrapper components with converter functions (`toHardwareCardProps`, `toEventCardProps`, etc.) and formalize abstract data interfaces for all content types; detail views adopt abstract interfaces rather than `CollectionEntry` | T024 | Converter functions exported from `ecosystem-site-core`; type-specific wrappers removed; card transformation logic is pure and testable |
-| T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024,T029 | Shared page-shell package APIs render on all three sites |
+| T029 | WS1 | done | Replace type-specific card wrapper components with converter functions (`toHardwareCardProps`, `toEventCardProps`, etc.) and formalize abstract data interfaces for all content types; detail views adopt abstract interfaces rather than `CollectionEntry` | T024 | Converter functions exported from `ecosystem-site-core`; type-specific wrappers removed; card transformation logic is pure and testable |
+| T030 | WS1 | done | Extract shared detail view wrapper components (`HardwareDetail`, `SoftwareDetail`, `EventDetail`, `PersonDetail`, `OrganizationDetail`, `ResearchDetail`) and `RelatedItemsGrid` to `ecosystem-site-core`; add abstract `*DetailData` interfaces; convert quori/vizij `DetailHero` to thin adapters | T029 | All six entity detail views consumed from package on all three sites; `RelatedItemsGrid` shared; local detail view copies removed |
+| T025 | WS1 | todo | Extract shared page-shell React surfaces (`Home`, `Events`, `Projects`, `Contributors`, `Services`, `GetInvolved`) with slot/config APIs | T024,T029,T030 | Shared page-shell package APIs render on all three sites |
 | T026 | WS1 | todo | Document and enforce site-local exception list for non-generalizable components | T022 | Exception list committed and referenced by extraction PRs |
 | T027 | WS1 | done | Add shared view-model mappers in `ecosystem-site-core` (`toPersonListData`, `toPersonPopoverData`, and related detail-page mappers) and remove ad-hoc per-page serializers | T024 | Detail/card/popover components consume strict mapper outputs with no `as any` bridges |
 | T028 | WS5 | done | Add cross-repo typecheck gate (`npx tsc --noEmit`) to smoke/deploy workflows and document local verification fallback when `astro check` is memory-bound | T014,T019 | PR CI fails on type drift before build/deploy; local checklist includes deterministic type gate |
@@ -198,9 +199,11 @@ Goal:
 - Default to moving reusable React components and UI elements into `ecosystem-site-core`; keep only truly site-specific components in site repos.
 
 Already centralized in `ecosystem-site-core`:
-- Detail primitives and shared detail layout pieces (`BaseDetailLayout`, `DetailHero`, `ContentSection`, `InfoCard`, `FeaturesList`, `ChipsList`, `SpecificationsList`, `LinkSection`).
-- Shared helper/contracts modules (navigation, layout, drafts, date/event utilities, URL/images helpers, route mapping).
+- Detail primitives and shared detail layout pieces (`BaseDetailLayout`, `DetailHero`, `ContentSection`, `InfoCard`, `FeaturesList`, `ChipsList`, `SpecificationsList`, `LinkSection`, `RelatedItemsGrid`).
+- All six detail view wrapper components (`HardwareDetail`, `SoftwareDetail`, `EventDetail`, `PersonDetail`, `OrganizationDetail`, `ResearchDetail`) with abstract `*DetailData` interfaces and contributor/affiliation models.
+- Shared helper/contracts modules (navigation, layout, drafts, date/event utilities, URL/images helpers, route mapping, status-config, card-converters, detail-view-models, base-url-context).
 - Shared style entry (`styles.css` + `styles/base.css`) used by migrated detail surfaces.
+- Internal `Icon` component (iconify-backed, solar/mdi/hugeicons sets) used by SpecificationsList/FeaturesList; `@iconify-json/*` packages bundled as dependencies.
 
 Shared-eligible components still local (to be moved):
 
@@ -209,6 +212,7 @@ Shared-eligible components still local (to be moved):
 | Navigation + layout runtime | `src/components/layout/*`, `src/components/navigation/*` in semio/quori/vizij | `ecosystem-site-core` with site config/slot APIs | done (site-local adapters only) |
 | Core cards + list elements | `src/components/cards/*` in semio/quori/vizij | `ecosystem-site-core` shared card package | done |
 | Shared UI primitives | `src/components/ui/{IconButton,Avatar,Tooltip,BasicChip,OrganizationChip,CallToActionButton,FeaturedStar,Icon}.tsx` across sites | `ecosystem-site-core` UI primitives | done |
+| Detail view wrappers | `src/components/detail/views/*` and `RelatedItemsGrid` across sites | `ecosystem-site-core` detail views | done (T030) |
 | Search surfaces | `src/components/search/*` across sites | `ecosystem-site-core` search module | todo |
 | Shared section blocks | `src/components/sections/*` + common `react-pages/home/sections/*` patterns | `ecosystem-site-core` section/layout module | todo |
 | Shared page shells | `src/react-pages/{home,events,projects,contributors,services,get-involved,about}` across sites | `ecosystem-site-core` page-shell APIs | todo |
@@ -229,7 +233,7 @@ Completed since migration kickoff:
 
 Current active focus:
 
-- Continue WS1 component generalization in `ecosystem-site-core` with explicit inventory-driven extraction (next: T029 converter refactor, then T025 page-shell migration).
+- Continue WS1 component generalization in `ecosystem-site-core` with explicit inventory-driven extraction (next: T025 page-shell migration — Contributors, Events listing, Home sections).
 - Keep migration branches aligned with `main` hotfixes while preserving shared-package migration progress.
 - Continue WS5 operationalization: release/version governance, cross-repo smoke CI parity, and automated update PR flows.
 
@@ -285,7 +289,12 @@ Latest integration notes:
 - Added `site-core:build/link/unlink` scripts to semio and quori (vizij already had them); all three sites now have consistent local dev workflow for active ecosystem-site-core extraction.
 - Added `@semio-community/ecosystem-site-core` dependency to vizij-ai (was missing despite source imports); lockfile updated.
 - Extracted 8 shared UI primitives and 12 card/list-element components to `ecosystem-site-core` v0.3.12; all three site repos consume them from the package on migration branches (T024 done).
-- Architectural decision (T029): prefer converter functions over thin wrapper components for cards. Type-specific card wrappers (`HardwareCard`, `SoftwareCard`, etc.) will be replaced by pure `toHardwareCardProps(id, data)` → `ItemCardProps` converters exported from `ecosystem-site-core`; detail views will adopt abstract data interfaces (`HardwareDetailData`, etc.) rather than `CollectionEntry` types to support Astro-agnostic extraction in T025.
+- Architectural decision (T029): prefer converter functions over thin wrapper components for cards. Type-specific card wrappers (`HardwareCard`, `SoftwareCard`, etc.) will be replaced by pure `toHardwareCardProps(id, data)` → `ItemCardProps` converters exported from `ecosystem-site-core`; detail views will adopt abstract data interfaces (`HardwareDetailData`, etc.) rather than `CollectionEntry` types to support Astro-agnostic extraction in T030.
+- Extracted all six detail view wrapper components (T030) to `ecosystem-site-core` (v0.3.14–v0.3.22): `HardwareDetail`, `SoftwareDetail`, `EventDetail`, `PersonDetail`, `OrganizationDetail`, `ResearchDetail`; `RelatedItemsGrid` shared; abstract `*DetailData` and contributor/affiliation interfaces added to contracts; all three site repos consuming from package with local copies deleted.
+- Fixed PR-preview baseUrl propagation for detail views and contributor pages: added `baseUrl?: string` prop to all detail view components and `ContributorsPage`; each component self-wraps with `BaseUrlProvider` (v0.3.19–v0.3.20).
+- Added internal `Icon` component backed by `@iconify/utils` + `@iconify-json/solar/mdi/hugeicons`; replaced `renderIcon` callback pattern in `SpecificationsList`/`FeaturesList` with direct icon rendering (v0.3.21). Added `vite.ssr.noExternal: ["@semio-community/ecosystem-site-core"]` to all three site Astro configs to handle Node.js ESM JSON import restrictions.
+- Fixed `DetailHero` featured star rendering (v0.3.22): star now shows when `featuredState` is set even with no badges; default fallback uses `FeaturedStar` component instead of a chip span.
+- Current package version: `@semio-community/ecosystem-site-core@0.3.22`.
 
 ## Sequencing Plan
 
@@ -432,7 +441,8 @@ Verification requirements:
 
 ## Immediate Next Actions
 
-1. Open/update migration PRs for semio/quori/vizij with current shared package versions and run smoke CI on each branch.
-2. Finish T021 by removing remaining site-local detail fallback style patches once shared stylesheet coverage is confirmed on all sites.
-3. Execute T024/T025/T026 (shared UI + page-shell extraction and site-local exception contract) with mapper boundaries as part of the shared API.
-4. Complete WS5 follow-through: dependency bump automation (T017), deterministic CI/deploy parity closure (T019), and typecheck gate rollout (T028).
+1. **T025** — Begin page-shell extraction: `ContributorsPage` is the highest-priority candidate (already uses shared cards/detail primitives; cross-site-identical). Extract to `ecosystem-site-core` as a shared React page shell with a `baseUrl` prop and content slot.
+2. **T025 continued** — Extract `EventsPage` listing shell, then home section blocks (hero, feature sections, CTA patterns shared across semio/quori/vizij).
+3. **T017** — Add site-repo Actions to auto-open dependency bump PRs when `ecosystem-site-core` publishes a new version.
+4. **T019** — Standardize all deploy/preview/smoke workflows to `npm ci` (lockfile-based); audit any remaining `npm install` usages.
+5. **T026** — Commit the site-local exception list (Quori configurator/3D, Vizij showcase/demos) as a doc artifact in each site repo.
