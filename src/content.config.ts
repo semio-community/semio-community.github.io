@@ -387,18 +387,13 @@ const events = defineCollection({
         "webinar",
         "competition",
       ]),
-      startDate: z.string().or(z.date()).transform(parseDate),
-      endDate: z.string().or(z.date()).transform(parseDate),
-      submissionDeadlineDate: z
-        .string()
-        .or(z.date())
-        .transform(parseDate)
-        .optional(),
-      notificationDate: z
-        .string()
-        .or(z.date())
-        .transform(parseDate)
-        .optional(),
+      dates: z.array(
+        z.object({
+          name: z.string(),
+          date: z.string().or(z.date()).transform(parseDate),
+          order: z.number().optional(),
+        }),
+      ),
       location: z.object({
         venue: z.string().optional(),
         city: z.string(),
@@ -441,7 +436,25 @@ const events = defineCollection({
       draft: z.boolean().optional(),
       topics: z.array(z.string()),
       organizations: z.array(eventOrganizationSchema).optional(),
-    }),
+    }).transform((data) => ({
+      ...data,
+      startDate: (() => {
+        const s = data.dates.find(
+          (d) => d.name.toLowerCase() === "start date" || d.name.toLowerCase() === "start",
+        );
+        return s?.date ?? data.dates.reduce((min, d) => (d.date < min ? d.date : min), data.dates[0]!.date);
+      })(),
+      endDate: (() => {
+        const e = data.dates.find(
+          (d) => d.name.toLowerCase() === "end date" || d.name.toLowerCase() === "end",
+        );
+        if (e) return e.date;
+        const s = data.dates.find(
+          (d) => d.name.toLowerCase() === "start date" || d.name.toLowerCase() === "start",
+        );
+        return s?.date ?? data.dates[0]!.date;
+      })(),
+    })),
 });
 
 export const collections = {
