@@ -3,18 +3,8 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import BaseHead from "@/components/BaseHead.astro";
 import SiteShell from "@/layouts/SiteShell.astro";
-import {
-  BaseDetailLayout,
-  DetailHero,
-  SpecificationsList,
-  ContentSection,
-} from "@/components/detail";
-import { RelatedItemsGrid } from "@semio-community/ecosystem-site-core";
-import LinkSection from "@/components/detail/LinkSection";
+import { EventDetail, type RelatedItem } from "@semio-community/ecosystem-site-core";
 import { getAllEvents } from "@/data/events";
-import { BasicChip } from "@semio-community/ecosystem-site-core";
-import { resolveLogoAsset } from "@/utils/images";
-import { getEventPreviewDescriptionText } from "@/utils/events";
 import { parseDateLocal } from "@/utils/date";
 import { isDraftVisible } from "@/utils/drafts";
 
@@ -39,13 +29,11 @@ async function getRelatedEvents(
 ) {
   const allEvents = await getAllEvents();
 
-  // Filter out the current event and past events (unless current is also past)
   const currentDate = new Date();
   const isCurrentPast = parseDateLocal(event.data.endDate) < currentDate;
 
   const otherEvents = allEvents.filter((e) => {
     if (e.id === event.id) return false;
-    // If current event is past, include all; otherwise prefer upcoming
     if (!isCurrentPast) {
       const eventDate = parseDateLocal(e.data.startDate);
       if (eventDate < currentDate) return false;
@@ -53,48 +41,25 @@ async function getRelatedEvents(
     return true;
   });
 
-  // Score each event based on similarity
   const scoredEvents = otherEvents.map((e) => {
     let score = 0;
-
-    // Same type gets points
     if (e.data.type === event.data.type) score += 3;
-
-    // Same delivery mode (online vs in-person) gets points
-    if (
-      Boolean(e.data.location.online) === Boolean(event.data.location.online)
-    ) {
-      score += 2;
-    }
-
-    // Same city gets points
+    if (Boolean(e.data.location.online) === Boolean(event.data.location.online)) score += 2;
     if (e.data.location.city === event.data.location.city) score += 2;
-
-    // Same country gets points
     if (e.data.location.country === event.data.location.country) score += 1;
-
-    // Overlapping topics get points
     const eventTopics = new Set(event.data.topics || []);
-    const otherTopics = e.data.topics || [];
-    const topicOverlap = otherTopics.filter((topic) =>
-      eventTopics.has(topic),
-    ).length;
+    const topicOverlap = (e.data.topics || []).filter((t) => eventTopics.has(t)).length;
     score += topicOverlap * 2;
-
-    // Temporal proximity (within 3 months) gets points
     const timeDiff = Math.abs(
       parseDateLocal(e.data.startDate).getTime() -
         parseDateLocal(event.data.startDate).getTime(),
     );
     const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
     if (monthsDiff <= 3) score += 3 - Math.floor(monthsDiff);
-
     return { event: e, score };
   });
 
-  // Sort by score and take the top ones
   scoredEvents.sort((a, b) => b.score - a.score);
-
   return scoredEvents
     .filter((se) => se.score > 0)
     .slice(0, limit)
@@ -108,139 +73,7 @@ const meta = {
   description: data.description,
 };
 const ogImage = `/og/events/${entry.id}.png`;
-
-// Determine event status
-const currentDate = new Date();
-const startDate = parseDateLocal(data.startDate);
-const endDate = parseDateLocal(data.endDate);
-let eventStatus = "upcoming";
-if (currentDate > endDate) {
-  eventStatus = "past";
-} else if (currentDate >= startDate && currentDate <= endDate) {
-  eventStatus = "ongoing";
-}
-
-// Prepare status badges
-const badges = [];
-
-// Status badge
-if (eventStatus === "ongoing") {
-  badges.push({
-    text: "Ongoing",
-    color: "green" as const,
-    variant: "solid" as const,
-  });
-} else if (eventStatus === "upcoming") {
-  badges.push({
-    text: "Upcoming",
-    color: "blue" as const,
-    variant: "solid" as const,
-  });
-} else {
-  badges.push({
-    text: "Past Event",
-    color: "gray" as const,
-    variant: "outline" as const,
-  });
-}
-
-if (typeof data.location.online === "boolean") {
-  badges.push({
-    text: data.location.online ? "Online" : "In Person",
-    color: data.location.online ? ("accent" as const) : ("green" as const),
-    variant: "outline" as const,
-  });
-}
-
-const typeLabels = {
-  conference: "Conference",
-  workshop: "Workshop",
-  hackathon: "Hackathon",
-  meetup: "Meetup",
-  webinar: "Webinar",
-  competition: "Competition",
-};
-badges.push({
-  text: typeLabels[data.type] || data.type,
-  color: "blue" as const,
-  variant: "outline" as const,
-});
-
-const eventLinks = { ...(data.links || {}) };
-if (eventStatus === "past") {
-  delete eventLinks.registration;
-}
-
-// Format dates for display
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-};
-
-// Prepare event details
-const eventDetailsItems = [];
-eventDetailsItems.push({
-  label: "Start Date",
-  value: formatDate(startDate),
-  icon: "solar:calendar-date-line-duotone",
-});
-eventDetailsItems.push({
-  label: "End Date",
-  value: formatDate(endDate),
-  icon: "solar:calendar-mark-line-duotone",
-});
-// Prepare location details
-const locationItems = [];
-if (data.location.venue) {
-  locationItems.push({
-    label: "Venue",
-    value: data.location.venue,
-    icon: "solar:buildings-line-duotone",
-  });
-}
-locationItems.push({
-  label: "Location",
-  value: `${data.location.city}, ${data.location.country}`,
-  icon: "solar:map-point-line-duotone",
-});
-if (data.location.online) {
-  locationItems.push({
-    label: "Online Access",
-    value: "Available",
-    icon: "solar:laptop-minimalistic-line-duotone",
-  });
-}
-if (data.location.coordinates) {
-  locationItems.push({
-    label: "Map",
-    value: "View on Google Maps",
-    link: `https://maps.google.com/?q=${data.location.coordinates.lat},${data.location.coordinates.lng}`,
-    external: true,
-    icon: "solar:map-line-duotone",
-  });
-}
-
-const formatRoleLabel = (role: string) =>
-  role
-    .split("-")
-    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-    .join(" ");
-
-const roleEntries = (data.roles || []).map((role) => ({
-  value: role,
-  label: formatRoleLabel(role),
-}));
-
-const descriptionText = getEventPreviewDescriptionText(data);
-const featuredState = data.featured
-  ? eventStatus === "past"
-    ? "previously-featured"
-    : "featured"
-  : undefined;---
+---
 
 <html
   class="overflow-x-hidden grid scroll-pt-18 scroll-smooth font-sans text-text antialiased"
@@ -255,126 +88,11 @@ const featuredState = data.featured
   </head>
   <body class="relative min-h-screen w-full bg-surface text-xl md:text-base">
     <SiteShell showBackground containerClassName="max-w-5xl">
-      <BaseDetailLayout>
-        <Fragment slot="hero">
-          <DetailHero
-            image={data.images?.hero}
-            title={data.name}
-            subtitle={descriptionText}
-            badges={badges}
-            featuredState={featuredState}
-            logo={resolveLogoAsset(data.images)}
-            entityType="event"
-          />
-        </Fragment>
-
-        <Fragment slot="links">
-          {
-            eventLinks && Object.keys(eventLinks).length > 0 && (
-              <LinkSection
-                client:idle
-                links={eventLinks}
-                size="md"
-                className="gap-1"
-              />
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="description">
-          <ContentSection title="ABOUT THE EVENT" content={data.description} />
-        </Fragment>
-
-        <Fragment slot="metadata">
-          <SpecificationsList
-            title="EVENT DETAILS"
-            items={eventDetailsItems}
-            defaultItemIcon="solar:calendar-line-duotone"
-          />
-          <SpecificationsList
-            title="LOCATION"
-            items={locationItems}
-            defaultItemIcon="solar:map-point-line-duotone"
-          />
-        </Fragment>
-
-        <Fragment slot="contributors">
-          {
-            roleEntries.length > 0 && (
-              <div class="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-                <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                  SEMIO COMMUNITY ROLES
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                  {roleEntries.map((role) => (
-                    <BasicChip text={role.label} variant="primary" />
-                  ))}
-                </div>
-              </div>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="tags">
-          {
-            data.topics && data.topics.length > 0 && (
-              <div class="bg-linear-to-br from-surface-lighter to-surface rounded-xl border border-accent-one/20 p-6">
-                <h3 class="text-xs font-semibold mb-3 text-accent-base uppercase tracking-wider">
-                  TOPICS
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                  {data.topics.map((topic: string) => (
-                    <span class="px-3 py-1.5 bg-accent-two/10 rounded-lg text-sm text-accent-base">
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )
-          }
-        </Fragment>
-
-        <Fragment slot="related">
-          {
-            relatedEvents && relatedEvents.length > 0 && (
-              <RelatedItemsGrid
-                title="Related Events"
-                subtitle="Similar upcoming and past events"
-                items={
-                  relatedEvents.map((event) => ({
-                    id: event.id,
-                    data: {
-                      name: event.data.name,
-                      title: undefined,
-                      displayName: event.data.displayName,
-                      description: event.data.description,
-                      abstract: undefined,
-                      status: undefined,
-                      type: event.data.type,
-                      category: undefined,
-                      featured: event.data.featured,
-                      images: event.data.images,
-                      avatar: undefined,
-                      logo: undefined,
-                      thumbnail: undefined,
-                      banner: event.data.images?.hero,
-                      links: event.data.links,
-                      startDate: event.data.startDate,
-                      endDate: event.data.endDate,
-                      shortDescription: `${
-                        typeLabels[event.data.type] || event.data.type
-                      } • ${event.data.location.city}`,
-                    },
-                  })) as any
-                }
-                itemType="events"
-                columns={3}
-                baseUrl={import.meta.env.BASE_URL}
-              />
-            )
-          }
-        </Fragment>
-      </BaseDetailLayout>
+      <EventDetail
+        data={data}
+        relatedEvents={relatedEvents as RelatedItem[]}
+        baseUrl={import.meta.env.BASE_URL}
+      />
     </SiteShell>
   </body>
 </html>
