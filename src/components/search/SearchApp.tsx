@@ -1,7 +1,15 @@
 import React from "react";
 import { SearchProvider, useSearch, SearchModal } from "@/components/search";
-import { MobileNavigation } from "@/components/navigation/MobileNavigation";
+import {
+  BoundMobileNavigation,
+  getNavHighlightClasses,
+  resolveNavCtaVariant,
+  resolveNavHighlightVariant,
+} from "@semio-community/ecosystem-site-core";
+import { navIconMap } from "@/components/navigation/navIcons";
 import { NavIconButton } from "@/components/navigation/NavIconButton";
+import { siteConfig } from "@/site.config";
+import { url as buildUrl } from "@/utils/url";
 import type { Section } from "@/site.config";
 
 /**
@@ -45,6 +53,14 @@ export interface SearchAppProps {
   className?: string;
 }
 
+const navHighlight = getNavHighlightClasses(
+  resolveNavHighlightVariant(siteConfig.navigation?.highlightVariant),
+);
+const ctaVariant = resolveNavCtaVariant({
+  ctaVariant: siteConfig.navigation?.ctaVariant,
+  highlightVariant: siteConfig.navigation?.highlightVariant,
+});
+
 /**
  * DesktopSearchTrigger
  *
@@ -85,6 +101,27 @@ export const DesktopSearchTrigger: React.FC<
   );
 };
 
+const MobileNav: React.FC<{ menuLinks: MenuLink[]; currentPath: string; urlPrefix: string }> = ({
+  menuLinks,
+  currentPath,
+  urlPrefix,
+}) => {
+  const { query, setQuery, results, loading } = useSearch();
+  const resolveHref = (path: string) => buildUrl(path, urlPrefix || import.meta.env.BASE_URL);
+
+  return (
+    <BoundMobileNavigation
+      menuLinks={menuLinks}
+      currentPath={currentPath}
+      resolveHref={resolveHref}
+      navHighlight={navHighlight}
+      ctaVariant={ctaVariant}
+      iconMap={navIconMap}
+      search={{ query, setQuery, results, loading }}
+    />
+  );
+};
+
 export const SearchApp: React.FC<SearchAppProps> = ({
   menuLinks,
   currentPath,
@@ -108,7 +145,7 @@ export const SearchApp: React.FC<SearchAppProps> = ({
 
         {/* Mobile Navigation with Radix UI Dialog (hidden on desktop) */}
         <div className="md:hidden">
-          <MobileNavigation
+          <MobileNav
             menuLinks={menuLinks}
             currentPath={currentPath}
             urlPrefix={urlPrefix}
