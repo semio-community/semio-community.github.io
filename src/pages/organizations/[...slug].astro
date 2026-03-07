@@ -7,14 +7,15 @@ import { getAllOrganizations } from "@/data/organizations";
 import { getPeopleByOrganization } from "@/data/people";
 import { getAllHardware } from "@/data/hardware";
 import { getAllSoftware } from "@/data/software";
-import { OrganizationDetail, type KeyContact } from "@/components/detail/views/OrganizationDetail";
+import { toOrganizationKeyContact } from "@semio-community/ecosystem-site-core";
+import { OrganizationDetail, type DetailKeyContact } from "@semio-community/ecosystem-site-core";
 import { isDraftVisible } from "@/utils/drafts";
 
 type PartnerEntry = CollectionEntry<"organizations">;
 
 export async function getStaticPaths() {
   const organizations = await getCollection("organizations", ({ data }) => {
-    return isDraftVisible(data.draft);
+    return isDraftVisible(data.draft, data.sites);
   });
   const partners = organizations.filter((org) => org.data.isPartner);
   return partners.map((entry) => ({
@@ -86,29 +87,18 @@ const meta = {
 const ogImage = `/og/organizations/${entry.id}.png`;
 
 const affiliatedPeople = await getPeopleByOrganization(entry.id);
-const keyContacts: KeyContact[] = affiliatedPeople
+const keyContacts: DetailKeyContact[] = affiliatedPeople
   .slice(0, 6)
-  .map((personEntry) => {
-    const affiliation = personEntry.data.affiliations?.find(
-      (aff) => aff.organizationId === entry.id,
-    );
-    return {
-      personId: personEntry.id,
-      person: personEntry.data,
-      role: affiliation?.role,
-      department: affiliation?.department,
-      currentAffiliation: affiliation
-        ? {
-            organizationId: entry.id,
-            partnerName: data.shortName || data.name,
-            role: affiliation.role,
-          }
-        : undefined,
-    };
-  });---
+  .map((personEntry) =>
+    toOrganizationKeyContact({
+      personEntry,
+      organizationId: entry.id,
+      partnerName: data.shortName || data.name,
+    }),
+  );---
 
 <html
-  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  class="overflow-x-hidden grid scroll-pt-18 scroll-smooth font-sans text-text antialiased"
   lang="en"
 >
   <head>
@@ -118,13 +108,14 @@ const keyContacts: KeyContact[] = affiliatedPeople
       ogImage={ogImage}
     />
   </head>
-  <body class="relative min-h-screen w-full bg-surface">
-    <SiteShell noPaddingTop showBackground containerClassName="max-w-5xl">
+  <body class="relative min-h-screen w-full bg-surface text-xl md:text-base">
+    <SiteShell showBackground containerClassName="max-w-5xl">
       <OrganizationDetail
         data={data}
         relatedContent={relatedContent}
         relatedOrganizations={relatedOrganizations}
         keyContacts={keyContacts}
+        baseUrl={import.meta.env.BASE_URL}
       />
     </SiteShell>
   </body>

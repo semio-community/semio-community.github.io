@@ -38,8 +38,6 @@ export default function BaseDetailLayout({
   related,
   footer,
 }: BaseDetailLayoutProps) {
-  const paddingClass = hero ? "pt-16 md:pt-20 lg:pt-4" : "pt-20 lg:pt-4";
-
   const renderSection = (section?: SectionContent) => {
     if (section == null || section === "") return null;
     return <>{section}</>;
@@ -50,7 +48,6 @@ export default function BaseDetailLayout({
       <article
         className={clsx(
           "detail-layout w-full min-h-screen",
-          paddingClass,
           className,
         )}
       >
@@ -62,16 +59,16 @@ export default function BaseDetailLayout({
 
         {renderSection(hero)}
 
-        {renderSection(actions) && (
-          <div className="mb-8 px-4 md:px-8 lg:px-12">
-            {renderSection(actions)}
-          </div>
-        )}
-
         {renderSection(links) && (
           <section className="links-section mb-8">
             {renderSection(links)}
           </section>
+        )}
+
+        {renderSection(actions) && (
+          <div className="mb-8 px-4 md:px-8 lg:px-12">
+            {renderSection(actions)}
+          </div>
         )}
 
         {renderSection(description) && (

@@ -1,5 +1,9 @@
 import React, { type ReactNode } from "react";
 import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
+import {
+  getSiteLayoutContainerClass,
+  getSiteLayoutContentGridClass,
+} from "@semio-community/ecosystem-site-core";
 
 /**
  * BaseLayout.tsx
@@ -84,6 +88,9 @@ export default function SiteLayout({
   showBackground = true,
   containerClassName = "",
 }: SiteLayoutProps) {
+  const containerClass = getSiteLayoutContainerClass(containerClassName);
+  const contentGridClass = getSiteLayoutContentGridClass(noPaddingTop);
+
   return (
     <div className="relative min-h-screen w-full text-text antialiased">
       {/* Optional top-level providers (e.g., theme) */}
@@ -105,15 +112,8 @@ export default function SiteLayout({
           {sidebar}
 
           {/* Main container */}
-          <div
-            id="container"
-            className={`relative m-auto max-w-4xl grow ${containerClassName}`}
-          >
-            <div
-              className={`m-auto grid min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 ${
-                noPaddingTop ? "" : "pt-[72px] lg:pt-4"
-              }`}
-            >
+          <div id="container" className={containerClass}>
+            <div className={contentGridClass}>
               <main id="main" className="relative grow" data-pagefind-body>
                 {children}
               </main>

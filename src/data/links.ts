@@ -1,4 +1,4 @@
-import type { LinkType } from "@/components/ui/IconButton";
+import type { LinkType } from "@semio-community/ecosystem-site-core";
 
 export const linkPriority: LinkType[] = [
   "website",

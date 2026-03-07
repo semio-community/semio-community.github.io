@@ -1,19 +1,17 @@
 import type React from "react";
 import CMS from "decap-cms-app";
-import type { DetailHeroBadge } from "@/components/detail/DetailHero";
 import {
   PersonDetail,
-  type AffiliationDisplay,
-} from "@/components/detail/views/PersonDetail";
-import { EventDetail } from "@/components/detail/views/EventDetail";
-import { OrganizationDetail } from "@/components/detail/views/OrganizationDetail";
-import { HardwareDetail } from "@/components/detail/views/HardwareDetail";
-import { SoftwareDetail } from "@/components/detail/views/SoftwareDetail";
-import {
+  EventDetail,
+  OrganizationDetail,
+  HardwareDetail,
+  SoftwareDetail,
   ResearchDetail,
-  type ResearchAuthor,
+  type DetailHeroBadge,
+  type AffiliationDisplay,
   type ResearchOrganizationLink,
-} from "@/components/detail/views/ResearchDetail";
+} from "@semio-community/ecosystem-site-core";
+import type { ResearchAuthorModel } from "@semio-community/ecosystem-site-core";
 import Footer from "@/components/layout/Footer";
 import previewStyles from "@/styles/global.css?inline";
 declare const __CMS_ROOT__: string;
@@ -25,7 +23,7 @@ function applyPreviewChrome() {
   root.classList.add(
     "overflow-x-hidden",
     "grid",
-    "scroll-pt-[72px]",
+    "scroll-pt-18",
     "scroll-smooth",
     "font-sans",
     "text-text",
@@ -207,9 +205,6 @@ const PeoplePreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
         }
         fullName={name || "Person"}
         badges={badges}
-        links={links}
-        bio={bio}
-        expertise={expertise}
         currentAffiliations={currentAffiliations}
         pastAffiliations={pastAffiliations}
         relatedContent={undefined}
@@ -363,7 +358,7 @@ const ResearchPreview: React.FC<PreviewProps> = ({ entry, getAsset }) => {
     },
   };
 
-  const authors: ResearchAuthor[] = (data?.contributors || []).map(
+  const authors: ResearchAuthorModel[] = (data?.contributors || []).map(
     (contributor: Record<string, unknown>, idx: number) => ({
       order: contributor?.order ?? idx,
       personId: contributor?.personId || `contributor-${idx + 1}`,

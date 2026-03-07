@@ -6,6 +6,14 @@ import { getAllOrganizations } from "@/data/organizations";
 import { getAllPeople } from "@/data/people";
 import { getCollection } from "astro:content";
 import { isDraftVisible } from "@/utils/drafts";
+import { toPersonCardData, toOrganizationCardData } from "@/utils/card-mappers";
+import type {
+  ContributorsPagePersonItem,
+  ContributorsPageOrganizationItem,
+  ContributorsPagePartnerSection,
+} from "@semio-community/ecosystem-site-core";
+import React from "react";
+import { UsersGroupTwoRounded } from "@solar-icons/react-perf/LineDuotone";
 
 const meta = {
   title: "Contributors",
@@ -17,12 +25,19 @@ const ogImage = "/og/contributors.png";
 const allOrganizations = await getAllOrganizations();
 const allPeople = await getAllPeople();
 const organizations = await getCollection("organizations", ({ data }) =>
-  isDraftVisible(data.draft),
+  isDraftVisible(data.draft, data.sites),
 );
 
 const orgNameById = Object.fromEntries(
   organizations.map((org) => [org.id, org.data.shortName || org.data.name]),
 );
+
+function affiliationLabel(person: (typeof allPeople)[number]): string | undefined {
+  const aff =
+    person.data.affiliations?.find((a) => a.isPrimary) ??
+    person.data.affiliations?.find((a) => !a.endDate);
+  return aff ? orgNameById[aff.organizationId] || aff.organizationId : undefined;
+}
 
 const HIDE_BOARD_MEMBERS = true;
 const boardMembers = allPeople.filter(
@@ -35,7 +50,6 @@ const communityMembers = allPeople.filter(
 
 const donorPeople = allPeople.filter((p) => p.data.isDonor);
 const donorOrganizations = organizations.filter((org) => org.data.isDonor);
-const donorsCount = donorPeople.length + donorOrganizations.length;
 const grantMakers = organizations.filter((org) => org.data.isGrantMaker);
 
 const partnerTypeInfo: Record<
@@ -73,7 +87,19 @@ for (const partner of allOrganizations) {
   partnersByType[partner.data.type]!.push(partner);
 }
 
-const partnerSections = [
+const mappedBoardMembers: ContributorsPagePersonItem[] = boardMembers.map((p) => ({
+  id: p.id,
+  data: toPersonCardData(p.data),
+  affiliationLabel: affiliationLabel(p),
+}));
+
+const mappedCommunityMembers: ContributorsPagePersonItem[] = communityMembers.map((p) => ({
+  id: p.id,
+  data: toPersonCardData(p.data),
+  affiliationLabel: affiliationLabel(p),
+}));
+
+const mappedPartnerSections: ContributorsPagePartnerSection[] = [
   ...orderedPartnerTypes,
   ...Object.keys(partnersByType).filter(
     (type) => !orderedPartnerTypes.includes(type),
@@ -81,19 +107,32 @@ const partnerSections = [
 ].map((type) => ({
   type,
   info: partnerTypeInfo[type] ?? null,
-  partners: partnersByType[type] ?? [],
+  partners: (partnersByType[type] ?? []).map((o): ContributorsPageOrganizationItem => ({
+    id: o.id,
+    data: toOrganizationCardData(o.data),
+  })),
 }));
 
-const sponsorsUniqueCount = (() => {
-  const ids = new Set<string>();
-  donorPeople.forEach((p) => ids.add(`p:${p.id}`));
-  donorOrganizations.forEach((o) => ids.add(`o:${o.id}`));
-  grantMakers.forEach((o) => ids.add(`o:${o.id}`));
-  return ids.size;
-})();---
+const mappedDonorPeople: ContributorsPagePersonItem[] = donorPeople.map((p) => ({
+  id: p.id,
+  data: toPersonCardData(p.data),
+}));
+
+const mappedDonorOrganizations: ContributorsPageOrganizationItem[] = donorOrganizations.map((o) => ({
+  id: o.id,
+  data: toOrganizationCardData(o.data),
+}));
+
+const mappedGrantMakers: ContributorsPageOrganizationItem[] = grantMakers.map((o) => ({
+  id: o.id,
+  data: toOrganizationCardData(o.data),
+}));
+
+const heroIcon = React.createElement(UsersGroupTwoRounded, { className: "w-16 h-16 text-accent-two" });
+---
 
 <html
-  class="overflow-x-hidden grid scroll-pt-[72px] scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  class="overflow-x-hidden grid scroll-pt-18 scroll-smooth font-sans text-text antialiased"
   lang="en"
 >
   <head>
@@ -103,20 +142,19 @@ const sponsorsUniqueCount = (() => {
       ogImage={ogImage}
     />
   </head>
-  <body class="relative min-h-screen w-full bg-surface">
-    <SiteShell noPaddingTop showBackground containerClassName="max-w-6xl">
+  <body class="relative min-h-screen w-full bg-surface text-xl md:text-base">
+    <SiteShell showBackground containerClassName="max-w-6xl">
       <ContributorsPage
         meta={meta}
         hideBoardMembers={HIDE_BOARD_MEMBERS}
-        boardMembers={boardMembers}
-        communityMembers={communityMembers}
-        partnerSections={partnerSections}
-        donorPeople={donorPeople}
-        donorOrganizations={donorOrganizations}
-        grantMakers={grantMakers}
-        donorsCount={donorsCount}
-        sponsorsUniqueCount={sponsorsUniqueCount}
-        orgNameById={orgNameById}
+        boardMembers={mappedBoardMembers}
+        communityMembers={mappedCommunityMembers}
+        partnerSections={mappedPartnerSections}
+        donorPeople={mappedDonorPeople}
+        donorOrganizations={mappedDonorOrganizations}
+        grantMakers={mappedGrantMakers}
+        heroIcon={heroIcon}
+        baseUrl={import.meta.env.BASE_URL}
       />
     </SiteShell>
   </body>

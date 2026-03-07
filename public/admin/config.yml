@@ -272,6 +272,31 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Related People
+        name: relatedPeople
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: people
+          value_field: id
+          display_fields: &a7
+            - name
+            - id
+          search_fields: &a8
+            - name
+            - id
   - name: organizations
     label: Organizations
     label_singular: Organization
@@ -526,9 +551,45 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Visibility
+        name: visibility
+        widget: object
+        required: false
+        fields:
+          - label: Sites
+            name: sites
+            widget: select
+            options: []
+            multiple: true
+      - label: Overrides
+        name: overrides
+        widget: string
+        required: false
+        hint: "Unmapped schema: siteOverridesSchema"
       - label: Order
         name: order
         widget: number
+      - label: Related Organizations
+        name: relatedOrganizations
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: organizations
+          value_field: id
+          display_fields: *a1
+          search_fields: *a2
   - name: hardware
     label: Hardware
     label_singular: Hardware
@@ -819,6 +880,55 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Related Hardware
+        name: relatedHardware
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: hardware
+          value_field: id
+          display_fields: &a3
+            - name
+            - id
+          search_fields: &a4
+            - name
+            - id
+      - label: Related Software
+        name: relatedSoftware
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: software
+          value_field: id
+          display_fields: &a5
+            - name
+            - id
+          search_fields: &a6
+            - name
+            - id
+      - label: Related Research
+        name: relatedResearch
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: string
   - name: software
     label: Software
     label_singular: Software
@@ -1120,6 +1230,62 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Visibility
+        name: visibility
+        widget: object
+        required: false
+        fields:
+          - label: Sites
+            name: sites
+            widget: select
+            options: []
+            multiple: true
+      - label: Overrides
+        name: overrides
+        widget: string
+        required: false
+        hint: "Unmapped schema: siteOverridesSchema"
+      - label: Related Hardware
+        name: relatedHardware
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: hardware
+          value_field: id
+          display_fields: *a3
+          search_fields: *a4
+      - label: Related Software
+        name: relatedSoftware
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: relation
+          collection: software
+          value_field: id
+          display_fields: *a5
+          search_fields: *a6
+      - label: Related Research
+        name: relatedResearch
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: string
       - label: Publish Date
         name: publishDate
         widget: datetime
@@ -1152,12 +1318,8 @@ collections:
             widget: relation
             collection: people
             value_field: id
-            display_fields:
-              - name
-              - id
-            search_fields:
-              - name
-              - id
+            display_fields: *a7
+            search_fields: *a8
           - label: Order
             name: order
             widget: number
@@ -1239,12 +1401,8 @@ collections:
           widget: relation
           collection: hardware
           value_field: id
-          display_fields:
-            - name
-            - id
-          search_fields:
-            - name
-            - id
+          display_fields: *a3
+          search_fields: *a4
       - label: Related Software
         name: relatedSoftware
         widget: list
@@ -1255,12 +1413,16 @@ collections:
           widget: relation
           collection: software
           value_field: id
-          display_fields:
-            - name
-            - id
-          search_fields:
-            - name
-            - id
+          display_fields: *a5
+          search_fields: *a6
+      - label: Related Research
+        name: relatedResearch
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: string
       - label: Links
         name: links
         widget: object
@@ -1447,6 +1609,30 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Visibility
+        name: visibility
+        widget: object
+        required: false
+        fields:
+          - label: Sites
+            name: sites
+            widget: select
+            options: []
+            multiple: true
+      - label: Overrides
+        name: overrides
+        widget: string
+        required: false
+        hint: "Unmapped schema: siteOverridesSchema"
       - label: Publish Date
         name: publishDate
         widget: datetime
@@ -1763,6 +1949,30 @@ collections:
         name: draft
         widget: boolean
         required: false
+      - label: Sites
+        name: sites
+        widget: select
+        options: []
+        multiple: true
+        required: false
+      - label: Render Markdown
+        name: renderMarkdown
+        widget: boolean
+      - label: Visibility
+        name: visibility
+        widget: object
+        required: false
+        fields:
+          - label: Sites
+            name: sites
+            widget: select
+            options: []
+            multiple: true
+      - label: Overrides
+        name: overrides
+        widget: string
+        required: false
+        hint: "Unmapped schema: siteOverridesSchema"
       - label: Topics
         name: topics
         widget: list
@@ -1802,3 +2012,11 @@ collections:
             name: endDate
             widget: datetime
             required: false
+      - label: Related Events
+        name: relatedEvents
+        widget: list
+        required: false
+        field:
+          label: Item
+          name: item
+          widget: string

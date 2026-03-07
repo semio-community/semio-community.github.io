@@ -1,7 +1,9 @@
 @import "tailwindcss";
 @import "../assets/fonts/Gilroy.css";
+@import "@semio-community/ecosystem-site-core/styles.css";
 
 @source "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
+@source "../../node_modules/@semio-community/ecosystem-site-core/dist/**/*.{js,mjs,cjs}";
 
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
@@ -551,7 +553,7 @@
 
     /* Style for code blocks */
     pre {
-      @apply m-0 static px-0 py-2 max-h-[612px] text-sm;
+      @apply m-0 static px-0 py-2 max-h-153 text-sm;
 
       /* Style for code content */
       > code {
