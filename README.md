@@ -63,8 +63,7 @@ src/
 │   ├── events/           Thin re-export of EventsSections
 │   ├── search/           SearchProvider, SearchModal, SearchApp
 │   ├── hero/             HeroHeader.tsx (Semio-branded glyph animation)
-│   ├── background/       ParallaxHexBackground.tsx
-│   └── people/           PersonPopover.tsx
+│   └── background/       ParallaxHexBackground.tsx
 └── utils/                url.ts, date.ts, images.ts, events.ts, etc.
 ```
 

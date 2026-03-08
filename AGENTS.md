@@ -149,7 +149,6 @@ npm run format       # Format code
 These components are intentionally site-specific and should not be moved to the shared package:
 - `src/components/hero/HeroHeader.tsx` — branded glyph animation (Semio visual identity)
 - `src/components/background/ParallaxHexBackground.tsx` — branded hex background
-- `src/components/people/PersonPopover.tsx` — site-specific routing and data
 - `src/components/search/` — Pagefind search (identical across sites but tightly coupled to Astro build)
 - `src/components/BaseHead.astro` — site-specific meta, OG, and webmention config
 - `src/components/navigation/navIcons.ts` — site-specific route→icon mapping
