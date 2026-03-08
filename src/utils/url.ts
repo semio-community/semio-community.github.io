@@ -10,9 +10,9 @@ import { isExternalUrl, resolveBaseUrl } from "@semio-community/ecosystem-site-c
  * @param baseOverride - Optional base URL to use instead of import.meta.env.BASE_URL
  * @returns The full path with base URL applied
  */
-export function url(path: string = "", baseOverride?: string): string {
-  const baseUrl = baseOverride ?? import.meta.env.BASE_URL;
-  return resolveBaseUrl(path, baseUrl);
+export function url(path = "", baseOverride?: string): string {
+	const baseUrl = baseOverride ?? import.meta.env.BASE_URL;
+	return resolveBaseUrl(path, baseUrl);
 }
 
 /**
@@ -20,7 +20,7 @@ export function url(path: string = "", baseOverride?: string): string {
  * @returns The home page URL with base path
  */
 export function homeUrl(): string {
-  return import.meta.env.BASE_URL;
+	return import.meta.env.BASE_URL;
 }
 
 export { isExternalUrl };

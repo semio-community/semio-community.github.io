@@ -1,9 +1,9 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
-import SiteShell from "@/layouts/SiteShell.astro";
 import { getAllHardware } from "@/data/hardware";
-import { getAllSoftware } from "@/data/software";
 import { getAllResearch } from "@/data/research";
+import { getAllSoftware } from "@/data/software";
+import SiteShell from "@/layouts/SiteShell.astro";
 import ProjectsPage from "@/react-pages/projects/ProjectsPage";
 import { resolveImageLike } from "@/utils/images";
 
@@ -16,7 +16,9 @@ const serializeImages = (images?: {
   logo?: unknown;
   logoUrl?: string;
 }) => {
+  // biome-ignore lint/suspicious/noExplicitAny: images.hero/logo are unknown types needing runtime resolution
   const hero = resolveImageLike(images?.hero as any);
+  // biome-ignore lint/suspicious/noExplicitAny: images.hero/logo are unknown types needing runtime resolution
   const logo = resolveImageLike((images?.logo as any) ?? images?.logoUrl);
   if (!hero && !logo) return undefined;
   return { hero: hero || undefined, logo: logo || undefined };
