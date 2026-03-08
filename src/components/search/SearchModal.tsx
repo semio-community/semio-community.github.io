@@ -75,7 +75,7 @@ export const SearchModal: React.FC = () => {
         <Dialog.Overlay className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm data-[state=open]:animate-fadeIn data-[state=closed]:animate-fadeOut" />
         <Dialog.Content
           onKeyDown={onKeyDown}
-          className="fixed inset-x-0 top-[8vh] z-50 mx-auto w-full max-w-[44rem] rounded-xl border border-accent-base/10 bg-surface/90 p-4 shadow-2xl backdrop-blur-xl focus:outline-none data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut"
+          className="fixed inset-x-0 top-[8vh] z-50 mx-auto w-full max-w-176 rounded-xl border border-accent-base/10 bg-surface/90 p-4 shadow-2xl backdrop-blur-xl focus:outline-none data-[state=open]:animate-scaleIn data-[state=closed]:animate-scaleOut"
         >
           {/* Input (stub) */}
           <div className="mb-3">
