@@ -96,14 +96,29 @@ npm run dev        # dev server at http://localhost:4321
 
 ## Adding and Modifying Content
 
-Content files are MDX with frontmatter matching the ecosystem content schema. The canonical source is `ecosystem-content-hub`; files are synced into `src/content/<type>/`.
+### Content flow
 
-To add a content entry directly to this site without the hub sync, add an MDX file to `src/content/<type>/` with the required frontmatter fields. Use an existing entry in the same collection as a reference.
+The canonical source for all content is [`ecosystem-content-hub`](https://github.com/semio-community/ecosystem-content-hub). The `src/content/` directory in this repo is a **generated output** — files are copied here by the sync script and committed to the repo. **Do not hand-edit files in `src/content/`**; changes will be overwritten on the next sync.
 
-Key frontmatter fields for all collections:
+`src/content/` is committed (not gitignored) so that CI builds are self-contained and don't depend on the hub being reachable at build time. Content changes arrive as automated sync PRs, providing a review gate before they go live.
+
+### Syncing content locally
+
+Pull the latest content from the hub (the hub repo must be checked out as a sibling directory):
+
+```bash
+npm run content:sync:all   # sync organizations, events, and all collections
+```
+
+The sync script filters entries by the `sites` field in each MDX file — only entries tagged `semio` are copied here. Asset paths that don't exist locally are stripped.
+
+### Authoring content
+
+Edit or add MDX files in `ecosystem-content-hub/content/<type>/`, then run the sync. Key frontmatter fields:
+
 - `name` / `title` — display name
-- `visibility` — controls which sites show this entry (e.g. `["semio-community"]`)
-- `draft: true` — hides from production builds
+- `sites: [semio, quori, vizij]` — controls which sites include this entry
+- `draft: true` — hides from production builds (still synced; filtered at query time)
 
 See `@semio-community/ecosystem-content-schema` for the full schema per collection.
 
