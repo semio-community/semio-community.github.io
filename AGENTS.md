@@ -149,7 +149,7 @@ npm run format       # Format code
 These components are intentionally site-specific and should not be moved to the shared package:
 - `src/components/hero/HeroHeader.tsx` — branded glyph animation (Semio visual identity)
 - `src/components/background/ParallaxHexBackground.tsx` — branded hex background
-- `src/components/search/` — Pagefind search (identical across sites but tightly coupled to Astro build)
+- `src/components/search/` — Pagefind search integration (uses `SearchProvider`, `SearchModal`, `SearchMobilePanel` from package, but the `useSearch` hook and Pagefind wiring are site-specific)
 - `src/components/BaseHead.astro` — site-specific meta, OG, and webmention config
 - `src/components/navigation/navIcons.ts` — site-specific route→icon mapping
 
@@ -163,3 +163,5 @@ If you see a component that has identical logic across all three sites, it belon
 - Detail page components (`BaseDetailLayout`, `DetailHero`, `InfoCard`, `ContentSection`, etc.)
 - Events page (`EventsSections`)
 - Header and Footer shells (`Header`, `Footer`, `SkipLink`)
+- Search UI (`SearchProvider`, `SearchModal`, `SearchMobilePanel`) — site wires `useSearch()` hook
+- Theme (`ThemeProvider`) — manages dark/light mode toggle
