@@ -1,14 +1,15 @@
 import { type NavigationIcon, mainRouteIconMap } from "@/components/navigation/navIcons";
 import { renderOgImage } from "@/og/renderer";
 import type { OgImageProps } from "@/og/types";
+import { siteConfig } from "@/site.config";
 import type { APIContext } from "astro";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const STATIC_PAGES: Record<string, OgImageProps> = {
 	home: {
-		title: "Semio Community",
-		description: "Reproducible Robot Science",
+		title: siteConfig.title,
+		description: siteConfig.description,
 	},
 	projects: {
 		title: "Projects",

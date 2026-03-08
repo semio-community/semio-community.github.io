@@ -75,7 +75,7 @@ export const HeroSection = ({
 	const hasHeroImage = Boolean(heroImage?.src);
 	const hasLogo = Boolean(logoImage?.src);
 	const showOverlayLogo = Boolean(hasHeroImage && hasLogo);
-	const showStandaloneBadge = !hasHeroImage && !hasLogo && Boolean(badgeIcon);
+	const showBadgeIcon = !hasLogo && Boolean(badgeIcon);
 	const showGlyphBackground = !hasHeroImage;
 	const baseStyle = hasHeroImage
 		? { backgroundColor: "transparent" }
@@ -142,7 +142,7 @@ export const HeroSection = ({
 				</div>
 			) : null}
 
-			{showStandaloneBadge && badgeIcon ? (
+			{showBadgeIcon && badgeIcon ? (
 				<div
 					style={{
 						position: "absolute",
@@ -154,7 +154,7 @@ export const HeroSection = ({
 				/>
 			) : null}
 
-			{showStandaloneBadge ? (
+			{showBadgeIcon ? (
 				<div
 					style={{
 						position: "absolute",
