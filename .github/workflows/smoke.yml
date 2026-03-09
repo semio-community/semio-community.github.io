@@ -95,11 +95,7 @@ jobs:
       - name: Sync content from hub
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.enable_hub_sync }}
         working-directory: site
-        run: npm run content:sync:all
-
-      - name: Generate CMS config
-        working-directory: site
-        run: npm run cms:config
+        run: npm run content:sync:hub
 
       - name: Build site
         working-directory: site
