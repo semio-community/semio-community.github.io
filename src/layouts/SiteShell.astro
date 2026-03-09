@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import BaseHead from "@/components/BaseHead.astro";
 import ParallaxHexBackground from "@/components/background/ParallaxHexBackground";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
@@ -9,10 +10,12 @@ import {
   type FeaturedSection,
   type NavCollections,
   menuLinks,
+  siteConfig,
 } from "@/site.config";
+import type { SiteMeta } from "@/types";
 import { isDraftVisible } from "@/utils/drafts";
 
-export interface Props {
+export interface Props extends SiteMeta {
   showBackground?: boolean;
   containerClassName?: string;
   backgroundCount?: number;
@@ -30,6 +33,12 @@ type VisibilityData = {
 };
 
 const {
+  // SiteMeta props — forwarded to BaseHead
+  title,
+  description,
+  ogImage,
+  articleDate,
+  // Layout props
   showBackground = true,
   containerClassName,
   backgroundCount,
@@ -64,7 +73,8 @@ for (const section of featuredSections) {
     idsByCollection.get(section.collection) ??
     // biome-ignore lint/style/noNonNullAssertion: set() followed by get() on the same key always returns the value
     idsByCollection.set(section.collection, new Set()).get(section.collection)!;
-  if (!fieldsByCollection.has(section.collection)) fieldsByCollection.set(section.collection, new Set());
+  if (!fieldsByCollection.has(section.collection))
+    fieldsByCollection.set(section.collection, new Set());
   // biome-ignore lint/style/noNonNullAssertion: key was just set above, get() is guaranteed to return a value
   const fields = fieldsByCollection.get(section.collection)!;
   for (const itemId of section.items) ids.add(itemId);
@@ -113,43 +123,59 @@ for (const [collection, ids] of idsByCollection) {
 }
 ---
 
-<ThemeProvider />
-<SkipLink />
-<Header
-  client:load
-  currentPath={Astro.url.pathname}
-  navCollections={navCollections}
-/>
-
-{
-  showBackground && (
-    <ParallaxHexBackground
-      client:only="react"
-      count={backgroundCount}
-      seed={backgroundSeed}
-      verticalSpanVh={backgroundVerticalSpanVh}
-      horizontalRangeVw={backgroundHorizontalRangeVw}
-      palette={backgroundPalette}
-      opacity={backgroundOpacity}
-      className={backgroundClassName}
+<!doctype html>
+<html
+  class="overflow-x-hidden grid scroll-pt-18 scroll-smooth font-sans text-text text-xl md:text-base antialiased"
+  lang={siteConfig.lang}
+>
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      ogImage={ogImage}
+      articleDate={articleDate}
     />
-  )
-}
+  </head>
+  <body class="relative min-h-screen w-full bg-surface">
+    <ThemeProvider />
+    <SkipLink />
+    <Header
+      client:load
+      currentPath={Astro.url.pathname}
+      navCollections={navCollections}
+    />
 
-<div class="relative flex min-h-screen w-full flex-col">
-  <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
-    <div
-      id="container"
-      class={`relative m-auto max-w-4xl grow w-full min-w-0 ${containerClassName || ""}`}
-    >
-      <div
-        class="m-auto grid grid-cols-1 min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 w-full min-w-0 pt-18"
-      >
-        <main id="main" class="relative grow" data-pagefind-body>
-          <slot />
-        </main>
-        <Footer />
+    {
+      showBackground && (
+        <ParallaxHexBackground
+          client:only="react"
+          count={backgroundCount}
+          seed={backgroundSeed}
+          verticalSpanVh={backgroundVerticalSpanVh}
+          horizontalRangeVw={backgroundHorizontalRangeVw}
+          palette={backgroundPalette}
+          opacity={backgroundOpacity}
+          className={backgroundClassName}
+        />
+      )
+    }
+
+    <div class="relative flex min-h-screen w-full flex-col">
+      <div class="relative flex min-h-screen w-full flex-1 m-auto max-w-6xl">
+        <div
+          id="container"
+          class={`relative m-auto max-w-4xl grow w-full min-w-0 ${containerClassName || ""}`}
+        >
+          <div
+            class="m-auto grid grid-cols-1 min-h-screen grid-rows-[1fr_auto] px-4 md:px-8 w-full min-w-0 pt-18"
+          >
+            <main id="main" class="relative grow" data-pagefind-body>
+              <slot />
+            </main>
+            <Footer />
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </body>
+</html>
