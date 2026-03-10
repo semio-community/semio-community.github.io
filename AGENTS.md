@@ -142,6 +142,38 @@ Content collections are defined by `createEcosystemCollections` (from `@semio-co
 
 Each collection entry is an MDX file in `src/content/<collection>/`. The frontmatter schema is defined in the schema package — check there for required and optional fields.
 
+## First-Time Setup: GitHub Packages Authentication
+
+The shared packages (`@semio-community/ecosystem-site-core` and `@semio-community/ecosystem-content-schema`) are published to **GitHub Packages**, not the public npm registry. GitHub Packages requires authentication for all installs, even for public packages. Without this setup `npm install` will fail with a 401 error.
+
+This is a **one-time machine-level step** — once done it applies to all projects on your machine.
+
+### Step 1 — Create a Personal Access Token (PAT)
+
+1. Go to [github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens/new)
+2. Give it a descriptive name, e.g. `semio-packages-read`
+3. Select the **`read:packages`** scope only — no other scopes are needed for local dev
+4. Click **Generate token** and copy it — you will not see it again
+
+### Step 2 — Add the token to your global npm config
+
+```bash
+npm config set //npm.pkg.github.com/:_authToken YOUR_TOKEN_HERE
+```
+
+This writes one line to `~/.npmrc`. It does not affect installs from the public npm registry — only requests to `npm.pkg.github.com` will use it.
+
+### Step 3 — Clone and install
+
+```bash
+git clone https://github.com/semio-community/semio-community.github.io
+cd semio-community.github.io
+npm install
+npm run dev    # dev server at http://localhost:4321
+```
+
+> **Note for Vizij contributors:** the Vizij repo lives in the `vizij-ai` GitHub org, not `semio-community`. The packages are still hosted in `semio-community`'s registry, so the same `read:packages` PAT on `npm.pkg.github.com` applies — no extra steps needed.
+
 ## Local Development with the Shared Package
 
 To iterate on `ecosystem-site-core` locally while running this site:
