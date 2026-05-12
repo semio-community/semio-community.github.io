@@ -15,8 +15,34 @@ function resolveHubContentRoot() {
 
 const hubRoot = resolveHubContentRoot();
 const siteRoot = path.join(root, "src/content");
-const collectionKeys = ["people", "software", "hardware", "research"];
+const collectionKeys = ["organizations", "events", "people", "software", "hardware", "research"];
 const siteKey = "semio";
+
+function toRepoPath(assetPath) {
+	return path.join(root, assetPath.replace(/^\//, ""));
+}
+
+function sanitizeAssetPaths(value) {
+	if (typeof value === "string" && value.startsWith("/src/assets/images/")) {
+		return fs.existsSync(toRepoPath(value)) ? value : undefined;
+	}
+
+	if (Array.isArray(value)) {
+		const next = value.map((item) => sanitizeAssetPaths(item)).filter((item) => item !== undefined);
+		return next;
+	}
+
+	if (value && typeof value === "object") {
+		const next = {};
+		for (const [k, v] of Object.entries(value)) {
+			const sanitized = sanitizeAssetPaths(v);
+			if (sanitized !== undefined) next[k] = sanitized;
+		}
+		return next;
+	}
+
+	return value;
+}
 
 function parseFrontmatter(raw) {
 	if (!raw.startsWith("---\n")) {
@@ -77,10 +103,10 @@ for (const collectionKey of collectionKeys) {
 		const siteOverride =
 			data.overrides && typeof data.overrides === "object" ? data.overrides[siteKey] : undefined;
 
-		const mergedData = {
+		const mergedData = sanitizeAssetPaths({
 			...data,
 			...(siteOverride && typeof siteOverride === "object" ? siteOverride : {}),
-		};
+		});
 
 		mergedData.sites = undefined;
 		mergedData.overrides = undefined;

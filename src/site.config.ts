@@ -33,6 +33,8 @@ export const siteConfig: SiteConfig = {
 		highlightVariant: "primary",
 		ctaVariant: "primary",
 	},
+	homeOrganizationId: "semio-community",
+	suppressOrganizationPage: true,
 };
 
 export type LinkSection = CoreLinkSection;

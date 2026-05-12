@@ -18,7 +18,9 @@
     "verify:drafts": "node test/verify-drafts.mjs",
     "verify:shared-tailwind": "node scripts/verify-shared-tailwind-wiring.mjs",
     "render:modules": "node scripts/render-configurator-modules.mjs",
-    "content:sync:hub": "node scripts/sync-content-hub-collections.mjs && node scripts/sync-content-hub-events.mjs && node scripts/sync-content-hub-organizations.mjs"
+    "content:sync:hub": "node scripts/sync-content-hub.mjs",
+    "link:local": "npm link ../ecosystem-content-schema ../ecosystem-site-core",
+    "unlink:local": "npm unlink --no-save @semio-community/ecosystem-content-schema @semio-community/ecosystem-site-core && npm install"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.10",
@@ -36,8 +38,8 @@
     "@radix-ui/react-navigation-menu": "^1.2.14",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@semio-community/ecosystem-content-schema": "^0.3.7",
-    "@semio-community/ecosystem-site-core": "^0.3.41",
+    "@semio-community/ecosystem-content-schema": "^0.4.0",
+    "@semio-community/ecosystem-site-core": "^0.7.2",
     "@shikijs/transformers": "^1.25.1",
     "@solar-icons/react-perf": "^1.0.0",
     "@tailwindcss/vite": "^4.1.11",
@@ -58,6 +60,7 @@
     "rehype-pretty-code": "^0.14.0",
     "rehype-unwrap-images": "^1.0.0",
     "remark-directive": "^3.0.0",
+    "remark-gfm": "^4.0.1",
     "satori": "0.12.0",
     "satori-html": "^0.3.2",
     "sharp": "^0.33.5",
