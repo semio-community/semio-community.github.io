@@ -13,10 +13,12 @@ import { siteConfig } from "./src/site.config";
 
 // Remark plugins
 import remarkDirective from "remark-directive"; /* handle ::: directives as nodes */
+import remarkGfm from "remark-gfm";
 import { remarkAdmonitions } from "./src/plugins/remark-admonitions"; /* add admonitions */
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 
 // Rehype plugins
+import { rehypeBasePathContent } from "@semio-community/ecosystem-site-core";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeUnwrapImages from "rehype-unwrap-images";
 
@@ -84,7 +86,12 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
 
-    remarkPlugins: [remarkReadingTime, remarkDirective, remarkAdmonitions],
+    remarkPlugins: [
+      remarkGfm,
+      remarkReadingTime,
+      remarkDirective,
+      remarkAdmonitions,
+    ],
     remarkRehype: {
       footnoteLabelProperties: {
         className: [""],
@@ -100,6 +107,7 @@ export default defineConfig({
           target: "_blank",
         },
       ],
+      [rehypeBasePathContent, { basePath: process.env.PR_PREVIEW_PATH || "/" }],
 
       [
         rehypePrettyCode,
@@ -154,7 +162,14 @@ export default defineConfig({
       // Deduplicate React across the client bundle and, together with noExternal
       // above, across the SSR bundle — ensuring a single React instance even when
       // ecosystem-site-core is npm-linked and has its own nested node_modules/react.
-      dedupe: ["react", "react-dom"],
+      dedupe: [
+        "react",
+        "react-dom",
+        "motion",
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-tooltip",
+        "@solar-icons/react-perf",
+      ],
     },
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"],
