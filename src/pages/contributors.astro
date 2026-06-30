@@ -10,11 +10,13 @@ import {
   type ContributorsPageOrganizationItem,
   type ContributorsPagePartnerSection,
   type ContributorsPagePersonItem,
+  buildOrgDisplayLookup,
   filterHomeOrganization,
-  getCurrentAffiliation,
+  resolvePersonHeadline,
   sortFeaturedFirst,
 } from "@semio-community/ecosystem-site-core";
 import { siteConfig } from "@/site.config";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 import { UsersGroupTwoRounded } from "@solar-icons/react-perf/LineDuotone";
 import React from "react";
 
@@ -25,23 +27,32 @@ const meta = {
 };
 const ogImage = "/og/contributors.png";
 
-const allOrganizations = await getAllOrganizations();
-const allPeople = await getAllPeople();
-const organizations = await getCollection("organizations", ({ data }) =>
-  isDraftVisible(data.draft, data.sites),
+const featured = await buildFeaturedPropagation();
+const allOrganizations = featured.propagateAll(
+  await getAllOrganizations(),
+  "organizations",
+);
+const allPeople = featured.propagateAll(await getAllPeople(), "people");
+const organizations = featured.propagateAll(
+  await getCollection("organizations", ({ data }) =>
+    isDraftVisible(data.draft, data.sites),
+  ),
+  "organizations",
 );
 const allOrganizationsUnfiltered = await getCollection("organizations");
-
-const orgNameById = Object.fromEntries(
-  allOrganizationsUnfiltered.map((org) => [org.id, org.data.shortName || org.data.name]),
-);
+// Shared org-display resolver — prefers `shortName`, falls back to `name`.
+// Used by `resolvePersonHeadline` to turn an affiliation's organizationId
+// into a human-readable name. The affiliation's own `organizationName`
+// override (when set in the source MDX, e.g. for external orgs like
+// "All Tomorrows Institute" that aren't in our orgs collection) still
+// wins; this lookup covers the in-collection cases.
+const orgDisplayLookup = buildOrgDisplayLookup(allOrganizationsUnfiltered);
 
 function affiliationLabel(person: (typeof allPeople)[number]): string | undefined {
-  const aff = getCurrentAffiliation(
-    person.data.affiliations,
-    siteConfig.homeOrganizationId,
-  );
-  return aff ? orgNameById[aff.organizationId] || aff.organizationId : undefined;
+  return resolvePersonHeadline(person.data, {
+    homeOrgId: siteConfig.homeOrganizationId,
+    orgDisplayLookup,
+  }).label;
 }
 
 // When true, the dedicated "Board Members" section is hidden and board
@@ -153,7 +164,7 @@ const heroIcon = React.createElement(UsersGroupTwoRounded, { className: "w-16 h-
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-6xl"
+ containerClassName="max-w-6xl"
 >
       <ContributorsPage
         meta={meta}
@@ -166,6 +177,8 @@ const heroIcon = React.createElement(UsersGroupTwoRounded, { className: "w-16 h-
         grantMakers={mappedGrantMakers}
         heroIcon={heroIcon}
         baseUrl={import.meta.env.BASE_URL}
+        homeOrgId={siteConfig.homeOrganizationId}
+        orgDisplayLookup={orgDisplayLookup}
       />
     </SiteShell>
   </body>

@@ -3,7 +3,12 @@ import { getCollection, getEntry } from "astro:content";
 import SiteShell from "@/layouts/SiteShell.astro";
 import { getRelatedHardware } from "@/data/hardware";
 import { getPerson } from "@/data/people";
-import { HardwareDetail } from "@semio-community/ecosystem-site-core";
+import {
+  HardwareDetail,
+  findPressForEntity,
+  findAwardsForEntity,
+} from "@semio-community/ecosystem-site-core";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 import { isDraftVisible } from "@/utils/drafts";
 import { toOrganizationCardData } from "@/utils/card-mappers";
 
@@ -79,19 +84,45 @@ const orgContributors = await Promise.all(
         data: org?.data ? toOrganizationCardData(org.data) : undefined,
       };
     }),
-);---
+);
+
+// Press items that reference this hardware via `relatedHardware`.
+const allPress = await getCollection("press", ({ data }) =>
+  isDraftVisible(data.draft, data.sites),
+);
+const relatedPress = findPressForEntity(allPress, "hardware", entry.id);
+
+// Awards where this hardware is a recipient.
+const allAwards = await getCollection("awards", ({ data: awardData }) =>
+  isDraftVisible(awardData.draft, awardData.sites),
+);
+const awards = findAwardsForEntity(allAwards, "hardware", entry.id);
+
+// Featured-status propagation: scan currently-featured press +
+// awards, then augment this entry (and its related-hardware cards)
+// so a press item or award lit up by an active `featuring` window
+// surfaces as a featured-star on the entities it references.
+const featured = await buildFeaturedPropagation();
+const propagatedData = featured.propagate(entry, "hardware").data;
+const propagatedRelatedHardware = featured.propagateAll(
+  relatedHardware,
+  "hardware",
+);
+---
 
     <SiteShell
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-5xl"
+ containerClassName="max-w-5xl"
 >
       <HardwareDetail
-        data={data}
+        data={propagatedData}
         organizationContributors={orgContributors}
         peopleContributors={validPeopleContributors}
-        relatedHardware={relatedHardware}
+        relatedHardware={propagatedRelatedHardware}
+        relatedPress={relatedPress}
+        awards={awards}
         baseUrl={import.meta.env.BASE_URL}
       />
     </SiteShell>

@@ -10,10 +10,14 @@ import {
   OrganizationDetail,
   type DetailKeyContact,
   filterHomeOrganization,
+  findPressForEntity,
+  findAwardsForEntity,
+  findAwardsGrantedByOrganization,
   sortFeaturedFirst,
   toOrganizationKeyContact,
 } from "@semio-community/ecosystem-site-core";
 import { siteConfig } from "@/site.config";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 import { isDraftVisible } from "@/utils/drafts";
 
 type PartnerEntry = CollectionEntry<"organizations">;
@@ -78,15 +82,36 @@ async function getPartnerRelatedContent(partnerId: string) {
     ),
   );
 
-  return { research: [], hardware, software, events: [] } as {
+  // Press items that reference this organization via `relatedOrganizations`.
+  const allPress = await getCollection("press", ({ data }) =>
+    isDraftVisible(data.draft, data.sites),
+  );
+  const press = findPressForEntity(allPress, "organizations", partnerId);
+
+  return { research: [], hardware, software, events: [], press } as {
     research: CollectionEntry<"research">[];
     hardware: CollectionEntry<"hardware">[];
     software: CollectionEntry<"software">[];
     events: CollectionEntry<"events">[];
+    press: CollectionEntry<"press">[];
   };
 }
 
 const relatedContent = await getPartnerRelatedContent(entry.id);
+
+// Awards: split into received (recipients.organizations) vs granted
+// (grantingOrganizationId). The same award could in theory satisfy both
+// when an org grants an award to itself, but the lookups are
+// independent so it'd just show in both lists — acceptable edge case.
+const allAwards = await getCollection("awards", ({ data: awardData }) =>
+  isDraftVisible(awardData.draft, awardData.sites),
+);
+const awardsReceived = findAwardsForEntity(allAwards, "organizations", entry.id);
+const awardsGranted = findAwardsGrantedByOrganization(allAwards, entry.id);
+
+// Featured-status propagation.
+const featured = await buildFeaturedPropagation();
+const propagatedData = featured.propagate(entry, "organizations").data;
 
 const meta = {
   title: `${data.name} - Partner Organization`,
@@ -109,12 +134,20 @@ const keyContacts: DetailKeyContact[] = sortFeaturedFirst(affiliatedPeople)
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-5xl"
+ containerClassName="max-w-5xl"
 >
       <OrganizationDetail
-        data={data}
-        relatedContent={relatedContent}
-        relatedOrganizations={relatedOrganizations}
+        data={propagatedData}
+        relatedContent={{
+          research: featured.propagateAll(relatedContent.research ?? [], "research"),
+          hardware: featured.propagateAll(relatedContent.hardware ?? [], "hardware"),
+          software: featured.propagateAll(relatedContent.software ?? [], "software"),
+          events: featured.propagateAll(relatedContent.events ?? [], "events"),
+          press: relatedContent.press,
+        }}
+        relatedOrganizations={featured.propagateAll(relatedOrganizations, "organizations")}
+        awardsReceived={awardsReceived}
+        awardsGranted={awardsGranted}
         keyContacts={keyContacts}
         baseUrl={import.meta.env.BASE_URL}
       />

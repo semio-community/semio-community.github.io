@@ -4,8 +4,15 @@ import { getCollection, getEntry } from "astro:content";
 import SiteShell from "@/layouts/SiteShell.astro";
 import { getRelatedResearch as fetchRelatedResearch } from "@/data/research";
 import { getPerson, getFormattedAuthors } from "@/data/people";
-import { toResearchAuthor, ResearchDetail, type ResearchOrganizationLink } from "@semio-community/ecosystem-site-core";
+import {
+  toResearchAuthor,
+  ResearchDetail,
+  type ResearchOrganizationLink,
+  findPressForEntity,
+  findAwardsForEntity,
+} from "@semio-community/ecosystem-site-core";
 import type { ResearchAuthorModel } from "@semio-community/ecosystem-site-core";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 import { isDraftVisible } from "@/utils/drafts";
 import { toOrganizationCardData } from "@/utils/card-mappers";
 
@@ -76,22 +83,57 @@ const validRelatedHardware = relatedHardwareItems.filter(
 
 const validRelatedSoftware = relatedSoftwareItems.filter(
   (item): item is CollectionEntry<"software"> => Boolean(item),
-);---
+);
+
+// Press items that reference this research via `relatedResearch`.
+const allPress = await getCollection("press", ({ data }) =>
+  isDraftVisible(data.draft, data.sites),
+);
+const relatedPress = findPressForEntity(allPress, "research", entry.id);
+
+// Publications produced under this research program: reverse-lookup on
+// `press.fromResearch` containing this research entry's id. These are
+// rendered as a distinct "Publications" section, separate from generic
+// press coverage.
+const relatedPublications = allPress.filter(
+  (entry_) =>
+    entry_.data.type === "publication" &&
+    Array.isArray((entry_.data as any).fromResearch) &&
+    (entry_.data as any).fromResearch.includes(entry.id),
+);
+
+// Awards where this research program is a recipient.
+const allAwards = await getCollection("awards", ({ data: awardData }) =>
+  isDraftVisible(awardData.draft, awardData.sites),
+);
+const awards = findAwardsForEntity(allAwards, "research", entry.id);
+
+// Featured-status propagation.
+const featured = await buildFeaturedPropagation();
+const propagatedData = featured.propagate(entry, "research").data;
+const propagatedRelatedResearch = featured.propagateAll(
+  relatedResearch,
+  "research",
+);
+---
 
     <SiteShell
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-5xl"
+ containerClassName="max-w-5xl"
 >
       <ResearchDetail
-        data={data}
+        data={propagatedData}
         authors={authorsWithData}
         authorsSubtitle={authorsString}
         organizationLinks={organizationLinks}
-        relatedHardware={validRelatedHardware}
-        relatedSoftware={validRelatedSoftware}
-        relatedResearch={relatedResearch}
+        relatedHardware={featured.propagateAll(validRelatedHardware, "hardware")}
+        relatedSoftware={featured.propagateAll(validRelatedSoftware, "software")}
+        relatedResearch={propagatedRelatedResearch}
+        relatedPress={relatedPress}
+        relatedPublications={relatedPublications}
+        awards={awards}
         baseUrl={import.meta.env.BASE_URL}
       />
     </SiteShell>

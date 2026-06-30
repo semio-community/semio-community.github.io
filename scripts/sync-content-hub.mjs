@@ -3,6 +3,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import YAML from "yaml";
+import {
+	validateContentGraph,
+	splitReferenceFindings,
+	formatReferenceErrors,
+} from "@semio-community/ecosystem-content-schema";
 
 const root = process.cwd();
 function resolveHubContentRoot() {
@@ -15,8 +20,8 @@ function resolveHubContentRoot() {
 
 const hubRoot = resolveHubContentRoot();
 const siteRoot = path.join(root, "src/content");
-const collectionKeys = ["organizations", "events", "people", "software", "hardware", "research"];
-const siteKey = "semio";
+const collectionKeys = ["organizations", "events", "people", "software", "hardware", "research", "press", "awards"];
+const siteKey = "semio-community";
 
 function toRepoPath(assetPath) {
 	return path.join(root, assetPath.replace(/^\//, ""));
@@ -73,6 +78,9 @@ function getContentFiles(directory) {
 
 let importedCount = 0;
 let skippedCount = 0;
+const syncedEntries = Object.fromEntries(
+	collectionKeys.map((key) => [key, []]),
+);
 
 if (!hubRoot) {
 	console.error(
@@ -114,6 +122,12 @@ for (const collectionKey of collectionKeys) {
 		fs.writeFileSync(targetPath, stringifyFrontmatter(mergedData, body), "utf8");
 		importedFiles.add(fileName);
 		importedCount += 1;
+
+		// Collect for post-sync reference validation (id = file slug).
+		syncedEntries[collectionKey].push({
+			id: fileName.replace(/\.(md|mdx)$/, ""),
+			data: mergedData,
+		});
 	}
 
 	for (const existingName of getContentFiles(targetDir)) {
@@ -125,3 +139,36 @@ for (const collectionKey of collectionKeys) {
 console.log(
 	`Synced ${importedCount} entries for site '${siteKey}' across collections: ${collectionKeys.join(", ")} (${skippedCount} skipped).`,
 );
+
+// --- Post-sync reference validation ---------------------------------------
+// Validate the just-synced content as a self-contained graph for THIS site.
+// A dropped *structural* reference (a recipient, contributor, affiliation, or
+// funding/lead/granting organization that should have synced to this site but
+// didn't — the "Funding Organization row vanished" class) is an error and
+// fails the sync. Soft `relatedX` cross-links that thin out per-site drop
+// cleanly at render time, so they are reported as warnings only. Typos are
+// already caught upstream by the hub's own validate:refs check.
+const findings = validateContentGraph({
+	entriesByCollection: syncedEntries,
+	sites: [siteKey],
+	globalMissSeverity: "byRule",
+});
+const { errors: refErrors, warnings: refWarnings } =
+	splitReferenceFindings(findings);
+if (findings.length > 0) {
+	console.log(
+		formatReferenceErrors(findings, {
+			graphName: `${siteKey} synced content`,
+		}),
+	);
+}
+console.log(
+	`Reference check: ${refErrors.length} error(s), ${refWarnings.length} warning(s).`,
+);
+if (refErrors.length > 0) {
+	console.error(
+		`\nSync produced ${refErrors.length} dangling structural reference(s) for site '${siteKey}'. ` +
+			"A referenced entry did not sync to this site -- check its 'sites:' scoping in the hub.",
+	);
+	process.exit(1);
+}
