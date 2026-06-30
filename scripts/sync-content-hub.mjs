@@ -24,11 +24,28 @@ const collectionKeys = ["organizations", "events", "people", "software", "hardwa
 const siteKey = "semio-community";
 
 function toRepoPath(assetPath) {
+	// `@/…` is the Astro/tsconfig alias for `src/…`; resolve it so the
+	// existence check below hits the real file. Everything else is treated
+	// as root-relative (a leading slash is stripped first).
+	if (assetPath.startsWith("@/")) {
+		return path.join(root, "src", assetPath.slice(2));
+	}
 	return path.join(root, assetPath.replace(/^\//, ""));
 }
 
+// Image asset references appear in two equivalent forms across content:
+// `/src/assets/images/…` and the `@/assets/images/…` alias. Both must be
+// sanitized — a reference whose target file is absent in this site is
+// dropped so the build doesn't hard-fail on a missing image.
+function isManagedAssetPath(value) {
+	return (
+		value.startsWith("/src/assets/images/") ||
+		value.startsWith("@/assets/images/")
+	);
+}
+
 function sanitizeAssetPaths(value) {
-	if (typeof value === "string" && value.startsWith("/src/assets/images/")) {
+	if (typeof value === "string" && isManagedAssetPath(value)) {
 		return fs.existsSync(toRepoPath(value)) ? value : undefined;
 	}
 
