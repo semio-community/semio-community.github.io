@@ -3,7 +3,12 @@ import { getCollection, getEntry } from "astro:content";
 import SiteShell from "@/layouts/SiteShell.astro";
 import { getRelatedSoftware } from "@/data/software";
 import { getPerson } from "@/data/people";
-import { SoftwareDetail } from "@semio-community/ecosystem-site-core";
+import {
+  SoftwareDetail,
+  findPressForEntity,
+  findAwardsForEntity,
+} from "@semio-community/ecosystem-site-core";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 import { isDraftVisible } from "@/utils/drafts";
 import { toOrganizationCardData } from "@/utils/card-mappers";
 
@@ -79,19 +84,43 @@ const orgContributors = await Promise.all(
         data: org?.data ? toOrganizationCardData(org.data) : undefined,
       };
     }),
-);---
+);
+
+// Press items that reference this software via `relatedSoftware`.
+const allPress = await getCollection("press", ({ data }) =>
+  isDraftVisible(data.draft, data.sites),
+);
+const relatedPress = findPressForEntity(allPress, "software", entry.id);
+
+// Awards where this software is a recipient.
+const allAwards = await getCollection("awards", ({ data: awardData }) =>
+  isDraftVisible(awardData.draft, awardData.sites),
+);
+const awards = findAwardsForEntity(allAwards, "software", entry.id);
+
+// Featured-status propagation (see hardware/[...slug].astro for the
+// rationale and pattern).
+const featured = await buildFeaturedPropagation();
+const propagatedData = featured.propagate(entry, "software").data;
+const propagatedRelatedSoftware = featured.propagateAll(
+  relatedSoftware,
+  "software",
+);
+---
 
     <SiteShell
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-5xl"
+ containerClassName="max-w-5xl"
 >
       <SoftwareDetail
-        data={data}
+        data={propagatedData}
         organizationContributors={orgContributors}
         peopleContributors={validPeopleContributors}
-        relatedSoftware={relatedSoftware}
+        relatedSoftware={propagatedRelatedSoftware}
+        relatedPress={relatedPress}
+        awards={awards}
         baseUrl={import.meta.env.BASE_URL}
       />
     </SiteShell>
