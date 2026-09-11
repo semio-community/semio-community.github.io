@@ -1,4 +1,7 @@
-import { mapSlugKeysToRouteKeys } from "@semio-community/ecosystem-site-core";
+import {
+  mapSlugKeysToRouteKeys,
+  type NavigationIconComponent,
+} from "@semio-community/ecosystem-site-core";
 import {
 	Calendar,
 	Document2,
@@ -8,9 +11,13 @@ import {
 	UserPlusRounded,
 	UsersGroupTwoRounded,
 } from "@solar-icons/react-perf/LineDuotone";
-import type { ComponentType, SVGProps } from "react";
 
-export type NavigationIcon = ComponentType<SVGProps<SVGSVGElement>>;
+/**
+ * Alias of site-core's navigation icon slot. Kept as a named export
+ * because local modules import `NavigationIcon`; the shape itself is
+ * owned by site-core so the two cannot drift.
+ */
+export type NavigationIcon = NavigationIconComponent;
 
 /**
  * Per-slug icon mapping for header dropdowns + mobile nav rows.

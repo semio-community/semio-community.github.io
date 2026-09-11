@@ -63,13 +63,6 @@ export const menuLinks: MenuLink[] = [
 		inHeader: false,
 	},
 	{
-		// Footer-only link (not in the header nav). Keeps the About page
-		// reachable and satisfies the orphan-page check.
-		path: "/about/",
-		title: "About",
-		inHeader: false,
-	},
-	{
 		path: "/projects/",
 		title: "Projects",
 		inHeader: true,
