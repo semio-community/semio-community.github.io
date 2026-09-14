@@ -5,11 +5,12 @@ import { getAllSoftware } from "@/data/software";
 import SiteShell from "@/layouts/SiteShell.astro";
 import ProjectsPage from "@/react-pages/projects/ProjectsPage";
 import { resolveImageLike } from "@/utils/images";
+import { buildProjectsPayload } from "@semio-community/ecosystem-site-core";
+import { siteConfig } from "@/site.config";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
 
-const hardware = await getAllHardware();
-const software = await getAllSoftware();
-const research = await getAllResearch();
-
+// Site-local image resolution (asset pipelines differ per site), injected
+// into the shared `buildProjectsPayload` helper.
 const serializeImages = (images?: {
   hero?: unknown;
   logo?: unknown;
@@ -23,53 +24,6 @@ const serializeImages = (images?: {
   return { hero: hero || undefined, logo: logo || undefined };
 };
 
-const serializeHardware = (item: (typeof hardware)[number]) => ({
-  id: item.id,
-  data: {
-    name: item.data.name,
-    description: item.data.description,
-    shortDescription: item.data.shortDescription,
-    category: item.data.category,
-    status: item.data.status,
-    featured: item.data.featured,
-    links: item.data.links,
-    images: serializeImages(item.data.images),
-    imagePolicy: item.data.imagePolicy,
-  },
-});
-
-const serializeSoftware = (item: (typeof software)[number]) => ({
-  id: item.id,
-  data: {
-    name: item.data.name,
-    description: item.data.description,
-    shortDescription: item.data.shortDescription,
-    category: item.data.category,
-    status: item.data.status,
-    featured: item.data.featured,
-    links: item.data.links,
-    images: serializeImages(item.data.images),
-    imagePolicy: item.data.imagePolicy,
-  },
-});
-
-const serializeResearch = (item: (typeof research)[number]) => ({
-  id: item.id,
-  data: {
-    title: item.data.title,
-    description: item.data.description,
-    type: item.data.type,
-    featured: item.data.featured,
-    publishDate:
-      item.data.publishDate instanceof Date
-        ? item.data.publishDate.toISOString()
-        : item.data.publishDate,
-    links: item.data.links,
-    images: serializeImages(item.data.images),
-    imagePolicy: item.data.imagePolicy,
-  },
-});
-
 const meta = {
   title: "Projects",
   description:
@@ -77,12 +31,21 @@ const meta = {
 };
 const ogImage = "/og/projects.png";
 
-const projectsPayload = JSON.stringify({
-  meta,
-  hardware: hardware.map(serializeHardware),
-  software: software.map(serializeSoftware),
-  research: research.map(serializeResearch),
-});
+// Applies featured propagation + serializes `featuring` uniformly, so
+// featured stars render consistently across sites. See
+// `projects-payload.ts` in site-core.
+const featured = await buildFeaturedPropagation();
+const projectsPayload = JSON.stringify(
+  buildProjectsPayload({
+    hardware: await getAllHardware(),
+    software: await getAllSoftware(),
+    research: await getAllResearch(),
+    meta,
+    featuredPropagation: featured,
+    siteKey: siteConfig.siteKey,
+    resolveImages: serializeImages,
+  }),
+);
 ---
 
     <SiteShell

@@ -1,17 +1,20 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-import { getAllEvents } from "@/data/events";
 import SiteShell from "@/layouts/SiteShell.astro";
-import { parseDateLocal } from "@/utils/date";
+import MDXContent from "@/components/mdx/MDXContent.astro";
+import { getAllEvents } from "@/data/events";
 import { isDraftVisible } from "@/utils/drafts";
-import { EventDetail, type RelatedItem } from "@semio-community/ecosystem-site-core";
+import { buildFeaturedPropagation } from "@/utils/featured-propagation";
+import {
+  EventDetail,
+  prepareEventDetail,
+  type RelatedItem,
+} from "@semio-community/ecosystem-site-core";
 
 export async function getStaticPaths() {
-  const events = await getCollection("events", ({ data }) => {
-    // In production, exclude drafts. In development, show all.
-    return isDraftVisible(data.draft, data.sites);
-  });
+  const events = await getCollection("events", ({ data }) =>
+    isDraftVisible(data.draft, data.sites),
+  );
   return events.map((entry) => ({
     params: { slug: entry.id },
     props: { entry },
@@ -19,72 +22,32 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { data } = entry;
 
-// Get related events (by type or topics)
-async function getRelatedEvents(
-  event: CollectionEntry<"events">,
-  limit = 3,
-) {
-  const allEvents = await getAllEvents();
+const [featured, allEvents] = await Promise.all([
+  buildFeaturedPropagation(),
+  getAllEvents(),
+]);
 
-  const currentDate = new Date();
-  const isCurrentPast = parseDateLocal(event.data.endDate) < currentDate;
-
-  const otherEvents = allEvents.filter((e) => {
-    if (e.id === event.id) return false;
-    if (!isCurrentPast) {
-      const eventDate = parseDateLocal(e.data.startDate);
-      if (eventDate < currentDate) return false;
-    }
-    return true;
-  });
-
-  const scoredEvents = otherEvents.map((e) => {
-    let score = 0;
-    if (e.data.type === event.data.type) score += 3;
-    if (Boolean(e.data.location.online) === Boolean(event.data.location.online)) score += 2;
-    if (e.data.location.city === event.data.location.city) score += 2;
-    if (e.data.location.country === event.data.location.country) score += 1;
-    const eventTopics = new Set(event.data.topics || []);
-    const topicOverlap = (e.data.topics || []).filter((t) => eventTopics.has(t)).length;
-    score += topicOverlap * 2;
-    const timeDiff = Math.abs(
-      parseDateLocal(e.data.startDate).getTime() -
-        parseDateLocal(event.data.startDate).getTime(),
-    );
-    const monthsDiff = timeDiff / (1000 * 60 * 60 * 24 * 30);
-    if (monthsDiff <= 3) score += 3 - Math.floor(monthsDiff);
-    return { event: e, score };
-  });
-
-  scoredEvents.sort((a, b) => b.score - a.score);
-  return scoredEvents
-    .filter((se) => se.score > 0)
-    .slice(0, limit)
-    .map((se) => se.event);
-}
-
-const relatedEvents = await getRelatedEvents(entry, 3);
+const payload = prepareEventDetail({ entry, allEvents, featured });
 
 const meta = {
-  title: `${data.name} - Event`,
-  description: data.description,
+  title: `${payload.data.name} - Event`,
+  description: payload.data.description,
 };
 const ogImage = `/og/events/${entry.id}.png`;
 ---
 
-    <SiteShell
+<SiteShell
   title={meta.title}
   description={meta.description}
   ogImage={ogImage}
-  showBackground containerClassName="max-w-5xl"
+  containerClassName="max-w-5xl"
 >
-      <EventDetail
-        data={data}
-        relatedEvents={relatedEvents as RelatedItem[]}
-        baseUrl={import.meta.env.BASE_URL}
-      />
-    </SiteShell>
-  </body>
-</html>
+  <EventDetail
+    data={payload.data}
+    relatedEvents={payload.relatedEvents as RelatedItem[]}
+    baseUrl={import.meta.env.BASE_URL}
+  >
+    {payload.shouldRenderBody && <MDXContent entry={entry} />}
+  </EventDetail>
+</SiteShell>
