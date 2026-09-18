@@ -1,1 +1,0 @@
-import{i as e}from"./dist.xDqLp3mU.js";export{e as EventsSections,e as default};
