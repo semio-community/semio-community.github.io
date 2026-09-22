@@ -4,10 +4,13 @@ import { getAllResearch } from "@/data/research";
 import { getAllSoftware } from "@/data/software";
 import SiteShell from "@/layouts/SiteShell.astro";
 import ProjectsPage from "@/react-pages/projects/ProjectsPage";
-import { resolveImageLike } from "@/utils/images";
-import { buildProjectsPayload } from "@semio-community/ecosystem-site-core";
 import { siteConfig } from "@/site.config";
 import { buildFeaturedPropagation } from "@/utils/featured-propagation";
+import { resolveImageLike } from "@/utils/images";
+import {
+  type ProjectsPageContent,
+  buildProjectsPayload,
+} from "@semio-community/ecosystem-site-core";
 
 // Site-local image resolution (asset pipelines differ per site), injected
 // into the shared `buildProjectsPayload` helper.
@@ -31,21 +34,47 @@ const meta = {
 };
 const ogImage = "/og/projects.png";
 
+// This site's voice for the projects landing page. The shared layout
+// owns none of it; the hero reuses `meta` so the page heading and the
+// document description cannot drift apart.
+const content: ProjectsPageContent = {
+  heading: meta.title,
+  intro: meta.description,
+  hardware: {
+    title: "Hardware Projects",
+    description:
+      "Community-driven robotics hardware for research and education",
+    emptyMessage:
+      "Hardware platforms coming soon! Check back later for updates.",
+  },
+  software: {
+    title: "Software Projects",
+    description:
+      "Comprehensive software tools for every aspect of HRI development",
+    emptyMessage:
+      "Software packages coming soon! Check back later for updates.",
+  },
+  research: {
+    title: "Research Projects",
+    description:
+      "Reproducible science and studies advancing the field of human-robot interaction",
+    emptyMessage:
+      "Research publications coming soon! Check back later for updates.",
+  },
+};
+
 // Applies featured propagation + serializes `featuring` uniformly, so
 // featured stars render consistently across sites. See
 // `projects-payload.ts` in site-core.
 const featured = await buildFeaturedPropagation();
-const projectsPayload = JSON.stringify(
-  buildProjectsPayload({
-    hardware: await getAllHardware(),
-    software: await getAllSoftware(),
-    research: await getAllResearch(),
-    meta,
-    featuredPropagation: featured,
-    siteKey: siteConfig.siteKey,
-    resolveImages: serializeImages,
-  }),
-);
+const projects = buildProjectsPayload({
+  hardware: await getAllHardware(),
+  software: await getAllSoftware(),
+  research: await getAllResearch(),
+  featuredPropagation: featured,
+  siteKey: siteConfig.siteKey,
+  resolveImages: serializeImages,
+});
 ---
 
     <SiteShell
@@ -53,5 +82,5 @@ const projectsPayload = JSON.stringify(
   description={meta.description}
   ogImage={ogImage}
 >
-      <ProjectsPage client:load projectsPayload={projectsPayload} />
+      <ProjectsPage client:load projects={projects} content={content} />
     </SiteShell>
