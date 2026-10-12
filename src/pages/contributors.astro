@@ -1,7 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { getAllOrganizations } from "@/data/organizations";
-import { getAllPeople } from "@/data/people";
+import { getPartnerOrganizations, getAllPeople } from "@/utils/collections";
 import SiteShell from "@/layouts/SiteShell.astro";
 import ContributorsPage from "@/react-pages/contributors/ContributorsPage";
 import { isDraftVisible } from "@/utils/drafts";
@@ -54,7 +53,7 @@ const [featured, allPeople, allOrganizations, visibleOrganizations, allOrganizat
   await Promise.all([
     buildFeaturedPropagation(),
     getAllPeople(),
-    getAllOrganizations(),
+    getPartnerOrganizations(),
     getCollection("organizations", ({ data }) =>
       isDraftVisible(data.draft, data.sites),
     ),
