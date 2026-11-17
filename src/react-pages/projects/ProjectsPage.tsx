@@ -1,20 +1,27 @@
 /**
  * Thin wrapper over site-core's shared ProjectsPage layout. The layout
  * (hero, expandable hardware/software/research grids, empty states) is
- * shared; this file supplies only the site-specific connect/CTA section
- * (semio's donate block via the local ConnectSection).
+ * shared; the copy and data come from `projects.astro`, and this file
+ * supplies only the site-specific connect/CTA section (the donate block
+ * via the local ConnectSection).
  */
 import ConnectSection from "@/react-pages/home/sections/ConnectSection";
-import { ProjectsPage as ProjectsPageLayout } from "@semio-community/ecosystem-site-core";
+import {
+	type ProjectsPageContent,
+	ProjectsPage as ProjectsPageLayout,
+	type ProjectsPayload,
+} from "@semio-community/ecosystem-site-core";
 
 interface ProjectsPageProps {
-	projectsPayload: string;
+	projects: ProjectsPayload;
+	content: ProjectsPageContent;
 }
 
-export default function ProjectsPage({ projectsPayload }: ProjectsPageProps) {
+export default function ProjectsPage({ projects, content }: ProjectsPageProps) {
 	return (
 		<ProjectsPageLayout
-			projectsPayload={projectsPayload}
+			projects={projects}
+			content={content}
 			baseUrl={import.meta.env.BASE_URL}
 			footerSection={<ConnectSection />}
 		/>
